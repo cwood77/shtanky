@@ -52,6 +52,13 @@ bool symbolTable::tryBind(const std::string& fqn, linkBase& l)
    return false;
 }
 
+void fullScopeNameBuilder::visit(cmn::node& n)
+{
+   cmn::node *pParent = n.getParent();
+   if(pParent)
+      pParent->acceptVisitor(*this);
+}
+
 void fullScopeNameBuilder::visit(scopeNode& n)
 {
    fqn = std::string(".") + n.scopeName + fqn;

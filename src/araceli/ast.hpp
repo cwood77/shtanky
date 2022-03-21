@@ -84,4 +84,20 @@ public:
    virtual void visit(fileNode& n) { visit(static_cast<cmn::node&>(n)); }
 };
 
+class diagVisitor : public hNodeVisitor {
+public:
+   diagVisitor() : m_nIndents(0) {}
+
+   virtual void visit(cmn::node& n) { visitChildren(n); }
+   virtual void visit(projectNode& n);
+   virtual void visit(scopeNode& n);
+   virtual void visit(classNode& n);
+   virtual void visit(fileNode& n);
+
+private:
+   std::string getIndent() const;
+
+   size_t m_nIndents;
+};
+
 } // namespace araceli

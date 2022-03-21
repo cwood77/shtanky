@@ -34,6 +34,7 @@ public:
    sourceLocation origin;
    std::set<std::string> attributes;
 
+   node *getParent() { return m_pParent; }
    void appendChild(node& n);
    std::vector<node*>& getChildren() { return m_children; }
 

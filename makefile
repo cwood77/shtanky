@@ -31,6 +31,7 @@ dirs:
 # liam
 
 LIAM_SRC = \
+	src/araceli/ast.cpp \
 	src/araceli/lexor.cpp \
 	src/araceli/loader.cpp \
 	src/araceli/nameUtil.cpp \

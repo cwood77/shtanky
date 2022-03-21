@@ -54,6 +54,7 @@ int main(int,char*[])
       std::unique_ptr<projectNode> pPrj = projectBuilder::create("ca");
       projectBuilder::addScope(*pPrj.get(),"testdata\\test",/*inProject*/true);
       projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
+      { diagVisitor v; pPrj->acceptVisitor(v); }
 
       symbolTable sTable;
       while(true)
@@ -79,6 +80,7 @@ int main(int,char*[])
             scopeNode& next = f.mostLikely();
             ::printf("loading %s and trying again\n",next.path.c_str());
             loader::loadFolder(next);
+            { diagVisitor v; pPrj->acceptVisitor(v); }
          }
          else
             break;

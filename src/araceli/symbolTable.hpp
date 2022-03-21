@@ -28,7 +28,7 @@ private:
 // knows about scope-providing nodes
 class fullScopeNameBuilder : public hNodeVisitor {
 public:
-   virtual void visit(cmn::node& n) { visitChildren(n); }
+   virtual void visit(cmn::node& n);
    virtual void visit(scopeNode& n);
    virtual void visit(classNode& n);
 
@@ -117,7 +117,7 @@ public:
    {
       T v(m_sTable);
       n.acceptVisitor(v);
-      hNodeVisitor::visit(n);
+      visitChildren(n);
    }
 
 private:
