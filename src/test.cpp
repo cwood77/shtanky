@@ -1,6 +1,7 @@
 #include "araceli/lexor.hpp"
 #include "araceli/parser.hpp"
 #include "araceli/projectBuilder.hpp"
+#include "araceli/symbolTable.hpp"
 #include <stdio.h>
 #include <string.h>
 
@@ -52,6 +53,16 @@ int main(int,char*[])
       std::unique_ptr<projectNode> pPrj = projectBuilder::create("ca");
       projectBuilder::addScope(*pPrj.get(),"testdata\\test",/*inProject*/true);
       projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
+
+      ::printf("linking\n");
+      symbolTable sTable;
+      treeVisitor<nodePublisher> pub(sTable);
+      pPrj->acceptVisitor(pub);
+      treeVisitor<nodeResolver> res(sTable);
+      pPrj->acceptVisitor(res);
+      ::printf("%lld resolved; %lld unresolved\n",
+         sTable.resolved.size(),
+         sTable.unresolved.size());
    }
 
    return 0;

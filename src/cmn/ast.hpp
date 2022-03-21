@@ -13,6 +13,8 @@ class iNodeVisitor {
 public:
    virtual ~iNodeVisitor() {}
    virtual void visit(node& n) = 0;
+
+   void visitChildren(node& n);
 };
 
 class sourceLocation {
