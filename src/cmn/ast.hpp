@@ -32,6 +32,7 @@ public:
    std::set<std::string> attributes;
 
    void appendChild(node& n);
+   std::vector<node*>& getChildren() { return m_children; }
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 

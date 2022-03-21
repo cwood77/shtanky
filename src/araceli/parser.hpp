@@ -77,4 +77,22 @@ private:
    lexor& m_l;
 };
 
+// compile process
+// - inputs:
+//   dir folders
+//   src folder
+//   ns to build
+//   target type (e.g console EXE)
+//
+// -steps
+//   list root nss
+//   parse src
+//   check unresolved refs
+//   repeat
+//   gen metadata
+//   run target type codegen
+//   lower
+//   done
+
+
 } // namespace araceli

@@ -1,5 +1,6 @@
 #include "araceli/lexor.hpp"
 #include "araceli/parser.hpp"
+#include "araceli/projectBuilder.hpp"
 #include <stdio.h>
 #include <string.h>
 
@@ -12,7 +13,7 @@ int main(int,char*[])
 
    std::stringstream stream;
    {
-      std::ifstream src("src\\test.ara");
+      std::ifstream src("testdata\\test\\test.ara");
       while(src.good())
       {
          std::string line;
@@ -43,6 +44,14 @@ int main(int,char*[])
       auto file = p.parseFile();
 
       ::printf("done with parser\n");
+   }
+
+   {
+      using namespace araceli;
+      ::printf("testing build process\n");
+      std::unique_ptr<projectNode> pPrj = projectBuilder::create("ca");
+      projectBuilder::addScope(*pPrj.get(),"testdata\\test",/*inProject*/true);
+      projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
    }
 
    return 0;
