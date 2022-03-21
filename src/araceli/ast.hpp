@@ -35,6 +35,9 @@ public:
 class projectNode : public cmn::node {
 public:
    std::string targetType;
+
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
 };
 
 class scopeNode : public cmn::node {
@@ -45,6 +48,9 @@ public:
    std::string scopeName;
    bool inProject;
    bool loaded;
+
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
 };
 
 class classNode : public cmn::node {
@@ -71,7 +77,7 @@ class metadataBuilder : public iNodeVisitor {
 
 class hNodeVisitor : public iNodeVisitor {
 public:
-   virtual void visit(cmn::node& n) { visitChildren(n); }
+   virtual void visit(cmn::node& n) { }
    virtual void visit(projectNode& n) { visit(static_cast<cmn::node&>(n)); }
    virtual void visit(scopeNode& n) { visit(static_cast<cmn::node&>(n)); }
    virtual void visit(classNode& n) { visit(static_cast<cmn::node&>(n)); }

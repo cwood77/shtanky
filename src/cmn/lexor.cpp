@@ -1,4 +1,6 @@
 #include "lexor.hpp"
+#include <sstream>
+#include <stdexcept>
 #include <string.h>
 
 namespace cmn {
@@ -104,6 +106,21 @@ std::string lexorBase::getTokenName(size_t t)
       return "string literal";
    else
       return m_lexemeDict[t]->name;
+}
+
+void lexorBase::demand(size_t t)
+{
+   if(getToken() != t)
+   {
+      std::stringstream msg;
+      msg << "expected " << getTokenName(t) << " but got " << getTokenName();
+      error(msg.str());
+   }
+}
+
+void lexorBase::error(const std::string& msg)
+{
+   throw std::runtime_error(msg);
 }
 
 void lexorBase::addPhase(iLexorPhase& p)

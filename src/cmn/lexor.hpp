@@ -1,7 +1,9 @@
 #pragma once
 
+#include "ast.hpp"
 #include <list>
 #include <map>
+#include <memory>
 #include <string>
 
 namespace cmn {
@@ -71,10 +73,11 @@ public:
    std::string getTokenName(size_t t);
    std::string getTokenName() { return getTokenName(m_state.token); }
    std::string getLexeme() { return m_state.lexeme; }
+   unsigned long getLineNumber() { return m_state.lineNumber; }
 
-   void demandOneOf(size_t t);
-   void demandOneOf(size_t n, ...);
-   void demandAndEat(size_t t);
+   void demand(size_t t);
+   //void demandOneOf(size_t n, ...);
+   void demandAndEat(size_t t) { demand(t); advance(); }
    void error(const std::string& msg);
 
 protected:
@@ -92,6 +95,39 @@ private:
    std::map<std::string,const lexemeInfo*> m_alphas;
    std::map<size_t,const lexemeInfo*> m_lexemeDict;
    std::string m_terminators;
+};
+
+class nodeFactory {
+public:
+   explicit nodeFactory(lexorBase& l) : m_l(l) {}
+
+   void deferAttribute(const std::string& attr)
+   {
+      m_attrs.push_back(attr);
+   }
+
+   template<class T>
+   T *create()
+   {
+      std::unique_ptr<T> pNode(new T());
+      pNode->origin.lineNumber = m_l.getLineNumber();
+      for(auto it=m_attrs.begin();it!=m_attrs.end();++it)
+         pNode->attributes.insert(*it);
+      m_attrs.clear();
+      return pNode.release();
+   }
+
+   template<class T>
+   T& appendNewChild(node& parent)
+   {
+      T *pRval = create<T>();
+      parent.appendChild(*pRval);
+      return *pRval;
+   }
+
+private:
+   lexorBase& m_l;
+   std::list<std::string> m_attrs;
 };
 
 } // namespace cmn

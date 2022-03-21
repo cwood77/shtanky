@@ -35,7 +35,52 @@ void parser::parseFile(fileNode& f)
 
 void parser::parseClass(fileNode& f)
 {
-   //parseAttributes();
+   parseAttributes();
+
+   m_l.demandAndEat(lexor::kClass);
+   classNode& c = m_nFac.appendNewChild<classNode>(f);
+
+   m_l.demand(lexor::kName);
+   c.name = m_l.getLexeme();
+   m_l.advance();
+
+   parseClassBases(c);
+
+   m_l.demandAndEat(lexor::kLBrace);
+
+   parseClassMembers(c);
+}
+
+void parser::parseClassBases(classNode& c)
+{
+   // only 1 for now
+   if(m_l.getToken() != lexor::kLBrace)
+   {
+      m_l.demandAndEat(lexor::kColon);
+
+      m_l.demand(lexor::kName);
+      c.baseClasses.push_back(link<classNode>());
+      c.baseClasses.back().ref = m_l.getLexeme();
+      m_l.advance();
+   }
+}
+
+void parser::parseAttributes()
+{
+   while(m_l.getToken() == lexor::kLBracket)
+   {
+      m_l.advance();
+
+      m_l.demand(lexor::kName);
+      m_nFac.deferAttribute(m_l.getLexeme());
+      m_l.advance();
+
+      m_l.demandAndEat(lexor::kRBracket);
+   }
+}
+
+void parser::parseClassMembers(classNode& c)
+{
 }
 
 } // namespace araceli

@@ -73,6 +73,10 @@ public:
 private:
    void parseFile(fileNode& f);
    void parseClass(fileNode& f);
+   void parseClassBases(classNode& c);
+   void parseClassMembers(classNode& c);
+
+   void parseAttributes();
 
    lexor& m_l;
 };
@@ -93,6 +97,5 @@ private:
 //   run target type codegen
 //   lower
 //   done
-
 
 } // namespace araceli

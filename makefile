@@ -33,6 +33,7 @@ dirs:
 LIAM_SRC = \
 	src/araceli/lexor.cpp \
 	src/araceli/loader.cpp \
+	src/araceli/nameUtil.cpp \
 	src/araceli/parser.cpp \
 	src/araceli/projectBuilder.cpp \
 	src/araceli/symbolTable.cpp \

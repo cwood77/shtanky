@@ -1,4 +1,5 @@
 #include "araceli/lexor.hpp"
+#include "araceli/loader.hpp"
 #include "araceli/parser.hpp"
 #include "araceli/projectBuilder.hpp"
 #include "araceli/symbolTable.hpp"
@@ -54,15 +55,34 @@ int main(int,char*[])
       projectBuilder::addScope(*pPrj.get(),"testdata\\test",/*inProject*/true);
       projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
 
-      ::printf("linking\n");
       symbolTable sTable;
-      treeVisitor<nodePublisher> pub(sTable);
-      pPrj->acceptVisitor(pub);
-      treeVisitor<nodeResolver> res(sTable);
-      pPrj->acceptVisitor(res);
-      ::printf("%lld resolved; %lld unresolved\n",
-         sTable.resolved.size(),
-         sTable.unresolved.size());
+      while(true)
+      {
+         ::printf("link/load loop\n");
+         treeVisitor<nodePublisher> pub(sTable);
+         pPrj->acceptVisitor(pub);
+         treeVisitor<nodeResolver> res(sTable);
+         pPrj->acceptVisitor(res);
+         ::printf("%lld resolved; %lld unresolved\n",
+            sTable.resolved.size(),
+            sTable.unresolved.size());
+
+         if(sTable.unresolved.size())
+         {
+            auto missing = (*sTable.unresolved.begin())->ref;
+            ::printf("loading more to find symbol %s\n",missing.c_str());
+
+            unloadedScopeFinder f(missing);
+            pPrj->acceptVisitor(f);
+            if(!f.any())
+               throw std::runtime_error("eh? no progress?");
+            scopeNode& next = f.mostLikely();
+            ::printf("loading %s and trying again\n",next.path.c_str());
+            loader::loadFolder(next);
+         }
+         else
+            break;
+      }
    }
 
    return 0;

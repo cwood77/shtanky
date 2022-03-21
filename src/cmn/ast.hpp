@@ -1,5 +1,6 @@
 #pragma once
 
+#include <list>
 #include <memory>
 #include <set>
 #include <string>
@@ -44,30 +45,6 @@ private:
 
    node(const node&);
    node& operator=(const node&);
-};
-
-class lexorBase;
-
-class nodeFactory {
-public:
-   explicit nodeFactory(lexorBase& l) : m_l(l) {}
-
-   void deferAttribute(const std::string& attr);
-
-   template<class T>
-   T *create()
-   {
-      std::unique_ptr<T> pNode(new T());
-      // set origin
-      // set attributes
-      return pNode.release();
-   }
-
-   template<class T>
-   T& appendNewChild(node& parent);
-
-private:
-   lexorBase& m_l;
 };
 
 } // namespace cmn
