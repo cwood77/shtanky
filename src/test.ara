@@ -1,0 +1,9 @@
+[program]
+class test : sht.cons.program {
+
+override run(args : str[])
+{
+   gCons->printLn("hello world!");
+}
+
+}
