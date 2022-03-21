@@ -1,6 +1,5 @@
-#include "cmn/parser.hpp"
-#include "cmn/ast.hpp"
-#include "cmn/lexor.hpp"
+#include "araceli/lexor.hpp"
+#include "araceli/parser.hpp"
 #include <stdio.h>
 #include <string.h>
 

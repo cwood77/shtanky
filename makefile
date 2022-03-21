@@ -10,13 +10,22 @@ RELEASE_LNK_FLAGS_POST = -static-libgcc -static-libstdc++ -static
 SCRIPTLIB = scriptlib/xcopy-deploy.bat
 
 all: \
+	dirs \
 	$(OUT_DIR)/debug/liam.exe \
 	$(OUT_DIR)/release/liam.exe \
 
 clean:
 	rm -rf bin
 
-.PHONY: all clean
+dirs:
+	@mkdir -p $(OUT_DIR)/debug
+	@mkdir -p $(OBJ_DIR)/debug/araceli
+	@mkdir -p $(OBJ_DIR)/debug/cmn
+	@mkdir -p $(OUT_DIR)/release
+	@mkdir -p $(OBJ_DIR)/release/araceli
+	@mkdir -p $(OBJ_DIR)/release/cmn
+
+.PHONY: all clean dirs
 
 # ----------------------------------------------------------------------
 # liam
@@ -32,22 +41,18 @@ LIAM_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(LIAM_SRC)))
 
 $(OUT_DIR)/debug/liam.exe: $(LIAM_DEBUG_OBJ)
 	$(info $< --> $@)
-	@mkdir -p $(OUT_DIR)/debug
 	@$(LINK_CMD) -o $@ $(LIAM_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST)
 
 $(LIAM_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
 	$(info $< --> $@)
-	@mkdir -p $(OBJ_DIR)/debug/liam
 	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
 
 LIAM_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(LIAM_SRC)))
 
 $(OUT_DIR)/release/liam.exe: $(LIAM_RELEASE_OBJ)
 	$(info $< --> $@)
-	@mkdir -p $(OUT_DIR)/release
 	@$(LINK_CMD) -o $@ $(LIAM_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST)
 
 $(LIAM_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
-	@mkdir -p $(OBJ_DIR)/release/liam
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
