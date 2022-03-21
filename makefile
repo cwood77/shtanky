@@ -22,6 +22,10 @@ clean:
 # liam
 
 LIAM_SRC = \
+	src/araceli/lexor.cpp \
+	src/araceli/parser.cpp \
+	src/cmn/ast.cpp \
+	src/cmn/lexor.cpp \
 	src/test.cpp \
 
 LIAM_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(LIAM_SRC)))
