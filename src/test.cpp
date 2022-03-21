@@ -1,3 +1,5 @@
+#include "cmn/parser.hpp"
+#include "cmn/ast.hpp"
 #include "cmn/lexor.hpp"
 #include <stdio.h>
 #include <string.h>
@@ -184,6 +186,11 @@ void lexorBase::matchAlphanumeric()
    }
 }
 
+parserBase::parserBase(lexorBase& l)
+: m_nFac(l)
+{
+}
+
 } // namespace cmn
 
 namespace araceli {
@@ -212,6 +219,32 @@ lexor::lexor(const char *buffer)
    advance();
 }
 
+parser::parser(lexor& l)
+: parserBase(l)
+, m_l(l)
+{
+}
+
+std::unique_ptr<fileNode> parser::parseFile()
+{
+   std::unique_ptr<fileNode> pFile(m_nFac.create<fileNode>());
+   parseFile(*pFile.get());
+   return pFile;
+}
+
+void parser::parseFile(fileNode& f)
+{
+   if(m_l.getToken() == lexor::kEOI)
+      return;
+
+   parseClass(f);
+}
+
+void parser::parseClass(fileNode& f)
+{
+   //parseAttributes();
+}
+
 } // namespace araceli
 
 int main(int,char*[])
@@ -230,14 +263,27 @@ int main(int,char*[])
    }
 
    std::string copy = stream.str();
-   araceli::lexor l(copy.c_str());
-
-   while(true)
    {
-      ::printf("%s(%s)\n",l.getTokenName().c_str(),l.getLexeme().c_str());
-      l.advance();
-      if(l.getToken() == cmn::lexorBase::kEOI)
-         break;
+      araceli::lexor l(copy.c_str());
+
+      while(true)
+      {
+         ::printf("%s(%s)\n",l.getTokenName().c_str(),l.getLexeme().c_str());
+         l.advance();
+         if(l.getToken() == cmn::lexorBase::kEOI)
+            break;
+      }
+
+      ::printf("done with lexor, start parser\n");
+   }
+
+   {
+      araceli::lexor l(copy.c_str());
+      araceli::parser p(l);
+
+      auto file = p.parseFile();
+
+      ::printf("done with parser\n");
    }
 
    return 0;

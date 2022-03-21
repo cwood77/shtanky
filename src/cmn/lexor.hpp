@@ -72,6 +72,7 @@ public:
    std::string getTokenName() { return getTokenName(m_state.token); }
    std::string getLexeme() { return m_state.lexeme; }
 
+   void demandOneOf(size_t t);
    void demandOneOf(size_t n, ...);
    void demandAndEat(size_t t);
    void error(const std::string& msg);
