@@ -69,12 +69,6 @@ public:
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
 };
 
-class metadata {
-};
-
-class metadataBuilder : public iNodeVisitor {
-};
-
 class hNodeVisitor : public iNodeVisitor {
 public:
    virtual void visit(cmn::node& n) { }
@@ -98,6 +92,20 @@ private:
    std::string getIndent() const;
 
    size_t m_nIndents;
+};
+
+class treeVisitor : public hNodeVisitor {
+public:
+   explicit treeVisitor(cmn::iNodeVisitor& inner) : m_inner(inner) {}
+
+   virtual void visit(cmn::node& n)
+   {
+      n.acceptVisitor(m_inner);
+      visitChildren(n);
+   }
+
+private:
+   cmn::iNodeVisitor& m_inner;
 };
 
 } // namespace araceli

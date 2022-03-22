@@ -1,5 +1,6 @@
 #include "araceli/lexor.hpp"
 #include "araceli/loader.hpp"
+#include "araceli/metadata.hpp"
 #include "araceli/parser.hpp"
 #include "araceli/projectBuilder.hpp"
 #include "araceli/symbolTable.hpp"
@@ -60,9 +61,9 @@ int main(int,char*[])
       while(true)
       {
          ::printf("link/load loop\n");
-         treeVisitor<nodePublisher> pub(sTable);
+         treeSymbolVisitor<nodePublisher> pub(sTable);
          pPrj->acceptVisitor(pub);
-         treeVisitor<nodeResolver> res(sTable);
+         treeSymbolVisitor<nodeResolver> res(sTable);
          pPrj->acceptVisitor(res);
          ::printf("%lld resolved; %lld unresolved\n",
             sTable.resolved.size(),
@@ -84,6 +85,11 @@ int main(int,char*[])
          }
          else
             break;
+      }
+
+      // next, gen metadata
+      metadata md;
+      {
       }
    }
 

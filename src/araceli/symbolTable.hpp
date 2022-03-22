@@ -109,9 +109,9 @@ private:
 };
 
 template<class T>
-class treeVisitor : public hNodeVisitor {
+class treeSymbolVisitor : public hNodeVisitor {
 public:
-   explicit treeVisitor(symbolTable& st) : m_sTable(st) {}
+   explicit treeSymbolVisitor(symbolTable& st) : m_sTable(st) {}
 
    virtual void visit(cmn::node& n)
    {

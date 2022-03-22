@@ -34,6 +34,7 @@ LIAM_SRC = \
 	src/araceli/ast.cpp \
 	src/araceli/lexor.cpp \
 	src/araceli/loader.cpp \
+	src/araceli/metadata.cpp \
 	src/araceli/nameUtil.cpp \
 	src/araceli/parser.cpp \
 	src/araceli/projectBuilder.cpp \
