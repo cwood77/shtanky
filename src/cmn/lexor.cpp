@@ -141,7 +141,10 @@ void lexorBase::demandOneOf(size_t n, ...)
 
 void lexorBase::error(const std::string& msg)
 {
-   throw std::runtime_error(msg);
+   std::stringstream fullMsg;
+   fullMsg << msg << " near line " << m_state.lineNumber;
+
+   throw std::runtime_error(fullMsg.str());
 }
 
 void lexorBase::addPhase(iLexorPhase& p)

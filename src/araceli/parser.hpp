@@ -79,6 +79,15 @@ private:
    void parseMethod(methodNode& n);
    void parseField(fieldNode& n);
 
+   void parseSequence(cmn::node& owner);
+   void parseStatements(cmn::node& owner);
+   bool tryParseStatement(cmn::node& owner);
+   void parseInvoke(std::unique_ptr<cmn::node>& inst, cmn::node& owner);
+   cmn::node& parseLValue();
+   void parseRValue(cmn::node& owner);
+
+   void parseType(cmn::node& owner);
+
    void parseAttributes();
 
    lexor& m_l;

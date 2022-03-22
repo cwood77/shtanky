@@ -1,6 +1,6 @@
 class console {
 
-   public printLn(msg : str)
+   public printLn(msg : str) : void
    {
    }
 

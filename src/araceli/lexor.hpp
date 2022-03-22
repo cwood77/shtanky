@@ -16,10 +16,14 @@ public:
       kArrow,
       kClass,
       kOverride,
+      kAbstract,
       kStr,
+      kVoid,
       kPublic,
       kProtected,
       kPrivate,
+      kBoolLiteral,
+      kEquals,
    };
 
    explicit lexor(const char *buffer);

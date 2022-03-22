@@ -1,11 +1,9 @@
 [program]
 class test : sht.cons.program {
 
-   private f : bool = false;
-
    override run(args : str[]) : void
    {
-      gCons->printLn("hello world!");
+      _out->printLn("hello world!");
    }
 
 }

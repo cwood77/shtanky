@@ -103,6 +103,17 @@ void diagVisitor::visit(voidTypeNode& n)
    m_nIndents-=3;
 }
 
+void diagVisitor::visit(userTypeNode& n)
+{
+   ::printf("%suserType name=%s linked?=%d\n",
+      getIndent().c_str(),
+      n.name.c_str(),
+      n.pDef.pRefee ? 1 : 0);
+   m_nIndents+=3;
+   hNodeVisitor::visit(n);
+   m_nIndents-=3;
+}
+
 void diagVisitor::visit(fieldNode& n)
 {
    ::printf("%sfield\n",

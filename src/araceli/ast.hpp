@@ -14,6 +14,7 @@ class typeNode;
 class strTypeNode;
 class arrayTypeNode;
 class voidTypeNode;
+class userTypeNode;
 class fieldNode;
 class sequenceNode;
 class invokeNode;
@@ -34,6 +35,7 @@ public:
    virtual void visit(strTypeNode& n) = 0;
    virtual void visit(arrayTypeNode& n) = 0;
    virtual void visit(voidTypeNode& n) = 0;
+   virtual void visit(userTypeNode& n) = 0;
    virtual void visit(fieldNode& n) = 0;
    virtual void visit(sequenceNode& n) = 0;
    virtual void visit(invokeNode& n) = 0;
@@ -152,6 +154,15 @@ public:
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
 };
 
+class userTypeNode : public typeNode {
+public:
+   link<classNode> pDef;
+   std::string name;
+
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
 class fieldNode : public memberNode {
 public:
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
@@ -213,6 +224,7 @@ public:
    virtual void visit(strTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(arrayTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(voidTypeNode& n) { visit(static_cast<typeNode&>(n)); }
+   virtual void visit(userTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(fieldNode& n) { visit(static_cast<memberNode&>(n)); }
    virtual void visit(sequenceNode& n) { visit(static_cast<cmn::node&>(n)); }
    virtual void visit(invokeNode& n) { visit(static_cast<cmn::node&>(n)); }
@@ -236,6 +248,7 @@ public:
    virtual void visit(strTypeNode& n);
    virtual void visit(arrayTypeNode& n);
    virtual void visit(voidTypeNode& n);
+   virtual void visit(userTypeNode& n);
    virtual void visit(fieldNode& n);
    virtual void visit(sequenceNode& n);
    virtual void visit(invokeNode& n);
