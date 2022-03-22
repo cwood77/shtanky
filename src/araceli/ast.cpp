@@ -46,12 +46,10 @@ void diagVisitor::visit(classNode& n)
 
 void diagVisitor::visit(memberNode& n)
 {
-   const char *kAccessStrings[] = { "public", "protected", "private" };
-
-   ::printf("%smember; name=%s; access=%s\n",
+   ::printf("%smember; name=%s; flags=%lld\n",
       getIndent().c_str(),
       n.name.c_str(),
-      kAccessStrings[n.access]);
+      n.flags);
    m_nIndents+=3;
    hNodeVisitor::visit(n);
    m_nIndents-=3;
@@ -59,10 +57,10 @@ void diagVisitor::visit(memberNode& n)
 
 void diagVisitor::visit(methodNode& n)
 {
-   ::printf("%smethod; isOverride=%d; baseLinked?=%d\n",
+   ::printf("%smethod; flags=%lld; baseLinked?=%d\n",
       getIndent().c_str(),
-      n.isOverride ? 1 : 0,
-      n.baseImpl.pRefee ? 1 : 0);
+      n.flags,
+      n.baseImpl.getRefee() ? 1 : 0);
    hNodeVisitor::visit(n);
 }
 
@@ -108,7 +106,7 @@ void diagVisitor::visit(userTypeNode& n)
    ::printf("%suserType name=%s linked?=%d\n",
       getIndent().c_str(),
       n.name.c_str(),
-      n.pDef.pRefee ? 1 : 0);
+      n.pDef.getRefee() ? 1 : 0);
    m_nIndents+=3;
    hNodeVisitor::visit(n);
    m_nIndents-=3;
@@ -135,7 +133,17 @@ void diagVisitor::visit(invokeNode& n)
    ::printf("%sinvoke; name=%s; protoLinked?=%d\n",
       getIndent().c_str(),
       n.name.c_str(),
-      n.proto.pRefee ? 1 : 0);
+      n.proto.getRefee() ? 1 : 0);
+   m_nIndents+=3;
+   hNodeVisitor::visit(n);
+   m_nIndents-=3;
+}
+
+void diagVisitor::visit(callNode& n)
+{
+   ::printf("%scall; name=%s\n",
+      getIndent().c_str(),
+      n.name.c_str());
    m_nIndents+=3;
    hNodeVisitor::visit(n);
    m_nIndents-=3;
@@ -166,6 +174,16 @@ void diagVisitor::visit(boolLiteralNode& n)
    ::printf("%sboolLit; value=%d\n",
       getIndent().c_str(),
       n.value ? 1 : 0);
+   m_nIndents+=3;
+   hNodeVisitor::visit(n);
+   m_nIndents-=3;
+}
+
+void diagVisitor::visit(intLiteralNode& n)
+{
+   ::printf("%sintLit; value=%s\n",
+      getIndent().c_str(),
+      n.value.c_str());
    m_nIndents+=3;
    hNodeVisitor::visit(n);
    m_nIndents-=3;

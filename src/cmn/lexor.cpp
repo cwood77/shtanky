@@ -35,6 +35,25 @@ void stringLiteralReader::advance(lexorState& s) const
    s.token = lexorBase::kStringLiteral;
 }
 
+void intLiteralReader::collectTerminators(std::string& t) const
+{
+   t += "0123456789";
+}
+
+void intLiteralReader::advance(lexorState& s) const
+{
+   if(!::isdigit(s.pThumb[0]))
+      return;
+
+   const char *pEnd = s.pThumb + 1;
+   for(;::isdigit(*pEnd);pEnd++);
+
+   s.lexeme = std::string(s.pThumb,pEnd-s.pThumb);
+
+   s.pThumb = pEnd;
+   s.token = lexorBase::kIntLiteral;
+}
+
 void whitespaceEater::collectTerminators(std::string& t) const
 {
    t += " \t\r\n";
@@ -105,6 +124,8 @@ std::string lexorBase::getTokenName(size_t t)
       return "name";
    else if(t == kStringLiteral)
       return "string literal";
+   else if(t == kIntLiteral)
+      return "int literal";
    else
       return m_lexemeDict[t]->name;
 }

@@ -1,14 +1,21 @@
-class console {
+interface iStream {
 
-   public printLn(msg : str) : void
+   printLn(msg : str) : void;
+
+}
+
+class stdout : iStream {
+
+   override printLn(msg : str) : void
    {
+      ._osCall(1,msg);
    }
 
 }
 
-class program {
+abstract program {
 
-   private gCons : console;
+   public _out : iStream;
 
    abstract run(args : str[]) : void;
 

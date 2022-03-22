@@ -75,7 +75,7 @@ private:
    void parseClass(fileNode& f);
    void parseClassBases(classNode& c);
    void parseClassMembers(classNode& c);
-   void parseMemberKeywords(bool& o, memberNode::accessTypes& at);
+   void parseMemberKeywords(size_t& flags);
    void parseMethod(methodNode& n);
    void parseField(fieldNode& n);
 
@@ -83,6 +83,8 @@ private:
    void parseStatements(cmn::node& owner);
    bool tryParseStatement(cmn::node& owner);
    void parseInvoke(std::unique_ptr<cmn::node>& inst, cmn::node& owner);
+   void parseCall(std::unique_ptr<cmn::node>& inst, cmn::node& owner);
+   void parsePassedArgList(cmn::node& owner);
    cmn::node& parseLValue();
    void parseRValue(cmn::node& owner);
 

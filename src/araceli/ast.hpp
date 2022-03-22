@@ -1,5 +1,7 @@
 #pragma once
 #include "../cmn/ast.hpp"
+#include <stdexcept>
+#include <typeinfo>
 
 namespace araceli {
 
@@ -18,9 +20,11 @@ class userTypeNode;
 class fieldNode;
 class sequenceNode;
 class invokeNode;
+class callNode;
 class varRefNode;
 class stringLiteralNode;
 class boolLiteralNode;
+class intLiteralNode;
 
 class iNodeVisitor : public cmn::iNodeVisitor {
 public:
@@ -39,25 +43,52 @@ public:
    virtual void visit(fieldNode& n) = 0;
    virtual void visit(sequenceNode& n) = 0;
    virtual void visit(invokeNode& n) = 0;
+   virtual void visit(callNode& n) = 0;
    virtual void visit(varRefNode& n) = 0;
    virtual void visit(stringLiteralNode& n) = 0;
    virtual void visit(boolLiteralNode& n) = 0;
+   virtual void visit(intLiteralNode& n) = 0;
+};
+
+namespace nodeFlags {
+   enum {
+      kOverride  = 1 << 0,
+      kAbstract  = 1 << 1,
+      kStatic    = 1 << 2,
+      kInterface = 1 << 3,
+
+      kPublic    = 1 << 4,
+      kProtected = 1 << 5,
+      kPrivate   = 1 << 6,
+   };
 };
 
 class linkBase {
 public:
-   linkBase() : pRefee(NULL) {}
+   linkBase() : m_pRefee(NULL) {}
+
+   virtual void bind(cmn::node& dest) = 0;
 
    std::string ref;
-   cmn::node *pRefee;
+
+   cmn::node *_getRefee() { return m_pRefee; }
+
+protected:
+   cmn::node *m_pRefee;
 };
 
 template<class T>
 class link : public linkBase {
 public:
-   bool tryBind(cmn::node& dest);
+   virtual void bind(cmn::node& dest)
+   {
+      m_pRefee = dynamic_cast<T*>(&dest);
+      if(!m_pRefee)
+         throw std::runtime_error(
+            std::string("link expected node type ") + typeid(T).name());
+   }
 
-   T *getRefee();
+   T *getRefee() { return dynamic_cast<T*>(m_pRefee); }
 };
 
 class projectNode : public cmn::node {
@@ -91,6 +122,9 @@ public:
 
 class classNode : public cmn::node {
 public:
+   classNode() : flags(0) {}
+
+   size_t flags;
    std::string name;
 
    std::vector<link<classNode> > baseClasses;
@@ -101,9 +135,9 @@ public:
 
 class memberNode : public cmn::node {
 public:
-   memberNode() : access(kPrivate) {}
+   memberNode() : flags(0) {}
 
-   enum accessTypes { kPublic, kProtected, kPrivate } access;
+   size_t flags;
    std::string name;
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
@@ -112,10 +146,6 @@ public:
 
 class methodNode : public memberNode {
 public:
-   methodNode() : isOverride(false) {}
-
-   bool isOverride;
-
    link<methodNode> baseImpl;
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
@@ -184,6 +214,14 @@ public:
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
 };
 
+class callNode : public cmn::node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
 class varRefNode : public cmn::node {
 public:
    std::string name;
@@ -210,6 +248,14 @@ public:
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
 };
 
+class intLiteralNode : public cmn::node {
+public:
+   std::string value;
+
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
 class hNodeVisitor : public iNodeVisitor {
 public:
    virtual void visit(cmn::node& n) { }
@@ -228,9 +274,11 @@ public:
    virtual void visit(fieldNode& n) { visit(static_cast<memberNode&>(n)); }
    virtual void visit(sequenceNode& n) { visit(static_cast<cmn::node&>(n)); }
    virtual void visit(invokeNode& n) { visit(static_cast<cmn::node&>(n)); }
+   virtual void visit(callNode& n) { visit(static_cast<cmn::node&>(n)); }
    virtual void visit(varRefNode& n) { visit(static_cast<cmn::node&>(n)); }
    virtual void visit(stringLiteralNode& n) { visit(static_cast<cmn::node&>(n)); }
    virtual void visit(boolLiteralNode& n) { visit(static_cast<cmn::node&>(n)); }
+   virtual void visit(intLiteralNode& n) { visit(static_cast<cmn::node&>(n)); }
 };
 
 class diagVisitor : public hNodeVisitor {
@@ -252,9 +300,11 @@ public:
    virtual void visit(fieldNode& n);
    virtual void visit(sequenceNode& n);
    virtual void visit(invokeNode& n);
+   virtual void visit(callNode& n);
    virtual void visit(varRefNode& n);
    virtual void visit(stringLiteralNode& n);
    virtual void visit(boolLiteralNode& n);
+   virtual void visit(intLiteralNode& n);
 
 private:
    std::string getIndent() const;

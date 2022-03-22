@@ -35,8 +35,16 @@ void parser::parseClass(fileNode& f)
 {
    parseAttributes();
 
-   m_l.demandAndEat(lexor::kClass);
    classNode& c = m_nFac.appendNewChild<classNode>(f);
+   if(m_l.getToken() == lexor::kClass)
+      ;
+   else if(m_l.getToken() == lexor::kInterface)
+      c.flags |= nodeFlags::kInterface;
+   else if(m_l.getToken() == lexor::kAbstract)
+      c.flags |= nodeFlags::kAbstract;
+   else
+      m_l.demandOneOf(3,lexor::kClass,lexor::kInterface,lexor::kAbstract);
+   m_l.advance();
 
    m_l.demand(lexor::kName);
    c.name = m_l.getLexeme();
@@ -53,7 +61,7 @@ void parser::parseClass(fileNode& f)
 
 void parser::parseClassBases(classNode& c)
 {
-   // only 1 for now
+   // at most 1 for now
    if(m_l.getToken() != lexor::kLBrace)
    {
       m_l.demandAndEat(lexor::kColon);
@@ -81,9 +89,8 @@ void parser::parseAttributes()
 
 void parser::parseClassMembers(classNode& c)
 {
-   bool o = false;
-   memberNode::accessTypes at = memberNode::kPrivate;
-   parseMemberKeywords(o,at);
+   size_t flags = 0;
+   parseMemberKeywords(flags);
 
    m_l.demand(lexor::kName);
    auto name = m_l.getLexeme();
@@ -92,15 +99,14 @@ void parser::parseClassMembers(classNode& c)
    if(m_l.getToken() == lexor::kLParen)
    {
       auto& m = m_nFac.appendNewChild<methodNode>(c);
-      m.access = at;
+      m.flags = flags;
       m.name = name;
-      m.isOverride = o;
       parseMethod(m);
    }
    else if(m_l.getToken() == lexor::kColon)
    {
       auto& m = m_nFac.appendNewChild<fieldNode>(c);
-      m.access = at;
+      m.flags = flags;
       m.name = name;
       parseField(m);
    }
@@ -111,23 +117,25 @@ void parser::parseClassMembers(classNode& c)
       parseClassMembers(c);
 }
 
-void parser::parseMemberKeywords(bool& o, memberNode::accessTypes& at)
+void parser::parseMemberKeywords(size_t& flags)
 {
    if(m_l.getToken() == lexor::kOverride)
-      o = true;
+      flags |= nodeFlags::kOverride;
    else if(m_l.getToken() == lexor::kAbstract)
-      ; // TODO unimpled
+      flags |= nodeFlags::kAbstract;
+   else if(m_l.getToken() == lexor::kStatic)
+      flags |= nodeFlags::kStatic;
    else if(m_l.getToken() == lexor::kPublic)
-      at = memberNode::kPublic;
+      flags |= nodeFlags::kPublic;
    else if(m_l.getToken() == lexor::kProtected)
-      at = memberNode::kProtected;
+      flags |= nodeFlags::kProtected;
    else if(m_l.getToken() == lexor::kPrivate)
-      at = memberNode::kPrivate;
+      flags |= nodeFlags::kPrivate;
    else
       return;
 
    m_l.advance();
-   parseMemberKeywords(o,at);
+   parseMemberKeywords(flags);
 }
 
 void parser::parseMethod(methodNode& n)
@@ -193,7 +201,10 @@ bool parser::tryParseStatement(cmn::node& owner)
    if(m_l.getToken() == lexor::kRBrace) return false;
 
    std::unique_ptr<cmn::node> pInst(&parseLValue());
-   parseInvoke(pInst,owner);
+   if(m_l.getToken() == lexor::kLParen)
+      parseCall(pInst,owner);
+   else
+      parseInvoke(pInst,owner);
 
    return true;
 }
@@ -212,11 +223,38 @@ void parser::parseInvoke(std::unique_ptr<cmn::node>& inst, cmn::node& owner)
    i.name = name;
    i.appendChild(*inst.release());
 
-   parseRValue(i);
+   parsePassedArgList(owner);
 
    m_l.demandAndEat(lexor::kRParen);
 
    m_l.demandAndEat(lexor::kSemiColon);
+}
+
+void parser::parseCall(std::unique_ptr<cmn::node>& inst, cmn::node& owner)
+{
+   m_l.demandAndEat(lexor::kLParen);
+
+   varRefNode& func = dynamic_cast<varRefNode&>(*inst.get());
+
+   auto& c = m_nFac.appendNewChild<callNode>(owner);
+   c.name = func.name;
+
+   parsePassedArgList(owner);
+
+   m_l.demandAndEat(lexor::kRParen);
+
+   m_l.demandAndEat(lexor::kSemiColon);
+}
+
+void parser::parsePassedArgList(cmn::node& owner)
+{
+   while(m_l.getToken() != lexor::kRParen)
+   {
+      parseRValue(owner);
+
+      if(m_l.getToken() == lexor::kComma)
+         m_l.advance();
+   }
 }
 
 cmn::node& parser::parseLValue()
@@ -245,6 +283,12 @@ void parser::parseRValue(cmn::node& owner)
          l.value = false;
       else
          l.value = true;
+      m_l.advance();
+   }
+   else if(m_l.getToken() == lexor::kIntLiteral)
+   {
+      auto& l = m_nFac.appendNewChild<intLiteralNode>(owner);
+      l.value = m_l.getLexeme();
       m_l.advance();
    }
    else

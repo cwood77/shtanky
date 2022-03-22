@@ -49,6 +49,12 @@ public:
    virtual void advance(lexorState& s) const;
 };
 
+class intLiteralReader : public iLexorPhase {
+public:
+   virtual void collectTerminators(std::string& t) const;
+   virtual void advance(lexorState& s) const;
+};
+
 class whitespaceEater : public iLexorPhase {
 public:
    virtual void collectTerminators(std::string& t) const;
@@ -62,6 +68,7 @@ public:
       kUnknown,
       kName,
       kStringLiteral,
+      kIntLiteral,
       _kFirstDerivedToken
    };
 

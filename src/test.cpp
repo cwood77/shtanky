@@ -12,96 +12,57 @@
 
 int main(int,char*[])
 {
-   ::printf("testing lexor\n");
+   using namespace araceli;
+   ::printf("testing build process\n");
+   std::unique_ptr<projectNode> pPrj = projectBuilder::create("ca");
+   projectBuilder::addScope(*pPrj.get(),"testdata\\test",/*inProject*/true);
+   projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
+   { diagVisitor v; pPrj->acceptVisitor(v); }
 
-   std::stringstream stream;
+   symbolTable sTable;
+   while(true)
    {
-      std::ifstream src("testdata\\test\\test.ara");
-      while(src.good())
+      ::printf("link/load loop\n");
+      treeSymbolVisitor<nodePublisher> pub(sTable);
+      pPrj->acceptVisitor(pub);
+      treeSymbolVisitor<nodeResolver> res(sTable);
+      pPrj->acceptVisitor(res);
+      ::printf("%lld resolved; %lld unresolved\n",
+         sTable.resolved.size(),
+         sTable.unresolved.size());
+
+      if(sTable.unresolved.size())
       {
-         std::string line;
-         std::getline(src,line);
-         stream << line << std::endl;
+         auto missing = (*sTable.unresolved.begin())->ref;
+         ::printf("loading more to find symbol %s\n",missing.c_str());
+
+         unloadedScopeFinder f(missing);
+         pPrj->acceptVisitor(f);
+         if(!f.any())
+            throw std::runtime_error("eh? no progress?");
+         scopeNode& next = f.mostLikely();
+         ::printf("loading %s and trying again\n",next.path.c_str());
+         loader::loadFolder(next);
+         { diagVisitor v; pPrj->acceptVisitor(v); }
       }
+      else
+         break;
    }
 
-   std::string copy = stream.str();
+   // gather metadata
+   metadata md;
    {
-      araceli::lexor l(copy.c_str());
-
-      while(true)
-      {
-         ::printf("%s(%s)\n",l.getTokenName().c_str(),l.getLexeme().c_str());
-         l.advance();
-         if(l.getToken() == cmn::lexorBase::kEOI)
-            break;
-      }
-
-      ::printf("done with lexor, start parser\n");
+      nodeMetadataBuilder inner(md);
+      treeVisitor outer(inner);
+      pPrj->acceptVisitor(outer);
    }
 
-   {
-      araceli::lexor l(copy.c_str());
-      araceli::parser p(l);
+   // file codegen
+   // -> header file
+   // -> source file
+   // -> make file
 
-      auto file = p.parseFile();
-
-      ::printf("done with parser\n");
-   }
-
-   {
-      using namespace araceli;
-      ::printf("testing build process\n");
-      std::unique_ptr<projectNode> pPrj = projectBuilder::create("ca");
-      projectBuilder::addScope(*pPrj.get(),"testdata\\test",/*inProject*/true);
-      projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
-      { diagVisitor v; pPrj->acceptVisitor(v); }
-
-      symbolTable sTable;
-      while(true)
-      {
-         ::printf("link/load loop\n");
-         treeSymbolVisitor<nodePublisher> pub(sTable);
-         pPrj->acceptVisitor(pub);
-         treeSymbolVisitor<nodeResolver> res(sTable);
-         pPrj->acceptVisitor(res);
-         ::printf("%lld resolved; %lld unresolved\n",
-            sTable.resolved.size(),
-            sTable.unresolved.size());
-
-         if(sTable.unresolved.size())
-         {
-            auto missing = (*sTable.unresolved.begin())->ref;
-            ::printf("loading more to find symbol %s\n",missing.c_str());
-
-            unloadedScopeFinder f(missing);
-            pPrj->acceptVisitor(f);
-            if(!f.any())
-               throw std::runtime_error("eh? no progress?");
-            scopeNode& next = f.mostLikely();
-            ::printf("loading %s and trying again\n",next.path.c_str());
-            loader::loadFolder(next);
-            { diagVisitor v; pPrj->acceptVisitor(v); }
-         }
-         else
-            break;
-      }
-
-      // gather metadata
-      metadata md;
-      {
-         nodeMetadataBuilder inner(md);
-         treeVisitor outer(inner);
-         pPrj->acceptVisitor(outer);
-      }
-
-      // file codegen
-      // -> header file
-      // -> source file
-      // -> make file
-
-      // target codegen
-   }
+   // target codegen
 
    return 0;
 }

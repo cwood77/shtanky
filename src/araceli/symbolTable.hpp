@@ -42,25 +42,25 @@ public:
 
    virtual void visit(classNode& n)
    {
-      if(m_l.pRefee)
+      if(m_l._getRefee())
          return;
 
       {
          fullScopeNameBuilder v;
          n.acceptVisitor(v);
          m_sTable.tryResolve(v.fqn,m_l);
-         if(m_l.pRefee)
+         if(m_l._getRefee())
             return;
       }
 
       for(auto it=n.baseClasses.begin();it!=n.baseClasses.end();++it)
       {
-         if(it->pRefee)
+         if(it->getRefee())
          {
             fullScopeNameBuilder v;
-            it->pRefee->acceptVisitor(v);
+            it->getRefee()->acceptVisitor(v);
             m_sTable.tryResolve(v.fqn,m_l);
-            if(m_l.pRefee)
+            if(m_l._getRefee())
                return;
          }
       }

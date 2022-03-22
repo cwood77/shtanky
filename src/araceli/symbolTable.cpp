@@ -44,7 +44,7 @@ bool symbolTable::tryBind(const std::string& fqn, linkBase& l)
    else
    {
       ::printf("ok!\n");
-      l.pRefee = it->second;
+      l.bind(*it->second);
       unresolved.erase(&l);
       return true;
    }
@@ -74,6 +74,10 @@ void fullScopeNameBuilder::visit(classNode& n)
 unloadedScopeFinder::unloadedScopeFinder(const std::string& missingRef)
 : m_missingRef(missingRef)
 {
+   // if the ref is FQ, shave off the leading .
+   // so I can treat FQ and rel names identically
+   if(m_missingRef.c_str()[0] == '.')
+      m_missingRef = m_missingRef.c_str()+1;
 }
 
 bool unloadedScopeFinder::any()
