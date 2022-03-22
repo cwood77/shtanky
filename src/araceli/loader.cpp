@@ -36,7 +36,7 @@ void loader::loadFolder(scopeNode& s)
 
       if(fData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
          ;
-      else
+      else if(cmn::pathUtil::getExtension(fullPath) == "ara")
       {
          ::printf("loading file %s\n",fullPath.c_str());
          std::string contents;

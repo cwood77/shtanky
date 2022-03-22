@@ -6,6 +6,14 @@
 
 namespace cmn {
 
+std::string pathUtil::getExtension(const std::string& path)
+{
+   const char *pDot = ::strrchr(path.c_str(),'.');
+   if(!pDot)
+      throw std::runtime_error("bad path format");
+   return pDot+1;
+}
+
 std::string pathUtil::getLastPart(const std::string& path)
 {
    const char *pSlash = ::strrchr(path.c_str(),'\\');

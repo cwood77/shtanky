@@ -76,7 +76,7 @@ public:
    unsigned long getLineNumber() { return m_state.lineNumber; }
 
    void demand(size_t t);
-   //void demandOneOf(size_t n, ...);
+   void demandOneOf(size_t n, ...);
    void demandAndEat(size_t t) { demand(t); advance(); }
    void error(const std::string& msg);
 

@@ -75,6 +75,9 @@ private:
    void parseClass(fileNode& f);
    void parseClassBases(classNode& c);
    void parseClassMembers(classNode& c);
+   void parseMemberKeywords(bool& o, memberNode::accessTypes& at);
+   void parseMethod(methodNode& n);
+   void parseField(fieldNode& n);
 
    void parseAttributes();
 

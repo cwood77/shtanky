@@ -1,2 +1,15 @@
+class console {
+
+   public printLn(msg : str)
+   {
+   }
+
+}
+
 class program {
+
+   private gCons : console;
+
+   abstract run(args : str[]) : void;
+
 }

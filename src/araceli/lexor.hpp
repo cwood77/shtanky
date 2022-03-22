@@ -17,6 +17,9 @@ public:
       kClass,
       kOverride,
       kStr,
+      kPublic,
+      kProtected,
+      kPrivate,
    };
 
    explicit lexor(const char *buffer);

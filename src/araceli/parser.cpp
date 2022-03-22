@@ -81,6 +81,56 @@ void parser::parseAttributes()
 
 void parser::parseClassMembers(classNode& c)
 {
+   bool o = false;
+   memberNode::accessTypes at = memberNode::kPrivate;
+   parseMemberKeywords(o,at);
+
+   m_l.demand(lexor::kName);
+   auto name = m_l.getLexeme();
+   m_l.advance();
+
+   if(m_l.getToken() == lexor::kLParen)
+   {
+      auto& m = m_nFac.appendNewChild<methodNode>(c);
+      m.access = at;
+      m.name = name;
+      m.isOverride = o;
+      parseMethod(m);
+   }
+   else if(m_l.getToken() == lexor::kColon)
+   {
+      auto& m = m_nFac.appendNewChild<fieldNode>(c);
+      m.access = at;
+      m.name = name;
+      parseField(m);
+   }
+   else
+      m_l.demandOneOf(2,lexor::kLParen,lexor::kColon);
+}
+
+void parser::parseMemberKeywords(bool& o, memberNode::accessTypes& at)
+{
+   if(m_l.getToken() == lexor::kOverride)
+      o = true;
+   else if(m_l.getToken() == lexor::kPublic)
+      at = memberNode::kPublic;
+   else if(m_l.getToken() == lexor::kProtected)
+      at = memberNode::kProtected;
+   else if(m_l.getToken() == lexor::kPrivate)
+      at = memberNode::kPrivate;
+   else
+      return;
+
+   m_l.advance();
+   parseMemberKeywords(o,at);
+}
+
+void parser::parseMethod(methodNode& n)
+{
+}
+
+void parser::parseField(fieldNode& n)
+{
 }
 
 } // namespace araceli

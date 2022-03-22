@@ -5,15 +5,41 @@ namespace araceli {
 
 class projectNode;
 class scopeNode;
-class classNode;
 class fileNode;
+class classNode;
+class memberNode;
+class methodNode;
+class argNode;
+class typeNode;
+class strTypeNode;
+class arrayTypeNode;
+class voidTypeNode;
+class fieldNode;
+class sequenceNode;
+class invokeNode;
+class varRefNode;
+class stringLiteralNode;
+class boolLiteralNode;
 
 class iNodeVisitor : public cmn::iNodeVisitor {
 public:
    virtual void visit(projectNode& n) = 0;
    virtual void visit(scopeNode& n) = 0;
-   virtual void visit(classNode& n) = 0;
    virtual void visit(fileNode& n) = 0;
+   virtual void visit(classNode& n) = 0;
+   virtual void visit(memberNode& n) = 0;
+   virtual void visit(methodNode& n) = 0;
+   virtual void visit(argNode& n) = 0;
+   virtual void visit(typeNode& n) = 0;
+   virtual void visit(strTypeNode& n) = 0;
+   virtual void visit(arrayTypeNode& n) = 0;
+   virtual void visit(voidTypeNode& n) = 0;
+   virtual void visit(fieldNode& n) = 0;
+   virtual void visit(sequenceNode& n) = 0;
+   virtual void visit(invokeNode& n) = 0;
+   virtual void visit(varRefNode& n) = 0;
+   virtual void visit(stringLiteralNode& n) = 0;
+   virtual void visit(boolLiteralNode& n) = 0;
 };
 
 class linkBase {
@@ -53,6 +79,14 @@ public:
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
 };
 
+class fileNode : public cmn::node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
 class classNode : public cmn::node {
 public:
    std::string name;
@@ -63,8 +97,104 @@ public:
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
 };
 
-class fileNode : public cmn::node {
+class memberNode : public cmn::node {
 public:
+   memberNode() : access(kPrivate) {}
+
+   enum accessTypes { kPublic, kProtected, kPrivate } access;
+   std::string name;
+
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class methodNode : public memberNode {
+public:
+   methodNode() : isOverride(false) {}
+
+   bool isOverride;
+
+   link<methodNode> baseImpl;
+
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class argNode : public cmn::node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class typeNode : public cmn::node {
+public:
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class strTypeNode : public typeNode {
+public:
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class arrayTypeNode : public typeNode {
+public:
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class voidTypeNode : public typeNode {
+public:
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class fieldNode : public memberNode {
+public:
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class sequenceNode : public cmn::node {
+public:
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class invokeNode : public cmn::node {
+public:
+   link<methodNode> proto;
+   std::string name;
+
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class varRefNode : public cmn::node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class stringLiteralNode : public cmn::node {
+public:
+   std::string value;
+
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class boolLiteralNode : public cmn::node {
+public:
+   boolLiteralNode() : value(false) {}
+
+   bool value;
+
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
 };
@@ -74,8 +204,21 @@ public:
    virtual void visit(cmn::node& n) { }
    virtual void visit(projectNode& n) { visit(static_cast<cmn::node&>(n)); }
    virtual void visit(scopeNode& n) { visit(static_cast<cmn::node&>(n)); }
-   virtual void visit(classNode& n) { visit(static_cast<cmn::node&>(n)); }
    virtual void visit(fileNode& n) { visit(static_cast<cmn::node&>(n)); }
+   virtual void visit(classNode& n) { visit(static_cast<cmn::node&>(n)); }
+   virtual void visit(memberNode& n) { visit(static_cast<cmn::node&>(n)); }
+   virtual void visit(methodNode& n) { visit(static_cast<memberNode&>(n)); }
+   virtual void visit(argNode& n) { visit(static_cast<cmn::node&>(n)); }
+   virtual void visit(typeNode& n) { visit(static_cast<cmn::node&>(n)); }
+   virtual void visit(strTypeNode& n) { visit(static_cast<typeNode&>(n)); }
+   virtual void visit(arrayTypeNode& n) { visit(static_cast<typeNode&>(n)); }
+   virtual void visit(voidTypeNode& n) { visit(static_cast<typeNode&>(n)); }
+   virtual void visit(fieldNode& n) { visit(static_cast<memberNode&>(n)); }
+   virtual void visit(sequenceNode& n) { visit(static_cast<cmn::node&>(n)); }
+   virtual void visit(invokeNode& n) { visit(static_cast<cmn::node&>(n)); }
+   virtual void visit(varRefNode& n) { visit(static_cast<cmn::node&>(n)); }
+   virtual void visit(stringLiteralNode& n) { visit(static_cast<cmn::node&>(n)); }
+   virtual void visit(boolLiteralNode& n) { visit(static_cast<cmn::node&>(n)); }
 };
 
 class diagVisitor : public hNodeVisitor {
@@ -85,8 +228,20 @@ public:
    virtual void visit(cmn::node& n) { visitChildren(n); }
    virtual void visit(projectNode& n);
    virtual void visit(scopeNode& n);
-   virtual void visit(classNode& n);
    virtual void visit(fileNode& n);
+   virtual void visit(classNode& n);
+   virtual void visit(memberNode& n);
+   virtual void visit(methodNode& n);
+   virtual void visit(argNode& n);
+   virtual void visit(strTypeNode& n);
+   virtual void visit(arrayTypeNode& n);
+   virtual void visit(voidTypeNode& n);
+   virtual void visit(fieldNode& n);
+   virtual void visit(sequenceNode& n);
+   virtual void visit(invokeNode& n);
+   virtual void visit(varRefNode& n);
+   virtual void visit(stringLiteralNode& n);
+   virtual void visit(boolLiteralNode& n);
 
 private:
    std::string getIndent() const;

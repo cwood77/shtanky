@@ -1,5 +1,6 @@
 #include "lexor.hpp"
 #include <sstream>
+#include <stdarg.h>
 #include <stdexcept>
 #include <string.h>
 
@@ -116,6 +117,26 @@ void lexorBase::demand(size_t t)
       msg << "expected " << getTokenName(t) << " but got " << getTokenName();
       error(msg.str());
    }
+}
+
+void lexorBase::demandOneOf(size_t n, ...)
+{
+   std::stringstream msg;
+   msg << "expected ";
+
+   va_list ap;
+   va_start(ap,n);
+   for(size_t i=0;i<n;i++)
+   {
+      if(i)
+         msg << ", ";
+      int t = va_arg(ap,int);
+      msg << getTokenName(t);
+   }
+   va_end(ap);
+
+   msg << " but got " << getTokenName();
+   error(msg.str());
 }
 
 void lexorBase::error(const std::string& msg)

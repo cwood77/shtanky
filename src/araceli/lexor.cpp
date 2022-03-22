@@ -15,6 +15,9 @@ static const cmn::lexemeInfo scanTable[] = {
    { cmn::lexemeInfo::kAlphanumeric, lexor::kClass,     "class",    "class"     },
    { cmn::lexemeInfo::kAlphanumeric, lexor::kOverride,  "override", "override"  },
    { cmn::lexemeInfo::kAlphanumeric, lexor::kStr,       "str",      "str"       },
+   { cmn::lexemeInfo::kAlphanumeric, lexor::kPublic,    "public",   "public"    },
+   { cmn::lexemeInfo::kAlphanumeric, lexor::kProtected, "protected","protected" },
+   { cmn::lexemeInfo::kAlphanumeric, lexor::kPrivate,   "private",  "private"   },
    { cmn::lexemeInfo::kEndOfTable,   0,                 NULL,       NULL        }
 };
 

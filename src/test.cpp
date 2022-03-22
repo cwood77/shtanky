@@ -87,10 +87,20 @@ int main(int,char*[])
             break;
       }
 
-      // next, gen metadata
+      // gather metadata
       metadata md;
       {
+         nodeMetadataBuilder inner(md);
+         treeVisitor outer(inner);
+         pPrj->acceptVisitor(outer);
       }
+
+      // file codegen
+      // -> header file
+      // -> source file
+      // -> make file
+
+      // target codegen
    }
 
    return 0;
