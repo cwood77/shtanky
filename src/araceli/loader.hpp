@@ -1,12 +1,12 @@
 #pragma once
 
-namespace araceli {
+namespace cmn { class scopeNode; }
 
-class scopeNode;
+namespace araceli {
 
 class loader {
 public:
-   static void loadFolder(scopeNode& s);
+   static void loadFolder(cmn::scopeNode& s);
 
 private:
    loader();

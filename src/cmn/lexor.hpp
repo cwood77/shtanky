@@ -117,7 +117,7 @@ public:
    T *create()
    {
       std::unique_ptr<T> pNode(new T());
-      pNode->origin.lineNumber = m_l.getLineNumber();
+      pNode->lineNumber = m_l.getLineNumber();
       for(auto it=m_attrs.begin();it!=m_attrs.end();++it)
          pNode->attributes.insert(*it);
       m_attrs.clear();

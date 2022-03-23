@@ -13,10 +13,10 @@ using namespace araceli;
 
 int main(int,char*[])
 {
-   std::unique_ptr<projectNode> pPrj = projectBuilder::create("ca");
+   std::unique_ptr<cmn::araceliProjectNode> pPrj = projectBuilder::create("ca");
    projectBuilder::addScope(*pPrj.get(),"testdata\\test",/*inProject*/true);
    projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
-   { diagVisitor v; pPrj->acceptVisitor(v); }
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    ::printf("entering link/load loop ----\n");
    symbolTable sTable;
@@ -35,7 +35,7 @@ int main(int,char*[])
       if(!nMissing)
          break;
 
-      scopeNode *pToLoad = NULL;
+      cmn::scopeNode *pToLoad = NULL;
       for(auto it=sTable.unresolved.begin();it!=sTable.unresolved.end();++it)
       {
          auto refToFind = (*it)->ref;
@@ -53,7 +53,7 @@ int main(int,char*[])
       {
          ::printf("loading %s and trying again\n",pToLoad->path.c_str());
          loader::loadFolder(*pToLoad);
-         { diagVisitor v; pPrj->acceptVisitor(v); }
+         { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
       }
       else
       {
@@ -69,7 +69,7 @@ int main(int,char*[])
    metadata md;
    {
       nodeMetadataBuilder inner(md);
-      treeVisitor outer(inner);
+      cmn::treeVisitor outer(inner);
       pPrj->acceptVisitor(outer);
    }
 

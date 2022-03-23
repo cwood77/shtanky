@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <typeinfo>
 
-namespace araceli {
+namespace liam {
 
 class projectNode;
 class scopeNode;
@@ -50,19 +50,6 @@ public:
    virtual void visit(intLiteralNode& n) = 0;
 };
 
-namespace nodeFlags {
-   enum {
-      kOverride  = 1 << 0,
-      kAbstract  = 1 << 1,
-      kStatic    = 1 << 2,
-      kInterface = 1 << 3,
-
-      kPublic    = 1 << 4,
-      kProtected = 1 << 5,
-      kPrivate   = 1 << 6,
-   };
-};
-
 class linkBase {
 public:
    linkBase() : m_pRefee(NULL) {}
@@ -93,28 +80,9 @@ public:
 
 class projectNode : public cmn::node {
 public:
-   std::string targetType;
-
-   virtual void acceptVisitor(cmn::iNodeVisitor& v)
-   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
-};
-
-class scopeNode : public cmn::node {
-public:
-   scopeNode() : inProject(false), loaded(false) {}
-
-   std::string path; // whatever came from commandline
-   std::string scopeName; // last part of path name
-   bool inProject;
-   bool loaded;
-
-   virtual void acceptVisitor(cmn::iNodeVisitor& v)
-   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
-};
-
-class fileNode : public cmn::node {
-public:
-   std::string fullPath;
+   std::string sourceFullPath;
+   std::list<std::string> searchPaths;
+   std::set<std::string> includedPaths;
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
@@ -122,36 +90,22 @@ public:
 
 class classNode : public cmn::node {
 public:
-   classNode() : flags(0) {}
-
-   size_t flags;
-   std::string name;
-
-   std::vector<link<classNode> > baseClasses;
-
-   std::list<classNode*> computeLineage();
-
-   virtual void acceptVisitor(cmn::iNodeVisitor& v)
-   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
-
-private:
-   void computeLineage(std::list<classNode*>& l);
-};
-
-class memberNode : public cmn::node {
-public:
-   memberNode() : flags(0) {}
-
-   size_t flags;
    std::string name;
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
 };
 
-class methodNode : public memberNode {
+class fieldNode : public cmn::node {
 public:
-   link<methodNode> baseImpl;
+   std::string name;
+   virtual void acceptVisitor(cmn::iNodeVisitor& v)
+   { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+};
+
+class funcNode : public cmn::node {
+public:
+   std::string name;
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
@@ -191,13 +145,13 @@ public:
 
 class userTypeNode : public typeNode {
 public:
-   link<classNode> pDef;
+   link<classNode> pDef; // needed?
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
 };
 
-class fieldNode : public memberNode {
+class ptrTypeNode : public typeNode {
 public:
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
@@ -211,7 +165,7 @@ public:
 
 class invokeNode : public cmn::node {
 public:
-   link<methodNode> proto; // unimpled
+   std::string name;
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
@@ -344,4 +298,4 @@ private:
    cmn::iNodeVisitor& m_inner;
 };
 
-} // namespace araceli
+} // namespace liam

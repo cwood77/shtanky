@@ -12,7 +12,7 @@ void symbolTable::publish(const std::string& fqn, cmn::node& n)
    resolved[fqn] = &n;
 }
 
-void symbolTable::tryResolveExact(const std::string& refingScope, linkBase& l)
+void symbolTable::tryResolveExact(const std::string& refingScope, cmn::linkBase& l)
 {
    ::printf("resolving ref %s with context %s [exact]\n",l.ref.c_str(),refingScope.c_str());
    unresolved.insert(&l);
@@ -27,7 +27,7 @@ void symbolTable::tryResolveExact(const std::string& refingScope, linkBase& l)
    }
 }
 
-void symbolTable::tryResolveWithParents(const std::string& refingScope, linkBase& l)
+void symbolTable::tryResolveWithParents(const std::string& refingScope, cmn::linkBase& l)
 {
    ::printf("resolving ref %s with context %s [w/ parents]\n",l.ref.c_str(),refingScope.c_str());
    unresolved.insert(&l);
@@ -49,7 +49,7 @@ void symbolTable::tryResolveWithParents(const std::string& refingScope, linkBase
    }
 }
 
-bool symbolTable::tryBind(const std::string& fqn, linkBase& l)
+bool symbolTable::tryBind(const std::string& fqn, cmn::linkBase& l)
 {
    ::printf("  checking %s...",fqn.c_str());
 
@@ -74,16 +74,16 @@ void fullScopeNameBuilder::visit(cmn::node& n)
       pParent->acceptVisitor(*this);
 }
 
-void fullScopeNameBuilder::visit(scopeNode& n)
+void fullScopeNameBuilder::visit(cmn::scopeNode& n)
 {
    fqn = std::string(".") + n.scopeName + fqn;
-   hNodeVisitor::visit(n);
+   cmn::hNodeVisitor::visit(n);
 }
 
-void fullScopeNameBuilder::visit(classNode& n)
+void fullScopeNameBuilder::visit(cmn::classNode& n)
 {
    fqn = std::string(".") + n.name + fqn;
-   hNodeVisitor::visit(n);
+   cmn::hNodeVisitor::visit(n);
 }
 
 void linkResolver::visit(cmn::node& n)
@@ -96,7 +96,7 @@ void linkResolver::visit(cmn::node& n)
       pParent->acceptVisitor(*this);
 }
 
-void linkResolver::visit(scopeNode& n)
+void linkResolver::visit(cmn::scopeNode& n)
 {
    if(m_l._getRefee())
       return;
@@ -110,10 +110,10 @@ void linkResolver::visit(scopeNode& n)
          return;
    }
 
-   hNodeVisitor::visit(n);
+   cmn::hNodeVisitor::visit(n);
 }
 
-void linkResolver::visit(classNode& n)
+void linkResolver::visit(cmn::classNode& n)
 {
    if(m_l._getRefee())
       return;
@@ -173,7 +173,7 @@ void linkResolver::visit(classNode& n)
       }
    }
 
-   hNodeVisitor::visit(n);
+   cmn::hNodeVisitor::visit(n);
 }
 
 void linkResolver::tryResolve(const std::string& refingScope)
@@ -184,19 +184,19 @@ void linkResolver::tryResolve(const std::string& refingScope)
       m_sTable.tryResolveExact(refingScope,m_l);
 }
 
-void nodePublisher::visit(classNode& n)
+void nodePublisher::visit(cmn::classNode& n)
 {
    fullScopeNameBuilder v;
    n.acceptVisitor(v);
    m_sTable.publish(v.fqn,n);
 
-   hNodeVisitor::visit(n);
+   cmn::hNodeVisitor::visit(n);
 }
 
-void nodePublisher::visit(memberNode& n)
+void nodePublisher::visit(cmn::memberNode& n)
 {
-   bool isField = (dynamic_cast<fieldNode*>(&n)!=NULL);
-   if(isField || (n.flags & (nodeFlags::kOverride | nodeFlags::kAbstract)))
+   bool isField = (dynamic_cast<cmn::fieldNode*>(&n)!=NULL);
+   if(isField || (n.flags & (cmn::nodeFlags::kOverride | cmn::nodeFlags::kAbstract)))
    {
       fullScopeNameBuilder v;
       v.fqn = std::string(".") + n.name;
@@ -204,10 +204,10 @@ void nodePublisher::visit(memberNode& n)
       m_sTable.publish(v.fqn,n);
    }
 
-   hNodeVisitor::visit(n);
+   cmn::hNodeVisitor::visit(n);
 }
 
-void nodeResolver::visit(classNode& n)
+void nodeResolver::visit(cmn::classNode& n)
 {
    for(auto it=n.baseClasses.begin();it!=n.baseClasses.end();++it)
    {
@@ -215,26 +215,26 @@ void nodeResolver::visit(classNode& n)
       n.acceptVisitor(v);
    }
 
-   hNodeVisitor::visit(n);
+   cmn::hNodeVisitor::visit(n);
 }
 
-void nodeResolver::visit(methodNode& n)
+void nodeResolver::visit(cmn::methodNode& n)
 {
-   if(n.flags & nodeFlags::kOverride)
+   if(n.flags & cmn::nodeFlags::kOverride)
    {
       linkResolver v(m_sTable,n.baseImpl,linkResolver::kBaseClasses);
       n.acceptVisitor(v);
    }
 
-   hNodeVisitor::visit(n);
+   cmn::hNodeVisitor::visit(n);
 }
 
-void nodeResolver::visit(userTypeNode& n)
+void nodeResolver::visit(cmn::userTypeNode& n)
 {
    linkResolver v(m_sTable,n.pDef,linkResolver::kContainingScopes);
    n.acceptVisitor(v);
 
-   hNodeVisitor::visit(n);
+   cmn::hNodeVisitor::visit(n);
 }
 
 // invoke node linking is a lot more involved.... it depends on the type found in the
@@ -250,13 +250,13 @@ void nodeResolver::visit(invokeNode& n)
 }
 #endif
 
-void nodeResolver::visit(varRefNode& n)
+void nodeResolver::visit(cmn::varRefNode& n)
 {
    linkResolver v(m_sTable,n.pDef,
       linkResolver::kBaseClasses | linkResolver::kLocalsAndFields);
    n.acceptVisitor(v);
 
-   hNodeVisitor::visit(n);
+   cmn::hNodeVisitor::visit(n);
 }
 
 unloadedScopeFinder::unloadedScopeFinder(const std::string& missingRef)
@@ -273,12 +273,12 @@ bool unloadedScopeFinder::any()
    return m_candidates.size();
 }
 
-scopeNode& unloadedScopeFinder::mostLikely()
+cmn::scopeNode& unloadedScopeFinder::mostLikely()
 {
    return *((--(m_candidates.end()))->second);
 }
 
-void unloadedScopeFinder::visit(scopeNode& n)
+void unloadedScopeFinder::visit(cmn::scopeNode& n)
 {
    if(!n.loaded)
    {
@@ -301,7 +301,7 @@ void unloadedScopeFinder::visit(scopeNode& n)
    else
       ::printf("   scope %s already loaded\n",n.path.c_str());
 
-   hNodeVisitor::visit(n);
+   cmn::hNodeVisitor::visit(n);
 }
 
 } // namespace araceli

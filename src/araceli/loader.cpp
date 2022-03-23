@@ -1,6 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
+#include "../cmn/ast.hpp"
 #include "../cmn/pathUtil.hpp"
-#include "ast.hpp"
 #include "lexor.hpp"
 #include "loader.hpp"
 #include "parser.hpp"
@@ -9,7 +9,7 @@
 
 namespace araceli {
 
-void loader::loadFolder(scopeNode& s)
+void loader::loadFolder(cmn::scopeNode& s)
 {
    if(s.loaded)
       return;
@@ -17,7 +17,7 @@ void loader::loadFolder(scopeNode& s)
    // load subfolders
    for(auto it=s.getChildren().begin();it!=s.getChildren().end();++it)
    {
-      scopeNode *pSubScope = dynamic_cast<scopeNode*>(*it);
+      cmn::scopeNode *pSubScope = dynamic_cast<cmn::scopeNode*>(*it);
       if(pSubScope)
          loadFolder(*pSubScope);
    }

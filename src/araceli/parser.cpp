@@ -18,30 +18,30 @@ parser::parser(lexor& l)
 {
 }
 
-std::unique_ptr<fileNode> parser::parseFile()
+std::unique_ptr<cmn::fileNode> parser::parseFile()
 {
-   std::unique_ptr<fileNode> pFile(m_nFac.create<fileNode>());
+   std::unique_ptr<cmn::fileNode> pFile(m_nFac.create<cmn::fileNode>());
    parseFile(*pFile.get());
    return pFile;
 }
 
-void parser::parseFile(fileNode& f)
+void parser::parseFile(cmn::fileNode& f)
 {
    while(m_l.getToken() != lexor::kEOI)
       parseClass(f);
 }
 
-void parser::parseClass(fileNode& f)
+void parser::parseClass(cmn::fileNode& f)
 {
    parseAttributes();
 
-   classNode& c = m_nFac.appendNewChild<classNode>(f);
+   cmn::classNode& c = m_nFac.appendNewChild<cmn::classNode>(f);
    if(m_l.getToken() == lexor::kClass)
       ;
    else if(m_l.getToken() == lexor::kInterface)
-      c.flags |= nodeFlags::kInterface;
+      c.flags |= cmn::nodeFlags::kInterface;
    else if(m_l.getToken() == lexor::kAbstract)
-      c.flags |= nodeFlags::kAbstract;
+      c.flags |= cmn::nodeFlags::kAbstract;
    else
       m_l.demandOneOf(3,lexor::kClass,lexor::kInterface,lexor::kAbstract);
    m_l.advance();
@@ -59,7 +59,7 @@ void parser::parseClass(fileNode& f)
    m_l.demandAndEat(lexor::kRBrace);
 }
 
-void parser::parseClassBases(classNode& c)
+void parser::parseClassBases(cmn::classNode& c)
 {
    // at most 1 for now
    if(m_l.getToken() != lexor::kLBrace)
@@ -67,7 +67,7 @@ void parser::parseClassBases(classNode& c)
       m_l.demandAndEat(lexor::kColon);
 
       m_l.demand(lexor::kName);
-      c.baseClasses.push_back(link<classNode>());
+      c.baseClasses.push_back(cmn::link<cmn::classNode>());
       c.baseClasses.back().ref = m_l.getLexeme();
       m_l.advance();
    }
@@ -87,7 +87,7 @@ void parser::parseAttributes()
    }
 }
 
-void parser::parseClassMembers(classNode& c)
+void parser::parseClassMembers(cmn::classNode& c)
 {
    size_t flags = 0;
    parseMemberKeywords(flags);
@@ -98,7 +98,7 @@ void parser::parseClassMembers(classNode& c)
 
    if(m_l.getToken() == lexor::kLParen)
    {
-      auto& m = m_nFac.appendNewChild<methodNode>(c);
+      auto& m = m_nFac.appendNewChild<cmn::methodNode>(c);
       m.flags = flags;
       m.name = name;
       m.baseImpl.ref = name;
@@ -106,7 +106,7 @@ void parser::parseClassMembers(classNode& c)
    }
    else if(m_l.getToken() == lexor::kColon)
    {
-      auto& m = m_nFac.appendNewChild<fieldNode>(c);
+      auto& m = m_nFac.appendNewChild<cmn::fieldNode>(c);
       m.flags = flags;
       m.name = name;
       parseField(m);
@@ -121,17 +121,17 @@ void parser::parseClassMembers(classNode& c)
 void parser::parseMemberKeywords(size_t& flags)
 {
    if(m_l.getToken() == lexor::kOverride)
-      flags |= nodeFlags::kOverride;
+      flags |= cmn::nodeFlags::kOverride;
    else if(m_l.getToken() == lexor::kAbstract)
-      flags |= nodeFlags::kAbstract;
+      flags |= cmn::nodeFlags::kAbstract;
    else if(m_l.getToken() == lexor::kStatic)
-      flags |= nodeFlags::kStatic;
+      flags |= cmn::nodeFlags::kStatic;
    else if(m_l.getToken() == lexor::kPublic)
-      flags |= nodeFlags::kPublic;
+      flags |= cmn::nodeFlags::kPublic;
    else if(m_l.getToken() == lexor::kProtected)
-      flags |= nodeFlags::kProtected;
+      flags |= cmn::nodeFlags::kProtected;
    else if(m_l.getToken() == lexor::kPrivate)
-      flags |= nodeFlags::kPrivate;
+      flags |= cmn::nodeFlags::kPrivate;
    else
       return;
 
@@ -139,12 +139,12 @@ void parser::parseMemberKeywords(size_t& flags)
    parseMemberKeywords(flags);
 }
 
-void parser::parseMethod(methodNode& n)
+void parser::parseMethod(cmn::methodNode& n)
 {
    m_l.demandAndEat(lexor::kLParen);
 
    // only 1 arg so far
-   auto& a = m_nFac.appendNewChild<argNode>(n);
+   auto& a = m_nFac.appendNewChild<cmn::argNode>(n);
    m_l.demand(lexor::kName);
    a.name = m_l.getLexeme();
    m_l.advance();
@@ -164,7 +164,7 @@ void parser::parseMethod(methodNode& n)
       parseSequence(n);
 }
 
-void parser::parseField(fieldNode& n)
+void parser::parseField(cmn::fieldNode& n)
 {
    m_l.demandAndEat(lexor::kColon);
 
@@ -186,7 +186,7 @@ void parser::parseSequence(cmn::node& owner)
 {
    m_l.demandAndEat(lexor::kLBrace);
 
-   auto& s = m_nFac.appendNewChild<sequenceNode>(owner);
+   auto& s = m_nFac.appendNewChild<cmn::sequenceNode>(owner);
    parseStatements(s);
 
    m_l.demandAndEat(lexor::kRBrace);
@@ -220,7 +220,7 @@ void parser::parseInvoke(std::unique_ptr<cmn::node>& inst, cmn::node& owner)
 
    m_l.demandAndEat(lexor::kLParen);
 
-   auto& i = m_nFac.appendNewChild<invokeNode>(owner);
+   auto& i = m_nFac.appendNewChild<cmn::invokeNode>(owner);
    i.proto.ref = name;
    i.appendChild(*inst.release());
 
@@ -235,9 +235,9 @@ void parser::parseCall(std::unique_ptr<cmn::node>& inst, cmn::node& owner)
 {
    m_l.demandAndEat(lexor::kLParen);
 
-   varRefNode& func = dynamic_cast<varRefNode&>(*inst.get());
+   cmn::varRefNode& func = dynamic_cast<cmn::varRefNode&>(*inst.get());
 
-   auto& c = m_nFac.appendNewChild<callNode>(owner);
+   auto& c = m_nFac.appendNewChild<cmn::callNode>(owner);
    c.name = func.pDef.ref;
 
    parsePassedArgList(owner);
@@ -264,7 +264,7 @@ cmn::node& parser::parseLValue()
    auto name = m_l.getLexeme();
    m_l.advance();
 
-   std::unique_ptr<varRefNode> pInst(m_nFac.create<varRefNode>());
+   std::unique_ptr<cmn::varRefNode> pInst(m_nFac.create<cmn::varRefNode>());
    pInst->pDef.ref = name;
    return *pInst.release();
 }
@@ -273,13 +273,13 @@ void parser::parseRValue(cmn::node& owner)
 {
    if(m_l.getToken() == lexor::kStringLiteral)
    {
-      auto& l = m_nFac.appendNewChild<stringLiteralNode>(owner);
+      auto& l = m_nFac.appendNewChild<cmn::stringLiteralNode>(owner);
       l.value = m_l.getLexeme();
       m_l.advance();
    }
    else if(m_l.getToken() == lexor::kBoolLiteral)
    {
-      auto& l = m_nFac.appendNewChild<boolLiteralNode>(owner);
+      auto& l = m_nFac.appendNewChild<cmn::boolLiteralNode>(owner);
       if(m_l.getLexeme() == "false")
          l.value = false;
       else
@@ -288,7 +288,7 @@ void parser::parseRValue(cmn::node& owner)
    }
    else if(m_l.getToken() == lexor::kIntLiteral)
    {
-      auto& l = m_nFac.appendNewChild<intLiteralNode>(owner);
+      auto& l = m_nFac.appendNewChild<cmn::intLiteralNode>(owner);
       l.value = m_l.getLexeme();
       m_l.advance();
    }
@@ -300,24 +300,24 @@ void parser::parseType(cmn::node& owner)
 {
    if(m_l.getToken() == lexor::kStr)
    {
-      auto& t = m_nFac.appendNewChild<strTypeNode>(owner);
+      auto& t = m_nFac.appendNewChild<cmn::strTypeNode>(owner);
       m_l.advance();
 
       if(m_l.getToken() == lexor::kLBracket)
       {
          m_l.advance();
          m_l.demandAndEat(lexor::kRBracket);
-         m_nFac.appendNewChild<arrayTypeNode>(t);
+         m_nFac.appendNewChild<cmn::arrayTypeNode>(t);
       }
    }
    else if(m_l.getToken() == lexor::kVoid)
    {
-      m_nFac.appendNewChild<voidTypeNode>(owner);
+      m_nFac.appendNewChild<cmn::voidTypeNode>(owner);
       m_l.advance();
    }
    else if(m_l.getToken() == lexor::kName)
    {
-      auto& t = m_nFac.appendNewChild<userTypeNode>(owner);
+      auto& t = m_nFac.appendNewChild<cmn::userTypeNode>(owner);
       t.pDef.ref = m_l.getLexeme();
       m_l.advance();
    }

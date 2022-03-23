@@ -1,5 +1,5 @@
 #pragma once
-#include "ast.hpp"
+#include "../cmn/ast.hpp"
 #include <list>
 #include <map>
 
@@ -14,7 +14,7 @@ private:
    std::map<std::string,std::list<cmn::node*> > m_map;
 };
 
-class nodeMetadataBuilder : public hNodeVisitor {
+class nodeMetadataBuilder : public cmn::hNodeVisitor {
 public:
    explicit nodeMetadataBuilder(metadata& m) : m_m(m) {}
 

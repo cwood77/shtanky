@@ -31,7 +31,6 @@ dirs:
 # araceli
 
 ARACELI_SRC = \
-	src/araceli/ast.cpp \
 	src/araceli/codegen.cpp \
 	src/araceli/lexor.cpp \
 	src/araceli/loader.cpp \

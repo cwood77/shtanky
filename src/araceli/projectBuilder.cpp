@@ -7,9 +7,9 @@
 
 namespace araceli {
 
-std::unique_ptr<projectNode> projectBuilder::create(const std::string& targetType)
+std::unique_ptr<cmn::araceliProjectNode> projectBuilder::create(const std::string& targetType)
 {
-   std::unique_ptr<projectNode> pNode(new projectNode());
+   std::unique_ptr<cmn::araceliProjectNode> pNode(new cmn::araceliProjectNode());
    pNode->targetType = targetType;
    return pNode;
 }
@@ -19,11 +19,11 @@ void projectBuilder::addScope(cmn::node& p, const std::string& path, bool inProj
    ::printf("adding scope %s\n",path.c_str());
 
    // add a scope node for this folder
-   std::unique_ptr<scopeNode> pNode(new scopeNode());
+   std::unique_ptr<cmn::scopeNode> pNode(new cmn::scopeNode());
    pNode->path = path;
    pNode->scopeName = cmn::pathUtil::getLastPart(path);
    pNode->inProject = inProject;
-   scopeNode& myScope = *pNode.get();
+   cmn::scopeNode& myScope = *pNode.get();
    p.appendChild(*pNode.release());
 
    // check for subfolders

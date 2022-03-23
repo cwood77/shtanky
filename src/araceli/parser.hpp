@@ -1,7 +1,7 @@
 #pragma once
 
+#include "../cmn/ast.hpp"
 #include <memory>
-#include "ast.hpp"
 
 namespace cmn {
 
@@ -68,16 +68,16 @@ class parser : public cmn::parserBase {
 public:
    explicit parser(lexor& l);
 
-   std::unique_ptr<fileNode> parseFile();
+   std::unique_ptr<cmn::fileNode> parseFile();
 
 private:
-   void parseFile(fileNode& f);
-   void parseClass(fileNode& f);
-   void parseClassBases(classNode& c);
-   void parseClassMembers(classNode& c);
+   void parseFile(cmn::fileNode& f);
+   void parseClass(cmn::fileNode& f);
+   void parseClassBases(cmn::classNode& c);
+   void parseClassMembers(cmn::classNode& c);
    void parseMemberKeywords(size_t& flags);
-   void parseMethod(methodNode& n);
-   void parseField(fieldNode& n);
+   void parseMethod(cmn::methodNode& n);
+   void parseField(cmn::fieldNode& n);
 
    void parseSequence(cmn::node& owner);
    void parseStatements(cmn::node& owner);
@@ -94,22 +94,5 @@ private:
 
    lexor& m_l;
 };
-
-// compile process
-// - inputs:
-//   dir folders
-//   src folder
-//   ns to build
-//   target type (e.g console EXE)
-//
-// -steps
-//   list root nss
-//   parse src
-//   check unresolved refs
-//   repeat
-//   gen metadata
-//   run target type codegen
-//   lower
-//   done
 
 } // namespace araceli

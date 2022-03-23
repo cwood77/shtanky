@@ -4,46 +4,46 @@
 
 namespace araceli {
 
-void liamTypeWriter::visit(typeNode& n)
+void liamTypeWriter::visit(cmn::typeNode& n)
 {
-   auto typeQuals = n.getChildrenOf<typeNode>();
+   auto typeQuals = n.getChildrenOf<cmn::typeNode>();
    for(auto it=typeQuals.begin();it!=typeQuals.end();++it)
       (*it)->acceptVisitor(*this);
 }
 
-void liamTypeWriter::visit(strTypeNode& n)
+void liamTypeWriter::visit(cmn::strTypeNode& n)
 {
    m_o << "str";
    hNodeVisitor::visit(n);
 }
 
-void liamTypeWriter::visit(arrayTypeNode& n)
+void liamTypeWriter::visit(cmn::arrayTypeNode& n)
 {
    m_o << "[]";
    hNodeVisitor::visit(n);
 }
 
-void liamTypeWriter::visit(voidTypeNode& n)
+void liamTypeWriter::visit(cmn::voidTypeNode& n)
 {
    m_o << "void";
    hNodeVisitor::visit(n);
 }
 
-void liamTypeWriter::visit(userTypeNode& n)
+void liamTypeWriter::visit(cmn::userTypeNode& n)
 {
    m_o << n.pDef.ref;
    hNodeVisitor::visit(n);
 }
 
-void codeGen::visit(fileNode& n)
+void codeGen::visit(cmn::fileNode& n)
 {
-   fileNode *pPrev = m_pActiveFile;
+   cmn::fileNode *pPrev = m_pActiveFile;
    m_pActiveFile = &n;
    hNodeVisitor::visit(n);
    m_pActiveFile = pPrev;
 }
 
-void codeGen::visit(classNode& n)
+void codeGen::visit(cmn::classNode& n)
 {
    auto& header = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader).stream();
    //auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
@@ -56,22 +56,22 @@ void codeGen::visit(classNode& n)
    hNodeVisitor::visit(n);
 }
 
-void codeGen::generateClassVTable(classNode& n, std::ostream& header, std::string& vname)
+void codeGen::generateClassVTable(cmn::classNode& n, std::ostream& header, std::string& vname)
 {
-   std::vector<methodNode*> totalMethods;
+   std::vector<cmn::methodNode*> totalMethods;
    auto lineage = n.computeLineage();
    for(auto it=lineage.begin();it!=lineage.end();++it)
       (*it)->getChildrenOf(totalMethods);
 
    std::vector<std::string> names;
    for(auto it=totalMethods.begin();it!=totalMethods.end();++it)
-      if((*it)->flags & nodeFlags::kAbstract)
+      if((*it)->flags & cmn::nodeFlags::kAbstract)
          names.push_back((*it)->baseImpl.ref);
 
    if(names.size() == 0)
       return;
 
-   vname = fullyQualifiedName::build(n,"vtbl");
+   vname = cmn::fullyQualifiedName::build(n,"vtbl");
    header
       << "class " << vname << " {" << std::endl
    ;
@@ -85,18 +85,18 @@ void codeGen::generateClassVTable(classNode& n, std::ostream& header, std::strin
    ;
 }
 
-void codeGen::generateClassType(classNode& n, std::ostream& header, const std::string& vname)
+void codeGen::generateClassType(cmn::classNode& n, std::ostream& header, const std::string& vname)
 {
    // gather fields from self _and_ all parents (no inheritance in liam)
    // however, parents _also_ are generated.  This is in case they have methods
    // which would need a self parameter
-   std::vector<fieldNode*> totalFields;
+   std::vector<cmn::fieldNode*> totalFields;
    auto lineage = n.computeLineage();
    for(auto it=lineage.begin();it!=lineage.end();++it)
       (*it)->getChildrenOf(totalFields);
 
    header
-      << "class " << fullyQualifiedName::build(n) << " {" << std::endl
+      << "class " << cmn::fullyQualifiedName::build(n) << " {" << std::endl
    ;
 
    if(!vname.empty())
@@ -107,7 +107,7 @@ void codeGen::generateClassType(classNode& n, std::ostream& header, const std::s
       header << "   " << (*it)->name << " : ";
 
       liamTypeWriter tyW(header);
-      (*it)->demandSoleChild<typeNode>().acceptVisitor(tyW);
+      (*it)->demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
 
       header << ";" << std::endl;
    }
@@ -117,31 +117,31 @@ void codeGen::generateClassType(classNode& n, std::ostream& header, const std::s
    ;
 }
 
-void codeGen::generateClassPrototypes(classNode& n, std::ostream& header)
+void codeGen::generateClassPrototypes(cmn::classNode& n, std::ostream& header)
 {
    header
-      << fullyQualifiedName::build(n,"ctor") << "() : "
-         << fullyQualifiedName::build(n) << ";" << std::endl;
+      << cmn::fullyQualifiedName::build(n,"ctor") << "() : "
+         << cmn::fullyQualifiedName::build(n) << ";" << std::endl;
    ;
 
-   auto methods = n.getChildrenOf<methodNode>();
+   auto methods = n.getChildrenOf<cmn::methodNode>();
    for(auto it=methods.begin();it!=methods.end();++it)
    {
-      if(!((*it)->flags & nodeFlags::kAbstract))
+      if(!((*it)->flags & cmn::nodeFlags::kAbstract))
       {
          header
             << std::endl
-            << fullyQualifiedName::build(**it,(*it)->baseImpl.ref) << "("
+            << cmn::fullyQualifiedName::build(**it,(*it)->baseImpl.ref) << "("
          ;
 
          bool firstParam = true;
-         if(!((*it)->flags & nodeFlags::kStatic))
+         if(!((*it)->flags & cmn::nodeFlags::kStatic))
          {
-            header << "self : " << fullyQualifiedName::build(n);
+            header << "self : " << cmn::fullyQualifiedName::build(n);
             firstParam = false;
          }
 
-         auto args = (*it)->getChildrenOf<argNode>();
+         auto args = (*it)->getChildrenOf<cmn::argNode>();
          for(auto jit=args.begin();jit!=args.end();++jit)
          {
             if(!firstParam)
@@ -151,7 +151,7 @@ void codeGen::generateClassPrototypes(classNode& n, std::ostream& header)
                << (*jit)->name << " : ";
             ;
             liamTypeWriter tyW(header);
-            (*jit)->demandSoleChild<typeNode>().acceptVisitor(tyW);
+            (*jit)->demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
 
             firstParam = false;
          }

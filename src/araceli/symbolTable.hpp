@@ -1,5 +1,5 @@
 #pragma once
-#include "ast.hpp"
+#include "../cmn/ast.hpp"
 #include <map>
 #include <set>
 
@@ -16,47 +16,47 @@ namespace araceli {
 class symbolTable {
 public:
    std::map<std::string,cmn::node*> resolved;
-   std::set<linkBase*> unresolved;
+   std::set<cmn::linkBase*> unresolved;
 
    void publish(const std::string& fqn, cmn::node& n);
-   void tryResolveExact(const std::string& refingScope, linkBase& l);
-   void tryResolveWithParents(const std::string& refingScope, linkBase& l);
+   void tryResolveExact(const std::string& refingScope, cmn::linkBase& l);
+   void tryResolveWithParents(const std::string& refingScope, cmn::linkBase& l);
 
 private:
-   bool tryBind(const std::string& fqn, linkBase& l);
+   bool tryBind(const std::string& fqn, cmn::linkBase& l);
 };
 
 // knows about scope-providing nodes
 // deprecated
-class fullScopeNameBuilder : public hNodeVisitor {
+class fullScopeNameBuilder : public cmn::hNodeVisitor {
 public:
    virtual void visit(cmn::node& n);
-   virtual void visit(scopeNode& n);
-   virtual void visit(classNode& n);
+   virtual void visit(cmn::scopeNode& n);
+   virtual void visit(cmn::classNode& n);
 
    std::string fqn;
 };
 
-class typeFinder : public hNodeVisitor {
+class typeFinder : public cmn::hNodeVisitor {
 public:
    typeFinder() : pType(NULL) {}
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
-   virtual void visit(typeNode& n) { pType = &n; }
+   virtual void visit(cmn::typeNode& n) { pType = &n; }
 
-   typeNode *pType;
+   cmn::typeNode *pType;
 };
 
-class fieldGatherer : public hNodeVisitor {
+class fieldGatherer : public cmn::hNodeVisitor {
 public:
    virtual void visit(cmn::node& n) { visitChildren(n); }
-   virtual void visit(fieldNode& n) { fields.insert(&n); hNodeVisitor::visit(n); }
+   virtual void visit(cmn::fieldNode& n) { fields.insert(&n); hNodeVisitor::visit(n); }
 
-   std::set<fieldNode*> fields;
+   std::set<cmn::fieldNode*> fields;
 };
 
 // knows all the scopes of a given node
-class linkResolver : public hNodeVisitor {
+class linkResolver : public cmn::hNodeVisitor {
 public:
    enum {
       kContainingScopes = 0x1,
@@ -65,43 +65,43 @@ public:
       kLocalsAndFields  = 0x8,
    };
 
-   linkResolver(symbolTable& st, linkBase& l, size_t mode)
+   linkResolver(symbolTable& st, cmn::linkBase& l, size_t mode)
    : m_sTable(st), m_l(l), m_mode(mode) {}
 
    virtual void visit(cmn::node& n);
-   virtual void visit(scopeNode& n);
-   virtual void visit(classNode& n);
+   virtual void visit(cmn::scopeNode& n);
+   virtual void visit(cmn::classNode& n);
 
 private:
    void tryResolve(const std::string& refingScope);
 
    symbolTable& m_sTable;
-   linkBase& m_l;
+   cmn::linkBase& m_l;
    size_t m_mode;
 };
 
 // knows all the links in a given node
-class nodePublisher : public hNodeVisitor {
+class nodePublisher : public cmn::hNodeVisitor {
 public:
    explicit nodePublisher(symbolTable& st) : m_sTable(st) {}
 
-   virtual void visit(classNode& n);
-   virtual void visit(memberNode& n);
+   virtual void visit(cmn::classNode& n);
+   virtual void visit(cmn::memberNode& n);
 
 private:
    symbolTable& m_sTable;
 };
 
 // knows all the links in a given node
-class nodeResolver : public hNodeVisitor {
+class nodeResolver : public cmn::hNodeVisitor {
 public:
    explicit nodeResolver(symbolTable& st) : m_sTable(st) {}
 
-   virtual void visit(classNode& n);
-   virtual void visit(methodNode& n);
-   virtual void visit(userTypeNode& n);
-   //virtual void visit(invokeNode& n);
-   virtual void visit(varRefNode& n);
+   virtual void visit(cmn::classNode& n);
+   virtual void visit(cmn::methodNode& n);
+   virtual void visit(cmn::userTypeNode& n);
+   //virtual void visit(cmn::invokeNode& n);
+   virtual void visit(cmn::varRefNode& n);
 
 private:
    symbolTable& m_sTable;
@@ -109,7 +109,7 @@ private:
 
 // deprecated
 template<class T>
-class treeSymbolVisitor : public hNodeVisitor {
+class treeSymbolVisitor : public cmn::hNodeVisitor {
 public:
    explicit treeSymbolVisitor(symbolTable& st) : m_sTable(st) {}
 
@@ -124,19 +124,19 @@ private:
    symbolTable& m_sTable;
 };
 
-class unloadedScopeFinder : public hNodeVisitor {
+class unloadedScopeFinder : public cmn::hNodeVisitor {
 public:
    explicit unloadedScopeFinder(const std::string& missingRef);
 
    bool any();
-   scopeNode& mostLikely();
+   cmn::scopeNode& mostLikely();
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
-   virtual void visit(scopeNode& n);
+   virtual void visit(cmn::scopeNode& n);
 
 private:
    std::string m_missingRef;
-   std::map<std::string,scopeNode*> m_candidates;
+   std::map<std::string,cmn::scopeNode*> m_candidates;
 };
 
 } // namespace araceli
