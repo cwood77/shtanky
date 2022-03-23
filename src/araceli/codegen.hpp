@@ -47,6 +47,10 @@ public:
 #endif
 
 private:
+   void generateClassVTable(classNode& n, std::ostream& header, std::string& vname);
+   void generateClassType(classNode& n, std::ostream& header, const std::string& vname);
+   void generateClassPrototypes(classNode& n, std::ostream& header);
+
    fileNode *m_pActiveFile;
    cmn::outBundle& m_out;
 };
