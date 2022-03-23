@@ -101,6 +101,7 @@ void parser::parseClassMembers(classNode& c)
       auto& m = m_nFac.appendNewChild<methodNode>(c);
       m.flags = flags;
       m.name = name;
+      m.baseImpl.ref = name;
       parseMethod(m);
    }
    else if(m_l.getToken() == lexor::kColon)
@@ -220,6 +221,7 @@ void parser::parseInvoke(std::unique_ptr<cmn::node>& inst, cmn::node& owner)
    m_l.demandAndEat(lexor::kLParen);
 
    auto& i = m_nFac.appendNewChild<invokeNode>(owner);
+   i.proto.ref = name;
    i.name = name;
    i.appendChild(*inst.release());
 
@@ -317,6 +319,7 @@ void parser::parseType(cmn::node& owner)
    else if(m_l.getToken() == lexor::kName)
    {
       auto& t = m_nFac.appendNewChild<userTypeNode>(owner);
+      t.pDef.ref = m_l.getLexeme();
       t.name = m_l.getLexeme();
       m_l.advance();
    }

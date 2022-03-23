@@ -19,7 +19,8 @@ public:
    std::set<linkBase*> unresolved;
 
    void publish(const std::string& fqn, cmn::node& n);
-   void tryResolve(const std::string& refingScope, linkBase& l);
+   void tryResolveExact(const std::string& refingScope, linkBase& l);
+   void tryResolveWithParents(const std::string& refingScope, linkBase& l);
 
 private:
    bool tryBind(const std::string& fqn, linkBase& l);
@@ -38,51 +39,35 @@ public:
 // knows all the scopes of a given node
 class linkResolver : public hNodeVisitor {
 public:
-   linkResolver(symbolTable& st, linkBase& l) : m_sTable(st), m_l(l) {}
+   enum {
+      kContainingScopes = 0x1,
+      kOwnClass         = 0x2,
+      kBaseClasses      = 0x4,
+      kLocalsAndFields  = 0x8,
+   };
 
-   virtual void visit(classNode& n)
-   {
-      if(m_l._getRefee())
-         return;
+   linkResolver(symbolTable& st, linkBase& l, size_t mode)
+   : m_sTable(st), m_l(l), m_mode(mode) {}
 
-      {
-         fullScopeNameBuilder v;
-         n.acceptVisitor(v);
-         m_sTable.tryResolve(v.fqn,m_l);
-         if(m_l._getRefee())
-            return;
-      }
-
-      for(auto it=n.baseClasses.begin();it!=n.baseClasses.end();++it)
-      {
-         if(it->getRefee())
-         {
-            fullScopeNameBuilder v;
-            it->getRefee()->acceptVisitor(v);
-            m_sTable.tryResolve(v.fqn,m_l);
-            if(m_l._getRefee())
-               return;
-         }
-      }
-   }
+   virtual void visit(cmn::node& n);
+   virtual void visit(scopeNode& n);
+   virtual void visit(classNode& n);
 
 private:
+   void tryResolve(const std::string& refingScope);
+
    symbolTable& m_sTable;
    linkBase& m_l;
+   size_t m_mode;
 };
 
+// knows all the links in a given node
 class nodePublisher : public hNodeVisitor {
 public:
    explicit nodePublisher(symbolTable& st) : m_sTable(st) {}
 
-   virtual void visit(classNode& n)
-   {
-      fullScopeNameBuilder v;
-      n.acceptVisitor(v);
-      m_sTable.publish(v.fqn,n);
-
-      hNodeVisitor::visit(n);
-   }
+   virtual void visit(classNode& n);
+   virtual void visit(methodNode& n);
 
 private:
    symbolTable& m_sTable;
@@ -93,16 +78,10 @@ class nodeResolver : public hNodeVisitor {
 public:
    explicit nodeResolver(symbolTable& st) : m_sTable(st) {}
 
-   virtual void visit(classNode& n)
-   {
-      for(auto it=n.baseClasses.begin();it!=n.baseClasses.end();++it)
-      {
-         linkResolver v(m_sTable,*it);
-         n.acceptVisitor(v);
-      }
-
-      hNodeVisitor::visit(n);
-   }
+   virtual void visit(classNode& n);
+   virtual void visit(methodNode& n); // really all members
+   virtual void visit(userTypeNode& n);
+   //virtual void visit(invokeNode& n);
 
 private:
    symbolTable& m_sTable;

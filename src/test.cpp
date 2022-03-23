@@ -19,10 +19,11 @@ int main(int,char*[])
    projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
    { diagVisitor v; pPrj->acceptVisitor(v); }
 
+   ::printf("entering link/load loop ----\n");
    symbolTable sTable;
+   size_t missingLastTime = 0;
    while(true)
    {
-      ::printf("link/load loop\n");
       treeSymbolVisitor<nodePublisher> pub(sTable);
       pPrj->acceptVisitor(pub);
       treeSymbolVisitor<nodeResolver> res(sTable);
@@ -31,22 +32,38 @@ int main(int,char*[])
          sTable.resolved.size(),
          sTable.unresolved.size());
 
-      if(sTable.unresolved.size())
-      {
-         auto missing = (*sTable.unresolved.begin())->ref;
-         ::printf("loading more to find symbol %s\n",missing.c_str());
+      size_t nMissing = sTable.unresolved.size();
+      if(!nMissing)
+         break;
 
-         unloadedScopeFinder f(missing);
+      scopeNode *pToLoad = NULL;
+      for(auto it=sTable.unresolved.begin();it!=sTable.unresolved.end();++it)
+      {
+         auto refToFind = (*it)->ref;
+         unloadedScopeFinder f(refToFind);
          pPrj->acceptVisitor(f);
-         if(!f.any())
-            throw std::runtime_error("eh? no progress?");
-         scopeNode& next = f.mostLikely();
-         ::printf("loading %s and trying again\n",next.path.c_str());
-         loader::loadFolder(next);
+         if(f.any())
+         {
+            ::printf("trying to find symbol %s\n",refToFind.c_str());
+            pToLoad = &f.mostLikely();
+            break;
+         }
+      }
+
+      if(pToLoad)
+      {
+         ::printf("loading %s and trying again\n",pToLoad->path.c_str());
+         loader::loadFolder(*pToLoad);
          { diagVisitor v; pPrj->acceptVisitor(v); }
       }
       else
-         break;
+      {
+         ::printf("no guesses on what to load to find missing symbols; try settling\n");
+         if(nMissing != missingLastTime)
+            missingLastTime = nMissing; // retry
+         else
+            throw std::runtime_error("gave up trying to resolve symbols");
+      }
    }
 
    // gather metadata

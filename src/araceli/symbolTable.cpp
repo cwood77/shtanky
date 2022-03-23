@@ -12,9 +12,24 @@ void symbolTable::publish(const std::string& fqn, cmn::node& n)
    resolved[fqn] = &n;
 }
 
-void symbolTable::tryResolve(const std::string& refingScope, linkBase& l)
+void symbolTable::tryResolveExact(const std::string& refingScope, linkBase& l)
 {
-   ::printf("resolving ref %s with context %s\n",l.ref.c_str(),refingScope.c_str());
+   ::printf("resolving ref %s with context %s [exact]\n",l.ref.c_str(),refingScope.c_str());
+   unresolved.insert(&l);
+
+   if(nameUtil::isAbsolute(l.ref))
+      tryBind(l.ref,l);
+   else
+   {
+      auto prefix = refingScope;
+      auto attempt = nameUtil::append(prefix,l.ref);
+      tryBind(attempt,l);
+   }
+}
+
+void symbolTable::tryResolveWithParents(const std::string& refingScope, linkBase& l)
+{
+   ::printf("resolving ref %s with context %s [w/ parents]\n",l.ref.c_str(),refingScope.c_str());
    unresolved.insert(&l);
 
    if(nameUtil::isAbsolute(l.ref))
@@ -70,6 +85,140 @@ void fullScopeNameBuilder::visit(classNode& n)
    fqn = std::string(".") + n.name + fqn;
    hNodeVisitor::visit(n);
 }
+
+void linkResolver::visit(cmn::node& n)
+{
+   if(m_l._getRefee())
+      return;
+
+   cmn::node *pParent = n.getParent();
+   if(pParent)
+      pParent->acceptVisitor(*this);
+}
+
+void linkResolver::visit(scopeNode& n)
+{
+   if(m_l._getRefee())
+      return;
+
+   if(m_mode & kContainingScopes)
+   {
+      fullScopeNameBuilder v; // redundant
+      n.acceptVisitor(v);
+      tryResolve(v.fqn);
+      if(m_l._getRefee())
+         return;
+   }
+
+   hNodeVisitor::visit(n);
+}
+
+void linkResolver::visit(classNode& n)
+{
+   if(m_l._getRefee())
+      return;
+
+   if(m_mode & kOwnClass)
+   {
+      m_mode &= ~kOwnClass; // don't do this again
+
+      fullScopeNameBuilder v;
+      n.acceptVisitor(v);
+      tryResolve(v.fqn);
+      if(m_l._getRefee())
+         return;
+   }
+
+   if(m_mode & kBaseClasses)
+   {
+      for(auto it=n.baseClasses.begin();it!=n.baseClasses.end();++it)
+      {
+         if(it->getRefee())
+         {
+            fullScopeNameBuilder v;
+            it->getRefee()->acceptVisitor(v);
+            tryResolve(v.fqn);
+            if(m_l._getRefee())
+               return;
+         }
+      }
+   }
+
+   hNodeVisitor::visit(n);
+}
+
+void linkResolver::tryResolve(const std::string& refingScope)
+{
+   if(m_mode & kContainingScopes)
+      m_sTable.tryResolveWithParents(refingScope,m_l);
+   else
+      m_sTable.tryResolveExact(refingScope,m_l);
+}
+
+void nodePublisher::visit(classNode& n)
+{
+   fullScopeNameBuilder v;
+   n.acceptVisitor(v);
+   m_sTable.publish(v.fqn,n);
+
+   hNodeVisitor::visit(n);
+}
+
+void nodePublisher::visit(methodNode& n)
+{
+   if(n.flags & (nodeFlags::kOverride | nodeFlags::kAbstract))
+   {
+      fullScopeNameBuilder v;
+      v.fqn = std::string(".") + n.name;
+      n.acceptVisitor(v);
+      m_sTable.publish(v.fqn,n);
+   }
+
+   hNodeVisitor::visit(n);
+}
+
+void nodeResolver::visit(classNode& n)
+{
+   for(auto it=n.baseClasses.begin();it!=n.baseClasses.end();++it)
+   {
+      linkResolver v(m_sTable,*it,linkResolver::kContainingScopes);
+      n.acceptVisitor(v);
+   }
+
+   hNodeVisitor::visit(n);
+}
+
+void nodeResolver::visit(methodNode& n)
+{
+   if(n.flags & nodeFlags::kOverride)
+   {
+      linkResolver v(m_sTable,n.baseImpl,linkResolver::kBaseClasses);
+      n.acceptVisitor(v);
+   }
+
+   hNodeVisitor::visit(n);
+}
+
+void nodeResolver::visit(userTypeNode& n)
+{
+   linkResolver v(m_sTable,n.pDef,linkResolver::kContainingScopes);
+   n.acceptVisitor(v);
+
+   hNodeVisitor::visit(n);
+}
+
+// invoke node linking is a lot more involved.... it depends on the type found in the
+// instance
+#if 0
+void nodeResolver::visit(invokeNode& n)
+{
+   linkResolver v(m_sTable,n.proto,
+      linkResolver::kContainingScopes | linkResolver::kOwnClass);
+   n.acceptVisitor(v);
+
+   hNodeVisitor::visit(n);
+}
+#endif
 
 unloadedScopeFinder::unloadedScopeFinder(const std::string& missingRef)
 : m_missingRef(missingRef)

@@ -207,7 +207,7 @@ public:
 
 class invokeNode : public cmn::node {
 public:
-   link<methodNode> proto;
+   link<methodNode> proto; // unlinked
    std::string name;
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
@@ -224,6 +224,7 @@ public:
 
 class varRefNode : public cmn::node {
 public:
+   link<userTypeNode> pDef; // unlinked
    std::string name;
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
