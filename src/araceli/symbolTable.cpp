@@ -118,15 +118,22 @@ void linkResolver::visit(classNode& n)
    if(m_l._getRefee())
       return;
 
+   fieldGatherer fields;
+
    if(m_mode & kOwnClass)
    {
       m_mode &= ~kOwnClass; // don't do this again
 
-      fullScopeNameBuilder v;
-      n.acceptVisitor(v);
-      tryResolve(v.fqn);
-      if(m_l._getRefee())
-         return;
+      if(m_mode & kLocalsAndFields)
+         n.acceptVisitor(fields);
+      else
+      {
+         fullScopeNameBuilder v;
+         n.acceptVisitor(v);
+         tryResolve(v.fqn);
+         if(m_l._getRefee())
+            return;
+      }
    }
 
    if(m_mode & kBaseClasses)
@@ -135,11 +142,33 @@ void linkResolver::visit(classNode& n)
       {
          if(it->getRefee())
          {
-            fullScopeNameBuilder v;
-            it->getRefee()->acceptVisitor(v);
-            tryResolve(v.fqn);
-            if(m_l._getRefee())
-               return;
+            if(m_mode & kLocalsAndFields)
+            {
+               it->getRefee()->acceptVisitor(fields);
+               it->getRefee()->acceptVisitor(*this);
+            }
+            else
+            {
+               fullScopeNameBuilder v;
+               it->getRefee()->acceptVisitor(v);
+               tryResolve(v.fqn);
+               if(m_l._getRefee())
+                  return;
+            }
+         }
+      }
+   }
+
+   if(m_mode & kLocalsAndFields)
+   {
+      n.acceptVisitor(fields);
+      for(auto it=fields.fields.begin();it!=fields.fields.end();++it)
+      {
+         if((*it)->name == m_l.ref)
+         {
+            typeFinder tyF;
+            (*it)->acceptVisitor(tyF);
+            m_l.bind(*tyF.pType);
          }
       }
    }
@@ -164,9 +193,10 @@ void nodePublisher::visit(classNode& n)
    hNodeVisitor::visit(n);
 }
 
-void nodePublisher::visit(methodNode& n)
+void nodePublisher::visit(memberNode& n)
 {
-   if(n.flags & (nodeFlags::kOverride | nodeFlags::kAbstract))
+   bool isField = (dynamic_cast<fieldNode*>(&n)!=NULL);
+   if(isField || (n.flags & (nodeFlags::kOverride | nodeFlags::kAbstract)))
    {
       fullScopeNameBuilder v;
       v.fqn = std::string(".") + n.name;
@@ -219,6 +249,15 @@ void nodeResolver::visit(invokeNode& n)
    hNodeVisitor::visit(n);
 }
 #endif
+
+void nodeResolver::visit(varRefNode& n)
+{
+   linkResolver v(m_sTable,n.pDef,
+      linkResolver::kBaseClasses | linkResolver::kLocalsAndFields);
+   n.acceptVisitor(v);
+
+   hNodeVisitor::visit(n);
+}
 
 unloadedScopeFinder::unloadedScopeFinder(const std::string& missingRef)
 : m_missingRef(missingRef)

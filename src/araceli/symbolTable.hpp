@@ -36,6 +36,24 @@ public:
    std::string fqn;
 };
 
+class typeFinder : public hNodeVisitor {
+public:
+   typeFinder() : pType(NULL) {}
+
+   virtual void visit(cmn::node& n) { visitChildren(n); }
+   virtual void visit(typeNode& n) { pType = &n; }
+
+   typeNode *pType;
+};
+
+class fieldGatherer : public hNodeVisitor {
+public:
+   virtual void visit(cmn::node& n) { visitChildren(n); }
+   virtual void visit(fieldNode& n) { fields.insert(&n); hNodeVisitor::visit(n); }
+
+   std::set<fieldNode*> fields;
+};
+
 // knows all the scopes of a given node
 class linkResolver : public hNodeVisitor {
 public:
@@ -67,7 +85,7 @@ public:
    explicit nodePublisher(symbolTable& st) : m_sTable(st) {}
 
    virtual void visit(classNode& n);
-   virtual void visit(methodNode& n);
+   virtual void visit(memberNode& n);
 
 private:
    symbolTable& m_sTable;
@@ -79,9 +97,10 @@ public:
    explicit nodeResolver(symbolTable& st) : m_sTable(st) {}
 
    virtual void visit(classNode& n);
-   virtual void visit(methodNode& n); // really all members
+   virtual void visit(methodNode& n);
    virtual void visit(userTypeNode& n);
    //virtual void visit(invokeNode& n);
+   virtual void visit(varRefNode& n);
 
 private:
    symbolTable& m_sTable;

@@ -224,7 +224,7 @@ public:
 
 class varRefNode : public cmn::node {
 public:
-   link<userTypeNode> pDef; // unlinked
+   link<typeNode> pDef; // in work
    std::string name;
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)

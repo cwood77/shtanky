@@ -266,6 +266,7 @@ cmn::node& parser::parseLValue()
    m_l.advance();
 
    std::unique_ptr<varRefNode> pInst(m_nFac.create<varRefNode>());
+   pInst->pDef.ref = name;
    pInst->name = name;
    return *pInst.release();
 }
