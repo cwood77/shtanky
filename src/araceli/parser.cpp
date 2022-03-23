@@ -222,7 +222,6 @@ void parser::parseInvoke(std::unique_ptr<cmn::node>& inst, cmn::node& owner)
 
    auto& i = m_nFac.appendNewChild<invokeNode>(owner);
    i.proto.ref = name;
-   i.name = name;
    i.appendChild(*inst.release());
 
    parsePassedArgList(owner);
@@ -239,7 +238,7 @@ void parser::parseCall(std::unique_ptr<cmn::node>& inst, cmn::node& owner)
    varRefNode& func = dynamic_cast<varRefNode&>(*inst.get());
 
    auto& c = m_nFac.appendNewChild<callNode>(owner);
-   c.name = func.name;
+   c.name = func.pDef.ref;
 
    parsePassedArgList(owner);
 
@@ -267,7 +266,6 @@ cmn::node& parser::parseLValue()
 
    std::unique_ptr<varRefNode> pInst(m_nFac.create<varRefNode>());
    pInst->pDef.ref = name;
-   pInst->name = name;
    return *pInst.release();
 }
 
@@ -321,7 +319,6 @@ void parser::parseType(cmn::node& owner)
    {
       auto& t = m_nFac.appendNewChild<userTypeNode>(owner);
       t.pDef.ref = m_l.getLexeme();
-      t.name = m_l.getLexeme();
       m_l.advance();
    }
    else

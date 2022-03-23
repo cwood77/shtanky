@@ -26,8 +26,9 @@ void diagVisitor::visit(scopeNode& n)
 
 void diagVisitor::visit(fileNode& n)
 {
-   ::printf("%sfile\n",
-      getIndent().c_str());
+   ::printf("%sfile path:%s\n",
+      getIndent().c_str(),
+      n.fullPath.c_str());
    m_nIndents+=3;
    hNodeVisitor::visit(n);
    m_nIndents-=3;
@@ -105,7 +106,7 @@ void diagVisitor::visit(userTypeNode& n)
 {
    ::printf("%suserType name=%s linked?=%d\n",
       getIndent().c_str(),
-      n.name.c_str(),
+      n.pDef.ref.c_str(),
       n.pDef.getRefee() ? 1 : 0);
    m_nIndents+=3;
    hNodeVisitor::visit(n);
@@ -132,7 +133,7 @@ void diagVisitor::visit(invokeNode& n)
 {
    ::printf("%sinvoke; name=%s; protoLinked?=%d\n",
       getIndent().c_str(),
-      n.name.c_str(),
+      n.proto.ref.c_str(),
       n.proto.getRefee() ? 1 : 0);
    m_nIndents+=3;
    hNodeVisitor::visit(n);
@@ -153,7 +154,7 @@ void diagVisitor::visit(varRefNode& n)
 {
    ::printf("%svarRef; name=%s\n",
       getIndent().c_str(),
-      n.name.c_str());
+      n.pDef.ref.c_str());
    m_nIndents+=3;
    hNodeVisitor::visit(n);
    m_nIndents-=3;

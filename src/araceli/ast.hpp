@@ -103,8 +103,8 @@ class scopeNode : public cmn::node {
 public:
    scopeNode() : inProject(false), loaded(false) {}
 
-   std::string path;
-   std::string scopeName;
+   std::string path; // whatever came from commandline
+   std::string scopeName; // last part of path name
    bool inProject;
    bool loaded;
 
@@ -114,7 +114,7 @@ public:
 
 class fileNode : public cmn::node {
 public:
-   std::string name;
+   std::string fullPath;
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
@@ -187,7 +187,6 @@ public:
 class userTypeNode : public typeNode {
 public:
    link<classNode> pDef;
-   std::string name;
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
@@ -207,8 +206,7 @@ public:
 
 class invokeNode : public cmn::node {
 public:
-   link<methodNode> proto; // unlinked
-   std::string name;
+   link<methodNode> proto; // unimpled
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
@@ -224,8 +222,7 @@ public:
 
 class varRefNode : public cmn::node {
 public:
-   link<typeNode> pDef; // in work
-   std::string name;
+   link<typeNode> pDef;
 
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }

@@ -44,6 +44,7 @@ void loader::loadFolder(scopeNode& s)
          lexor l(contents.c_str());
          parser p(l);
          auto file = p.parseFile();
+         file->fullPath = fullPath;
          s.appendChild(*file.release());
       }
 
