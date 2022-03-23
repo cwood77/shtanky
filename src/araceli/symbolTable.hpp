@@ -27,6 +27,7 @@ private:
 };
 
 // knows about scope-providing nodes
+// deprecated
 class fullScopeNameBuilder : public hNodeVisitor {
 public:
    virtual void visit(cmn::node& n);
@@ -106,6 +107,7 @@ private:
    symbolTable& m_sTable;
 };
 
+// deprecated
 template<class T>
 class treeSymbolVisitor : public hNodeVisitor {
 public:

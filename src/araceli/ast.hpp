@@ -129,8 +129,13 @@ public:
 
    std::vector<link<classNode> > baseClasses;
 
+   std::list<classNode*> computeLineage();
+
    virtual void acceptVisitor(cmn::iNodeVisitor& v)
    { dynamic_cast<iNodeVisitor&>(v).visit(*this); }
+
+private:
+   void computeLineage(std::list<classNode*>& l);
 };
 
 class memberNode : public cmn::node {
@@ -308,6 +313,21 @@ private:
    std::string getIndent() const;
 
    size_t m_nIndents;
+};
+
+class fullyQualifiedName : private hNodeVisitor {
+public:
+   static std::string build(cmn::node& n, const std::string& start = "");
+
+private:
+   virtual void visit(cmn::node& n);
+   virtual void visit(scopeNode& n);
+   virtual void visit(classNode& n);
+
+   void makeAbsolute();
+   void prepend(const std::string& n);
+
+   std::string m_fqn;
 };
 
 class treeVisitor : public hNodeVisitor {

@@ -6,6 +6,14 @@
 
 namespace cmn {
 
+const char *pathUtil::kExtLiamHeader = "lh";
+const char *pathUtil::kExtLiamSource = "ls";
+
+std::string pathUtil::addExtension(const std::string& path, const std::string& ext)
+{
+   return path + "." + ext;
+}
+
 std::string pathUtil::getExtension(const std::string& path)
 {
    const char *pDot = ::strrchr(path.c_str(),'.');

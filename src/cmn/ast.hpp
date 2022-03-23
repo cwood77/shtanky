@@ -40,6 +40,25 @@ public:
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 
+   template<class T>
+   void getChildrenOf(std::vector<T*>& v)
+   {
+      for(auto it=m_children.begin();it!=m_children.end();++it)
+      {
+         auto candidate = dynamic_cast<T*>(*it);
+         if(candidate)
+            v.push_back(candidate);
+      }
+   }
+
+   template<class T>
+   std::vector<T*> getChildrenOf()
+   {
+      std::vector<T*> rval;
+      getChildrenOf<T>(rval);
+      return rval;
+   }
+
 private:
    node *m_pParent;
    std::vector<node*> m_children;

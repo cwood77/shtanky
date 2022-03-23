@@ -3,6 +3,20 @@
 
 namespace araceli {
 
+std::list<classNode*> classNode::computeLineage()
+{
+   std::list<classNode*> l;
+   computeLineage(l);
+   return l;
+}
+
+void classNode::computeLineage(std::list<classNode*>& l)
+{
+   for(auto it=baseClasses.begin();it!=baseClasses.end();++it)
+      it->getRefee()->computeLineage(l);
+   l.push_back(this);
+}
+
 void diagVisitor::visit(projectNode& n)
 {
    ::printf("%sproject; target=%s\n",getIndent().c_str(),n.targetType.c_str());
@@ -193,6 +207,52 @@ void diagVisitor::visit(intLiteralNode& n)
 std::string diagVisitor::getIndent() const
 {
    return std::string(m_nIndents,' ');
+}
+
+std::string fullyQualifiedName::build(cmn::node& n, const std::string& start)
+{
+   fullyQualifiedName self;
+   self.m_fqn = start;
+   n.acceptVisitor(self);
+   return self.m_fqn;
+}
+
+void fullyQualifiedName::visit(cmn::node& n)
+{
+   cmn::node *pParent = n.getParent();
+   if(pParent)
+      pParent->acceptVisitor(*this);
+   else
+      makeAbsolute();
+}
+
+void fullyQualifiedName::visit(scopeNode& n)
+{
+   prepend(n.scopeName);
+   hNodeVisitor::visit(n);
+}
+
+void fullyQualifiedName::visit(classNode& n)
+{
+   prepend(n.name);
+   hNodeVisitor::visit(n);
+}
+
+void fullyQualifiedName::makeAbsolute()
+{
+   if(m_fqn.empty()) return;
+
+   if(m_fqn.c_str()[0] != '.')
+      m_fqn = std::string(".") + m_fqn;
+}
+
+void fullyQualifiedName::prepend(const std::string& n)
+{
+   if(n.empty()) return;
+
+   makeAbsolute();
+
+   m_fqn = n + m_fqn;
 }
 
 } // namespace araceli

@@ -32,6 +32,7 @@ dirs:
 
 LIAM_SRC = \
 	src/araceli/ast.cpp \
+	src/araceli/codegen.cpp \
 	src/araceli/lexor.cpp \
 	src/araceli/loader.cpp \
 	src/araceli/metadata.cpp \
@@ -41,6 +42,7 @@ LIAM_SRC = \
 	src/araceli/symbolTable.cpp \
 	src/cmn/ast.cpp \
 	src/cmn/lexor.cpp \
+	src/cmn/out.cpp \
 	src/cmn/pathUtil.cpp \
 	src/test.cpp \
 

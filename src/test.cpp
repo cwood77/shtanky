@@ -1,9 +1,11 @@
+#include "araceli/codegen.hpp"
 #include "araceli/lexor.hpp"
 #include "araceli/loader.hpp"
 #include "araceli/metadata.hpp"
 #include "araceli/parser.hpp"
 #include "araceli/projectBuilder.hpp"
 #include "araceli/symbolTable.hpp"
+#include "cmn/out.hpp"
 #include <stdio.h>
 #include <string.h>
 
@@ -80,6 +82,13 @@ int main(int,char*[])
    // -> make file
 
    // target codegen
+
+   cmn::outBundle out;
+   cmn::testFileWriter dummy;
+   out.setAutoUpdate(dummy);
+
+   codeGen v(out);
+   pPrj->acceptVisitor(v);
 
    return 0;
 }
