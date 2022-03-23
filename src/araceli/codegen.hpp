@@ -5,6 +5,21 @@ namespace cmn { class outBundle; }
 
 namespace araceli {
 
+class liamTypeWriter : public hNodeVisitor {
+public:
+   explicit liamTypeWriter(std::ostream& o) : m_o(o) {}
+
+   virtual void visit(cmn::node& n) {}
+   virtual void visit(typeNode& n);
+   virtual void visit(strTypeNode& n);
+   virtual void visit(arrayTypeNode& n);
+   virtual void visit(voidTypeNode& n);
+   virtual void visit(userTypeNode& n);
+
+private:
+   std::ostream& m_o;
+};
+
 class codeGen : public hNodeVisitor {
 public:
    explicit codeGen(cmn::outBundle& out) : m_pActiveFile(NULL), m_out(out) {}

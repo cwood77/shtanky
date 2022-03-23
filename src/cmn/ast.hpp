@@ -3,6 +3,7 @@
 #include <list>
 #include <memory>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -40,6 +41,8 @@ public:
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 
+   // ------ template helpers
+
    template<class T>
    void getChildrenOf(std::vector<T*>& v)
    {
@@ -57,6 +60,15 @@ public:
       std::vector<T*> rval;
       getChildrenOf<T>(rval);
       return rval;
+   }
+
+   template<class T>
+   T& demandSoleChild()
+   {
+      std::vector<T*> candidates = getChildrenOf<T>();
+      if(candidates.size() != 1)
+         throw std::runtime_error("expected single child");
+      return **candidates.begin();
    }
 
 private:
