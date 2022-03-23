@@ -11,8 +11,8 @@ SCRIPTLIB = scriptlib/xcopy-deploy.bat
 
 all: \
 	dirs \
-	$(OUT_DIR)/debug/liam.exe \
-	$(OUT_DIR)/release/liam.exe \
+	$(OUT_DIR)/debug/araceli.exe \
+	$(OUT_DIR)/release/araceli.exe \
 
 clean:
 	rm -rf bin
@@ -28,13 +28,14 @@ dirs:
 .PHONY: all clean dirs
 
 # ----------------------------------------------------------------------
-# liam
+# araceli
 
-LIAM_SRC = \
+ARACELI_SRC = \
 	src/araceli/ast.cpp \
 	src/araceli/codegen.cpp \
 	src/araceli/lexor.cpp \
 	src/araceli/loader.cpp \
+	src/araceli/main.cpp \
 	src/araceli/metadata.cpp \
 	src/araceli/nameUtil.cpp \
 	src/araceli/parser.cpp \
@@ -44,24 +45,23 @@ LIAM_SRC = \
 	src/cmn/lexor.cpp \
 	src/cmn/out.cpp \
 	src/cmn/pathUtil.cpp \
-	src/test.cpp \
 
-LIAM_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(LIAM_SRC)))
+ARACELI_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(ARACELI_SRC)))
 
-$(OUT_DIR)/debug/liam.exe: $(LIAM_DEBUG_OBJ)
+$(OUT_DIR)/debug/araceli.exe: $(ARACELI_DEBUG_OBJ)
 	$(info $< --> $@)
-	@$(LINK_CMD) -o $@ $(LIAM_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST)
+	@$(LINK_CMD) -o $@ $(ARACELI_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST)
 
-$(LIAM_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+$(ARACELI_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
 	$(info $< --> $@)
 	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
 
-LIAM_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(LIAM_SRC)))
+ARACELI_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(ARACELI_SRC)))
 
-$(OUT_DIR)/release/liam.exe: $(LIAM_RELEASE_OBJ)
+$(OUT_DIR)/release/araceli.exe: $(ARACELI_RELEASE_OBJ)
 	$(info $< --> $@)
-	@$(LINK_CMD) -o $@ $(LIAM_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST)
+	@$(LINK_CMD) -o $@ $(ARACELI_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST)
 
-$(LIAM_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+$(ARACELI_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@

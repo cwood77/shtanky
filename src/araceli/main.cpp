@@ -1,21 +1,18 @@
-#include "araceli/codegen.hpp"
-#include "araceli/lexor.hpp"
-#include "araceli/loader.hpp"
-#include "araceli/metadata.hpp"
-#include "araceli/parser.hpp"
-#include "araceli/projectBuilder.hpp"
-#include "araceli/symbolTable.hpp"
-#include "cmn/out.hpp"
+#include "../cmn/out.hpp"
+#include "codegen.hpp"
+#include "lexor.hpp"
+#include "loader.hpp"
+#include "metadata.hpp"
+#include "parser.hpp"
+#include "projectBuilder.hpp"
+#include "symbolTable.hpp"
 #include <stdio.h>
 #include <string.h>
 
-#include <fstream>
-#include <sstream>
+using namespace araceli;
 
 int main(int,char*[])
 {
-   using namespace araceli;
-   ::printf("testing build process\n");
    std::unique_ptr<projectNode> pPrj = projectBuilder::create("ca");
    projectBuilder::addScope(*pPrj.get(),"testdata\\test",/*inProject*/true);
    projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
