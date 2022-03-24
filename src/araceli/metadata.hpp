@@ -14,7 +14,7 @@ private:
    std::map<std::string,std::list<cmn::node*> > m_map;
 };
 
-class nodeMetadataBuilder : public cmn::hNodeVisitor {
+class nodeMetadataBuilder : public cmn::araceliVisitor<> { // maybe this is generic?
 public:
    explicit nodeMetadataBuilder(metadata& m) : m_m(m) {}
 

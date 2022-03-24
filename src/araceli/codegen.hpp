@@ -5,7 +5,7 @@ namespace cmn { class outBundle; }
 
 namespace araceli {
 
-class liamTypeWriter : public cmn::hAraceliVisitor {
+class liamTypeWriter : public cmn::araceliVisitor<> {
 public:
    explicit liamTypeWriter(std::ostream& o) : m_o(o) {}
 
@@ -20,7 +20,7 @@ private:
    std::ostream& m_o;
 };
 
-class codeGen : public cmn::hAraceliVisitor {
+class codeGen : public cmn::araceliVisitor<> {
 public:
    explicit codeGen(cmn::outBundle& out) : m_pActiveFile(NULL), m_out(out) {}
 

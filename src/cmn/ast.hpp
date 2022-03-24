@@ -58,6 +58,8 @@ public:
    virtual void visit(boolLiteralNode& n) = 0;
    virtual void visit(intLiteralNode& n) = 0;
 
+   virtual void _implementLanguage() = 0;
+
    void visitChildren(node& n);
 };
 
@@ -360,6 +362,8 @@ public:
    virtual void visit(boolLiteralNode& n);
    virtual void visit(intLiteralNode& n);
 
+   virtual void _implementLanguage() {} // all
+
 private:
    class autoIndent {
    public:
@@ -375,7 +379,10 @@ private:
    size_t m_nIndents;
 };
 
-class hAraceliVisitor : public hNodeVisitor {
+template<class T = hNodeVisitor>
+class araceliVisitor : public T {
+public:
+   virtual void _implementLanguage() {} // araceli
 };
 
 // ----------------------- helper visitors -----------------------
@@ -383,6 +390,8 @@ class hAraceliVisitor : public hNodeVisitor {
 class fullyQualifiedName : private hNodeVisitor {
 public:
    static std::string build(node& n, const std::string& start = "");
+
+   virtual void _implementLanguage() {} // all
 
 private:
    virtual void visit(node& n);
@@ -404,6 +413,8 @@ public:
       n.acceptVisitor(m_inner);
       visitChildren(n);
    }
+
+   virtual void _implementLanguage() {} // all
 
 private:
    iNodeVisitor& m_inner;

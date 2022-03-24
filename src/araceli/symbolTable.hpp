@@ -28,7 +28,7 @@ private:
 
 // knows about scope-providing nodes
 // deprecated
-class fullScopeNameBuilder : public cmn::hNodeVisitor {
+class fullScopeNameBuilder : public cmn::araceliVisitor<> {
 public:
    virtual void visit(cmn::node& n);
    virtual void visit(cmn::scopeNode& n);
@@ -37,7 +37,7 @@ public:
    std::string fqn;
 };
 
-class typeFinder : public cmn::hNodeVisitor {
+class typeFinder : public cmn::araceliVisitor<> {
 public:
    typeFinder() : pType(NULL) {}
 
@@ -47,7 +47,7 @@ public:
    cmn::typeNode *pType;
 };
 
-class fieldGatherer : public cmn::hNodeVisitor {
+class fieldGatherer : public cmn::araceliVisitor<> {
 public:
    virtual void visit(cmn::node& n) { visitChildren(n); }
    virtual void visit(cmn::fieldNode& n) { fields.insert(&n); hNodeVisitor::visit(n); }
@@ -56,7 +56,7 @@ public:
 };
 
 // knows all the scopes of a given node
-class linkResolver : public cmn::hNodeVisitor {
+class linkResolver : public cmn::araceliVisitor<> {
 public:
    enum {
       kContainingScopes = 0x1,
@@ -81,7 +81,7 @@ private:
 };
 
 // knows all the links in a given node
-class nodePublisher : public cmn::hNodeVisitor {
+class nodePublisher : public cmn::araceliVisitor<> {
 public:
    explicit nodePublisher(symbolTable& st) : m_sTable(st) {}
 
@@ -93,7 +93,7 @@ private:
 };
 
 // knows all the links in a given node
-class nodeResolver : public cmn::hNodeVisitor {
+class nodeResolver : public cmn::araceliVisitor<> {
 public:
    explicit nodeResolver(symbolTable& st) : m_sTable(st) {}
 
@@ -109,7 +109,7 @@ private:
 
 // deprecated
 template<class T>
-class treeSymbolVisitor : public cmn::hNodeVisitor {
+class treeSymbolVisitor : public cmn::araceliVisitor<>{
 public:
    explicit treeSymbolVisitor(symbolTable& st) : m_sTable(st) {}
 
@@ -124,7 +124,7 @@ private:
    symbolTable& m_sTable;
 };
 
-class unloadedScopeFinder : public cmn::hNodeVisitor {
+class unloadedScopeFinder : public cmn::araceliVisitor<> {
 public:
    explicit unloadedScopeFinder(const std::string& missingRef);
 
