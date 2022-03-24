@@ -3,6 +3,7 @@
 #include <list>
 #include <memory>
 #include <set>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <typeinfo>
@@ -12,18 +13,21 @@ namespace cmn {
 
 class node;
 class araceliProjectNode;
+class liamProjectNode;
 class scopeNode;
 class fileNode;
 class classNode;
 class memberNode;
 class methodNode;
 class fieldNode;
+class funcNode;
 class argNode;
 class typeNode;
 class strTypeNode;
 class arrayTypeNode;
 class voidTypeNode;
 class userTypeNode;
+class ptrTypeNode;
 class sequenceNode;
 class invokeNode;
 class callNode;
@@ -38,18 +42,21 @@ public:
 
    virtual void visit(node& n) = 0;
    virtual void visit(araceliProjectNode& n) = 0;
+   virtual void visit(liamProjectNode& n) = 0;
    virtual void visit(scopeNode& n) = 0;
    virtual void visit(fileNode& n) = 0;
    virtual void visit(classNode& n) = 0;
    virtual void visit(memberNode& n) = 0;
    virtual void visit(methodNode& n) = 0;
    virtual void visit(fieldNode& n) = 0;
+   virtual void visit(funcNode& n) = 0;
    virtual void visit(argNode& n) = 0;
    virtual void visit(typeNode& n) = 0;
    virtual void visit(strTypeNode& n) = 0;
    virtual void visit(arrayTypeNode& n) = 0;
    virtual void visit(voidTypeNode& n) = 0;
    virtual void visit(userTypeNode& n) = 0;
+   virtual void visit(ptrTypeNode& n) = 0;
    virtual void visit(sequenceNode& n) = 0;
    virtual void visit(invokeNode& n) = 0;
    virtual void visit(callNode& n) = 0;
@@ -58,9 +65,18 @@ public:
    virtual void visit(boolLiteralNode& n) = 0;
    virtual void visit(intLiteralNode& n) = 0;
 
+protected:
    virtual void _implementLanguage() = 0;
 
    void visitChildren(node& n);
+
+   template<class T>
+   void unexpected(T& n)
+   {
+      std::stringstream stream;
+      stream << "node type " << typeid(T).name() << " was unexpected";
+      throw std::runtime_error(stream.str());
+   }
 };
 
 namespace nodeFlags {
@@ -166,6 +182,15 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class liamProjectNode : public node {
+public:
+   std::string sourceFullPath;
+   std::list<std::string> searchPaths;
+   std::set<std::string> includedPaths;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 class scopeNode : public node {
 public:
    scopeNode() : inProject(false), loaded(false) {}
@@ -220,6 +245,13 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class funcNode : public node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 class argNode : public node {
 public:
    std::string name;
@@ -253,6 +285,11 @@ class userTypeNode : public typeNode {
 public:
    link<classNode> pDef;
 
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class ptrTypeNode : public typeNode {
+public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
@@ -315,18 +352,21 @@ class hNodeVisitor : public iNodeVisitor {
 public:
    virtual void visit(node& n) { }
    virtual void visit(araceliProjectNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(liamProjectNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(scopeNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(fileNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(classNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(memberNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(methodNode& n) { visit(static_cast<memberNode&>(n)); }
    virtual void visit(fieldNode& n) { visit(static_cast<memberNode&>(n)); }
+   virtual void visit(funcNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(argNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(typeNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(strTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(arrayTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(voidTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(userTypeNode& n) { visit(static_cast<typeNode&>(n)); }
+   virtual void visit(ptrTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(sequenceNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(invokeNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(callNode& n) { visit(static_cast<node&>(n)); }
@@ -342,18 +382,21 @@ public:
 
    virtual void visit(node& n) { visitChildren(n); }
    virtual void visit(araceliProjectNode& n);
+   virtual void visit(liamProjectNode& n);
    virtual void visit(scopeNode& n);
    virtual void visit(fileNode& n);
    virtual void visit(classNode& n);
    virtual void visit(memberNode& n);
    virtual void visit(methodNode& n);
    virtual void visit(fieldNode& n);
+   virtual void visit(funcNode& n);
    virtual void visit(argNode& n);
    // type
    virtual void visit(strTypeNode& n);
    virtual void visit(arrayTypeNode& n);
    virtual void visit(voidTypeNode& n);
    virtual void visit(userTypeNode& n);
+   virtual void visit(ptrTypeNode& n);
    virtual void visit(sequenceNode& n);
    virtual void visit(invokeNode& n);
    virtual void visit(callNode& n);
@@ -382,6 +425,10 @@ private:
 template<class T = hNodeVisitor>
 class araceliVisitor : public T {
 public:
+   virtual void visit(liamProjectNode& n) { T::unexpected(n); }
+   virtual void visit(funcNode& n) { T::unexpected(n); }
+   virtual void visit(ptrTypeNode& n) { T::unexpected(n); }
+
    virtual void _implementLanguage() {} // araceli
 };
 

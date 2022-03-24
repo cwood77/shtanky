@@ -46,6 +46,18 @@ void diagVisitor::visit(araceliProjectNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(liamProjectNode& n)
+{
+   ::printf("%sproject; path=%s; #search=%lld; #included=%lld\n",
+      getIndent().c_str(),
+      n.sourceFullPath.c_str(),
+      n.searchPaths.size(),
+      n.includedPaths.size());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 void diagVisitor::visit(scopeNode& n)
 {
    ::printf("%sscope; path=%s; name=%s; inProject=%d; loaded=%d\n",
@@ -107,6 +119,10 @@ void diagVisitor::visit(fieldNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(funcNode& n)
+{
+}
+
 void diagVisitor::visit(argNode& n)
 {
    ::printf("%sarg; name=%s\n",
@@ -153,6 +169,10 @@ void diagVisitor::visit(userTypeNode& n)
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(ptrTypeNode& n)
+{
 }
 
 void diagVisitor::visit(sequenceNode& n)

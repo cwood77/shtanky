@@ -13,6 +13,8 @@ all: \
 	dirs \
 	$(OUT_DIR)/debug/araceli.exe \
 	$(OUT_DIR)/release/araceli.exe \
+	$(OUT_DIR)/debug/liam.exe \
+	$(OUT_DIR)/release/liam.exe \
 
 clean:
 	rm -rf bin
@@ -20,12 +22,43 @@ clean:
 dirs:
 	@mkdir -p $(OUT_DIR)/debug
 	@mkdir -p $(OBJ_DIR)/debug/araceli
+	@mkdir -p $(OBJ_DIR)/debug/liam
 	@mkdir -p $(OBJ_DIR)/debug/cmn
 	@mkdir -p $(OUT_DIR)/release
 	@mkdir -p $(OBJ_DIR)/release/araceli
+	@mkdir -p $(OBJ_DIR)/release/liam
 	@mkdir -p $(OBJ_DIR)/release/cmn
 
 .PHONY: all clean dirs
+
+# ----------------------------------------------------------------------
+# cmn
+
+CMN_SRC = \
+	src/cmn/ast.cpp \
+	src/cmn/lexor.cpp \
+	src/cmn/out.cpp \
+	src/cmn/pathUtil.cpp \
+
+CMN_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(CMN_SRC)))
+
+$(OUT_DIR)/debug/cmn.lib: $(CMN_DEBUG_OBJ)
+	$(info $< --> $@)
+	@ar crs $@ $^
+
+$(CMN_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+CMN_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(CMN_SRC)))
+
+$(OUT_DIR)/release/cmn.lib: $(CMN_RELEASE_OBJ)
+	$(info $< --> $@)
+	@ar crs $@ $^
+
+$(CMN_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
 # ----------------------------------------------------------------------
 # araceli
@@ -40,16 +73,12 @@ ARACELI_SRC = \
 	src/araceli/parser.cpp \
 	src/araceli/projectBuilder.cpp \
 	src/araceli/symbolTable.cpp \
-	src/cmn/ast.cpp \
-	src/cmn/lexor.cpp \
-	src/cmn/out.cpp \
-	src/cmn/pathUtil.cpp \
 
 ARACELI_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(ARACELI_SRC)))
 
-$(OUT_DIR)/debug/araceli.exe: $(ARACELI_DEBUG_OBJ)
+$(OUT_DIR)/debug/araceli.exe: $(ARACELI_DEBUG_OBJ) $(OUT_DIR)/debug/cmn.lib
 	$(info $< --> $@)
-	@$(LINK_CMD) -o $@ $(ARACELI_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST)
+	@$(LINK_CMD) -o $@ $(ARACELI_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lcmn
 
 $(ARACELI_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
 	$(info $< --> $@)
@@ -57,10 +86,36 @@ $(ARACELI_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
 
 ARACELI_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(ARACELI_SRC)))
 
-$(OUT_DIR)/release/araceli.exe: $(ARACELI_RELEASE_OBJ)
+$(OUT_DIR)/release/araceli.exe: $(ARACELI_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
 	$(info $< --> $@)
-	@$(LINK_CMD) -o $@ $(ARACELI_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST)
+	@$(LINK_CMD) -o $@ $(ARACELI_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
 
 $(ARACELI_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# liam
+
+LIAM_SRC = \
+	src/liam/main.cpp \
+
+LIAM_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(LIAM_SRC)))
+
+$(OUT_DIR)/debug/liam.exe: $(LIAM_DEBUG_OBJ) $(OUT_DIR)/debug/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(LIAM_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lcmn
+
+$(LIAM_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+LIAM_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(LIAM_SRC)))
+
+$(OUT_DIR)/release/liam.exe: $(LIAM_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(LIAM_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
+
+$(LIAM_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
