@@ -73,20 +73,6 @@ void parser::parseClassBases(cmn::classNode& c)
    }
 }
 
-void parser::parseAttributes()
-{
-   while(m_l.getToken() == lexor::kLBracket)
-   {
-      m_l.advance();
-
-      m_l.demand(lexor::kName);
-      m_nFac.deferAttribute(m_l.getLexeme());
-      m_l.advance();
-
-      m_l.demandAndEat(lexor::kRBracket);
-   }
-}
-
 void parser::parseClassMembers(cmn::classNode& c)
 {
    size_t flags = 0;
@@ -323,6 +309,20 @@ void parser::parseType(cmn::node& owner)
    }
    else
       m_l.demandOneOf(3,lexor::kStr,lexor::kVoid,lexor::kName);
+}
+
+void parser::parseAttributes()
+{
+   while(m_l.getToken() == lexor::kLBracket)
+   {
+      m_l.advance();
+
+      m_l.demand(lexor::kName);
+      m_nFac.deferAttribute(m_l.getLexeme());
+      m_l.advance();
+
+      m_l.demandAndEat(lexor::kRBracket);
+   }
 }
 
 } // namespace araceli

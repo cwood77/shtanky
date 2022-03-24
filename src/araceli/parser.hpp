@@ -33,21 +33,26 @@ class lexor;
 // <class-members> ::== <method> <class-members>
 //                    | <field> <class-members>
 //                    | e
+// <member-keywords> ::== 'override' <member-keywords>
+//                      | 'private' <member-keywords>
+//                      | e
 // <method> ::== <member-keywords> <name> '(' <name> ':' <type> ')' ':' <type> <body>
 //             | e
 // <field> ::== <member-keywords> <name> ':' <type> <field-init> ';'
 // <field-init> ::== '=' <rvalue>
 //                 | e
-// <member-keywords> ::== 'override' <member-keywords>
-//                      | 'private' <member-keywords>
-//                      | e
 //
 // ------------------------- procedural
 // <body> ::== '{' <statements> '}'
 // <statements> ::== <statement>
 //                 | e
 // <statement> ::== <invoke> ';'
-// <invoke> ::== <lvalue> '->' <name> '(' <rvalue> ')'
+//                | <call> ';'
+// <invoke> ::== <lvalue> '->' <name> '(' <passedArgList> ')'
+// <call> ::== <lvalue> '(' <passedArgList> ')'
+// <passedArgList> ::== <rvalue> ',' <passedArgList>
+//                    | <rvalue>
+//                    | e
 //
 // ------------------------- rval/lval
 // <lvalue> ::== <name>
@@ -58,7 +63,7 @@ class lexor;
 // ------------------------- type
 // <type> ::== 'str' '[' ']'
 //           | 'void'
-//           | 'bool'
+//           | <name> // user defined type
 //
 // ------------------------- attributes
 // <attributes> ::== '[' <name> ']' <attributes>
@@ -71,12 +76,12 @@ public:
    std::unique_ptr<cmn::fileNode> parseFile();
 
 private:
-   void parseFile(cmn::fileNode& f);
-   void parseClass(cmn::fileNode& f);
-   void parseClassBases(cmn::classNode& c);
-   void parseClassMembers(cmn::classNode& c);
-   void parseMemberKeywords(size_t& flags);
-   void parseMethod(cmn::methodNode& n);
+   void parseFile(cmn::fileNode& f); // extend for liam
+   void parseClass(cmn::fileNode& f); // TODO hard to share b/c of 'interface' 'abstract'
+   void parseClassBases(cmn::classNode& c); // araceli only
+   void parseClassMembers(cmn::classNode& c); // limit for liam
+   void parseMemberKeywords(size_t& flags); // araceli only
+   void parseMethod(cmn::methodNode& n); // araceli only
    void parseField(cmn::fieldNode& n);
 
    void parseSequence(cmn::node& owner);
@@ -85,6 +90,7 @@ private:
    void parseInvoke(std::unique_ptr<cmn::node>& inst, cmn::node& owner);
    void parseCall(std::unique_ptr<cmn::node>& inst, cmn::node& owner);
    void parsePassedArgList(cmn::node& owner);
+
    cmn::node& parseLValue();
    void parseRValue(cmn::node& owner);
 

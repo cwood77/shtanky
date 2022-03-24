@@ -74,10 +74,9 @@ void whitespaceEater::advance(lexorState& s) const
    }
 }
 
-lexorBase::lexorBase(const lexemeInfo *pTable, const char *buffer)
+lexorBase::lexorBase(const char *buffer)
 : m_state(buffer)
 {
-   processTable(pTable);
 }
 
 lexorBase::~lexorBase()
@@ -145,14 +144,18 @@ void lexorBase::demandOneOf(size_t n, ...)
    std::stringstream msg;
    msg << "expected ";
 
+   bool first = true;
    va_list ap;
    va_start(ap,n);
    for(size_t i=0;i<n;i++)
    {
-      if(i)
-         msg << ", ";
       int t = va_arg(ap,int);
+      if(m_unsupported.find(t)!=m_unsupported.end())
+         continue;
+      if(!first)
+         msg << ", ";
       msg << getTokenName(t);
+      first = false;
    }
    va_end(ap);
 
@@ -174,21 +177,28 @@ void lexorBase::addPhase(iLexorPhase& p)
    p.collectTerminators(m_terminators);
 }
 
-void lexorBase::processTable(const lexemeInfo *pTable)
+void lexorBase::addTable(const lexemeInfo *pTable, size_t *pUnsupported)
 {
+   if(pUnsupported)
+      for(;*pUnsupported;++pUnsupported)
+         m_unsupported.insert(*pUnsupported);
+
    for(size_t i=0;;i++)
    {
       const lexemeInfo& l = pTable[i];
       if(l.k == lexemeInfo::kEndOfTable)
          break;
 
-      if(l.k == lexemeInfo::kSymbolic)
+      if(m_unsupported.find(l.token)==m_unsupported.end())
       {
-         m_symbolics[l.lexeme] = &l;
-         m_terminators += std::string(l.lexeme,1);
+         if(l.k == lexemeInfo::kSymbolic)
+         {
+            m_symbolics[l.lexeme] = &l;
+            m_terminators += std::string(l.lexeme,1);
+         }
+         else if(l.k == lexemeInfo::kAlphanumeric)
+            m_alphas[l.lexeme] = &l;
       }
-      else if(l.k == lexemeInfo::kAlphanumeric)
-         m_alphas[l.lexeme] = &l;
 
       m_lexemeDict[l.token] = &l;
    }

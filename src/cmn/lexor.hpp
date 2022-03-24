@@ -72,7 +72,7 @@ public:
       _kFirstDerivedToken
    };
 
-   lexorBase(const lexemeInfo *pTable, const char *buffer);
+   explicit lexorBase(const char *buffer);
    virtual ~lexorBase();
 
    void advance();
@@ -89,9 +89,9 @@ public:
 
 protected:
    void addPhase(iLexorPhase& p);
+   void addTable(const lexemeInfo *pTable, size_t *pUnsupported);
 
 private:
-   void processTable(const lexemeInfo *pTable);
    void runPhasesUntilSteady();
    void matchSymbolic();
    void matchAlphanumeric();
@@ -101,6 +101,7 @@ private:
    std::map<std::string,const lexemeInfo*> m_symbolics;
    std::map<std::string,const lexemeInfo*> m_alphas;
    std::map<size_t,const lexemeInfo*> m_lexemeDict;
+   std::set<size_t> m_unsupported;
    std::string m_terminators;
 };
 

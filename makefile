@@ -36,6 +36,7 @@ dirs:
 
 CMN_SRC = \
 	src/cmn/ast.cpp \
+	src/cmn/commonLexor.cpp \
 	src/cmn/lexor.cpp \
 	src/cmn/out.cpp \
 	src/cmn/pathUtil.cpp \
