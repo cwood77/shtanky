@@ -37,6 +37,7 @@ dirs:
 CMN_SRC = \
 	src/cmn/ast.cpp \
 	src/cmn/commonLexor.cpp \
+	src/cmn/commonParser.cpp \
 	src/cmn/lexor.cpp \
 	src/cmn/out.cpp \
 	src/cmn/pathUtil.cpp \
@@ -71,7 +72,6 @@ ARACELI_SRC = \
 	src/araceli/main.cpp \
 	src/araceli/metadata.cpp \
 	src/araceli/nameUtil.cpp \
-	src/araceli/parser.cpp \
 	src/araceli/projectBuilder.cpp \
 	src/araceli/symbolTable.cpp \
 

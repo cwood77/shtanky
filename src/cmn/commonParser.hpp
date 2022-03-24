@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../cmn/ast.hpp" // TODO
+#include "ast.hpp"
+#include "lexor.hpp"
 #include <memory>
 
 namespace cmn {
@@ -69,9 +70,9 @@ class commonLexor;
 // <attributes> ::== '[' <name> ']' <attributes>
 //                 |  e
 //
-class parser : public parserBase {
+class commonParser : public parserBase {
 public:
-   explicit parser(commonLexor& l);
+   explicit commonParser(commonLexor& l);
 
    std::unique_ptr<fileNode> parseFile();
 

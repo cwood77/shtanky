@@ -3,7 +3,6 @@
 #include "lexor.hpp"
 #include "loader.hpp"
 #include "metadata.hpp"
-#include "parser.hpp"
 #include "projectBuilder.hpp"
 #include "symbolTable.hpp"
 #include <stdio.h>

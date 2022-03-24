@@ -1,9 +1,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include "../cmn/ast.hpp"
+#include "../cmn/commonParser.hpp"
 #include "../cmn/pathUtil.hpp"
 #include "lexor.hpp"
 #include "loader.hpp"
-#include "parser.hpp" // TODO
 #include <stdio.h>
 #include <windows.h>
 
@@ -42,7 +42,7 @@ void loader::loadFolder(cmn::scopeNode& s)
          std::string contents;
          cmn::pathUtil::loadFileContents(fullPath,contents);
          lexor l(contents.c_str());
-         cmn::parser p(l);
+         cmn::commonParser p(l);
          auto file = p.parseFile();
          file->fullPath = fullPath;
          s.appendChild(*file.release());

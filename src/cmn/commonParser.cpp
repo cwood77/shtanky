@@ -1,5 +1,5 @@
-#include "../cmn/commonLexor.hpp" // TODO
-#include "parser.hpp"
+#include "commonLexor.hpp"
+#include "commonParser.hpp"
 
 namespace cmn {
 
@@ -12,26 +12,26 @@ parserBase::parserBase(lexorBase& l)
 
 namespace cmn {
 
-parser::parser(commonLexor& l)
+commonParser::commonParser(commonLexor& l)
 : parserBase(l)
 , m_l(l)
 {
 }
 
-std::unique_ptr<fileNode> parser::parseFile()
+std::unique_ptr<fileNode> commonParser::parseFile()
 {
    std::unique_ptr<fileNode> pFile(m_nFac.create<fileNode>());
    parseFile(*pFile.get());
    return pFile;
 }
 
-void parser::parseFile(fileNode& f)
+void commonParser::parseFile(fileNode& f)
 {
    while(m_l.getToken() != commonLexor::kEOI)
       parseClass(f);
 }
 
-void parser::parseClass(fileNode& f)
+void commonParser::parseClass(fileNode& f)
 {
    parseAttributes();
 
@@ -59,7 +59,7 @@ void parser::parseClass(fileNode& f)
    m_l.demandAndEat(commonLexor::kRBrace);
 }
 
-void parser::parseClassBases(classNode& c)
+void commonParser::parseClassBases(classNode& c)
 {
    // at most 1 for now
    if(m_l.getToken() != commonLexor::kLBrace)
@@ -73,7 +73,7 @@ void parser::parseClassBases(classNode& c)
    }
 }
 
-void parser::parseClassMembers(classNode& c)
+void commonParser::parseClassMembers(classNode& c)
 {
    size_t flags = 0;
    parseMemberKeywords(flags);
@@ -104,7 +104,7 @@ void parser::parseClassMembers(classNode& c)
       parseClassMembers(c);
 }
 
-void parser::parseMemberKeywords(size_t& flags)
+void commonParser::parseMemberKeywords(size_t& flags)
 {
    if(m_l.getToken() == commonLexor::kOverride)
       flags |= nodeFlags::kOverride;
@@ -125,7 +125,7 @@ void parser::parseMemberKeywords(size_t& flags)
    parseMemberKeywords(flags);
 }
 
-void parser::parseMethod(methodNode& n)
+void commonParser::parseMethod(methodNode& n)
 {
    m_l.demandAndEat(commonLexor::kLParen);
 
@@ -150,7 +150,7 @@ void parser::parseMethod(methodNode& n)
       parseSequence(n);
 }
 
-void parser::parseField(fieldNode& n)
+void commonParser::parseField(fieldNode& n)
 {
    m_l.demandAndEat(commonLexor::kColon);
 
@@ -168,7 +168,7 @@ void parser::parseField(fieldNode& n)
       m_l.demandOneOf(2,commonLexor::kEquals,commonLexor::kSemiColon);
 }
 
-void parser::parseSequence(node& owner)
+void commonParser::parseSequence(node& owner)
 {
    m_l.demandAndEat(commonLexor::kLBrace);
 
@@ -178,12 +178,12 @@ void parser::parseSequence(node& owner)
    m_l.demandAndEat(commonLexor::kRBrace);
 }
 
-void parser::parseStatements(node& owner)
+void commonParser::parseStatements(node& owner)
 {
    while(tryParseStatement(owner));
 }
 
-bool parser::tryParseStatement(node& owner)
+bool commonParser::tryParseStatement(node& owner)
 {
    if(m_l.getToken() == commonLexor::kRBrace) return false;
 
@@ -196,7 +196,7 @@ bool parser::tryParseStatement(node& owner)
    return true;
 }
 
-void parser::parseInvoke(std::unique_ptr<node>& inst, node& owner)
+void commonParser::parseInvoke(std::unique_ptr<node>& inst, node& owner)
 {
    m_l.demandAndEat(commonLexor::kArrow);
 
@@ -217,7 +217,7 @@ void parser::parseInvoke(std::unique_ptr<node>& inst, node& owner)
    m_l.demandAndEat(commonLexor::kSemiColon);
 }
 
-void parser::parseCall(std::unique_ptr<node>& inst, node& owner)
+void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
 {
    m_l.demandAndEat(commonLexor::kLParen);
 
@@ -233,7 +233,7 @@ void parser::parseCall(std::unique_ptr<node>& inst, node& owner)
    m_l.demandAndEat(commonLexor::kSemiColon);
 }
 
-void parser::parsePassedArgList(node& owner)
+void commonParser::parsePassedArgList(node& owner)
 {
    while(m_l.getToken() != commonLexor::kRParen)
    {
@@ -244,7 +244,7 @@ void parser::parsePassedArgList(node& owner)
    }
 }
 
-node& parser::parseLValue()
+node& commonParser::parseLValue()
 {
    m_l.demand(commonLexor::kName);
    auto name = m_l.getLexeme();
@@ -255,7 +255,7 @@ node& parser::parseLValue()
    return *pInst.release();
 }
 
-void parser::parseRValue(node& owner)
+void commonParser::parseRValue(node& owner)
 {
    if(m_l.getToken() == commonLexor::kStringLiteral)
    {
@@ -282,7 +282,7 @@ void parser::parseRValue(node& owner)
       owner.appendChild(parseLValue());
 }
 
-void parser::parseType(node& owner)
+void commonParser::parseType(node& owner)
 {
    if(m_l.getToken() == commonLexor::kStr)
    {
@@ -311,7 +311,7 @@ void parser::parseType(node& owner)
       m_l.demandOneOf(3,commonLexor::kStr,commonLexor::kVoid,commonLexor::kName);
 }
 
-void parser::parseAttributes()
+void commonParser::parseAttributes()
 {
    while(m_l.getToken() == commonLexor::kLBracket)
    {
