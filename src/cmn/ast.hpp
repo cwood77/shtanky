@@ -444,6 +444,17 @@ public:
    virtual void _implementLanguage() {} // araceli
 };
 
+template<class T = hNodeVisitor>
+class liamVisitor : public T {
+public:
+   virtual void visit(araceliProjectNode& n) { T::unexpected(n); }
+   virtual void visit(scopeNode& n) { T::unexpected(n); }
+   virtual void visit(fileNode& n) { T::unexpected(n); }
+   virtual void visit(methodNode& n) { T::unexpected(n); }
+
+   virtual void _implementLanguage() {} // liam
+};
+
 // ----------------------- helper visitors -----------------------
 
 class fullyQualifiedName : private hNodeVisitor {

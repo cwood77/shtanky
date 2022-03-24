@@ -29,7 +29,7 @@ void stringLiteralReader::advance(lexorState& s) const
    s.lexeme = std::string(s.pThumb,pEnd-s.pThumb);
 
    // unwrap quotes
-   s.lexeme = std::string(s.lexeme.c_str()+1,s.lexeme.length()-2);
+   s.lexeme = std::string(s.lexeme.c_str()+1,s.lexeme.length()-1);
 
    s.pThumb = pEnd+1;
    s.token = lexorBase::kStringLiteral;

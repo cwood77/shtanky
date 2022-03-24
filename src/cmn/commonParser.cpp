@@ -245,7 +245,7 @@ void commonParser::parseInvoke(std::unique_ptr<node>& inst, node& owner)
    i.proto.ref = name;
    i.appendChild(*inst.release());
 
-   parsePassedArgList(owner);
+   parsePassedArgList(i);
 
    m_l.demandAndEat(commonLexor::kRParen);
 
@@ -261,7 +261,7 @@ void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
    auto& c = m_nFac.appendNewChild<callNode>(owner);
    c.name = func.pDef.ref;
 
-   parsePassedArgList(owner);
+   parsePassedArgList(c);
 
    m_l.demandAndEat(commonLexor::kRParen);
 

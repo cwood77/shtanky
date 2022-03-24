@@ -1,6 +1,7 @@
 #include "../cmn/out.hpp"
 #include "../cmn/pathUtil.hpp"
 #include "codegen.hpp"
+#include <stdexcept>
 
 namespace araceli {
 
@@ -46,14 +47,92 @@ void codeGen::visit(cmn::fileNode& n)
 void codeGen::visit(cmn::classNode& n)
 {
    auto& header = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader).stream();
-   //auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
 
    std::string vname;
    generateClassVTable(n,header,vname);
    generateClassType(n,header,vname);
    generateClassPrototypes(n,header);
 
-   hNodeVisitor::visit(n);
+   auto methods = n.getChildrenOf<cmn::methodNode>();
+   for(auto it=methods.begin();it!=methods.end();++it)
+      generateClassMethod(n,**it,source);
+}
+
+void codeGen::visit(cmn::sequenceNode& n)
+{
+   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+
+   source << "{" << std::endl;
+
+   visitChildren(n);
+
+   source << "}" << std::endl;
+}
+
+void codeGen::visit(cmn::invokeNode& n)
+{
+   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+
+   if(n.getChildren().size() < 1)
+      throw std::runtime_error("eh?  bad invokeNode");
+
+   n.getChildren()[0]->acceptVisitor(*this);
+   source << "->" << n.proto.ref << "(";
+   bool first = true;
+   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+   {
+      if(it==n.getChildren().begin())
+         continue;
+      if(!first)
+         source << ",";
+      (*it)->acceptVisitor(*this);
+      first = false;
+   }
+   source << ");" << std::endl;
+}
+
+// TODO LAME - share some code here
+void codeGen::visit(cmn::callNode& n)
+{
+   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+
+   source << n.name << "(";
+   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+   {
+      if(it==n.getChildren().begin())
+         source << ",";
+      (*it)->acceptVisitor(*this);
+   }
+   source << ");" << std::endl;
+}
+
+void codeGen::visit(cmn::varRefNode& n)
+{
+   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   source << n.pDef.ref;
+   visitChildren(n);
+}
+
+void codeGen::visit(cmn::stringLiteralNode& n)
+{
+   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   source << "\"" << n.value << "\"";
+   visitChildren(n);
+}
+
+void codeGen::visit(cmn::boolLiteralNode& n)
+{
+   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   source << n.value;
+   visitChildren(n);
+}
+
+void codeGen::visit(cmn::intLiteralNode& n)
+{
+   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   source << n.value;
+   visitChildren(n);
 }
 
 void codeGen::generateClassVTable(cmn::classNode& n, std::ostream& header, std::string& vname)
@@ -130,38 +209,51 @@ void codeGen::generateClassPrototypes(cmn::classNode& n, std::ostream& header)
    {
       if(!((*it)->flags & cmn::nodeFlags::kAbstract))
       {
-         header
-            << std::endl
-            << "func " << cmn::fullyQualifiedName::build(**it,(*it)->baseImpl.ref) << "("
-         ;
-
-         bool firstParam = true;
-         if(!((*it)->flags & cmn::nodeFlags::kStatic))
-         {
-            header << "self : " << cmn::fullyQualifiedName::build(n);
-            firstParam = false;
-         }
-
-         auto args = (*it)->getChildrenOf<cmn::argNode>();
-         for(auto jit=args.begin();jit!=args.end();++jit)
-         {
-            if(!firstParam)
-               header << "," << std::endl << "   ";
-
-            header
-               << (*jit)->name << " : ";
-            ;
-            liamTypeWriter tyW(header);
-            (*jit)->demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
-
-            firstParam = false;
-         }
-
-         header
-            << ") : void;" << std::endl // TODO - actually print the right return value
-         ;
+         generateMethodSignature(**it,header);
+         header << ";" << std::endl;
       }
    }
+}
+
+void codeGen::generateClassMethod(cmn::classNode& n, cmn::methodNode& m, std::ostream& source)
+{
+   generateMethodSignature(m,source);
+   source << std::endl;
+   visitChildren(m);
+}
+
+void codeGen::generateMethodSignature(cmn::methodNode& m, std::ostream& s)
+{
+   s
+      << std::endl
+      << "func " << cmn::fullyQualifiedName::build(m,m.baseImpl.ref) << "("
+   ;
+
+   bool firstParam = true;
+   if(!(m.flags & cmn::nodeFlags::kStatic))
+   {
+      s << "self : " << cmn::fullyQualifiedName::build(m);
+      firstParam = false;
+   }
+
+   auto args = m.getChildrenOf<cmn::argNode>();
+   for(auto jit=args.begin();jit!=args.end();++jit)
+   {
+      if(!firstParam)
+         s << "," << std::endl << "   ";
+
+      s
+         << (*jit)->name << " : ";
+      ;
+      liamTypeWriter tyW(s);
+      (*jit)->demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
+
+      firstParam = false;
+   }
+
+   s
+      << ") : void" // TODO - actually print the right return value
+   ;
 }
 
 } // namespace araceli

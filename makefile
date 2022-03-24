@@ -99,7 +99,9 @@ $(ARACELI_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # liam
 
 LIAM_SRC = \
+	src/liam/astCodeGen.cpp \
 	src/liam/lexor.cpp \
+	src/liam/lir.cpp \
 	src/liam/main.cpp \
 	src/liam/projectBuilder.cpp \
 
