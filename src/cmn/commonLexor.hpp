@@ -1,3 +1,4 @@
+#pragma once
 #include "lexor.hpp"
 
 namespace cmn {
@@ -23,6 +24,8 @@ public:
       kAbstract,
       kStatic,
 
+      kRef,
+
       kClass,
       kVar,
 
@@ -37,7 +40,7 @@ public:
    };
 
 protected:
-   commonLexor(const char *buffer, size_t *pUnsupported);
+   commonLexor(const char *buffer, const size_t *pUnsupported);
 };
 
 } // namespace cmn

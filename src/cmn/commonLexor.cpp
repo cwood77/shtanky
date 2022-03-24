@@ -21,6 +21,8 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kAlphanumeric, commonLexor::kAbstract,    "abstract", "abstract"        },
    { lexemeInfo::kAlphanumeric, commonLexor::kStatic,      "static",   "static"          },
 
+   { lexemeInfo::kAlphanumeric, commonLexor::kRef,         "ref",      "ref"             },
+
    { lexemeInfo::kAlphanumeric, commonLexor::kClass,       "class",    "class"           },
    { lexemeInfo::kAlphanumeric, commonLexor::kVar,         "var",      "var"             },
 
@@ -38,7 +40,7 @@ static const lexemeInfo scanTable[] = {
 
 };
 
-commonLexor::commonLexor(const char *buffer, size_t *pUnsupported)
+commonLexor::commonLexor(const char *buffer, const size_t *pUnsupported)
 : lexorBase(buffer)
 {
    addPhase(*new stringLiteralReader());

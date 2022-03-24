@@ -1,4 +1,7 @@
 #include "../cmn/ast.hpp"
+#include "projectBuilder.hpp"
+
+using namespace liam;
 
 int main(int,const char*[])
 {
@@ -6,4 +9,6 @@ int main(int,const char*[])
    prj.sourceFullPath = "testdata\\test\\test.ara.ls";
    prj.searchPaths.push_back("testdata\\test");
    prj.searchPaths.push_back("testdata\\sht");
+   projectBuilder::build(prj);
+   { cmn::diagVisitor v; prj.acceptVisitor(v); }
 }

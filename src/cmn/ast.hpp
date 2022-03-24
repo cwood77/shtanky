@@ -16,6 +16,7 @@ class araceliProjectNode;
 class liamProjectNode;
 class scopeNode;
 class fileNode;
+class fileRefNode;
 class classNode;
 class memberNode;
 class methodNode;
@@ -45,6 +46,7 @@ public:
    virtual void visit(liamProjectNode& n) = 0;
    virtual void visit(scopeNode& n) = 0;
    virtual void visit(fileNode& n) = 0;
+   virtual void visit(fileRefNode& n) = 0;
    virtual void visit(classNode& n) = 0;
    virtual void visit(memberNode& n) = 0;
    virtual void visit(methodNode& n) = 0;
@@ -186,7 +188,7 @@ class liamProjectNode : public node {
 public:
    std::string sourceFullPath;
    std::list<std::string> searchPaths;
-   std::set<std::string> includedPaths;
+   std::set<std::string> loadedPaths;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
@@ -206,6 +208,13 @@ public:
 class fileNode : public node {
 public:
    std::string fullPath;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class fileRefNode : public node {
+public:
+   std::string ref;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
@@ -355,6 +364,7 @@ public:
    virtual void visit(liamProjectNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(scopeNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(fileNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(fileRefNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(classNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(memberNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(methodNode& n) { visit(static_cast<memberNode&>(n)); }
@@ -385,6 +395,7 @@ public:
    virtual void visit(liamProjectNode& n);
    virtual void visit(scopeNode& n);
    virtual void visit(fileNode& n);
+   virtual void visit(fileRefNode& n);
    virtual void visit(classNode& n);
    virtual void visit(memberNode& n);
    virtual void visit(methodNode& n);
@@ -426,6 +437,7 @@ template<class T = hNodeVisitor>
 class araceliVisitor : public T {
 public:
    virtual void visit(liamProjectNode& n) { T::unexpected(n); }
+   virtual void visit(fileRefNode& n) { T::unexpected(n); }
    virtual void visit(funcNode& n) { T::unexpected(n); }
    virtual void visit(ptrTypeNode& n) { T::unexpected(n); }
 

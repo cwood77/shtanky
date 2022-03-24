@@ -99,7 +99,9 @@ $(ARACELI_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # liam
 
 LIAM_SRC = \
+	src/liam/lexor.cpp \
 	src/liam/main.cpp \
+	src/liam/projectBuilder.cpp \
 
 LIAM_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(LIAM_SRC)))
 

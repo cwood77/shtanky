@@ -89,7 +89,7 @@ public:
 
 protected:
    void addPhase(iLexorPhase& p);
-   void addTable(const lexemeInfo *pTable, size_t *pUnsupported);
+   void addTable(const lexemeInfo *pTable, const size_t *pUnsupported);
 
 private:
    void runPhasesUntilSteady();

@@ -1,6 +1,11 @@
 # VI
 *.swp
 
+# generated araceli/liam/shtasm files
+*.ara.li
+*.ara.ls
+*.ara.ls.shtasm
+
 # Prerequisites
 *.d
 

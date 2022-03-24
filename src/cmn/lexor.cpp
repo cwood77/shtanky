@@ -177,7 +177,7 @@ void lexorBase::addPhase(iLexorPhase& p)
    p.collectTerminators(m_terminators);
 }
 
-void lexorBase::addTable(const lexemeInfo *pTable, size_t *pUnsupported)
+void lexorBase::addTable(const lexemeInfo *pTable, const size_t *pUnsupported)
 {
    if(pUnsupported)
       for(;*pUnsupported;++pUnsupported)

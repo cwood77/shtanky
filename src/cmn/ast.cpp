@@ -52,7 +52,7 @@ void diagVisitor::visit(liamProjectNode& n)
       getIndent().c_str(),
       n.sourceFullPath.c_str(),
       n.searchPaths.size(),
-      n.includedPaths.size());
+      n.loadedPaths.size());
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);
@@ -76,6 +76,16 @@ void diagVisitor::visit(fileNode& n)
    ::printf("%sfile path:%s\n",
       getIndent().c_str(),
       n.fullPath.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(fileRefNode& n)
+{
+   ::printf("%sfileRef path:%s\n",
+      getIndent().c_str(),
+      n.ref.c_str());
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);
