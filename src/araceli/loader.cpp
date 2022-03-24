@@ -3,7 +3,7 @@
 #include "../cmn/pathUtil.hpp"
 #include "lexor.hpp"
 #include "loader.hpp"
-#include "parser.hpp"
+#include "parser.hpp" // TODO
 #include <stdio.h>
 #include <windows.h>
 
@@ -42,7 +42,7 @@ void loader::loadFolder(cmn::scopeNode& s)
          std::string contents;
          cmn::pathUtil::loadFileContents(fullPath,contents);
          lexor l(contents.c_str());
-         parser p(l);
+         cmn::parser p(l);
          auto file = p.parseFile();
          file->fullPath = fullPath;
          s.appendChild(*file.release());

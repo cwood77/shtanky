@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../cmn/ast.hpp"
+#include "../cmn/ast.hpp" // TODO
 #include <memory>
 
 namespace cmn {
@@ -16,9 +16,9 @@ protected:
 
 } // namespace cmn
 
-namespace araceli {
+namespace cmn {
 
-class lexor;
+class commonLexor;
 
 // eBNF
 //
@@ -69,36 +69,36 @@ class lexor;
 // <attributes> ::== '[' <name> ']' <attributes>
 //                 |  e
 //
-class parser : public cmn::parserBase {
+class parser : public parserBase {
 public:
-   explicit parser(lexor& l);
+   explicit parser(commonLexor& l);
 
-   std::unique_ptr<cmn::fileNode> parseFile();
+   std::unique_ptr<fileNode> parseFile();
 
 private:
-   void parseFile(cmn::fileNode& f); // extend for liam
-   void parseClass(cmn::fileNode& f); // TODO hard to share b/c of 'interface' 'abstract'
-   void parseClassBases(cmn::classNode& c); // araceli only
-   void parseClassMembers(cmn::classNode& c); // limit for liam
+   void parseFile(fileNode& f); // extend for liam
+   void parseClass(fileNode& f); // TODO hard to share b/c of 'interface' 'abstract'
+   void parseClassBases(classNode& c); // araceli only
+   void parseClassMembers(classNode& c); // limit for liam
    void parseMemberKeywords(size_t& flags); // araceli only
-   void parseMethod(cmn::methodNode& n); // araceli only
-   void parseField(cmn::fieldNode& n);
+   void parseMethod(methodNode& n); // araceli only
+   void parseField(fieldNode& n);
 
-   void parseSequence(cmn::node& owner);
-   void parseStatements(cmn::node& owner);
-   bool tryParseStatement(cmn::node& owner);
-   void parseInvoke(std::unique_ptr<cmn::node>& inst, cmn::node& owner);
-   void parseCall(std::unique_ptr<cmn::node>& inst, cmn::node& owner);
-   void parsePassedArgList(cmn::node& owner);
+   void parseSequence(node& owner);
+   void parseStatements(node& owner);
+   bool tryParseStatement(node& owner);
+   void parseInvoke(std::unique_ptr<node>& inst, node& owner);
+   void parseCall(std::unique_ptr<node>& inst, node& owner);
+   void parsePassedArgList(node& owner);
 
-   cmn::node& parseLValue();
-   void parseRValue(cmn::node& owner);
+   node& parseLValue();
+   void parseRValue(node& owner);
 
-   void parseType(cmn::node& owner);
+   void parseType(node& owner);
 
    void parseAttributes();
 
-   lexor& m_l;
+   commonLexor& m_l;
 };
 
-} // namespace araceli
+} // namespace cmn
