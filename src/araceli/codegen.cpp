@@ -120,7 +120,8 @@ void codeGen::generateClassType(cmn::classNode& n, std::ostream& header, const s
 void codeGen::generateClassPrototypes(cmn::classNode& n, std::ostream& header)
 {
    header
-      << cmn::fullyQualifiedName::build(n,"ctor") << "() : "
+      << std::endl
+      << "func " << cmn::fullyQualifiedName::build(n,"ctor") << "() : "
          << cmn::fullyQualifiedName::build(n) << ";" << std::endl;
    ;
 
@@ -131,7 +132,7 @@ void codeGen::generateClassPrototypes(cmn::classNode& n, std::ostream& header)
       {
          header
             << std::endl
-            << cmn::fullyQualifiedName::build(**it,(*it)->baseImpl.ref) << "("
+            << "func " << cmn::fullyQualifiedName::build(**it,(*it)->baseImpl.ref) << "("
          ;
 
          bool firstParam = true;
@@ -157,7 +158,7 @@ void codeGen::generateClassPrototypes(cmn::classNode& n, std::ostream& header)
          }
 
          header
-            << ");" << std::endl
+            << ") : void;" << std::endl // TODO - actually print the right return value
          ;
       }
    }

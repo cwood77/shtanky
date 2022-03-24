@@ -22,6 +22,7 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kAlphanumeric, commonLexor::kStatic,      "static",   "static"          },
 
    { lexemeInfo::kAlphanumeric, commonLexor::kRef,         "ref",      "ref"             },
+   { lexemeInfo::kAlphanumeric, commonLexor::kFunc,        "func",     "func"            },
 
    { lexemeInfo::kAlphanumeric, commonLexor::kClass,       "class",    "class"           },
    { lexemeInfo::kAlphanumeric, commonLexor::kVar,         "var",      "var"             },
@@ -36,7 +37,7 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kAlphanumeric, commonLexor::kBoolLiteral, "true",     "boolean literal" },
    { lexemeInfo::kAlphanumeric, commonLexor::kBoolLiteral, "false",    "boolean literal" },
 
-   { lexemeInfo::kEndOfTable,   0,                   NULL,       NULL              }
+   { lexemeInfo::kEndOfTable,   0,                         NULL,       NULL              }
 
 };
 

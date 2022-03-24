@@ -131,6 +131,12 @@ void diagVisitor::visit(fieldNode& n)
 
 void diagVisitor::visit(funcNode& n)
 {
+   ::printf("%sfunc; name=%s\n",
+      getIndent().c_str(),
+      n.name.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
 }
 
 void diagVisitor::visit(argNode& n)
@@ -217,9 +223,10 @@ void diagVisitor::visit(callNode& n)
 
 void diagVisitor::visit(varRefNode& n)
 {
-   ::printf("%svarRef; name=%s\n",
+   ::printf("%svarRef; name=%s; linked?=%d\n",
       getIndent().c_str(),
-      n.pDef.ref.c_str());
+      n.pDef.ref.c_str(),
+      n.pDef.getRefee() ? 1 : 0);
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);

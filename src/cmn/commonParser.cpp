@@ -28,13 +28,24 @@ std::unique_ptr<fileNode> commonParser::parseFile()
 void commonParser::parseFile(fileNode& f)
 {
    while(m_l.getToken() != commonLexor::kEOI)
-      parseClass(f);
+   {
+      parseAttributes();
+
+      m_l.demandOneOf(4,
+         commonLexor::kClass,
+         commonLexor::kInterface,
+         commonLexor::kAbstract,
+         commonLexor::kFunc);
+
+      if(m_l.getToken() == commonLexor::kFunc)
+         parseGlobalFunc(f);
+      else
+         parseClass(f);
+   }
 }
 
 void commonParser::parseClass(fileNode& f)
 {
-   parseAttributes();
-
    classNode& c = m_nFac.appendNewChild<classNode>(f);
    if(m_l.getToken() == commonLexor::kClass)
       ;
@@ -88,7 +99,7 @@ void commonParser::parseClassMembers(classNode& c)
       m.flags = flags;
       m.name = name;
       m.baseImpl.ref = name;
-      parseMethod(m);
+      parseMethodOrGlobalFuncFromOpenParen(m);
    }
    else if(m_l.getToken() == commonLexor::kColon)
    {
@@ -125,31 +136,6 @@ void commonParser::parseMemberKeywords(size_t& flags)
    parseMemberKeywords(flags);
 }
 
-void commonParser::parseMethod(methodNode& n)
-{
-   m_l.demandAndEat(commonLexor::kLParen);
-
-   // only 1 arg so far
-   auto& a = m_nFac.appendNewChild<argNode>(n);
-   m_l.demand(commonLexor::kName);
-   a.name = m_l.getLexeme();
-   m_l.advance();
-
-   m_l.demandAndEat(commonLexor::kColon);
-
-   parseType(a);
-
-   m_l.demandAndEat(commonLexor::kRParen);
-   m_l.demandAndEat(commonLexor::kColon);
-
-   parseType(n);
-
-   if(m_l.getToken() == commonLexor::kSemiColon)
-      m_l.advance(); // decl only
-   else
-      parseSequence(n);
-}
-
 void commonParser::parseField(fieldNode& n)
 {
    m_l.demandAndEat(commonLexor::kColon);
@@ -166,6 +152,55 @@ void commonParser::parseField(fieldNode& n)
       m_l.advance();
    else
       m_l.demandOneOf(2,commonLexor::kEquals,commonLexor::kSemiColon);
+}
+
+// TODO !!!!! lame; nearly identical to methods
+void commonParser::parseGlobalFunc(fileNode& f)
+{
+   m_l.demandAndEat(commonLexor::kFunc);
+
+   auto& n = m_nFac.appendNewChild<funcNode>(f);
+
+   m_l.demand(commonLexor::kName);
+   n.name = m_l.getLexeme();
+   m_l.advance();
+
+   parseMethodOrGlobalFuncFromOpenParen(n);
+}
+
+void commonParser::parseMethodOrGlobalFuncFromOpenParen(node& n)
+{
+   m_l.demandAndEat(commonLexor::kLParen);
+
+   parseDecledArgList(n);
+
+   m_l.demandAndEat(commonLexor::kRParen);
+   m_l.demandAndEat(commonLexor::kColon);
+
+   parseType(n);
+
+   if(m_l.getToken() == commonLexor::kSemiColon)
+      m_l.advance(); // decl only
+   else
+      parseSequence(n);
+}
+
+void commonParser::parseDecledArgList(node& owner)
+{
+   while(m_l.getToken() != commonLexor::kRParen)
+   {
+      auto& a = m_nFac.appendNewChild<argNode>(owner);
+      m_l.demand(commonLexor::kName);
+      a.name = m_l.getLexeme();
+      m_l.advance();
+
+      m_l.demandAndEat(commonLexor::kColon);
+
+      parseType(a);
+
+      if(m_l.getToken() == commonLexor::kComma)
+         m_l.advance();
+   }
 }
 
 void commonParser::parseSequence(node& owner)

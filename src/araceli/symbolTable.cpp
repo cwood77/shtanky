@@ -231,7 +231,8 @@ void nodeResolver::visit(cmn::methodNode& n)
 
 void nodeResolver::visit(cmn::userTypeNode& n)
 {
-   linkResolver v(m_sTable,n.pDef,linkResolver::kContainingScopes);
+   linkResolver v(m_sTable,n.pDef,
+      linkResolver::kOwnClass | linkResolver::kContainingScopes);
    n.acceptVisitor(v);
 
    cmn::hNodeVisitor::visit(n);

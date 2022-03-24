@@ -44,6 +44,11 @@ private:
    iFileWriter *m_pWriter;
 };
 
+class fileWriter : public iFileWriter {
+public:
+   virtual void skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const;
+};
+
 class testFileWriter : public iFileWriter {
 public:
    virtual void skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const;

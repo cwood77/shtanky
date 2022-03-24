@@ -4,6 +4,7 @@ namespace araceli {
 
 static const size_t unsupported[] = {
    cmn::commonLexor::kRef,
+   cmn::commonLexor::kFunc,
    0, // end
 };
 

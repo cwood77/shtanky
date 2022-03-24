@@ -1,5 +1,6 @@
 #include "out.hpp"
 #include "pathUtil.hpp"
+#include <fstream>
 
 namespace cmn {
 
@@ -30,6 +31,13 @@ void outBundle::updateDisk(iFileWriter& f)
 {
    for(auto it=m_streams.begin();it!=m_streams.end();++it)
       it->second->updateDisk(f);
+}
+
+void fileWriter::skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const
+{
+   ::printf("writing %s\n",fullPath.c_str());
+   std::ofstream file(fullPath.c_str());
+   file << newContents;
 }
 
 void testFileWriter::skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const

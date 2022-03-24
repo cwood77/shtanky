@@ -63,6 +63,8 @@ int main(int,char*[])
             throw std::runtime_error("gave up trying to resolve symbols");
       }
    }
+   ::printf("graph after linking ----\n");
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // gather metadata
    metadata md;
@@ -80,7 +82,7 @@ int main(int,char*[])
    // target codegen
 
    cmn::outBundle out;
-   cmn::testFileWriter dummy;
+   cmn::fileWriter dummy;
    out.setAutoUpdate(dummy);
 
    codeGen v(out);

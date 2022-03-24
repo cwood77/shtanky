@@ -145,6 +145,7 @@ void lexorBase::demandOneOf(size_t n, ...)
    msg << "expected ";
 
    bool first = true;
+   bool bad = true;
    va_list ap;
    va_start(ap,n);
    for(size_t i=0;i<n;i++)
@@ -156,8 +157,14 @@ void lexorBase::demandOneOf(size_t n, ...)
          msg << ", ";
       msg << getTokenName(t);
       first = false;
+
+      if(getToken() == static_cast<size_t>(t))
+         bad = false;
    }
    va_end(ap);
+
+   if(!bad)
+      return;
 
    msg << " but got " << getTokenName();
    error(msg.str());

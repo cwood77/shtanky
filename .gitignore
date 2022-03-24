@@ -2,7 +2,7 @@
 *.swp
 
 # generated araceli/liam/shtasm files
-*.ara.li
+*.ara.lh
 *.ara.ls
 *.ara.ls.shtasm
 

@@ -25,6 +25,7 @@ class commonLexor;
 //
 // ------------------------- file
 // <file> ::== <class> <file>
+//           | <func> <file>
 //           | e
 //
 // ------------------------- class
@@ -42,6 +43,9 @@ class commonLexor;
 // <field> ::== <member-keywords> <name> ':' <type> <field-init> ';'
 // <field-init> ::== '=' <rvalue>
 //                 | e
+//
+// ------------------------- global funcs (liam)
+// <func> ::== <attributes> 'func' <name> '(' <name> ':' <type> ')' ';'
 //
 // ------------------------- procedural
 // <body> ::== '{' <statements> '}'
@@ -77,13 +81,15 @@ public:
    std::unique_ptr<fileNode> parseFile();
 
 private:
-   void parseFile(fileNode& f); // extend for liam
-   void parseClass(fileNode& f); // TODO hard to share b/c of 'interface' 'abstract'
-   void parseClassBases(classNode& c); // araceli only
-   void parseClassMembers(classNode& c); // limit for liam
-   void parseMemberKeywords(size_t& flags); // araceli only
-   void parseMethod(methodNode& n); // araceli only
+   void parseFile(fileNode& f);
+   void parseClass(fileNode& f);
+   void parseClassBases(classNode& c);
+   void parseClassMembers(classNode& c);
+   void parseMemberKeywords(size_t& flags);
    void parseField(fieldNode& n);
+   void parseGlobalFunc(fileNode& f);
+   void parseMethodOrGlobalFuncFromOpenParen(node& n);
+   void parseDecledArgList(node& owner);
 
    void parseSequence(node& owner);
    void parseStatements(node& owner);
