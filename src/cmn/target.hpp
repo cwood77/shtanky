@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <vector>
 
 namespace cmn {
 namespace tgt {
@@ -24,6 +25,8 @@ enum argTypes {
 };
 
 enum instrIds {
+   kDeclParam,
+
    kPush,
    kPop,
 
@@ -58,6 +61,7 @@ public:
 
 class iTargetInfo {
 public:
+   virtual void createRegisterBank(std::vector<size_t>& v) const = 0;
    virtual const char *getRegName(size_t r) const = 0;
    virtual const instrInfo *getInstr(instrIds i) const = 0;
 };

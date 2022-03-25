@@ -5,14 +5,13 @@
 namespace liam {
 
 class lirArg;
-class lirInstr;
+class lirStreams;
 
 class astCodeGen : public cmn::liamVisitor<> {
 public:
-   astCodeGen() : m_pHead(NULL) {}
-   ~astCodeGen();
+   explicit astCodeGen(lirStreams& l) : m_lir(l) {}
 
-   virtual void visit(cmn::node& n) {}
+   virtual void visit(cmn::node& n) { visitChildren(n); }
    virtual void visit(cmn::funcNode& n);
    virtual void visit(cmn::invokeNode& n);
    virtual void visit(cmn::callNode& n);
@@ -22,9 +21,8 @@ public:
    virtual void visit(cmn::intLiteralNode& n);
 
 private:
-   std::map<cmn::node*,lirArg*> m_args;
-
-   lirInstr *m_pHead;
+   lirStreams& m_lir;
+   std::string m_currFunc;
 };
 
 } // namespace liam

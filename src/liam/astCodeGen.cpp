@@ -6,38 +6,65 @@ namespace liam {
 
 void astCodeGen::visit(cmn::funcNode& n)
 {
-   // none?
+   m_currFunc = n.name;
+   auto& stream = m_lir.page[m_currFunc];
+
+   auto args = n.getChildrenOf<cmn::argNode>();
+   for(auto it=args.begin();it!=args.end();++it)
+   {
+      auto& arg = **it;
+      auto& i = lirInstr::append(stream.pTail,cmn::tgt::kDeclParam);
+      stream.createNamedArg(i,arg.name,0); // TODO - calc type size
+   }
+
+   n.demandSoleChild<cmn::sequenceNode>().acceptVisitor(*this);
 }
 
 void astCodeGen::visit(cmn::invokeNode& n)
 {
+   // HACK for testing; invoke is actually quite different from call
+   // ... wait, invokes in Liam are function ptrs
+   // ... so araceli needs to compile invokes down quite a bit
+   // so
+   //    myObj->foo(3);
+   // becomes
+   //    myObj->vptr->fooPtr(3);
+   //
+
+   auto& stream = m_lir.page[m_currFunc];
+   auto& call = lirInstr::append(stream.pTail,cmn::tgt::kCall);
+
+   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+   {
+      (*it)->acceptVisitor(*this);
+      stream.claimArg(**it,call);
+   }
+
+   stream.createTemporary<lirArgVar>(n,call,"",0);
 }
 
 void astCodeGen::visit(cmn::callNode& n)
 {
-#if 0
-   auto pInstr = lirInstr::append(m_pHead);
-//   pInstr->instrId = cmn::tgt::kCall;
+   auto& stream = m_lir.page[m_currFunc];
+   auto& call = lirInstr::append(stream.pTail,cmn::tgt::kCall);
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
    {
-      lirArg *pArg = m_args[*it];
-      if(pArg)
-         pInstr->addArg(*pArg);
+      (*it)->acceptVisitor(*this);
+      stream.claimArg(**it,call);
    }
-#endif
+
+   stream.createTemporary<lirArgVar>(n,call,"",0);
 }
 
 void astCodeGen::visit(cmn::varRefNode& n)
 {
-   // publish an arg
+   m_lir.page[m_currFunc].donate<lirArgVar>(n,n.pDef.ref,0);
 }
 
 void astCodeGen::visit(cmn::stringLiteralNode& n)
 {
-   /*
-   m_args[&n] = new lirArgConst(n.value,0);
-   */
+   m_lir.page[m_currFunc].donate<lirArgConst>(n,n.value,0);
 }
 
 void astCodeGen::visit(cmn::boolLiteralNode& n)

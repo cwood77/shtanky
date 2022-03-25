@@ -449,7 +449,6 @@ class liamVisitor : public T {
 public:
    virtual void visit(araceliProjectNode& n) { T::unexpected(n); }
    virtual void visit(scopeNode& n) { T::unexpected(n); }
-   virtual void visit(fileNode& n) { T::unexpected(n); }
    virtual void visit(methodNode& n) { T::unexpected(n); }
 
    virtual void _implementLanguage() {} // liam
