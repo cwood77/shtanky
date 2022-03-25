@@ -148,8 +148,8 @@ private:
    void parsePassedArgList(node& owner);
 
    node& parseLValue();
-   void parseRValue(node& owner);
-   void parseBop(node& owner);
+   void parseRValue(node& owner, node *pExprRoot);
+   void parseBop(node& owner, node *pExprRoot);
 
    void parseType(node& owner);
 

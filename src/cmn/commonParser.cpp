@@ -145,7 +145,7 @@ void commonParser::parseField(fieldNode& n)
    if(m_l.getToken() == commonLexor::kEquals)
    {
       m_l.advance();
-      parseRValue(n);
+      parseRValue(n,&n);
       m_l.demandAndEat(commonLexor::kSemiColon);
    }
    else if(m_l.getToken() == commonLexor::kSemiColon)
@@ -283,7 +283,7 @@ void commonParser::parseAssignment(std::unique_ptr<node>& inst, node& owner)
    auto& a = m_nFac.appendNewChild<assignmentNode>(owner);
    a.appendChild(*inst.release());
 
-   parseRValue(a);
+   parseRValue(a,&a);
 
    m_l.demandAndEat(commonLexor::kSemiColon);
 }
@@ -292,7 +292,7 @@ void commonParser::parsePassedArgList(node& owner)
 {
    while(m_l.getToken() != commonLexor::kRParen)
    {
-      parseRValue(owner);
+      parseRValue(owner,&owner);
 
       if(m_l.getToken() == commonLexor::kComma)
          m_l.advance();
@@ -310,7 +310,7 @@ node& commonParser::parseLValue()
    return *pInst.release();
 }
 
-void commonParser::parseRValue(node& owner)
+void commonParser::parseRValue(node& owner, node *pExprRoot)
 {
    if(m_l.getToken() == commonLexor::kStringLiteral)
    {
@@ -337,20 +337,20 @@ void commonParser::parseRValue(node& owner)
       owner.appendChild(parseLValue());
 
    if(m_l.getTokenClass() & commonLexor::kClassBop)
-      parseBop(owner);
+      parseBop(owner,pExprRoot);
 }
 
-void commonParser::parseBop(node& owner)
+void commonParser::parseBop(node& owner, node *pExprRoot)
 {
    std::unique_ptr<bopNode> pOp(m_nFac.create<bopNode>());
    pOp->op = m_l.getLexeme();
    m_l.advance();
 
    // inject an op node between owner and owner's most recent kid
-   owner.lastChild()->injectAbove(*pOp);
+   pExprRoot->lastChild()->injectAbove(*pOp);
    auto nOp = pOp.release();
 
-   parseRValue(*nOp);
+   parseRValue(*nOp,pExprRoot);
 }
 
 void commonParser::parseType(node& owner)
