@@ -38,6 +38,52 @@ public:
       kPrivate,
 
       kBoolLiteral,
+
+      // missing
+      kBase,
+      kSelf,
+      kThrow,
+      kCatch,
+      kIf,
+      kFor,
+      kDo,
+      kWhile,
+      kBreak,
+      kContinue,
+      kUsing,
+      kNamespace,
+      kScope,
+      kPragma,
+      kNew,
+      kDelete,
+      kVirtual,
+
+      kOut,
+      //kRef,
+
+      // reserved
+      kTilde,
+      kBacktick,
+      kBang,
+      kAt,
+      kHash,
+      kDollar,
+      kPercent,
+      kCarrot,
+      kAmpersand,
+      kAsterisk,
+      kHyphen,
+      kPlus,
+      kSingleQuote,
+      kBackslash,
+      kForwardslash,
+      kLessThan,
+      kGreaterThan,
+      kQuestion,
+   };
+
+   enum {
+      kClassBop = (1 << 0 | kNoClass)
    };
 
 protected:

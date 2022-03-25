@@ -113,6 +113,11 @@ void lexorBase::advance()
       m_state.token = kEOI;
 }
 
+size_t lexorBase::getTokenClass(size_t t)
+{
+   return m_tokenToClassMap[t];
+}
+
 std::string lexorBase::getTokenName(size_t t)
 {
    if(t == kEOI)
@@ -208,6 +213,24 @@ void lexorBase::addTable(const lexemeInfo *pTable, const size_t *pUnsupported)
       }
 
       m_lexemeDict[l.token] = &l;
+   }
+}
+
+void lexorBase::addClasses(const lexemeClassInfo *pClasses)
+{
+   for(size_t i=0;;i++)
+   {
+      const lexemeClassInfo& c = pClasses[i];
+      if(c.Class == kNoClass)
+         break;
+
+      for(size_t j=0;;j++)
+      {
+         if(c.pTokens[j] == 0)
+            break;
+
+         m_tokenToClassMap[c.pTokens[j]] |= c.Class;
+      }
    }
 }
 

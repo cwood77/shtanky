@@ -25,6 +25,17 @@ public:
    : k(k), token(t), lexeme(l), name(n) {}
 };
 
+class lexemeClassInfo {
+public:
+   size_t Class;
+   const char *name;
+
+   size_t *pTokens;
+
+   lexemeClassInfo(size_t Class, const char *name, size_t pTokens[])
+   : Class(Class), name(name), pTokens(pTokens) {}
+};
+
 class lexorState {
 public:
    explicit lexorState(const char *p);
@@ -69,7 +80,8 @@ public:
       kName,
       kStringLiteral,
       kIntLiteral,
-      _kFirstDerivedToken
+      _kFirstDerivedToken,
+      kNoClass            = (size_t)1<<20, // also, first class
    };
 
    explicit lexorBase(const char *buffer);
@@ -77,6 +89,8 @@ public:
 
    void advance();
    size_t getToken() { return m_state.token; }
+   size_t getTokenClass(size_t t);
+   size_t getTokenClass() { return getTokenClass(getToken()); }
    std::string getTokenName(size_t t);
    std::string getTokenName() { return getTokenName(m_state.token); }
    std::string getLexeme() { return m_state.lexeme; }
@@ -90,6 +104,7 @@ public:
 protected:
    void addPhase(iLexorPhase& p);
    void addTable(const lexemeInfo *pTable, const size_t *pUnsupported);
+   void addClasses(const lexemeClassInfo *pClasses);
 
 private:
    void runPhasesUntilSteady();
@@ -103,6 +118,7 @@ private:
    std::map<size_t,const lexemeInfo*> m_lexemeDict;
    std::set<size_t> m_unsupported;
    std::string m_terminators;
+   std::map<size_t,size_t> m_tokenToClassMap;
 };
 
 class nodeFactory {

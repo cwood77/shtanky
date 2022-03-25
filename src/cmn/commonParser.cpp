@@ -210,6 +210,9 @@ void commonParser::parseSequence(node& owner)
    auto& s = m_nFac.appendNewChild<sequenceNode>(owner);
    parseStatements(s);
 
+   if(m_l.getToken() == commonLexor::kLBrace)
+      parseSequence(owner);
+
    m_l.demandAndEat(commonLexor::kRBrace);
 }
 
@@ -220,13 +223,18 @@ void commonParser::parseStatements(node& owner)
 
 bool commonParser::tryParseStatement(node& owner)
 {
+   if(m_l.getToken() == commonLexor::kLBrace) return false;
    if(m_l.getToken() == commonLexor::kRBrace) return false;
 
    std::unique_ptr<node> pInst(&parseLValue());
-   if(m_l.getToken() == commonLexor::kLParen)
-      parseCall(pInst,owner);
-   else
+   if(m_l.getToken() == commonLexor::kArrow)
       parseInvoke(pInst,owner);
+   else if(m_l.getToken() == commonLexor::kLParen)
+      parseCall(pInst,owner);
+   else if(m_l.getToken() == commonLexor::kEquals)
+      parseAssignment(pInst,owner);
+   else
+      m_l.demandOneOf(3,commonLexor::kArrow,commonLexor::kLParen,commonLexor::kEquals);
 
    return true;
 }
@@ -264,6 +272,18 @@ void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
    parsePassedArgList(c);
 
    m_l.demandAndEat(commonLexor::kRParen);
+
+   m_l.demandAndEat(commonLexor::kSemiColon);
+}
+
+void commonParser::parseAssignment(std::unique_ptr<node>& inst, node& owner)
+{
+   m_l.demandAndEat(commonLexor::kEquals);
+
+   auto& a = m_nFac.appendNewChild<assignmentNode>(owner);
+   a.appendChild(*inst.release());
+
+   parseRValue(a);
 
    m_l.demandAndEat(commonLexor::kSemiColon);
 }
@@ -315,6 +335,22 @@ void commonParser::parseRValue(node& owner)
    }
    else
       owner.appendChild(parseLValue());
+
+   if(m_l.getTokenClass() & commonLexor::kClassBop)
+      parseBop(owner);
+}
+
+void commonParser::parseBop(node& owner)
+{
+   std::unique_ptr<bopNode> pOp(m_nFac.create<bopNode>());
+   pOp->op = m_l.getLexeme();
+   m_l.advance();
+
+   // inject an op node between owner and owner's most recent kid
+   owner.lastChild()->injectAbove(*pOp);
+   auto nOp = pOp.release();
+
+   parseRValue(*nOp);
 }
 
 void commonParser::parseType(node& owner)

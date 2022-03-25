@@ -37,8 +37,19 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kAlphanumeric, commonLexor::kBoolLiteral, "true",     "boolean literal" },
    { lexemeInfo::kAlphanumeric, commonLexor::kBoolLiteral, "false",    "boolean literal" },
 
-   { lexemeInfo::kEndOfTable,   0,                         NULL,       NULL              }
+   { lexemeInfo::kSymbolic,     commonLexor::kPlus,        "+",        "plus"            },
 
+   { lexemeInfo::kEndOfTable,   0,                         NULL,       NULL              }
+};
+
+static const lexemeClassInfo classTable[] = {
+
+   { commonLexor::kClassBop, "binary operator",
+      (size_t[]){
+         commonLexor::kPlus,
+      } },
+
+   { commonLexor::kNoClass, NULL, NULL },
 };
 
 commonLexor::commonLexor(const char *buffer, const size_t *pUnsupported)
@@ -48,6 +59,7 @@ commonLexor::commonLexor(const char *buffer, const size_t *pUnsupported)
    addPhase(*new intLiteralReader());
    addPhase(*new whitespaceEater());
    addTable(scanTable,pUnsupported);
+   addClasses(classTable);
 }
 
 } // namespace cmn

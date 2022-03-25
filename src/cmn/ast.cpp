@@ -16,10 +16,32 @@ node::~node()
       delete *it;
 }
 
+void node::injectAbove(node& n)
+{
+   m_pParent->appendChild(n);
+   n.appendChild(*this);
+
+   auto& oldSiblings = n.m_pParent->m_children;
+   for(auto it=oldSiblings.begin();it!=oldSiblings.end();++it)
+   {
+      if(*it == this)
+      {
+         oldSiblings.erase(it);
+         break;
+      }
+   }
+}
+
 void node::appendChild(node& n)
 {
    m_children.push_back(&n);
    n.m_pParent = this;
+}
+
+node *node::lastChild()
+{
+   if(m_children.size() == 0) return NULL;
+   return *(--(m_children.end()));
 }
 
 std::list<classNode*> classNode::computeLineage()
@@ -227,6 +249,25 @@ void diagVisitor::visit(varRefNode& n)
       getIndent().c_str(),
       n.pDef.ref.c_str(),
       n.pDef.getRefee() ? 1 : 0);
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(assignmentNode& n)
+{
+   ::printf("%sassignment\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(bopNode& n)
+{
+   ::printf("%sbop %s\n",
+      getIndent().c_str(),
+      n.op.c_str());
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);

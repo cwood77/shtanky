@@ -50,20 +50,40 @@ class commonLexor;
 // ------------------------- procedural
 // <body> ::== '{' <statements> '}'
 // <statements> ::== <statement>
+//                 | <body>
 //                 | e
-// <statement> ::== <invoke> ';'
+// <statement> ::== <invoke> ';' - are these just rvalues?; no.  branches are not rvalues
 //                | <call> ';'
-// <invoke> ::== <lvalue> '->' <name> '(' <passedArgList> ')'
-// <call> ::== <lvalue> '(' <passedArgList> ')'
+//                | <assignment> ';'
+// <invoke>     ::== <lvalue> '->' <name> '(' <passedArgList> ')'
+// <call>       ::== <lvalue> '(' <passedArgList> ')'
+// <assignment> ::== <lvalue> '=' <rvalue>
 // <passedArgList> ::== <rvalue> ',' <passedArgList>
 //                    | <rvalue>
 //                    | e
 //
-// ------------------------- rval/lval
+// ------------------------- rval/lval   <-- TODO left off here
 // <lvalue> ::== <name>
+//             | <call>
+//             | <invoke>
+//             | <faccess>
+//             | <index-op>
+//
 // <rvalue> ::== <string-literal>
 //             | <bool-literal>
 //             | <lvalue>
+//             | <bop>
+//
+// <faccess>  ::== <lvalue> '->' <name>
+// <index-op> ::== <lvalue> '[' <lvalue> ']'
+// <bop> ::== <rvalue> '+'{,etc.} <rvalue>
+//
+//  so 1 + 2 + 3
+//  would be:
+//     +
+//  1    +
+//     2  3
+//  ... which is right associative (i.e. 1 + (2 + 3)
 //
 // ------------------------- type
 // <type> ::== 'str' '[' ']'
@@ -74,6 +94,34 @@ class commonLexor;
 // <attributes> ::== '[' <name> ']' <attributes>
 //                 |  e
 //
+
+
+// missing:
+//  index ops      **
+//  arith ops      **
+//  log ops        **
+//  bitwise ops    **
+//  ptr deref      ????
+//  new/delete     ????
+//  field access   ????
+//  branch
+//  loop
+//  throw/catch
+//  ctor/dtor
+//  string interp
+//  int literal formats
+//  assignment
+//  paren grouping in exprs
+//  fancy call arg passing
+//  templates
+//  gemplates
+//  bool type
+//  char type
+//  negative values
+//
+// long term DEFERRED:
+//  floating point
+
 class commonParser : public parserBase {
 public:
    explicit commonParser(commonLexor& l);
@@ -96,10 +144,12 @@ private:
    bool tryParseStatement(node& owner);
    void parseInvoke(std::unique_ptr<node>& inst, node& owner);
    void parseCall(std::unique_ptr<node>& inst, node& owner);
+   void parseAssignment(std::unique_ptr<node>& inst, node& owner);
    void parsePassedArgList(node& owner);
 
    node& parseLValue();
    void parseRValue(node& owner);
+   void parseBop(node& owner);
 
    void parseType(node& owner);
 

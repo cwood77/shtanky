@@ -33,6 +33,8 @@ class sequenceNode;
 class invokeNode;
 class callNode;
 class varRefNode;
+class assignmentNode;
+class bopNode;
 class stringLiteralNode;
 class boolLiteralNode;
 class intLiteralNode;
@@ -63,6 +65,8 @@ public:
    virtual void visit(invokeNode& n) = 0;
    virtual void visit(callNode& n) = 0;
    virtual void visit(varRefNode& n) = 0;
+   virtual void visit(assignmentNode& n) = 0;
+   virtual void visit(bopNode& n) = 0;
    virtual void visit(stringLiteralNode& n) = 0;
    virtual void visit(boolLiteralNode& n) = 0;
    virtual void visit(intLiteralNode& n) = 0;
@@ -104,8 +108,11 @@ public:
    size_t flags;
 
    node *getParent() { return m_pParent; }
+   void injectAbove(node& n);
    void appendChild(node& n);
+
    std::vector<node*>& getChildren() { return m_children; }
+   node *lastChild();
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 
@@ -330,6 +337,19 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+// ----------------------- operators -----------------------
+
+class assignmentNode : public node {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class bopNode : public node {
+public:
+   std::string op;
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 // ----------------------- literals -----------------------
 
 class stringLiteralNode : public node {
@@ -381,6 +401,8 @@ public:
    virtual void visit(invokeNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(callNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(varRefNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(assignmentNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(bopNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(stringLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(boolLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(intLiteralNode& n) { visit(static_cast<node&>(n)); }
@@ -412,6 +434,8 @@ public:
    virtual void visit(invokeNode& n);
    virtual void visit(callNode& n);
    virtual void visit(varRefNode& n);
+   virtual void visit(assignmentNode& n);
+   virtual void visit(bopNode& n);
    virtual void visit(stringLiteralNode& n);
    virtual void visit(boolLiteralNode& n);
    virtual void visit(intLiteralNode& n);
