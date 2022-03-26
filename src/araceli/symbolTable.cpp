@@ -1,3 +1,4 @@
+#include "loader.hpp"
 #include "nameUtil.hpp"
 #include "symbolTable.hpp"
 #include <algorithm>
@@ -9,7 +10,17 @@ namespace araceli {
 void symbolTable::publish(const std::string& fqn, cmn::node& n)
 {
    ::printf("publishing symbol %s for %lld\n",fqn.c_str(),(size_t)&n);
-   resolved[fqn] = &n;
+   published[fqn] = &n;
+}
+
+void symbolTable::tryResolveVarType(const std::string& objName, cmn::node& obj, cmn::linkBase& l)
+{
+   if(objName == l.ref)
+   {
+      typeFinder tyF;
+      obj.acceptVisitor(tyF);
+      l.bind(*tyF.pType);
+   }
 }
 
 void symbolTable::tryResolveExact(const std::string& refingScope, cmn::linkBase& l)
@@ -53,8 +64,8 @@ bool symbolTable::tryBind(const std::string& fqn, cmn::linkBase& l)
 {
    ::printf("  checking %s...",fqn.c_str());
 
-   auto it = resolved.find(fqn);
-   if(it == resolved.end())
+   auto it = published.find(fqn);
+   if(it == published.end())
       ::printf("nope\n");
    else
    {
@@ -163,14 +174,7 @@ void linkResolver::visit(cmn::classNode& n)
    {
       n.acceptVisitor(fields);
       for(auto it=fields.fields.begin();it!=fields.fields.end();++it)
-      {
-         if((*it)->name == m_l.ref)
-         {
-            typeFinder tyF;
-            (*it)->acceptVisitor(tyF);
-            m_l.bind(*tyF.pType);
-         }
-      }
+         m_sTable.tryResolveVarType((*it)->name,**it,m_l);
    }
 
    cmn::hNodeVisitor::visit(n);
@@ -303,6 +307,54 @@ void unloadedScopeFinder::visit(cmn::scopeNode& n)
       ::printf("   scope %s already loaded\n",n.path.c_str());
 
    cmn::hNodeVisitor::visit(n);
+}
+
+void linkGraph(cmn::node& root)
+{
+   ::printf("entering link/load loop ----\n");
+   symbolTable sTable;
+   size_t missingLastTime = 0;
+   while(true)
+   {
+      { nodePublisher p(sTable); cmn::treeVisitor t(p); root.acceptVisitor(t); }
+      { nodeResolver r(sTable); cmn::treeVisitor t(r); root.acceptVisitor(t); }
+      ::printf("%lld published; %lld unresolved\n",
+         sTable.published.size(),
+         sTable.unresolved.size());
+
+      size_t nMissing = sTable.unresolved.size();
+      if(!nMissing)
+         break;
+
+      cmn::scopeNode *pToLoad = NULL;
+      for(auto it=sTable.unresolved.begin();it!=sTable.unresolved.end();++it)
+      {
+         auto refToFind = (*it)->ref;
+         unloadedScopeFinder f(refToFind);
+         root.acceptVisitor(f);
+         if(f.any())
+         {
+            ::printf("trying to find symbol %s\n",refToFind.c_str());
+            pToLoad = &f.mostLikely();
+            break;
+         }
+      }
+
+      if(pToLoad)
+      {
+         ::printf("loading %s and trying again\n",pToLoad->path.c_str());
+         loader::loadFolder(*pToLoad);
+         { cmn::diagVisitor v; root.acceptVisitor(v); }
+      }
+      else
+      {
+         ::printf("no guesses on what to load to find missing symbols; try settling\n");
+         if(nMissing != missingLastTime)
+            missingLastTime = nMissing; // retry
+         else
+            throw std::runtime_error("gave up trying to resolve symbols");
+      }
+   }
 }
 
 } // namespace araceli

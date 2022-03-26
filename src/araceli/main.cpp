@@ -1,8 +1,6 @@
 #include "../cmn/out.hpp"
 #include "codegen.hpp"
 #include "declasser.hpp"
-#include "lexor.hpp"
-#include "loader.hpp"
 #include "metadata.hpp"
 #include "projectBuilder.hpp"
 #include "symbolTable.hpp"
@@ -18,52 +16,7 @@ int main(int,char*[])
    projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
-   ::printf("entering link/load loop ----\n");
-   symbolTable sTable;
-   size_t missingLastTime = 0;
-   while(true)
-   {
-      treeSymbolVisitor<nodePublisher> pub(sTable);
-      pPrj->acceptVisitor(pub);
-      treeSymbolVisitor<nodeResolver> res(sTable);
-      pPrj->acceptVisitor(res);
-      ::printf("%lld resolved; %lld unresolved\n",
-         sTable.resolved.size(),
-         sTable.unresolved.size());
-
-      size_t nMissing = sTable.unresolved.size();
-      if(!nMissing)
-         break;
-
-      cmn::scopeNode *pToLoad = NULL;
-      for(auto it=sTable.unresolved.begin();it!=sTable.unresolved.end();++it)
-      {
-         auto refToFind = (*it)->ref;
-         unloadedScopeFinder f(refToFind);
-         pPrj->acceptVisitor(f);
-         if(f.any())
-         {
-            ::printf("trying to find symbol %s\n",refToFind.c_str());
-            pToLoad = &f.mostLikely();
-            break;
-         }
-      }
-
-      if(pToLoad)
-      {
-         ::printf("loading %s and trying again\n",pToLoad->path.c_str());
-         loader::loadFolder(*pToLoad);
-         { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
-      }
-      else
-      {
-         ::printf("no guesses on what to load to find missing symbols; try settling\n");
-         if(nMissing != missingLastTime)
-            missingLastTime = nMissing; // retry
-         else
-            throw std::runtime_error("gave up trying to resolve symbols");
-      }
-   }
+   linkGraph(*pPrj);
    ::printf("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
@@ -80,17 +33,15 @@ int main(int,char*[])
    ::printf("graph after transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
-   // file codegen
+   // TODO file codegen
    // -> header file
    // -> source file
    // -> make file
 
    // target codegen
-
    cmn::outBundle out;
-   cmn::fileWriter dummy;
-   out.setAutoUpdate(dummy);
-
+   cmn::fileWriter wr;
+   out.setAutoUpdate(wr);
    codeGen v(out);
    pPrj->acceptVisitor(v);
 

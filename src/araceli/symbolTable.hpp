@@ -15,10 +15,11 @@ namespace araceli {
 
 class symbolTable {
 public:
-   std::map<std::string,cmn::node*> resolved;
+   std::map<std::string,cmn::node*> published;
    std::set<cmn::linkBase*> unresolved;
 
    void publish(const std::string& fqn, cmn::node& n);
+   void tryResolveVarType(const std::string& objName, cmn::node& obj, cmn::linkBase& l);
    void tryResolveExact(const std::string& refingScope, cmn::linkBase& l);
    void tryResolveWithParents(const std::string& refingScope, cmn::linkBase& l);
 
@@ -107,23 +108,6 @@ private:
    symbolTable& m_sTable;
 };
 
-// deprecated
-template<class T>
-class treeSymbolVisitor : public cmn::araceliVisitor<>{
-public:
-   explicit treeSymbolVisitor(symbolTable& st) : m_sTable(st) {}
-
-   virtual void visit(cmn::node& n)
-   {
-      T v(m_sTable);
-      n.acceptVisitor(v);
-      visitChildren(n);
-   }
-
-private:
-   symbolTable& m_sTable;
-};
-
 class unloadedScopeFinder : public cmn::araceliVisitor<> {
 public:
    explicit unloadedScopeFinder(const std::string& missingRef);
@@ -138,5 +122,7 @@ private:
    std::string m_missingRef;
    std::map<std::string,cmn::scopeNode*> m_candidates;
 };
+
+void linkGraph(cmn::node& root);
 
 } // namespace araceli
