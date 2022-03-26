@@ -5,19 +5,27 @@
 
 namespace araceli {
 
-// ns1::ns2::classC + a::field
-// possible answers
-// baseClass's blassClass
-// ::ns1::ns2::a::field
-// ::ns1::a::field
-// ::a::field
-// class's have multiple scopes: their canonical scope *and* their inheritance chain
+// types of links:
+// type name resolution                                                           enforced
+// -    baseClass -> class    via:: type name              for:: enabler           *
+// - userTypeNode -> class    via:: type name                                      *
+//
+// base class member
+// -       method -> baseImpl via:: method name
+// -   varRefNode -> type     via:: ?? fields and globals  for:: ara codegen       ~
+//
+// type prop
+// -   invokeNode -> method   via:: ?? type prop + name
+//
+// anything else?
+// fieldAccessNode
 
 class symbolTable {
 public:
    std::map<std::string,cmn::node*> published;
    std::set<cmn::linkBase*> unresolved;
 
+   void markRequired(cmn::linkBase& l) { unresolved.insert(&l); }
    void publish(const std::string& fqn, cmn::node& n);
    void tryResolveVarType(const std::string& objName, cmn::node& obj, cmn::linkBase& l);
    void tryResolveExact(const std::string& refingScope, cmn::linkBase& l);
@@ -36,16 +44,6 @@ public:
    virtual void visit(cmn::classNode& n);
 
    std::string fqn;
-};
-
-class typeFinder : public cmn::araceliVisitor<> {
-public:
-   typeFinder() : pType(NULL) {}
-
-   virtual void visit(cmn::node& n) { visitChildren(n); }
-   virtual void visit(cmn::typeNode& n) { pType = &n; }
-
-   cmn::typeNode *pType;
 };
 
 class fieldGatherer : public cmn::araceliVisitor<> {
@@ -72,6 +70,7 @@ public:
    virtual void visit(cmn::node& n);
    virtual void visit(cmn::scopeNode& n);
    virtual void visit(cmn::classNode& n);
+   virtual void visit(cmn::methodNode& n);
 
 private:
    void tryResolve(const std::string& refingScope);

@@ -17,9 +17,8 @@ void symbolTable::tryResolveVarType(const std::string& objName, cmn::node& obj, 
 {
    if(objName == l.ref)
    {
-      typeFinder tyF;
-      obj.acceptVisitor(tyF);
-      l.bind(*tyF.pType);
+      l.bind(obj.demandSoleChild<cmn::typeNode>());
+      unresolved.erase(&l);
    }
 }
 
@@ -174,10 +173,25 @@ void linkResolver::visit(cmn::classNode& n)
    {
       n.acceptVisitor(fields);
       for(auto it=fields.fields.begin();it!=fields.fields.end();++it)
-         m_sTable.tryResolveVarType((*it)->name,**it,m_l);
+         if(m_l._getRefee() == NULL)
+            m_sTable.tryResolveVarType((*it)->name,**it,m_l);
    }
 
    cmn::hNodeVisitor::visit(n);
+}
+
+void linkResolver::visit(cmn::methodNode& n)
+{
+   if(m_mode & kLocalsAndFields)
+   {
+      // check args
+      auto args = n.getChildrenOf<cmn::argNode>();
+      for(auto it=args.begin();it!=args.end();++it)
+         if(m_l._getRefee() == NULL)
+            m_sTable.tryResolveVarType((*it)->name,**it,m_l);
+   }
+
+   hNodeVisitor::visit(n);
 }
 
 void linkResolver::tryResolve(const std::string& refingScope)
@@ -215,6 +229,7 @@ void nodeResolver::visit(cmn::classNode& n)
 {
    for(auto it=n.baseClasses.begin();it!=n.baseClasses.end();++it)
    {
+      m_sTable.markRequired(*it);
       linkResolver v(m_sTable,*it,linkResolver::kContainingScopes);
       n.acceptVisitor(v);
    }
@@ -235,6 +250,7 @@ void nodeResolver::visit(cmn::methodNode& n)
 
 void nodeResolver::visit(cmn::userTypeNode& n)
 {
+   m_sTable.markRequired(n.pDef);
    linkResolver v(m_sTable,n.pDef,
       linkResolver::kOwnClass | linkResolver::kContainingScopes);
    n.acceptVisitor(v);
@@ -257,6 +273,8 @@ void nodeResolver::visit(invokeNode& n)
 
 void nodeResolver::visit(cmn::varRefNode& n)
 {
+   // TODO this needs to support arguments too!
+   m_sTable.markRequired(n.pDef);
    linkResolver v(m_sTable,n.pDef,
       linkResolver::kBaseClasses | linkResolver::kLocalsAndFields);
    n.acceptVisitor(v);

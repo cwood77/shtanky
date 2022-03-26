@@ -44,7 +44,7 @@ void node::insertChild(size_t i, node& n)
    n.m_pParent = this;
 }
 
-void node::replaceChild(node& old, node& nu)
+node *node::replaceChild(node& old, node& nu)
 {
    int i=0;
    for(auto it=m_children.begin();it!=m_children.end();++it,i++)
@@ -52,9 +52,11 @@ void node::replaceChild(node& old, node& nu)
       if(*it == &old)
       {
          m_children[i] = &nu;
-         return;
+         return &old;
       }
    }
+
+   throw std::runtime_error("can't find child to replace");
 }
 
 node *node::lastChild()

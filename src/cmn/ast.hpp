@@ -115,7 +115,7 @@ public:
    void injectAbove(node& n);
    void appendChild(node& n);
    void insertChild(size_t i, node& n);
-   void replaceChild(node& old, node& nu);
+   node *replaceChild(node& old, node& nu); // caller responsible for delete
 
    std::vector<node*>& getChildren() { return m_children; }
    node *lastChild();
