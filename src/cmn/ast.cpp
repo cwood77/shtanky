@@ -233,6 +233,25 @@ void diagVisitor::visit(invokeNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(invokeFuncPtrNode& n)
+{
+   ::printf("%sinvoke func ptr\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(fieldAccessNode& n)
+{
+   ::printf("%sfield access; name=%s\n",
+      getIndent().c_str(),
+      n.name.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 void diagVisitor::visit(callNode& n)
 {
    ::printf("%scall; name=%s\n",

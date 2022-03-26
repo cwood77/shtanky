@@ -31,6 +31,8 @@ class userTypeNode;
 class ptrTypeNode;
 class sequenceNode;
 class invokeNode;
+class invokeFuncPtrNode;
+class fieldAccessNode;
 class callNode;
 class varRefNode;
 class assignmentNode;
@@ -63,6 +65,8 @@ public:
    virtual void visit(ptrTypeNode& n) = 0;
    virtual void visit(sequenceNode& n) = 0;
    virtual void visit(invokeNode& n) = 0;
+   virtual void visit(invokeFuncPtrNode& n) = 0;
+   virtual void visit(fieldAccessNode& n) = 0;
    virtual void visit(callNode& n) = 0;
    virtual void visit(varRefNode& n) = 0;
    virtual void visit(assignmentNode& n) = 0;
@@ -323,6 +327,18 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class invokeFuncPtrNode : public node {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class fieldAccessNode : public node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 class callNode : public node {
 public:
    std::string name;
@@ -399,6 +415,8 @@ public:
    virtual void visit(ptrTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(sequenceNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(invokeNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(invokeFuncPtrNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(fieldAccessNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(callNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(varRefNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(assignmentNode& n) { visit(static_cast<node&>(n)); }
@@ -432,6 +450,8 @@ public:
    virtual void visit(ptrTypeNode& n);
    virtual void visit(sequenceNode& n);
    virtual void visit(invokeNode& n);
+   virtual void visit(invokeFuncPtrNode& n);
+   virtual void visit(fieldAccessNode& n);
    virtual void visit(callNode& n);
    virtual void visit(varRefNode& n);
    virtual void visit(assignmentNode& n);
@@ -464,6 +484,7 @@ public:
    virtual void visit(fileRefNode& n) { T::unexpected(n); }
    virtual void visit(funcNode& n) { T::unexpected(n); }
    virtual void visit(ptrTypeNode& n) { T::unexpected(n); }
+   //virtual void visit(invokeFuncPtrNode& n) { T::unexpected(n); }
 
    virtual void _implementLanguage() {} // araceli
 };

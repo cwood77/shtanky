@@ -145,7 +145,7 @@ void commonParser::parseField(fieldNode& n)
    if(m_l.getToken() == commonLexor::kEquals)
    {
       m_l.advance();
-      parseRValue(n,&n);
+      parseRValue(n);
       m_l.demandAndEat(commonLexor::kSemiColon);
    }
    else if(m_l.getToken() == commonLexor::kSemiColon)
@@ -283,7 +283,7 @@ void commonParser::parseAssignment(std::unique_ptr<node>& inst, node& owner)
    auto& a = m_nFac.appendNewChild<assignmentNode>(owner);
    a.appendChild(*inst.release());
 
-   parseRValue(a,&a);
+   parseRValue(a);
 
    m_l.demandAndEat(commonLexor::kSemiColon);
 }
@@ -292,7 +292,7 @@ void commonParser::parsePassedArgList(node& owner)
 {
    while(m_l.getToken() != commonLexor::kRParen)
    {
-      parseRValue(owner,&owner);
+      parseRValue(owner);
 
       if(m_l.getToken() == commonLexor::kComma)
          m_l.advance();
@@ -305,9 +305,34 @@ node& commonParser::parseLValue()
    auto name = m_l.getLexeme();
    m_l.advance();
 
-   std::unique_ptr<varRefNode> pInst(m_nFac.create<varRefNode>());
+   //std::unique_ptr<varRefNode> pInst(m_nFac.create<varRefNode>());
+   auto pInst = m_nFac.create<varRefNode>();
    pInst->pDef.ref = name;
-   return *pInst.release();
+
+   node *pExprRoot = pInst;
+   return parseLValuePrime(*pInst,pExprRoot);
+}
+
+node& commonParser::parseLValuePrime(node& n, node*& pExprRoot)
+{
+   if(m_l.getToken() == commonLexor::kColon)
+   {
+      m_l.advance();
+
+      auto i = m_nFac.create<fieldAccessNode>();
+      i->appendChild(n);
+
+      m_l.demand(commonLexor::kName);
+      i->name = m_l.getLexeme();
+      m_l.advance();
+
+      pExprRoot = i;
+      return parseLValuePrime(*i,pExprRoot);
+   }
+   else if(m_l.getToken() == commonLexor::kArrowParen)
+      ;
+
+   return *pExprRoot;
 }
 
 void commonParser::parseRValue(node& owner, node *pExprRoot)

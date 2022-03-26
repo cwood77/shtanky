@@ -3,7 +3,7 @@ class test : .sht.cons.program {
 
    override run(args : str[]) : void
    {
-      _out->printLn(1 + 2 + 3 + 4 + 5);
+      _out->printLn(a:b:c);
    }
 
 }

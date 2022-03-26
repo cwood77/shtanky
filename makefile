@@ -9,11 +9,14 @@ RELEASE_LNK_FLAGS_POST = -static-libgcc -static-libstdc++ -static
 
 SCRIPTLIB = scriptlib/xcopy-deploy.bat
 
-all: \
+debug: \
 	dirs \
 	$(OUT_DIR)/debug/araceli.exe \
-	$(OUT_DIR)/release/araceli.exe \
 	$(OUT_DIR)/debug/liam.exe \
+
+all: \
+	debug \
+	$(OUT_DIR)/release/araceli.exe \
 	$(OUT_DIR)/release/liam.exe \
 
 clean:
@@ -29,7 +32,7 @@ dirs:
 	@mkdir -p $(OBJ_DIR)/release/liam
 	@mkdir -p $(OBJ_DIR)/release/cmn
 
-.PHONY: all clean dirs
+.PHONY: debug all clean dirs
 
 # ----------------------------------------------------------------------
 # cmn
@@ -38,6 +41,7 @@ CMN_SRC = \
 	src/cmn/ast.cpp \
 	src/cmn/commonLexor.cpp \
 	src/cmn/commonParser.cpp \
+	src/cmn/intel64.cpp \
 	src/cmn/lexor.cpp \
 	src/cmn/out.cpp \
 	src/cmn/pathUtil.cpp \
@@ -100,6 +104,7 @@ $(ARACELI_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 
 LIAM_SRC = \
 	src/liam/astCodeGen.cpp \
+	src/liam/instrPrefs.cpp \
 	src/liam/lexor.cpp \
 	src/liam/lir.cpp \
 	src/liam/main.cpp \

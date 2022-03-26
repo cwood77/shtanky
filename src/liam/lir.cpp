@@ -79,14 +79,28 @@ lirInstr::lirInstr(const cmn::tgt::instrIds id)
 {
 }
 
+lirVarStorage lirVarStorage::reg(size_t s)
+{
+   lirVarStorage x;
+   x.stackOffset = 0;
+   x.targetStorage = s;
+   return x;
+}
+
+lirVarStorage lirVarStorage::stack(int offset)
+{
+   lirVarStorage x;
+   x.stackOffset = offset;
+   x.targetStorage = cmn::tgt::kStackStorage;
+   return x;
+}
+
 lirVar::lirVar()
 : firstAccess(0)
 , lastAccess(0)
 , numAccesses(0)
 , size(0)
 , global(0)
-, stackSlot(0)
-, targetStorage(0)
 {
 }
 
@@ -110,6 +124,7 @@ lirArg& lirStream::createNamedArg(lirInstr& i, const std::string& name, size_t s
 
    auto& var = m_varTable[name];
    // recoard as var
+   var.id = name;
    var.firstAccess = i.orderNum;
    var.lastAccess = i.orderNum;
    var.size = size;
@@ -122,6 +137,8 @@ lirArg& lirStream::claimArg(cmn::node& n, lirInstr& i)
 {
    lirArg *pArg = m_nodeOutputs[&n];
    m_nodeOutputs.erase(&n);
+   if(!pArg)
+      throw std::runtime_error("no arg was published?");
 
    auto pAsVar = dynamic_cast<lirArgVar*>(pArg);
    if(pAsVar)
@@ -138,6 +155,7 @@ lirArg& lirStream::claimArg(cmn::node& n, lirInstr& i)
 
          auto& var = m_varTable[tmpName.str()];
          // recoard as var
+         var.id = tmpName.str();
          var.firstAccess = pOrigInstr->orderNum;
          var.lastAccess = pOrigInstr->orderNum;
          var.size = 0; // TODO
@@ -154,6 +172,14 @@ lirArg& lirStream::claimArg(cmn::node& n, lirInstr& i)
 
    i.addArg(*pArg);
    return *pArg;
+}
+
+lirVar& lirStream::getVariableByName(const std::string& name)
+{
+   auto it = m_varTable.find(name);
+   if(it == m_varTable.end())
+      throw std::runtime_error("variable not found!");
+   return it->second;
 }
 
 std::vector<lirVar*> lirStream::getVariablesInScope(size_t instrOrderNum)

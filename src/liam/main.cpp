@@ -1,5 +1,7 @@
 #include "../cmn/ast.hpp"
+#include "../cmn/intel64.hpp"
 #include "astCodeGen.hpp"
+#include "instrPrefs.hpp"
 #include "lir.hpp"
 #include "projectBuilder.hpp"
 
@@ -17,4 +19,7 @@ int main(int,const char*[])
    lirStreams lir;
    { astCodeGen v(lir); prj.acceptVisitor(v); }
    lir.dump();
+
+   cmn::tgt::w64EnumTargetInfo t;
+   instrPrefs::publishRequirements(lir,t);
 }

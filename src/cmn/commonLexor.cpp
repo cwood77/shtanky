@@ -13,6 +13,7 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kSymbolic,     commonLexor::kColon,       ":",        "colon"           },
    { lexemeInfo::kSymbolic,     commonLexor::kSemiColon,   ";",        "semicolon"       },
    { lexemeInfo::kSymbolic,     commonLexor::kArrow,       "->",       "arrow"           },
+   { lexemeInfo::kSymbolic,     commonLexor::kArrowParen,  "->(",      "arrow+paren"     },
    { lexemeInfo::kSymbolic,     commonLexor::kEquals,      "=",        "equals"          },
    { lexemeInfo::kSymbolic,     commonLexor::kComma,       ",",        "comma"           },
 

@@ -148,6 +148,8 @@ private:
    void parsePassedArgList(node& owner);
 
    node& parseLValue();
+   node& parseLValuePrime(node& n, node*& pExprRoot);
+   void parseRValue(node& owner) { parseRValue(owner,&owner); }
    void parseRValue(node& owner, node *pExprRoot);
    void parseBop(node& owner, node *pExprRoot);
 

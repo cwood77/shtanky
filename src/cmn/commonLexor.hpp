@@ -16,6 +16,7 @@ public:
       kColon,
       kSemiColon,
       kArrow,
+      kArrowParen,
       kEquals,
       kComma,
 

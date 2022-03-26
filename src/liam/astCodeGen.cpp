@@ -10,11 +10,14 @@ void astCodeGen::visit(cmn::funcNode& n)
    auto& stream = m_lir.page[m_currFunc];
 
    auto args = n.getChildrenOf<cmn::argNode>();
-   for(auto it=args.begin();it!=args.end();++it)
+   if(args.size())
    {
-      auto& arg = **it;
       auto& i = lirInstr::append(stream.pTail,cmn::tgt::kDeclParam);
-      stream.createNamedArg(i,arg.name,0); // TODO - calc type size
+      for(auto it=args.begin();it!=args.end();++it)
+      {
+         auto& arg = **it;
+         stream.createNamedArg(i,arg.name,0); // TODO - calc type size
+      }
    }
 
    n.demandSoleChild<cmn::sequenceNode>().acceptVisitor(*this);

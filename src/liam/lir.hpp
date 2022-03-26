@@ -7,9 +7,9 @@
 // backend compile
 // - number instrs
 // - determine var lifetime (using numbers)
-// - //each var solicits requirements from clients
+// - each var solicits requirements from clients
 // - create a register bank from the target
-// - set over each instruction
+// - step over each instruction
 //   - for each living variable, choose a slot
 // - select an overload for each instruction
 // - write
@@ -65,8 +65,8 @@ public:
    const cmn::tgt::instrIds instrId;
    const cmn::tgt::instrFmt *pInstrFmt;
 
-   bool isLast() const;
-   lirInstr& next();
+   bool isLast() const { return m_pNext == NULL; }
+   lirInstr& next() { return *m_pNext; }
    lirInstr& head();
 
    std::vector<lirArg*>& getArgs() { return m_args; }
@@ -77,6 +77,15 @@ private:
    lirInstr *m_pPrev;
    lirInstr *m_pNext;
    std::vector<lirArg*> m_args;
+};
+
+class lirVarStorage {
+public:
+   static lirVarStorage reg(size_t s);
+   static lirVarStorage stack(int offset);
+
+   int stackOffset;
+   size_t targetStorage;
 };
 
 class lirVar {
@@ -90,9 +99,8 @@ public:
    size_t size;
 
    size_t global;
-   size_t stackSlot;
 
-   size_t targetStorage;
+   std::map<size_t,lirVarStorage> storage;
 };
 
 class lirStream {
@@ -118,6 +126,7 @@ public:
 
    lirArg& claimArg(cmn::node& n, lirInstr& i);
 
+   lirVar& getVariableByName(const std::string& name);
    std::vector<lirVar*> getVariablesInScope(size_t instrOrderNum);
 
 private:
