@@ -29,8 +29,11 @@ public:
    virtual void visit(cmn::classNode& n);
    virtual void visit(cmn::sequenceNode& n);
    virtual void visit(cmn::invokeNode& n);
+   virtual void visit(cmn::invokeFuncPtrNode& n);
+   virtual void visit(cmn::fieldAccessNode& n);
    virtual void visit(cmn::callNode& n);
    virtual void visit(cmn::varRefNode& n);
+//   virtual void visit(bopNode& n);
    virtual void visit(cmn::stringLiteralNode& n);
    virtual void visit(cmn::boolLiteralNode& n);
    virtual void visit(cmn::intLiteralNode& n);
@@ -42,6 +45,8 @@ private:
    void generateClassMethod(cmn::classNode& n, cmn::methodNode& m, std::ostream& source);
 
    void generateMethodSignature(cmn::methodNode& m, std::ostream& s);
+
+   void generateCallFromOpenParen(cmn::node& n, bool skipFirst);
 
    cmn::fileNode *m_pActiveFile;
    cmn::outBundle& m_out;

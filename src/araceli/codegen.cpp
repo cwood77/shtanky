@@ -78,33 +78,38 @@ void codeGen::visit(cmn::invokeNode& n)
       throw std::runtime_error("eh?  bad invokeNode");
 
    n.getChildren()[0]->acceptVisitor(*this);
-   source << "->" << n.proto.ref << "(";
-   bool first = true;
-   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
-   {
-      if(it==n.getChildren().begin())
-         continue;
-      if(!first)
-         source << ",";
-      (*it)->acceptVisitor(*this);
-      first = false;
-   }
-   source << ");" << std::endl;
+   source << "->" << n.proto.ref;
+
+   generateCallFromOpenParen(n,true);
 }
 
-// TODO LAME - share some code here
+void codeGen::visit(cmn::invokeFuncPtrNode& n)
+{
+   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+
+   if(n.getChildren().size() < 1)
+      throw std::runtime_error("eh?  bad invokeNode");
+
+   n.getChildren()[0]->acceptVisitor(*this);
+   source << "->";
+
+   generateCallFromOpenParen(n,true);
+}
+
+void codeGen::visit(cmn::fieldAccessNode& n)
+{
+   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   visitChildren(n);
+   source << ":" << n.name;
+}
+
 void codeGen::visit(cmn::callNode& n)
 {
    auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
 
-   source << n.name << "(";
-   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
-   {
-      if(it==n.getChildren().begin())
-         source << ",";
-      (*it)->acceptVisitor(*this);
-   }
-   source << ");" << std::endl;
+   source << n.name;
+
+   generateCallFromOpenParen(n,false);
 }
 
 void codeGen::visit(cmn::varRefNode& n)
@@ -254,6 +259,23 @@ void codeGen::generateMethodSignature(cmn::methodNode& m, std::ostream& s)
    s
       << ") : void" // TODO - actually print the right return value
    ;
+}
+
+void codeGen::generateCallFromOpenParen(cmn::node& n, bool skipFirst)
+{
+   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   source << "(";
+   bool first = true;
+   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+   {
+      if(skipFirst && it==n.getChildren().begin())
+         continue;
+      if(!first)
+         source << ",";
+      (*it)->acceptVisitor(*this);
+      first = false;
+   }
+   source << ");" << std::endl;
 }
 
 } // namespace araceli

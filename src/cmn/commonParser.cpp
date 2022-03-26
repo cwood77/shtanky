@@ -172,6 +172,11 @@ void commonParser::parseMethodOrGlobalFuncFromOpenParen(node& n)
 {
    m_l.demandAndEat(commonLexor::kLParen);
 
+   parseMethodOrGlobalFuncFromAfterOpenParen(n);
+}
+
+void commonParser::parseMethodOrGlobalFuncFromAfterOpenParen(node& n)
+{
    parseDecledArgList(n);
 
    m_l.demandAndEat(commonLexor::kRParen);
@@ -229,12 +234,23 @@ bool commonParser::tryParseStatement(node& owner)
    std::unique_ptr<node> pInst(&parseLValue());
    if(m_l.getToken() == commonLexor::kArrow)
       parseInvoke(pInst,owner);
+   else if(m_l.getToken() == commonLexor::kArrowParen)
+   {
+      m_l.advance();
+
+      auto& i = m_nFac.appendNewChild<cmn::invokeFuncPtrNode>(owner);
+      i.appendChild(*pInst.release());
+
+      parsePassedArgList(i);
+      m_l.demandAndEat(commonLexor::kRParen);
+      m_l.demandAndEat(commonLexor::kSemiColon);
+   }
    else if(m_l.getToken() == commonLexor::kLParen)
       parseCall(pInst,owner);
    else if(m_l.getToken() == commonLexor::kEquals)
       parseAssignment(pInst,owner);
    else
-      m_l.demandOneOf(3,commonLexor::kArrow,commonLexor::kLParen,commonLexor::kEquals);
+      m_l.demandOneOf(4,commonLexor::kArrow,commonLexor::kArrowParen,commonLexor::kLParen,commonLexor::kEquals);
 
    return true;
 }
@@ -305,15 +321,13 @@ node& commonParser::parseLValue()
    auto name = m_l.getLexeme();
    m_l.advance();
 
-   //std::unique_ptr<varRefNode> pInst(m_nFac.create<varRefNode>());
    auto pInst = m_nFac.create<varRefNode>();
    pInst->pDef.ref = name;
 
-   node *pExprRoot = pInst;
-   return parseLValuePrime(*pInst,pExprRoot);
+   return parseLValuePrime(*pInst);
 }
 
-node& commonParser::parseLValuePrime(node& n, node*& pExprRoot)
+node& commonParser::parseLValuePrime(node& n)
 {
    if(m_l.getToken() == commonLexor::kColon)
    {
@@ -326,13 +340,25 @@ node& commonParser::parseLValuePrime(node& n, node*& pExprRoot)
       i->name = m_l.getLexeme();
       m_l.advance();
 
-      pExprRoot = i;
-      return parseLValuePrime(*i,pExprRoot);
+      return parseLValuePrime(*i);
    }
+#if 0
    else if(m_l.getToken() == commonLexor::kArrowParen)
-      ;
+   {
+      m_l.advance();
 
-   return *pExprRoot;
+      auto c = m_nFac.create<invokeFuncPtrNode>();
+      c->appendChild(n);
+
+      parsePassedArgList(*c);
+      m_l.demandAndEat(commonLexor::kRParen);
+      m_l.demandAndEat(commonLexor::kSemiColon);
+      //parseMethodOrGlobalFuncFromAfterOpenParen(*c);
+      return *c;
+   }
+#endif
+
+   return n;
 }
 
 void commonParser::parseRValue(node& owner, node *pExprRoot)

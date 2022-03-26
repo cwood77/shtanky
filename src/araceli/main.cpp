@@ -1,5 +1,6 @@
 #include "../cmn/out.hpp"
 #include "codegen.hpp"
+#include "declasser.hpp"
 #include "lexor.hpp"
 #include "loader.hpp"
 #include "metadata.hpp"
@@ -73,6 +74,11 @@ int main(int,char*[])
       cmn::treeVisitor outer(inner);
       pPrj->acceptVisitor(outer);
    }
+
+   // transforms
+   { declasser v; pPrj->acceptVisitor(v); }
+   ::printf("graph after transforms ----\n");
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // file codegen
    // -> header file

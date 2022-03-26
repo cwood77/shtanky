@@ -137,6 +137,7 @@ private:
    void parseField(fieldNode& n);
    void parseGlobalFunc(fileNode& f);
    void parseMethodOrGlobalFuncFromOpenParen(node& n);
+   void parseMethodOrGlobalFuncFromAfterOpenParen(node& n);
    void parseDecledArgList(node& owner);
 
    void parseSequence(node& owner);
@@ -148,7 +149,7 @@ private:
    void parsePassedArgList(node& owner);
 
    node& parseLValue();
-   node& parseLValuePrime(node& n, node*& pExprRoot);
+   node& parseLValuePrime(node& n);
    void parseRValue(node& owner) { parseRValue(owner,&owner); }
    void parseRValue(node& owner, node *pExprRoot);
    void parseBop(node& owner, node *pExprRoot);

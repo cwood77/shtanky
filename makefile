@@ -71,6 +71,7 @@ $(CMN_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 
 ARACELI_SRC = \
 	src/araceli/codegen.cpp \
+	src/araceli/declasser.cpp \
 	src/araceli/lexor.cpp \
 	src/araceli/loader.cpp \
 	src/araceli/main.cpp \

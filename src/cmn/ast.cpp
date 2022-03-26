@@ -38,6 +38,25 @@ void node::appendChild(node& n)
    n.m_pParent = this;
 }
 
+void node::insertChild(size_t i, node& n)
+{
+   m_children.insert(m_children.begin()+i,&n);
+   n.m_pParent = this;
+}
+
+void node::replaceChild(node& old, node& nu)
+{
+   int i=0;
+   for(auto it=m_children.begin();it!=m_children.end();++it,i++)
+   {
+      if(*it == &old)
+      {
+         m_children[i] = &nu;
+         return;
+      }
+   }
+}
+
 node *node::lastChild()
 {
    if(m_children.size() == 0) return NULL;
