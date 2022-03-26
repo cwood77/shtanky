@@ -497,6 +497,7 @@ public:
    virtual void visit(araceliProjectNode& n) { T::unexpected(n); }
    virtual void visit(scopeNode& n) { T::unexpected(n); }
    virtual void visit(methodNode& n) { T::unexpected(n); }
+   virtual void visit(invokeNode& n) { T::unexpected(n); }
 
    virtual void _implementLanguage() {} // liam
 };

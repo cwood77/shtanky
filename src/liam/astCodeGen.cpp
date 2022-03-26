@@ -23,17 +23,8 @@ void astCodeGen::visit(cmn::funcNode& n)
    n.demandSoleChild<cmn::sequenceNode>().acceptVisitor(*this);
 }
 
-void astCodeGen::visit(cmn::invokeNode& n)
+void astCodeGen::visit(cmn::invokeFuncPtrNode& n)
 {
-   // HACK for testing; invoke is actually quite different from call
-   // ... wait, invokes in Liam are function ptrs
-   // ... so araceli needs to compile invokes down quite a bit
-   // so
-   //    myObj->foo(3);
-   // becomes
-   //    myObj->vptr->fooPtr(3);
-   //
-
    auto& stream = m_lir.page[m_currFunc];
    auto& call = lirInstr::append(stream.pTail,cmn::tgt::kCall);
 
@@ -46,6 +37,18 @@ void astCodeGen::visit(cmn::invokeNode& n)
    stream.createTemporary<lirArgVar>(n,call,"",0);
 }
 
+void astCodeGen::visit(cmn::fieldAccessNode& n)
+{
+   auto& stream = m_lir.page[m_currFunc];
+   auto& mov = lirInstr::append(stream.pTail,cmn::tgt::kMov);
+
+   //auto& dest = mov.addArg(*new lirArgVar("",0));
+   stream.claimArg(n.demandSoleChild<cmn::node>(),mov);
+
+   stream.createTemporary<lirArgVar>(n,mov,"",0);
+}
+
+// TODO this seems wrong... where is the call address passed?
 void astCodeGen::visit(cmn::callNode& n)
 {
    auto& stream = m_lir.page[m_currFunc];

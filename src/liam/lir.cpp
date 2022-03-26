@@ -21,12 +21,12 @@ namespace liam {
 
 void lirArgVar::dump() const
 {
-   ::printf("v/%s/%lld ",name.c_str(),m_size);
+   ::printf("v/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
 }
 
 void lirArgConst::dump() const
 {
-   ::printf("c/%s/%lld ",name.c_str(),m_size);
+   ::printf("c/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
 }
 
 lirInstr::~lirInstr()

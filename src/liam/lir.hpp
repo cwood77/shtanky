@@ -20,9 +20,14 @@ namespace liam {
 
 class lirArg {
 public:
+   lirArg() : disp(0), addrOf(false) {}
    virtual ~lirArg() {}
+
    virtual size_t getSize() const = 0;
    virtual void dump() const = 0;
+
+   int disp;
+   bool addrOf;
 };
 
 class lirArgVar : public lirArg {
@@ -56,7 +61,7 @@ public:
    virtual ~lirInstr();
 
    static lirInstr& append(lirInstr*& pPrev, const cmn::tgt::instrIds id);
-   void addArg(lirArg& a) { m_args.push_back(&a); }
+   lirArg& addArg(lirArg& a) { m_args.push_back(&a); return a; }
 
    void dump();
 
