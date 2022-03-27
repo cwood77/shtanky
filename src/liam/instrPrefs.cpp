@@ -1,13 +1,14 @@
 #include "../cmn/target.hpp"
 #include "instrPrefs.hpp"
 #include "lir.hpp"
+#include "varGen.hpp"
 #include <stdexcept>
 
 namespace liam {
 
-size_t instrPrefs::publishRequirements(lirStreams& s, const cmn::tgt::iTargetInfo& target)
+size_t instrPrefs::publishRequirements(lirStreams& s, varTable& v, const cmn::tgt::iTargetInfo& target)
 {
-   instrPrefs self(target);
+   instrPrefs self(v,target);
 
    for(auto it=s.page.begin();it!=s.page.end();++it)
       self.handle(it->second);
@@ -51,8 +52,10 @@ void instrPrefs::handle(lirInstr& i)
                   auto& cc = m_target.getCallConvention();
                   std::vector<size_t> argStorage;
                   cc.getRValAndArgBank(argStorage);
-                  auto& v = m_pCurrStream->getVariableByName(pVar->name);
-                  v.storage[i.orderNum] = lirVarStorage::reg(argStorage[0]);
+                  //auto& v = m_pCurrStream->getVariableByName(pVar->name);
+                  var& v2 = m_vTable.demand(pVar->name);
+                  //v.storage[i.orderNum] = lirVarStorage::reg(argStorage[0]);
+                  v2.requireStorage(i,argStorage[0]);
                }
             }
          }
@@ -75,12 +78,13 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
 
    std::vector<size_t> argStorage;
    cc.getRValAndArgBank(argStorage);
-   size_t shadow = cc.getShadowSpace();
+   //size_t shadow = cc.getShadowSpace();
 
    for(size_t k = i.getArgs().size()-1;;k--)
    {
       lirArgVar& a = dynamic_cast<lirArgVar&>(*i.getArgs()[k]);
-      auto& v = m_pCurrStream->getVariableByName(a.name);
+      //auto& v = m_pCurrStream->getVariableByName(a.name);
+      var& v2 = m_vTable.demand(a.name);
 
       if(k+1 >= argStorage.size())
       {
@@ -88,22 +92,25 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
          if(outOrIn)
          {
             // going out
-            v.storage[i.orderNum] = lirVarStorage::stack(m_stackSpace);
+            //v.storage[i.orderNum] = lirVarStorage::stack(m_stackSpace);
             ::printf("> assigning RSP-%lld to %s\n",m_stackSpace,a.name.c_str());
-            m_stackSpace -= v.size;
+            //m_stackSpace -= v.size;
+            v2.requireStorage(i,cmn::tgt::kStorageStackLocal);
          }
          else
          {
             // coming in
-            v.storage[i.orderNum] = lirVarStorage::stack(shadow + v.size);
-            ::printf("> assigning RSP+%lld to %s\n",shadow + v.size,a.name.c_str());
+            //v.storage[i.orderNum] = lirVarStorage::stack(shadow + v.size);
+            //::printf("> assigning RSP+%lld to %s\n",shadow + v.size,a.name.c_str());
+            v2.requireStorage(i,cmn::tgt::kStorageStackArg);
          }
       }
       else
       {
          // use a register
-         v.storage[i.orderNum] = lirVarStorage::reg(argStorage[k+1]);
+         //v.storage[i.orderNum] = lirVarStorage::reg(argStorage[k+1]);
          ::printf("> assigning r%lld to %s\n",argStorage[k+1],a.name.c_str());
+         v2.requireStorage(i,argStorage[k+1]);
       }
 
       if(k==0)

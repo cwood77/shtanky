@@ -9,10 +9,8 @@ namespace i64 {
 
 // all regs support 64, 32, 16, 8 bits
 enum {
-   kNone,
-
    // supports TWO 8 bit (high byte unsupported by shtanky currently)
-   kRegA,
+   kRegA = _kStorageFirstReg,
    kRegB,
    kRegC,
    kRegD,

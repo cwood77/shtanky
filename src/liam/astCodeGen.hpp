@@ -6,6 +6,7 @@ namespace liam {
 
 class lirArg;
 class lirStreams;
+class varGenerator;
 
 // requires #include handling
 // requires varRef to user type linking
@@ -13,7 +14,7 @@ class lirStreams;
 
 class astCodeGen : public cmn::liamVisitor<> {
 public:
-   explicit astCodeGen(lirStreams& l) : m_lir(l) {}
+   astCodeGen(lirStreams& l, varGenerator& v) : m_lir(l), m_vGen(v) {}
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
    virtual void visit(cmn::funcNode& n);
@@ -27,6 +28,7 @@ public:
 
 private:
    lirStreams& m_lir;
+   varGenerator& m_vGen;
    std::string m_currFunc;
 };
 

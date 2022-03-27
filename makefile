@@ -110,6 +110,7 @@ LIAM_SRC = \
 	src/liam/lir.cpp \
 	src/liam/main.cpp \
 	src/liam/projectBuilder.cpp \
+	src/liam/varGen.cpp \
 
 LIAM_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(LIAM_SRC)))
 

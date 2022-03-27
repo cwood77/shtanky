@@ -91,7 +91,7 @@ lirVarStorage lirVarStorage::stack(int offset)
 {
    lirVarStorage x;
    x.stackOffset = offset;
-   x.targetStorage = cmn::tgt::kStackStorage;
+   x.targetStorage = cmn::tgt::kStorageStackArg; // TODO
    return x;
 }
 
@@ -116,6 +116,37 @@ void lirStream::dump()
 {
    pTail->head().dump();
 }
+
+#if 0
+lirArg& lirStream::publishArgOnWire(cmn::node& n, lirInstr& i, lirArg& a)
+{
+   auto it = m_wire.find(&n);
+   if(it != m_wire.end())
+      throw std::runtime_error("value already published on wire");
+
+   m_wire[&n].configure(i,a);
+
+   return a;
+}
+
+lirArg& lirStream::takeArgOffWire(cmn::node& n, lirInstr& i)
+{
+   auto it = m_wire.find(&n);
+   if(it == m_wire.end())
+      throw std::runtime_error("no value on wire");
+
+   lirVarWireStorage& stor = m_wire[&n];
+   auto& arg = stor.duplicateAndAddArg(i);
+   m_wire.erase(&n);
+
+   return arg;
+}
+
+lirArg& publishArgByName(cmn::node& n, lirInstr& i, lirArg& a)
+{
+   throw 3.14;
+}
+#endif
 
 lirArg& lirStream::createNamedArg(lirInstr& i, const std::string& name, size_t size)
 {
@@ -183,6 +214,15 @@ lirVar& lirStream::getVariableByName(const std::string& name)
 }
 
 std::vector<lirVar*> lirStream::getVariablesInScope(size_t instrOrderNum)
+{
+   throw 3.14;
+}
+
+void lirStream::lirVarWireStorage::configure(lirInstr& i, lirArg& a)
+{
+}
+
+lirArg& lirStream::lirVarWireStorage::duplicateAndAddArg(lirInstr& i)
 {
    throw 3.14;
 }

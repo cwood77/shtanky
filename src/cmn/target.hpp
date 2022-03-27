@@ -54,8 +54,13 @@ public:
    size_t trash;
 };
 
-enum {
-   kStackStorage = 1
+enum genericStorageClasses {
+   kStorageUnassigned,
+   kStorageStackArg,
+   kStorageStackLocal,
+   kStoragePatch,
+   kStorageImmediate,
+   _kStorageFirstReg  = 23,
 };
 
 class instrInfo {

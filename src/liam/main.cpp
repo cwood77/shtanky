@@ -4,6 +4,7 @@
 #include "instrPrefs.hpp"
 #include "lir.hpp"
 #include "projectBuilder.hpp"
+#include "varGen.hpp"
 
 using namespace liam;
 
@@ -16,10 +17,14 @@ int main(int,const char*[])
    projectBuilder::build(prj);
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
 
+   varTable vTbl;
    lirStreams lir;
-   { astCodeGen v(lir); prj.acceptVisitor(v); }
+   {
+      varGenerator vGen(vTbl);
+      { astCodeGen v(lir,vGen); prj.acceptVisitor(v); }
+   }
    lir.dump();
 
    cmn::tgt::w64EnumTargetInfo t;
-   instrPrefs::publishRequirements(lir,t);
+   instrPrefs::publishRequirements(lir,vTbl,t);
 }

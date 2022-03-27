@@ -10,20 +10,22 @@ class lirArg;
 class lirInstr;
 class lirStream;
 class lirStreams;
+class varTable;
 
 class instrPrefs {
 public:
-   static size_t publishRequirements(lirStreams& s, const cmn::tgt::iTargetInfo& target);
+   static size_t publishRequirements(lirStreams& s, varTable& v, const cmn::tgt::iTargetInfo& target);
 
 private:
-   explicit instrPrefs(const cmn::tgt::iTargetInfo& target)
-   : m_pCurrStream(NULL), m_target(target), m_stackSpace(0) {}
+   instrPrefs(varTable& v, const cmn::tgt::iTargetInfo& target)
+   : m_pCurrStream(NULL), m_vTable(v), m_target(target), m_stackSpace(0) {}
 
    void handle(lirStream& s);
    void handle(lirInstr& i);
    void handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, bool outOrIn);
 
    lirStream *m_pCurrStream;
+   varTable& m_vTable;
    const cmn::tgt::iTargetInfo& m_target;
    size_t m_stackSpace;
 };
