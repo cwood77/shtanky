@@ -19,6 +19,18 @@ size_t var::getSize()
 
 void var::requireStorage(lirInstr& i, size_t s)
 {
+   /*
+   auto it = instrToStorageMap.find(i);
+   if(it != instrToStorageMap.end())
+      if(it->second != s)
+         throw std::runtime_error("same instruction requested multiple storages??");
+
+   instrToStorageMap[i] = s;
+   storageToInstrMap[s].insert(i);
+   */
+
+   instrToStorageMap[i.orderNum].insert(s);
+   storageToInstrMap[s].insert(i.orderNum);
 }
 
 varTable::~varTable()

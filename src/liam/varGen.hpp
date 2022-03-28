@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 #include <map>
+#include <set>
 #include <string>
 
 // a variable is something that requires storage (register, stack, memory, immediate).
@@ -21,8 +22,14 @@ class var {
 public:
    std::string name;
    std::map<size_t,std::list<lirArg*> > refs;
-   std::map<size_t,size_t> storage;
-   std::map<lirArg*,size_t> storageOverrides;
+
+   // instr -> storage
+   //std::map<size_t,size_t> storage;            // this is prolly wrong
+
+   std::map<size_t,std::set<size_t> > instrToStorageMap; // noobs
+   std::map<size_t,std::set<size_t> > storageToInstrMap;
+
+   //std::map<lirArg*,size_t> storageOverrides;
 
    const lirArg& lastArg();
    size_t getSize();

@@ -1,7 +1,5 @@
 #pragma once
 #include <cstddef>
-#include <list>
-#include <utility>
 
 namespace cmn { namespace tgt { class iTargetInfo; } }
 
@@ -11,8 +9,8 @@ class lirStream;
 class var;
 class varTable;
 
-// find vars that have multiple storage locations
-// emit instructions to implement moves to fullfill these
+// find storage locations with multiple occupants at the same time
+// emit a move to evict one of them
 
 class varSplitter {
 public:
@@ -28,8 +26,6 @@ private:
    lirStream& m_s;
    varTable& m_v;
    cmn::tgt::iTargetInfo& m_t;
-
-   std::list<std::pair<lirInstr*,size_t> > m_newInstrs;
 };
 
 } // namespace liam

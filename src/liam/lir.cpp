@@ -97,7 +97,7 @@ lirInstr& lirInstr::head()
 }
 
 lirInstr::lirInstr(const cmn::tgt::instrIds id)
-: orderNum(0)
+: orderNum(10)
 , instrId(id)
 , pInstrFmt(NULL)
 , m_pPrev(NULL)
