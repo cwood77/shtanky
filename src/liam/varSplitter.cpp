@@ -64,6 +64,9 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
 
    m_newInstrs.push_back(std::make_pair<lirInstr*,size_t>(&mov,(size_t)srcStor));
    m_newInstrs.push_back(std::make_pair<lirInstr*,size_t>(&mov,(size_t)destStor));
+
+   v.storageDisambiguators[&src] = srcStor;
+   v.storageDisambiguators[&dest] = destStor;
 }
 
 } // namespace liam

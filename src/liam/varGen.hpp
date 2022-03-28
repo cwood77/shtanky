@@ -23,13 +23,9 @@ public:
    std::string name;
    std::map<size_t,std::list<lirArg*> > refs;
 
-   // instr -> storage
-   //std::map<size_t,size_t> storage;            // this is prolly wrong
-
-   std::map<size_t,std::set<size_t> > instrToStorageMap; // noobs
+   std::map<size_t,std::set<size_t> > instrToStorageMap;
    std::map<size_t,std::set<size_t> > storageToInstrMap;
-
-   //std::map<lirArg*,size_t> storageOverrides;
+   std::map<lirArg*,size_t> storageDisambiguators;
 
    const lirArg& lastArg();
    size_t getSize();
