@@ -20,7 +20,7 @@ void astCodeGen::visit(cmn::funcNode& n)
       for(auto it=args.begin();it!=args.end();++it)
       {
          auto& astArg = **it;
-         auto& arg = dynamic_cast<lirArgVar&>(i.addArg(*new lirArgVar(astArg.name,0))); // TODO - calc type size
+         auto& arg = i.addArg<lirArgVar>(astArg.name,0); // TODO - calc type size
          m_vGen.createNamedVar(i.orderNum,arg);
       }
    }

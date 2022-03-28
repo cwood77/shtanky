@@ -44,11 +44,37 @@ lirInstr& lirInstr::append(lirInstr*& pPrev, const cmn::tgt::instrIds id)
    {
       pPrev->m_pNext = pNoob;
       pNoob->m_pPrev = pPrev;
-      pNoob->orderNum = pPrev->orderNum + 1;
+      pNoob->orderNum = pPrev->orderNum + 10;
    }
 
    pPrev = pNoob;
    return *pNoob;
+}
+
+lirInstr& lirInstr::injectBefore(const cmn::tgt::instrIds id)
+{
+   auto *pNoob = new lirInstr(id);
+   pNoob->orderNum = orderNum - 1;
+
+   pNoob->m_pPrev = m_pPrev;
+
+   pNoob->m_pNext = this;
+   m_pPrev = pNoob;
+
+   return *pNoob;
+}
+
+lirInstr& lirInstr::search(size_t orderNum)
+{
+   lirInstr *pThumb = this;
+   while(true)
+   {
+      if(pThumb->orderNum == orderNum)
+         return *pThumb;
+      pThumb = &pThumb->next();
+   }
+
+   throw std::runtime_error("instr not found!");
 }
 
 void lirInstr::dump()

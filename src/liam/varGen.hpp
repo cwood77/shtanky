@@ -14,12 +14,15 @@ namespace cmn { class node; }
 namespace liam {
 
 class lirArg;
+class lirArgVar;
 class lirInstr;
 
 class var {
 public:
    std::string name;
    std::map<size_t,std::list<lirArg*> > refs;
+   std::map<size_t,size_t> storage;
+   std::map<lirArg*,size_t> storageOverrides;
 
    const lirArg& lastArg();
    size_t getSize();
@@ -35,6 +38,8 @@ public:
    var& create(const std::string& name);
    var& demand(const std::string& name);
    var& demand(lirArg& a);
+
+   std::map<std::string,var*>& all() { return m_vars; }
 
 private:
    std::map<std::string,var*> m_vars;

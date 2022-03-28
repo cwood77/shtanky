@@ -5,6 +5,7 @@
 #include "lir.hpp"
 #include "projectBuilder.hpp"
 #include "varGen.hpp"
+#include "varSplitter.hpp"
 
 using namespace liam;
 
@@ -27,4 +28,10 @@ int main(int,const char*[])
 
    cmn::tgt::w64EnumTargetInfo t;
    instrPrefs::publishRequirements(lir,vTbl,t);
+
+   // TODO all these operations should be per stream
+   for(auto it=lir.page.begin();it!=lir.page.end();++it)
+   {
+      varSplitter::split(it->second,vTbl,t);
+   }
 }

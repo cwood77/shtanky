@@ -61,7 +61,18 @@ public:
    virtual ~lirInstr();
 
    static lirInstr& append(lirInstr*& pPrev, const cmn::tgt::instrIds id);
+
+   template<class T>
+   T& addArg(const std::string& n, size_t z)
+   {
+      T *pArg = new T(n,z);
+      addArg(*pArg);
+      return *pArg;
+   }
+
    lirArg& addArg(lirArg& a) { m_args.push_back(&a); return a; }
+
+   lirInstr& injectBefore(const cmn::tgt::instrIds id);
 
    void dump();
 
@@ -73,6 +84,7 @@ public:
    bool isLast() const { return m_pNext == NULL; }
    lirInstr& next() { return *m_pNext; }
    lirInstr& head();
+   lirInstr& search(size_t orderNum);
 
    std::vector<lirArg*>& getArgs() { return m_args; }
 
