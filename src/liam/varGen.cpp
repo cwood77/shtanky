@@ -44,7 +44,10 @@ var& varTable::create(const std::string& name)
 {
    var*& pVar = m_vars[name];
    if(!pVar)
+   {
       pVar = new var;
+      pVar->name = name;
+   }
    return *pVar;
 }
 
@@ -54,6 +57,17 @@ var& varTable::demand(const std::string& name)
    if(!pVar)
       throw std::runtime_error("missing var");
    return *pVar;
+}
+
+var& varTable::demand(lirArg& a)
+{
+   for(auto it=m_vars.begin();it!=m_vars.end();++it)
+      for(auto jit=it->second->refs.begin();jit!=it->second->refs.end();++jit)
+         for(auto kit=jit->second.begin();kit!=jit->second.end();++kit)
+            if(*kit == &a)
+               return *it->second;
+
+   throw std::runtime_error("variable not found!");
 }
 
 varGenerator::~varGenerator()

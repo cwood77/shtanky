@@ -18,6 +18,7 @@ class lirInstr;
 
 class var {
 public:
+   std::string name;
    std::map<size_t,std::list<lirArg*> > refs;
 
    const lirArg& lastArg();
@@ -33,6 +34,7 @@ public:
    std::string pickUniqueName(const std::string& nameHint);
    var& create(const std::string& name);
    var& demand(const std::string& name);
+   var& demand(lirArg& a);
 
 private:
    std::map<std::string,var*> m_vars;

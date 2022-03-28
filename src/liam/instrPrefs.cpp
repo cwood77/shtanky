@@ -20,9 +20,10 @@ void instrPrefs::handle(lirStream& s)
 {
    m_pCurrStream = &s;
    auto pInstr = &s.pTail->head();
-   for(;!pInstr->isLast();pInstr=&pInstr->next())
+   for(;;pInstr=&pInstr->next())
    {
       handle(*pInstr);
+      if(pInstr->isLast()) break;
    }
 }
 
@@ -33,13 +34,17 @@ void instrPrefs::handle(lirInstr& i)
       case cmn::tgt::kDeclParam:
          {
             auto& cc = m_target.getCallConvention();
-            handle(i,cc,false);
+            handle(i,cc,/*outOrIn*/false);
          }
+         break;
+      case cmn::tgt::kPush: // no prefs
+      case cmn::tgt::kPop:
+      case cmn::tgt::kMov:
          break;
       case cmn::tgt::kCall:
          {
             auto& cc = m_target.getCallConvention();
-            handle(i,cc,true);
+            handle(i,cc,/*outOrIn*/true);
          }
          break;
       case cmn::tgt::kRet:
@@ -52,10 +57,8 @@ void instrPrefs::handle(lirInstr& i)
                   auto& cc = m_target.getCallConvention();
                   std::vector<size_t> argStorage;
                   cc.getRValAndArgBank(argStorage);
-                  //auto& v = m_pCurrStream->getVariableByName(pVar->name);
-                  var& v2 = m_vTable.demand(pVar->name);
-                  //v.storage[i.orderNum] = lirVarStorage::reg(argStorage[0]);
-                  v2.requireStorage(i,argStorage[0]);
+                  var& v = m_vTable.demand(pVar->name);
+                  v.requireStorage(i,argStorage[0]);
                }
             }
          }
@@ -63,7 +66,7 @@ void instrPrefs::handle(lirInstr& i)
       case cmn::tgt::kSyscall:
          {
             auto& cc = m_target.getSyscallConvention();
-            handle(i,cc,true);
+            handle(i,cc,/*outOrIn*/true);
          }
          break;
       default:
@@ -73,44 +76,38 @@ void instrPrefs::handle(lirInstr& i)
 
 void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, bool outOrIn)
 {
-   if(!cc.stackArgsPushRToL())
-      throw std::runtime_error("unimpled!");
-
    std::vector<size_t> argStorage;
    cc.getRValAndArgBank(argStorage);
-   //size_t shadow = cc.getShadowSpace();
+   size_t shadow = cc.getShadowSpace();
 
+   if(!cc.stackArgsPushRToL())
+      throw std::runtime_error("unimpled!");
    for(size_t k = i.getArgs().size()-1;;k--)
    {
-      lirArgVar& a = dynamic_cast<lirArgVar&>(*i.getArgs()[k]);
-      //auto& v = m_pCurrStream->getVariableByName(a.name);
-      var& v2 = m_vTable.demand(a.name);
+      var& v = m_vTable.demand(*i.getArgs()[k]);
 
-      if(k+1 >= argStorage.size())
+      if(k >= argStorage.size())
       {
          // use the stack
          if(outOrIn)
          {
             // going out
-            //v.storage[i.orderNum] = lirVarStorage::stack(m_stackSpace);
-            ::printf("> assigning RSP-%lld to %s\n",m_stackSpace,a.name.c_str());
-            //m_stackSpace -= v.size;
-            v2.requireStorage(i,cmn::tgt::kStorageStackLocal);
+            v.requireStorage(i,cmn::tgt::kStorageStackLocal);
+            ::printf("> assigning RSP-%lld to %s\n",m_stackSpace,v.name.c_str());
+            m_stackSpace -= v.getSize();
          }
          else
          {
             // coming in
-            //v.storage[i.orderNum] = lirVarStorage::stack(shadow + v.size);
-            //::printf("> assigning RSP+%lld to %s\n",shadow + v.size,a.name.c_str());
-            v2.requireStorage(i,cmn::tgt::kStorageStackArg);
+            v.requireStorage(i,cmn::tgt::kStorageStackArg);
+            ::printf("> assigning RSP+%lld to %s\n",shadow + v.getSize(),v.name.c_str());
          }
       }
       else
       {
          // use a register
-         //v.storage[i.orderNum] = lirVarStorage::reg(argStorage[k+1]);
-         ::printf("> assigning r%lld to %s\n",argStorage[k+1],a.name.c_str());
-         v2.requireStorage(i,argStorage[k+1]);
+         v.requireStorage(i,argStorage[k]);
+         ::printf("> assigning r%lld to %s\n",argStorage[k],v.name.c_str());
       }
 
       if(k==0)
