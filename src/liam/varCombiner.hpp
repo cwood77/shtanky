@@ -20,9 +20,6 @@ private:
    varCombiner(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
    : m_s(s), m_v(v), m_t(t) {}
 
-   void checkVar(var& v);
-   void emitMoveBefore(var& v, size_t orderNum, size_t src, size_t dest);
-
    lirStream& m_s;
    varTable& m_v;
    cmn::tgt::iTargetInfo& m_t;
