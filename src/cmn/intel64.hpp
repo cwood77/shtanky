@@ -36,6 +36,14 @@ enum {
 
 } // namespace i64
 
+class x8664Processor : public tgt::iProcessorInfo {
+public:
+   virtual void createRegisterBank(std::vector<size_t>& v) const;
+   virtual void createRegisterMap(std::map<size_t,size_t>& m) const;
+   virtual const char *getRegName(size_t r) const;
+   virtual const instrInfo *getInstr(instrIds i) const;
+};
+
 class shtankyCallingConvention : public tgt::iCallingConvention {
 };
 
@@ -52,11 +60,12 @@ class w64EmuSyscall : public tgt::iSyscallConvention {
 
 class w64EnumTargetInfo : public tgt::iTargetInfo {
 public:
-   virtual const iProcessorInfo& getProc() const;
+   virtual const iProcessorInfo& getProc() const { return m_proc; }
    virtual const iCallingConvention& getCallConvention() const { return m_cc; }
    virtual const iSyscallConvention& getSyscallConvention() const;
 
 private:
+   x8664Processor m_proc;
    w64CallingConvention m_cc;
 };
 

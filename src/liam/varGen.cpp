@@ -19,18 +19,63 @@ size_t var::getSize()
 
 void var::requireStorage(lirInstr& i, size_t s)
 {
-   /*
-   auto it = instrToStorageMap.find(i);
-   if(it != instrToStorageMap.end())
-      if(it->second != s)
-         throw std::runtime_error("same instruction requested multiple storages??");
-
-   instrToStorageMap[i] = s;
-   storageToInstrMap[s].insert(i);
-   */
-
    instrToStorageMap[i.orderNum].insert(s);
    storageToInstrMap[s].insert(i.orderNum);
+}
+
+bool var::isAlive(size_t orderNum)
+{
+   return refs.begin()->first <= orderNum && orderNum <= (--(refs.end()))->first;
+}
+
+std::set<size_t> var::getStorageAt(size_t orderNum)
+{
+   for(auto it=instrToStorageMap.begin();it!=instrToStorageMap.end();++it)
+      if(it->first >= orderNum)
+         return it->second;
+
+   throw std::runtime_error("can't find storage at that time");
+}
+
+bool var::requiresStorageLater(size_t orderNum, size_t storage)
+{
+   for(auto it=instrToStorageMap.begin();it!=instrToStorageMap.end();++it)
+      if(it->first > orderNum)
+         if(it->second.find(storage) != it->second.end())
+            return true;
+
+   return false;
+}
+
+void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
+{
+   lirInstr *pInstr = &i;
+   while(true)
+   {
+      auto it = instrToStorageMap.find(pInstr->orderNum);
+      if(it!=instrToStorageMap.end() && it->second.find(old)!=it->second.end())
+      {
+         it->second.erase(old);
+         it->second.insert(nu);
+
+         storageToInstrMap[old].erase(pInstr->orderNum);
+         if(storageToInstrMap[old].size() == 0)
+            storageToInstrMap.erase(old);
+         storageToInstrMap[nu].insert(pInstr->orderNum);
+
+         auto& args = i.getArgs();
+         for(auto jit=args.begin();jit!=args.end();++jit)
+         {
+            auto kit = storageDisambiguators.find(*jit);
+            if(kit != storageDisambiguators.end() && kit->second == old)
+               kit->second = nu;
+         }
+      }
+
+      if(pInstr->isLast())
+         break;
+      pInstr = &pInstr->next();
+   }
 }
 
 varTable::~varTable()

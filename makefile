@@ -110,6 +110,7 @@ LIAM_SRC = \
 	src/liam/lir.cpp \
 	src/liam/main.cpp \
 	src/liam/projectBuilder.cpp \
+	src/liam/varCombiner.cpp \
 	src/liam/varGen.cpp \
 	src/liam/varSplitter.cpp \
 

@@ -12,12 +12,12 @@ class varTable;
 // find storage locations with multiple occupants at the same time
 // emit a move to evict one of them
 
-class varSplitter {
+class varCombiner {
 public:
-   static void split(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t);
+   static void combine(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t);
 
 private:
-   varSplitter(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
+   varCombiner(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
    : m_s(s), m_v(v), m_t(t) {}
 
    void checkVar(var& v);

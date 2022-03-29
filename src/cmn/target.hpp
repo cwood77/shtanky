@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -89,6 +90,7 @@ public:
 class iProcessorInfo {
 public:
    virtual void createRegisterBank(std::vector<size_t>& v) const = 0;
+   virtual void createRegisterMap(std::map<size_t,size_t>& m) const = 0;
    virtual const char *getRegName(size_t r) const = 0;
    virtual const instrInfo *getInstr(instrIds i) const = 0;
 };

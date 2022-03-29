@@ -4,6 +4,7 @@
 #include "instrPrefs.hpp"
 #include "lir.hpp"
 #include "projectBuilder.hpp"
+#include "varCombiner.hpp"
 #include "varGen.hpp"
 #include "varSplitter.hpp"
 
@@ -33,5 +34,6 @@ int main(int,const char*[])
    for(auto it=lir.page.begin();it!=lir.page.end();++it)
    {
       varSplitter::split(it->second,vTbl,t);
+      varCombiner::combine(it->second,vTbl,t);
    }
 }
