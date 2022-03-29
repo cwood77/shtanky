@@ -128,6 +128,20 @@ var& varTable::demand(lirArg& a)
    throw std::runtime_error("variable not found!");
 }
 
+size_t varTable::getStorageFor(size_t orderNum, lirArg& a)
+{
+   var& v = demand(a);
+
+   auto it = v.storageDisambiguators.find(&a);
+   if(it != v.storageDisambiguators.end())
+      return it->second;
+
+   auto stors = v.getStorageAt(orderNum);
+   if(stors.size() != 1)
+      throw std::runtime_error("insanity!");
+   return *(stors.begin());
+}
+
 varGenerator::~varGenerator()
 {
    for(auto it=m_donations.begin();it!=m_donations.end();++it)

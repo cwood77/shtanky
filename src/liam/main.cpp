@@ -1,5 +1,7 @@
 #include "../cmn/ast.hpp"
 #include "../cmn/intel64.hpp"
+#include "../cmn/out.hpp"
+#include "asmCodeGen.hpp"
 #include "astCodeGen.hpp"
 #include "instrPrefs.hpp"
 #include "lir.hpp"
@@ -32,14 +34,22 @@ int main(int,const char*[])
    cmn::tgt::w64EnumTargetInfo t;
    instrPrefs::publishRequirements(lir,vTbl,t);
 
+   cmn::outBundle out;
+   cmn::fileWriter wr;
+   out.setAutoUpdate(wr);
+
    // TODO all these operations should be per stream
    for(auto it=lir.page.begin();it!=lir.page.end();++it)
    {
       varSplitter::split(it->second,vTbl,t);
       varCombiner::combine(it->second,vTbl,t);
 
-      varFinder f(t);
-      varAllocator a(it->second,vTbl,t,f);
-      a.run();
+      {
+         varFinder f(t);
+         varAllocator a(it->second,vTbl,t,f);
+         a.run();
+      }
+
+      asmCodeGen::generate(it->second,vTbl,t,out.get<cmn::columnedOutStream>("testdata\\test\\test.ara.ls","asm"));
    }
 }

@@ -86,7 +86,7 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
    {
       var& v = m_vTable.demand(*i.getArgs()[k]);
 
-      if(k >= argStorage.size())
+      if((k+1) >= argStorage.size())
       {
          // use the stack
          if(outOrIn)
@@ -106,8 +106,8 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
       else
       {
          // use a register
-         v.requireStorage(i,argStorage[k]);
-         ::printf("> assigning r%lld to %s\n",argStorage[k],v.name.c_str());
+         v.requireStorage(i,argStorage[k+1]);
+         ::printf("> assigning r%lld to %s\n",argStorage[k+1],v.name.c_str());
       }
 
       if(k==0)

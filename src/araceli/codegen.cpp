@@ -46,8 +46,8 @@ void codeGen::visit(cmn::fileNode& n)
 
 void codeGen::visit(cmn::classNode& n)
 {
-   auto& header = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader).stream();
-   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   auto& header = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader).stream();
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
 
    std::string vname;
    generateClassVTable(n,header,vname);
@@ -61,7 +61,7 @@ void codeGen::visit(cmn::classNode& n)
 
 void codeGen::visit(cmn::sequenceNode& n)
 {
-   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
 
    source << "{" << std::endl;
 
@@ -72,7 +72,7 @@ void codeGen::visit(cmn::sequenceNode& n)
 
 void codeGen::visit(cmn::invokeNode& n)
 {
-   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
 
    if(n.getChildren().size() < 1)
       throw std::runtime_error("eh?  bad invokeNode");
@@ -85,7 +85,7 @@ void codeGen::visit(cmn::invokeNode& n)
 
 void codeGen::visit(cmn::invokeFuncPtrNode& n)
 {
-   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
 
    if(n.getChildren().size() < 1)
       throw std::runtime_error("eh?  bad invokeNode");
@@ -98,14 +98,14 @@ void codeGen::visit(cmn::invokeFuncPtrNode& n)
 
 void codeGen::visit(cmn::fieldAccessNode& n)
 {
-   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
    visitChildren(n);
    source << ":" << n.name;
 }
 
 void codeGen::visit(cmn::callNode& n)
 {
-   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
 
    source << n.name;
 
@@ -114,28 +114,28 @@ void codeGen::visit(cmn::callNode& n)
 
 void codeGen::visit(cmn::varRefNode& n)
 {
-   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
    source << n.pDef.ref;
    visitChildren(n);
 }
 
 void codeGen::visit(cmn::stringLiteralNode& n)
 {
-   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
    source << "\"" << n.value << "\"";
    visitChildren(n);
 }
 
 void codeGen::visit(cmn::boolLiteralNode& n)
 {
-   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
    source << n.value;
    visitChildren(n);
 }
 
 void codeGen::visit(cmn::intLiteralNode& n)
 {
-   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
    source << n.value;
    visitChildren(n);
 }
@@ -263,7 +263,7 @@ void codeGen::generateMethodSignature(cmn::methodNode& m, std::ostream& s)
 
 void codeGen::generateCallFromOpenParen(cmn::node& n, bool skipFirst)
 {
-   auto& source = m_out.get(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
    source << "(";
    bool first = true;
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)

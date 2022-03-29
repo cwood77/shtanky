@@ -50,6 +50,8 @@ public:
 
    std::map<std::string,var*>& all() { return m_vars; }
 
+   size_t getStorageFor(size_t orderNum, lirArg& a);
+
 private:
    std::map<std::string,var*> m_vars;
 };

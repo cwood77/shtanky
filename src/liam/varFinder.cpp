@@ -10,8 +10,8 @@ size_t varFinder::chooseFreeStorage(std::map<size_t,size_t>& inUse)
    m_t.getProc().createRegisterBank(regs);
 
    for(size_t i=0;i<regs.size();i++)
-      if(inUse[i]==0)
-         return i;
+      if(inUse[regs[i]]==0)
+         return regs[i];
 
    throw std::runtime_error("no free register in combine");
 }

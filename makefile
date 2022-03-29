@@ -45,6 +45,7 @@ CMN_SRC = \
 	src/cmn/lexor.cpp \
 	src/cmn/out.cpp \
 	src/cmn/pathUtil.cpp \
+	src/cmn/trace.cpp \
 
 CMN_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(CMN_SRC)))
 
@@ -104,6 +105,7 @@ $(ARACELI_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # liam
 
 LIAM_SRC = \
+	src/liam/asmCodeGen.cpp \
 	src/liam/astCodeGen.cpp \
 	src/liam/availVarPass.cpp \
 	src/liam/instrPrefs.cpp \

@@ -1,8 +1,10 @@
 #pragma once
+#include <list>
 #include <map>
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace cmn {
 
@@ -11,17 +13,42 @@ public:
    virtual void skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const = 0;
 };
 
-class outStream {
+class iOutStream {
+public:
+   virtual ~iOutStream() {}
+
+   virtual void updateDisk(iFileWriter& f) = 0;
+};
+
+class outStream : public iOutStream {
 public:
    explicit outStream(const std::string& fullPath) : m_fullPath(fullPath) {}
 
    std::ostream& stream() { return m_stream; }
 
-   void updateDisk(iFileWriter& f);
+   virtual void updateDisk(iFileWriter& f);
 
 private:
    std::string m_fullPath;
    std::stringstream m_stream;
+};
+
+class columnedOutStream : public iOutStream {
+public:
+   explicit columnedOutStream(const std::string& fullPath)
+   : m_fullPath(fullPath), m_width(3) {}
+   ~columnedOutStream() {}
+
+   void setWidth(size_t w) { m_width = w; }
+
+   std::vector<std::stringstream*>& appendLine();
+
+   virtual void updateDisk(iFileWriter& f);
+
+private:
+   std::string m_fullPath;
+   size_t m_width;
+   std::list<std::vector<std::stringstream*> > m_lines;
 };
 
 class outBundle {
@@ -29,7 +56,16 @@ public:
    outBundle() : m_pWriter(NULL) {}
    ~outBundle();
 
-   outStream& get(const std::string& basePath, const std::string& ext);
+   template<class T>
+   T& get(const std::string& basePath, const std::string& ext)
+   {
+      std::string key;
+      iOutStream*& pStream = _get(basePath,ext,key);
+      if(!pStream)
+         pStream = new T(key);
+      return dynamic_cast<T&>(*pStream);
+   }
+
 #if 0
    // ephemeral files are always newly-created; if one already exists, a new one
    // with a decorated name is created
@@ -40,7 +76,9 @@ public:
    void updateDisk(iFileWriter& f);
 
 private:
-   std::map<std::string,outStream*> m_streams;
+   iOutStream*& _get(const std::string& basePath, const std::string& ext, std::string& key);
+
+   std::map<std::string,iOutStream*> m_streams;
    iFileWriter *m_pWriter;
 };
 

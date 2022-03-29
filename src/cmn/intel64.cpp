@@ -3,6 +3,16 @@
 namespace cmn {
 namespace tgt {
 
+static const instrInfo kInstrs[] = {
+   { "<decl>", NULL },
+   { "push",   NULL },
+   { "pop",    NULL },
+   { "mov",    NULL },
+   { "call",   NULL },
+   { "ret",    NULL },
+   { "system", NULL },
+};
+
 void x8664Processor::createRegisterBank(std::vector<size_t>& v) const
 {
    v.push_back(i64::kRegB);
@@ -48,12 +58,79 @@ void x8664Processor::createRegisterMap(std::map<size_t,size_t>& m) const
 
 const char *x8664Processor::getRegName(size_t r) const
 {
-   throw 3.14;
+   switch(r)
+   {
+      case kStorageUnassigned:
+         return "<unassigned>";
+         break;
+      case kStorageStackArg:
+         return "<stackarg>";
+         break;
+      case kStorageStackLocal:
+         return "<stacklocal>";
+         break;
+      case kStoragePatch:
+         return "<patch>";
+         break;
+      case kStorageImmediate:
+         return "<immediate>";
+         break;
+      case i64::kRegA:
+         return "rax";
+         break;
+      case i64::kRegB:
+         return "rbx";
+         break;
+      case i64::kRegC:
+         return "rcx";
+         break;
+      case i64::kRegD:
+         return "rdx";
+         break;
+      case i64::kRegBP:
+         return "rbp";
+         break;
+      case i64::kRegSP:
+         return "rsp";
+         break;
+      case i64::kRegSI:
+         return "rsi";
+         break;
+      case i64::kRegDI:
+         return "rdi";
+         break;
+      case i64::kReg8:
+         return "r8";
+         break;
+      case i64::kReg9:
+         return "r9";
+         break;
+      case i64::kReg10:
+         return "r10";
+         break;
+      case i64::kReg11:
+         return "r11";
+         break;
+      case i64::kReg12:
+         return "r12";
+         break;
+      case i64::kReg13:
+         return "r13";
+         break;
+      case i64::kReg14:
+         return "r14";
+         break;
+      case i64::kReg15:
+         return "r15";
+         break;
+      default:
+         throw 3.14;
+   }
 }
 
 const instrInfo *x8664Processor::getInstr(instrIds i) const
 {
-   throw 3.14;
+   return kInstrs+i;
 }
 
 bool w64CallingConvention::stackArgsPushRToL() const

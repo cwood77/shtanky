@@ -50,9 +50,9 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
    auto& stream = m_lir.page[m_currFunc];
    auto& mov = lirInstr::append(stream.pTail,cmn::tgt::kMov);
    auto& dest = mov.addArg(*new lirArgVar("",0));
-   dest.addrOf = true;
 
-   m_vGen.claimAndAddArgOffWire(mov,n.demandSoleChild<cmn::node>());
+   auto& src = m_vGen.claimAndAddArgOffWire(mov,n.demandSoleChild<cmn::node>());
+   src.addrOf = true;
 
    m_vGen.createPrivateVar(mov.orderNum,dest,"field:%s",n.name.c_str()).publishOnWire(n);
 }

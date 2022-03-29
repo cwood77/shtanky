@@ -66,6 +66,8 @@ enum genericStorageClasses {
 
 class instrInfo {
 public:
+   instrInfo(const char *name, const instrFmt *f) : name(name), fmts(f) {}
+
    const char *name;
    const instrFmt *fmts;
 };
