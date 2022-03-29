@@ -69,32 +69,38 @@ public:
 
 private:
    void publishOnWire(cmn::node& n, var& v);
-   void donateToWire(cmn::node& n, lirArg& a);
+   void donateToWire(cmn::node& n, lirArg& a, const std::string& nameHint);
    lirArg& duplicateArg(const lirArg& a);
 
    varTable& m_vTable;
    std::map<cmn::node*,var*> m_onWire;
    std::map<cmn::node*,lirArg*> m_donations;
+   std::map<cmn::node*,std::string> m_donatedNames;
 
 friend class varWriter;
 };
 
 class varWriter {
 public:
-   varWriter(varGenerator *pVGen, var *v, size_t num, lirArg *a)
-   : m_pVGen(pVGen), m_pVar(v), m_num(num), m_pArg(a), m_donated(false) {}
+   varWriter(varGenerator *pVGen, const std::string& nameHint, size_t num, lirArg *a)
+   : m_pVGen(pVGen), m_nameHint(nameHint), m_num(num), m_pArg(a)
+   , m_pub(false), m_donated(false) {}
    ~varWriter() { finalize(); }
 
-   void publishOnWire(cmn::node& n) { m_pVGen->publishOnWire(n,*m_pVar); }
-   void donateToWire(cmn::node& n) { m_pVGen->donateToWire(n,*m_pArg);  m_donated=true; }
+   void publishOnWire(cmn::node& n)
+   { m_pVGen->publishOnWire(n,createVar()); m_pub = true; }
+   void donateToWire(cmn::node& n)
+   { m_pVGen->donateToWire(n,*m_pArg,m_nameHint);  m_donated=true; }
 
 private:
+   var& createVar();
    void finalize();
 
    varGenerator *m_pVGen;
-   var *m_pVar;
+   std::string m_nameHint;
    size_t m_num;
    lirArg *m_pArg;
+   bool m_pub;
    bool m_donated;
 };
 

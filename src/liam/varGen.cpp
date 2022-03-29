@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <stdexcept>
 #include <stdio.h>
+#include <string.h>
 
 namespace liam {
 
@@ -34,7 +35,7 @@ std::set<size_t> var::getStorageAt(size_t orderNum)
       if(it->first >= orderNum)
          return it->second;
 
-   throw std::runtime_error("can't find storage at that time");
+   return std::set<size_t>();
 }
 
 bool var::requiresStorageLater(size_t orderNum, size_t storage)
@@ -140,20 +141,23 @@ varWriter varGenerator::createPrivateVar(size_t instrNum, lirArg& a, const std::
    char buffer[1000];
    ::vsnprintf(buffer,1000,nameHint.c_str(),ap);
    va_end(ap);
-   auto finalName = m_vTable.pickUniqueName(buffer);
+   if(::strlen(buffer)==0)
+      throw std::runtime_error("nameHint must be provied");
 
-   var& v = m_vTable.create(finalName);
+   //auto finalName = m_vTable.pickUniqueName(buffer);
+
+   //var& v = m_vTable.create(finalName);
    //v.refs[instrNum].push_back(&a);
 
-   return varWriter(this,&v,instrNum,&a);
+   return varWriter(this,nameHint,instrNum,&a);
 }
 
 varWriter varGenerator::createNamedVar(size_t instrNum, lirArgVar& a)
 {
-   var& v = m_vTable.create(a.name);
+   //var& v = m_vTable.create(a.name);
    //v.refs[instrNum].push_back(&a);
 
-   return varWriter(this,&v,instrNum,&a);
+   return varWriter(this,"",instrNum,&a);
 }
 
 lirArg& varGenerator::claimAndAddArgByName(lirInstr& i, const std::string& n)
@@ -174,9 +178,19 @@ lirArg& varGenerator::claimAndAddArgOffWire(lirInstr& i, cmn::node& n)
    if(pArg)
    {
       // use donation
-      auto finalName = m_vTable.pickUniqueName("donation");
-      var& v = m_vTable.create(finalName);
-      v.refs[i.orderNum].push_back(pArg);
+      // LAME TODO HACK - share code with createVar()
+      std::string m_nameHint = m_donatedNames[&n];
+      m_donatedNames.erase(&n);
+      var *pVar = NULL;
+      if(m_nameHint.empty())
+         pVar = &m_vTable.create(dynamic_cast<lirArgVar&>(*pArg).name);
+      else
+      {
+         auto finalName = m_vTable.pickUniqueName(m_nameHint);
+         pVar = &m_vTable.create(finalName);
+      }
+      pVar->refs[i.orderNum].push_back(pArg);
+
       i.addArg(*pArg);
       return *pArg;
    }
@@ -205,7 +219,7 @@ void varGenerator::publishOnWire(cmn::node& n, var& v)
    m_onWire[&n] = &v;
 }
 
-void varGenerator::donateToWire(cmn::node& n, lirArg& _a)
+void varGenerator::donateToWire(cmn::node& n, lirArg& _a, const std::string& nameHint)
 {
    if(m_onWire.find(&n)!=m_onWire.end())
       throw std::runtime_error("can't donate when already published");
@@ -213,6 +227,7 @@ void varGenerator::donateToWire(cmn::node& n, lirArg& _a)
    if(a)
       throw std::runtime_error("can't donate when already donated");
    a = &_a;
+   m_donatedNames[&n] = nameHint;
 }
 
 lirArg& varGenerator::duplicateArg(const lirArg& a)
@@ -225,10 +240,24 @@ lirArg& varGenerator::duplicateArg(const lirArg& a)
       return *new lirArgConst(pConst->name,pConst->getSize());
 }
 
+var& varWriter::createVar()
+{
+   var *pVar = NULL;
+   if(m_nameHint.empty())
+      pVar = &m_pVGen->m_vTable.create(dynamic_cast<lirArgVar&>(*m_pArg).name);
+   else
+   {
+      auto finalName = m_pVGen->m_vTable.pickUniqueName(m_nameHint);
+      pVar = &m_pVGen->m_vTable.create(finalName);
+   }
+   pVar->refs[m_num].push_back(m_pArg);
+   return *pVar;
+}
+
 void varWriter::finalize()
 {
-   if(!m_donated)
-      m_pVar->refs[m_num].push_back(m_pArg);
+   if(!m_donated && !m_pub)
+      createVar();
 }
 
 } // namespace liam
