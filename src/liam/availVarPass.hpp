@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <map>
 
 namespace cmn { namespace tgt { class iTargetInfo; } }
 
@@ -7,6 +8,7 @@ namespace liam {
 
 class lirInstr;
 class lirStream;
+class var;
 class varFinder;
 class varTable;
 
@@ -20,6 +22,7 @@ protected:
    : m_s(s), m_v(v), m_t(t), m_f(f) {}
 
    virtual void onInstr(lirInstr& i);
+   virtual void onLivingVar(lirInstr& i, var& v);
    virtual void onInstrStorage(lirInstr& i, size_t storage);
    virtual void onInstrWithAvailVar(lirInstr& i) {}
    void restart();

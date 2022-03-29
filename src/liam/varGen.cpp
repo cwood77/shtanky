@@ -31,8 +31,8 @@ bool var::isAlive(size_t orderNum)
 
 std::set<size_t> var::getStorageAt(size_t orderNum)
 {
-   for(auto it=instrToStorageMap.begin();it!=instrToStorageMap.end();++it)
-      if(it->first >= orderNum)
+   for(auto it=instrToStorageMap.rbegin();it!=instrToStorageMap.rend();++it)
+      if(it->first <= orderNum)
          return it->second;
 
    return std::set<size_t>();
@@ -149,7 +149,7 @@ varWriter varGenerator::createPrivateVar(size_t instrNum, lirArg& a, const std::
    //var& v = m_vTable.create(finalName);
    //v.refs[instrNum].push_back(&a);
 
-   return varWriter(this,nameHint,instrNum,&a);
+   return varWriter(this,buffer,instrNum,&a);
 }
 
 varWriter varGenerator::createNamedVar(size_t instrNum, lirArgVar& a)

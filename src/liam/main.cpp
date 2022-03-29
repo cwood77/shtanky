@@ -4,7 +4,9 @@
 #include "instrPrefs.hpp"
 #include "lir.hpp"
 #include "projectBuilder.hpp"
+#include "varAlloc.hpp"
 #include "varCombiner.hpp"
+#include "varFinder.hpp"
 #include "varGen.hpp"
 #include "varSplitter.hpp"
 
@@ -35,5 +37,9 @@ int main(int,const char*[])
    {
       varSplitter::split(it->second,vTbl,t);
       varCombiner::combine(it->second,vTbl,t);
+
+      varFinder f(t);
+      varAllocator a(it->second,vTbl,t,f);
+      a.run();
    }
 }

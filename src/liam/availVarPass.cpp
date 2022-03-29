@@ -36,20 +36,19 @@ void availVarPass::onInstr(lirInstr& i)
 
    for(auto it=m_v.all().begin();it!=m_v.all().end();++it)
    {
-      // for each var
-
       var& vr = *it->second;
       if(vr.isAlive(i.orderNum))
-      {
-         // for each var storage
-
-         auto storage = vr.getStorageAt(i.orderNum);
-         for(auto jit=storage.begin();jit!=storage.end();++jit)
-            onInstrStorage(i,*jit);
-      }
+         onLivingVar(i,vr);
    }
 
    onInstrWithAvailVar(i);
+}
+
+void availVarPass::onLivingVar(lirInstr& i, var& v)
+{
+   auto storage = v.getStorageAt(i.orderNum);
+   for(auto jit=storage.begin();jit!=storage.end();++jit)
+      onInstrStorage(i,*jit);
 }
 
 void availVarPass::onInstrStorage(lirInstr& i, size_t storage)
