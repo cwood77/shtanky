@@ -60,6 +60,7 @@ class w64EmuSyscall : public tgt::iSyscallConvention {
 
 class w64EnumTargetInfo : public tgt::iTargetInfo {
 public:
+   virtual size_t getSize(size_t s) const { return s==0 ? 8 : s; } // 64-bit target
    virtual const iProcessorInfo& getProc() const { return m_proc; }
    virtual const iCallingConvention& getCallConvention() const { return m_cc; }
    virtual const iSyscallConvention& getSyscallConvention() const;

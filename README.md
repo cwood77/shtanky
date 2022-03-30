@@ -42,7 +42,7 @@ Technical ideas and decisions thus far:
 - [ ] preserve nonvolitile regs in pro/epilogue
 - [ ] use shadow space for spilling 4 regs
 - [x] change 'storage' to allow for stack vars
-- [ ] more codegen tests
+~~- [ ] more codegen tests~~
 - [ ] codegen test that exercises stack
 - [ ] immediate ops
 - [ ] patchable immediate ops

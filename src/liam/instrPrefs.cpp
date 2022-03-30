@@ -81,12 +81,13 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
    std::vector<size_t> argStorage;
    cc.getRValAndArgBank(argStorage);
    size_t shadow = cc.getShadowSpace();
+   int stackSpace = 0;
 
    // decl nodes have no return vallue
    size_t offset = outOrIn ? 0 : 1;
 
    if(!cc.stackArgsPushRToL())
-      throw std::runtime_error("unimpled!");
+      throw std::runtime_error("unimpled! 1");
    for(size_t k = i.getArgs().size()-1;;k--)
    {
       var& v = m_vTable.demand(*i.getArgs()[k]);
@@ -97,15 +98,19 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
          if(outOrIn)
          {
             // going out
-            throw std::runtime_error("unimpled");
+            //throw std::runtime_error("unimpled 2");
+            // RSP-8, but RSP _when_?  push for a call needs to be done _before_ the call
+            // ... I guess I need to use a frame ptr?
+            v.requireStorage(i,cmn::tgt::makeStackStorage(stackSpace));
             //v.requireStorage(i,cmn::tgt::kStorageStackLocal);
             //::printf("> assigning RSP-%lld to %s\n",m_stackSpace,v.name.c_str());
             //m_stackSpace -= v.getSize();
+            stackSpace -= m_target.getSize(v.getSize());
          }
          else
          {
             // coming in
-            throw std::runtime_error("unimpled");
+            throw std::runtime_error("unimpled 3");
             //v.requireStorage(i,cmn::tgt::kStorageStackArg);
             //::printf("> assigning RSP+%lld to %s\n",shadow + v.getSize(),v.name.c_str());
          }

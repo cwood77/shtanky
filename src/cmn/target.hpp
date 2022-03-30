@@ -105,6 +105,7 @@ public:
 
 class iTargetInfo {
 public:
+   virtual size_t getSize(size_t s) const = 0;
    virtual const iProcessorInfo& getProc() const = 0;
    virtual const iCallingConvention& getCallConvention() const = 0;
    virtual const iSyscallConvention& getSyscallConvention() const = 0;
