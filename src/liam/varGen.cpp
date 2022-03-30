@@ -1,3 +1,4 @@
+#include "../cmn/trace.cpp"
 #include "lir.hpp"
 #include "varGen.hpp"
 #include <sstream>
@@ -29,13 +30,26 @@ bool var::isAlive(size_t orderNum)
    return refs.begin()->first <= orderNum && orderNum <= (--(refs.end()))->first;
 }
 
+// ans    req
+//  b  0
+//  b  1  BX
+//  b  2
+//  d  3  DX   splitter will inject at 2.5 to mov BX <- BX
+//  d  4
+//
 std::set<size_t> var::getStorageAt(size_t orderNum)
 {
-   for(auto it=instrToStorageMap.rbegin();it!=instrToStorageMap.rend();++it)
-      if(it->first <= orderNum)
-         return it->second;
+   if(instrToStorageMap.size() == 0)
+      return std::set<size_t>();
 
-   return std::set<size_t>();
+   auto found = instrToStorageMap.begin();
+   for(auto it=instrToStorageMap.begin();it!=instrToStorageMap.end();++it)
+      if(it->first <= orderNum)
+         found = it;
+      else
+         break;
+
+   return found->second;
 }
 
 bool var::requiresStorageLater(size_t orderNum, size_t storage)
@@ -50,12 +64,15 @@ bool var::requiresStorageLater(size_t orderNum, size_t storage)
 
 void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
 {
+   cdwDEBUG("--updateStorageHereAndAfter[%lld,%lld->%lld]\n",i.orderNum,old,nu);
+
    lirInstr *pInstr = &i;
    while(true)
    {
       auto it = instrToStorageMap.find(pInstr->orderNum);
       if(it!=instrToStorageMap.end() && it->second.find(old)!=it->second.end())
       {
+         cdwDEBUG("   hit\n");
          it->second.erase(old);
          it->second.insert(nu);
 
@@ -70,6 +87,16 @@ void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
             auto kit = storageDisambiguators.find(*jit);
             if(kit != storageDisambiguators.end() && kit->second == old)
                kit->second = nu;
+         }
+      }
+      else
+      {
+         cdwDEBUG("   ?no hit\n");
+
+         if(pInstr->orderNum == i.orderNum)
+         {
+            cdwDEBUG("      since this is instr %llu, inject a requirement\n",i.orderNum);
+            requireStorage(i,nu);
          }
       }
 

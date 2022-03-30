@@ -57,6 +57,8 @@ lirInstr& lirInstr::injectBefore(const cmn::tgt::instrIds id)
    pNoob->orderNum = orderNum - 1;
 
    pNoob->m_pPrev = m_pPrev;
+   if(m_pPrev)
+      m_pPrev->m_pNext = pNoob;
 
    pNoob->m_pNext = this;
    m_pPrev = pNoob;

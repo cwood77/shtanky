@@ -49,6 +49,7 @@ void instrPrefs::handle(lirInstr& i)
          break;
       case cmn::tgt::kRet:
          {
+            throw 3.14;
             if(i.getArgs().size())
             {
                lirArgVar *pVar = dynamic_cast<lirArgVar*>(i.getArgs()[0]);
@@ -65,6 +66,7 @@ void instrPrefs::handle(lirInstr& i)
          break;
       case cmn::tgt::kSyscall:
          {
+            throw 3.14;
             auto& cc = m_target.getSyscallConvention();
             handle(i,cc,/*outOrIn*/true);
          }
@@ -80,13 +82,16 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
    cc.getRValAndArgBank(argStorage);
    size_t shadow = cc.getShadowSpace();
 
+   // decl nodes have no return vallue
+   size_t offset = outOrIn ? 0 : 1;
+
    if(!cc.stackArgsPushRToL())
       throw std::runtime_error("unimpled!");
    for(size_t k = i.getArgs().size()-1;;k--)
    {
       var& v = m_vTable.demand(*i.getArgs()[k]);
 
-      if((k+1) >= argStorage.size())
+      if((k+offset) >= argStorage.size())
       {
          // use the stack
          if(outOrIn)
@@ -106,8 +111,8 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
       else
       {
          // use a register
-         v.requireStorage(i,argStorage[k+1]);
-         ::printf("> assigning r%lld to %s\n",argStorage[k+1],v.name.c_str());
+         v.requireStorage(i,argStorage[k+offset]);
+         ::printf("> assigning r%lld to %s\n",argStorage[k+offset],v.name.c_str());
       }
 
       if(k==0)

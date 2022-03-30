@@ -1,4 +1,5 @@
 #include "../cmn/target.hpp"
+#include "../cmn/trace.hpp"
 #include "lir.hpp"
 #include "varCombiner.hpp"
 #include "varGen.hpp"
@@ -13,8 +14,8 @@ size_t chooseFreeStorage(cmn::tgt::iTargetInfo& t, std::map<size_t,size_t>& inUs
    t.getProc().createRegisterBank(regs);
 
    for(size_t i=0;i<regs.size();i++)
-      if(inUse[i]==0)
-         return i;
+      if(inUse[regs[i]]==0)
+         return regs[i];
 
    throw std::runtime_error("no free register in combine");
 }
@@ -27,6 +28,8 @@ void varCombiner::combine(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
    while(true)
    {
       // for each instr
+
+      bool restart = false;
 
       std::map<size_t,size_t> inUse;
       t.getProc().createRegisterMap(inUse);
@@ -58,6 +61,8 @@ void varCombiner::combine(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
          if(it->second.size() > 1)
          {
             // two or more variables claimed this spot!
+            cdwDEBUG("%d variables claimed storage %lld!\n",it->second.size(),it->first);
+            cdwDEBUG("   when handling instr %llu\n",pInstr->orderNum);
 
             // pick one to be the winner
             //
@@ -77,22 +82,24 @@ void varCombiner::combine(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
             losers.erase(pWinner);
 
             // the winner gets to keep the storage
+            cdwDEBUG("   winner is %s\n",pWinner->name.c_str());
 
             for(auto jit=losers.begin();jit!=losers.end();++jit)
             {
                // for each loser
 
-               ::printf("[varCombiner] handling loser!\n");
+               cdwDEBUG("   handling loser %s\n",(*jit)->name.c_str());
 
                // stash loser to a free storage loc and fixup subsequent refs
                size_t altStorage = chooseFreeStorage(t,inUse);
                (*jit)->updateStorageHereAndAfter(*pInstr,it->first,altStorage);
+               cdwDEBUG("      evicting to %lld\n",altStorage);
 
                // emit a move to implement this
                {
                   auto& mov = pInstr->injectBefore(cmn::tgt::kMov);
-                  auto& dest = pInstr->addArg<lirArgVar>(":combDest",0);
-                  auto& src = pInstr->addArg<lirArgVar>(":combSrc",0);
+                  auto& dest = mov.addArg<lirArgVar>(":combDest",0);
+                  auto& src = mov.addArg<lirArgVar>(":combSrc",0);
 
                   (*jit)->refs[mov.orderNum].push_back(&dest);
                   (*jit)->refs[mov.orderNum].push_back(&src);
@@ -103,15 +110,26 @@ void varCombiner::combine(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
                   (*jit)->storageDisambiguators[&dest] = altStorage;
                   (*jit)->storageDisambiguators[&src] = it->first;
                }
+
+
+               cdwDEBUG("      new LIR graph:\n");
+               pInstr->head().dump();
             }
 
             // restart algorithm
             // ... I think
-            pInstr = &s.pTail->head();
-            continue;
+            //pInstr = &s.pTail->head();
+            //continue;
+            restart = true;
+            break;
          }
       }
 
+      if(restart)
+      {
+         pInstr = &pInstr->head();
+         continue;
+      }
       if(pInstr->isLast())
          break;
       pInstr = &pInstr->next();
