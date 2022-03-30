@@ -4,7 +4,7 @@
 # generated araceli/liam/shtasm files
 *.ara.lh
 *.ara.ls
-*.ara.ls.asm
+#*.ara.ls.asm
 
 # Prerequisites
 *.d
