@@ -50,6 +50,6 @@ int main(int,const char*[])
          a.run();
       }
 
-      asmCodeGen::generate(it->second,vTbl,t,out.get<cmn::columnedOutStream>("testdata\\test\\test.ara.ls","asm"));
+      asmCodeGen::generate(it->second,vTbl,t,out.get<cmn::outStream>("testdata\\test\\test.ara.ls","asm"));
    }
 }

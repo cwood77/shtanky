@@ -1,5 +1,6 @@
 #include "../cmn/out.hpp"
 #include "../cmn/target.hpp"
+#include "../cmn/textTable.hpp"
 #include "../cmn/trace.hpp"
 #include "asmCodeGen.hpp"
 #include "lir.hpp"
@@ -7,8 +8,11 @@
 
 namespace liam {
 
-void asmCodeGen::generate(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t, cmn::columnedOutStream& o)
+void asmCodeGen::generate(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t, cmn::outStream& o)
 {
+   cmn::textTable tt;
+   cmn::textTableLineWriter w(tt);
+
    lirInstr *pInstr = &s.pTail->head();
    while(true)
    {
@@ -22,10 +26,10 @@ void asmCodeGen::generate(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t, c
          case cmn::tgt::kRet:
          case cmn::tgt::kSyscall:
             {
-               auto& l = o.appendLine();
                cdwDEBUG("%s\n",t.getProc().getInstr(pInstr->instrId)->name);
-               //(*l[1]) << t.getProc().getInstr(pInstr->instrId)->name;
-               generateArgs(*pInstr,v,t,(*l[1]));
+               w[1] << t.getProc().getInstr(pInstr->instrId)->name;
+               generateArgs(*pInstr,v,t,w);
+               w.advanceLine();
             }
             break;
       }
@@ -35,16 +39,18 @@ void asmCodeGen::generate(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t, c
       else
          pInstr = &pInstr->next();
    }
+
+   tt.compileAndWrite(o.stream());
 }
 
-void asmCodeGen::generateArgs(lirInstr& i, varTable& v, cmn::tgt::iTargetInfo& t, std::stringstream& s)
+void asmCodeGen::generateArgs(lirInstr& i, varTable& v, cmn::tgt::iTargetInfo& t, cmn::textTableLineWriter& w)
 {
    bool first = false;
    auto& args = i.getArgs();
    for(auto it=args.begin();it!=args.end();++it)
    {
-/*      if(!first)
-         s << ", ";*/
+      if(!first)
+         w[1] << ", ";
       size_t stor = v.getStorageFor(i.orderNum,**it);
 
       if((*it)->addrOf)
@@ -52,7 +58,10 @@ void asmCodeGen::generateArgs(lirInstr& i, varTable& v, cmn::tgt::iTargetInfo& t
       else
          cdwDEBUG("   %s\n",t.getProc().getRegName(stor));
 
-//      s << t.getProc().getRegName(stor);
+      if((*it)->addrOf)
+         w[1] << "[" << t.getProc().getRegName(stor) << "]";
+      else
+         w[1] << t.getProc().getRegName(stor);
    }
 }
 

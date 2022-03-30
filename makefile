@@ -13,7 +13,7 @@ debug: \
 	dirs \
 	$(OUT_DIR)/debug/araceli.exe \
 	$(OUT_DIR)/debug/liam.exe
-	@cmd /c test.bat
+	@cmd /c _test.bat
 
 all: \
 	debug \
@@ -46,6 +46,7 @@ CMN_SRC = \
 	src/cmn/lexor.cpp \
 	src/cmn/out.cpp \
 	src/cmn/pathUtil.cpp \
+	src/cmn/textTable.cpp \
 	src/cmn/trace.cpp \
 
 CMN_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(CMN_SRC)))
