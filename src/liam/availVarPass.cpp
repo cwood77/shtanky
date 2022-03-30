@@ -1,6 +1,7 @@
 #include "../cmn/target.hpp"
 #include "availVarPass.hpp"
 #include "lir.hpp"
+#include "varFinder.hpp"
 #include "varGen.hpp"
 #include <exception>
 
@@ -31,8 +32,7 @@ void availVarPass::run()
 
 void availVarPass::onInstr(lirInstr& i)
 {
-   m_inUse.clear();
-   m_t.getProc().createRegisterMap(m_inUse);
+   m_f.reset();
 
    for(auto it=m_v.all().begin();it!=m_v.all().end();++it)
    {
@@ -48,12 +48,12 @@ void availVarPass::onLivingVar(lirInstr& i, var& v)
 {
    auto storage = v.getStorageAt(i.orderNum);
    for(auto jit=storage.begin();jit!=storage.end();++jit)
-      onInstrStorage(i,*jit);
+      onInstrStorage(i,v,*jit);
 }
 
-void availVarPass::onInstrStorage(lirInstr& i, size_t storage)
+void availVarPass::onInstrStorage(lirInstr& i, var& v, size_t storage)
 {
-   m_inUse[storage]++;
+   m_f.recordStorageUsed(storage);
 }
 
 void availVarPass::restart()

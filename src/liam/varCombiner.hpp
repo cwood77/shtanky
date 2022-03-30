@@ -1,5 +1,8 @@
 #pragma once
+#include "availVarPass.hpp"
 #include <cstddef>
+#include <map>
+#include <set>
 
 namespace cmn { namespace tgt { class iTargetInfo; } }
 
@@ -12,17 +15,17 @@ class varTable;
 // find storage locations with multiple occupants at the same time
 // emit a move to evict one of them
 
-class varCombiner {
+class varCombiner : public availVarPass {
 public:
-   static void combine(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t);
+   varCombiner(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t, varFinder& f)
+   : availVarPass(s,v,t,f) {}
+
+   virtual void onInstr(lirInstr& i);
+   virtual void onInstrStorage(lirInstr& i, var& v, size_t storage);
+   virtual void onInstrWithAvailVar(lirInstr& i);
 
 private:
-   varCombiner(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
-   : m_s(s), m_v(v), m_t(t) {}
-
-   lirStream& m_s;
-   varTable& m_v;
-   cmn::tgt::iTargetInfo& m_t;
+   std::map<size_t,std::set<var*> > m_clients;
 };
 
 } // namespace liam

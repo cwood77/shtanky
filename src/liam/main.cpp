@@ -41,14 +41,13 @@ int main(int,const char*[])
    // TODO all these operations should be per stream
    for(auto it=lir.page.begin();it!=lir.page.end();++it)
    {
-      varSplitter::split(it->second,vTbl,t);
-      varCombiner::combine(it->second,vTbl,t);
+      varFinder f(t);
 
-      {
-         varFinder f(t);
-         varAllocator a(it->second,vTbl,t,f);
-         a.run();
-      }
+      varSplitter::split(it->second,vTbl,t);
+      //varCombiner::combine(it->second,vTbl,t);
+      { varCombiner p(it->second,vTbl,t,f); p.run(); }
+
+      { varAllocator p(it->second,vTbl,t,f); p.run(); }
 
       asmCodeGen::generate(it->second,vTbl,t,out.get<cmn::outStream>("testdata\\test\\test.ara.ls","asm"));
    }

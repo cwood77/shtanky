@@ -13,6 +13,16 @@ class varFinder;
 class varTable;
 
 // sweeps over every instruction, keeping track of what storage is in use
+// it programs the finder with this information
+//
+// sequence:
+//   onInstr()
+//     for all alive
+//       onLivingVar()
+//       for all storage
+//         onInstrStorage()
+//     onInstrWithAvailVar()
+//
 class availVarPass {
 public:
    void run();
@@ -23,7 +33,7 @@ protected:
 
    virtual void onInstr(lirInstr& i);
    virtual void onLivingVar(lirInstr& i, var& v);
-   virtual void onInstrStorage(lirInstr& i, size_t storage);
+   virtual void onInstrStorage(lirInstr& i, var& v, size_t storage);
    virtual void onInstrWithAvailVar(lirInstr& i) {}
    void restart();
 
@@ -31,8 +41,6 @@ protected:
    varTable& m_v;
    cmn::tgt::iTargetInfo& m_t;
    varFinder& m_f;
-
-   std::map<size_t,size_t> m_inUse;
 };
 
 } // namespace liam

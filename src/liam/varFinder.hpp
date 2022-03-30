@@ -10,10 +10,13 @@ class varFinder {
 public:
    explicit varFinder(cmn::tgt::iTargetInfo& t) : m_t(t) {}
 
-   size_t chooseFreeStorage(std::map<size_t,size_t>& inUse);
+   void reset();
+   void recordStorageUsed(size_t s) { m_inUse[s]++; }
+   size_t chooseFreeStorage();
 
 private:
    cmn::tgt::iTargetInfo& m_t;
+   std::map<size_t,size_t> m_inUse;
 };
 
 } // namespace liam

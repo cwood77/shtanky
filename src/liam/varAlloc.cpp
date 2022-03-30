@@ -19,8 +19,7 @@ void varAllocator::onInstrWithAvailVar(lirInstr& i)
          if(storage.size() == 0)
          {
             // alive variable with no assigned storage... assign some now
-            size_t stor = m_f.chooseFreeStorage(m_inUse);
-            m_inUse[stor]++;
+            size_t stor = m_f.chooseFreeStorage();
             vr.requireStorage(i,stor);
             ::printf("[varAlloc] picking %lld for var %s\n",stor,vr.name.c_str());
          }

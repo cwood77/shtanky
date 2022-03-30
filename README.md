@@ -37,5 +37,14 @@ Technical ideas and decisions thus far:
 - gates to kernel mode done via `.osCall` instrinsic which is typically a `syscall` instruction
 - emulate on Windows 64 by generating the `.osCall` intrinsic differently in liam (and below?)
 
+## todo
+- [ ] notice that calls trash regs
+- [ ] preserve nonvolitile regs in pro/epilogue
+- [ ] use shadow space for spilling 4 regs
+- [ ] change 'storage' to allow for stack vars
+- [ ] immediate ops
+- [ ] patchable immediate ops
+- [ ] func labels
+- [ ] instr overload selection
 
 [^1]: The name "shtanky" was suggested by my son, Ethan (age 11).  I selected the first of his suggestions that didn't include "my dad's butt" somewhere in the title.
