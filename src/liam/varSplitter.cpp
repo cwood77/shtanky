@@ -1,3 +1,4 @@
+#include "../cmn/fmt.hpp"
 #include "lir.hpp"
 #include "varGen.hpp"
 #include "varSplitter.hpp"
@@ -55,7 +56,11 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
 {
    ::printf("emitting move for split!\n");
 
-   auto& mov = m_s.pTail->head().search(orderNum).injectBefore(cmn::tgt::kMov);
+   auto& mov = m_s.pTail->head()
+      .search(orderNum)
+         .injectBefore(
+            cmn::tgt::kMov,
+            cmn::fmt("      (%s req for %s) [splitter]",v.name.c_str(),m_t.getProc().getRegName(destStor)));
    auto& dest = mov.addArg<lirArgVar>("spltD",v.getSize());
    auto& src = mov.addArg<lirArgVar>("spltS",v.getSize());
 

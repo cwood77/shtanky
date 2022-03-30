@@ -36,7 +36,7 @@ lirInstr::~lirInstr()
    delete m_pNext;
 }
 
-lirInstr& lirInstr::append(lirInstr*& pPrev, const cmn::tgt::instrIds id)
+lirInstr& lirInstr::append(lirInstr*& pPrev, const cmn::tgt::instrIds id, const std::string& comment)
 {
    auto *pNoob = new lirInstr(id);
 
@@ -48,10 +48,13 @@ lirInstr& lirInstr::append(lirInstr*& pPrev, const cmn::tgt::instrIds id)
    }
 
    pPrev = pNoob;
+
+   pNoob->comment = comment;
+
    return *pNoob;
 }
 
-lirInstr& lirInstr::injectBefore(const cmn::tgt::instrIds id)
+lirInstr& lirInstr::injectBefore(const cmn::tgt::instrIds id, const std::string& comment)
 {
    auto *pNoob = new lirInstr(id);
    pNoob->orderNum = orderNum - 1;
@@ -62,6 +65,8 @@ lirInstr& lirInstr::injectBefore(const cmn::tgt::instrIds id)
 
    pNoob->m_pNext = this;
    m_pPrev = pNoob;
+
+   pNoob->comment = comment;
 
    return *pNoob;
 }

@@ -1,3 +1,4 @@
+#include "../cmn/fmt.hpp"
 #include "../cmn/target.hpp"
 #include "astCodeGen.hpp"
 #include "lir.hpp"
@@ -15,7 +16,10 @@ void astCodeGen::visit(cmn::funcNode& n)
    {
       // publish args as variables, if any
 
-      auto& i = lirInstr::append(stream.pTail,cmn::tgt::kDeclParam);
+      auto& i = lirInstr::append(
+         stream.pTail,
+         cmn::tgt::kDeclParam,
+         cmn::fmt("func %s",n.name.c_str()));
 
       for(auto it=args.begin();it!=args.end();++it)
       {
@@ -34,7 +38,10 @@ void astCodeGen::visit(cmn::invokeFuncPtrNode& n)
       (*it)->acceptVisitor(*this);
 
    auto& stream = m_lir.page[m_currFunc];
-   auto& call = lirInstr::append(stream.pTail,cmn::tgt::kCall);
+   auto& call = lirInstr::append(
+      stream.pTail,
+      cmn::tgt::kCall,
+      "");
    auto& rval = call.addArg(*new lirArgVar("rval",0));
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
@@ -48,7 +55,10 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
    visitChildren(n);
 
    auto& stream = m_lir.page[m_currFunc];
-   auto& mov = lirInstr::append(stream.pTail,cmn::tgt::kMov);
+   auto& mov = lirInstr::append(
+      stream.pTail,
+      cmn::tgt::kMov,
+      cmn::fmt("   :%s",n.name.c_str()));
    auto& dest = mov.addArg(*new lirArgVar("",0));
 
    auto& src = m_vGen.claimAndAddArgOffWire(mov,n.demandSoleChild<cmn::node>());

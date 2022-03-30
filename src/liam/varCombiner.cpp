@@ -1,3 +1,4 @@
+#include "../cmn/fmt.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/trace.hpp"
 #include "lir.hpp"
@@ -97,7 +98,9 @@ void varCombiner::combine(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
 
                // emit a move to implement this
                {
-                  auto& mov = pInstr->injectBefore(cmn::tgt::kMov);
+                  auto& mov = pInstr->injectBefore(
+                     cmn::tgt::kMov,
+                     cmn::fmt("      (preserve %s) [combiner]",t.getProc().getRegName(it->first)));
                   auto& dest = mov.addArg<lirArgVar>(":combDest",0);
                   auto& src = mov.addArg<lirArgVar>(":combSrc",0);
 

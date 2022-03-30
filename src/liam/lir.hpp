@@ -60,7 +60,7 @@ class lirInstr {
 public:
    virtual ~lirInstr();
 
-   static lirInstr& append(lirInstr*& pPrev, const cmn::tgt::instrIds id);
+   static lirInstr& append(lirInstr*& pPrev, const cmn::tgt::instrIds id, const std::string& comment);
 
    template<class T>
    T& addArg(const std::string& n, size_t z)
@@ -72,7 +72,7 @@ public:
 
    lirArg& addArg(lirArg& a) { m_args.push_back(&a); return a; }
 
-   lirInstr& injectBefore(const cmn::tgt::instrIds id);
+   lirInstr& injectBefore(const cmn::tgt::instrIds id, const std::string& comment);
 
    void dump();
 
@@ -80,6 +80,8 @@ public:
 
    const cmn::tgt::instrIds instrId;
    const cmn::tgt::instrFmt *pInstrFmt;
+
+   std::string comment;
 
    bool isLast() const { return m_pNext == NULL; }
    lirInstr& next() { return *m_pNext; }

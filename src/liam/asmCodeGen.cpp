@@ -29,6 +29,8 @@ void asmCodeGen::generate(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t, c
                cdwDEBUG("%s\n",t.getProc().getInstr(pInstr->instrId)->name);
                w[1] << t.getProc().getInstr(pInstr->instrId)->name;
                generateArgs(*pInstr,v,t,w);
+               if(!pInstr->comment.empty())
+                  w[2] << "; " << pInstr->comment;
                w.advanceLine();
             }
             break;

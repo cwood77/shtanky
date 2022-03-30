@@ -42,6 +42,7 @@ CMN_SRC = \
 	src/cmn/ast.cpp \
 	src/cmn/commonLexor.cpp \
 	src/cmn/commonParser.cpp \
+	src/cmn/fmt.cpp \
 	src/cmn/intel64.cpp \
 	src/cmn/lexor.cpp \
 	src/cmn/out.cpp \
