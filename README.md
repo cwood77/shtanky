@@ -41,7 +41,9 @@ Technical ideas and decisions thus far:
 - [ ] notice that calls trash regs
 - [ ] preserve nonvolitile regs in pro/epilogue
 - [ ] use shadow space for spilling 4 regs
-- [ ] change 'storage' to allow for stack vars
+- [x] change 'storage' to allow for stack vars
+- [ ] more codegen tests
+- [ ] codegen test that exercises stack
 - [ ] immediate ops
 - [ ] patchable immediate ops
 - [ ] func labels

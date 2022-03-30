@@ -69,7 +69,7 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
             {
                auto& mov = i.injectBefore(
                   cmn::tgt::kMov,
-                  cmn::fmt("      (preserve %s) [combiner]",m_t.getProc().getRegName(it->first)));
+                  cmn::fmt("      (preserve) [combiner]"));
                auto& dest = mov.addArg<lirArgVar>(":combDest",0);
                auto& src = mov.addArg<lirArgVar>(":combSrc",0);
 

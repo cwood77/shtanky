@@ -97,15 +97,17 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
          if(outOrIn)
          {
             // going out
-            v.requireStorage(i,cmn::tgt::kStorageStackLocal);
-            ::printf("> assigning RSP-%lld to %s\n",m_stackSpace,v.name.c_str());
-            m_stackSpace -= v.getSize();
+            throw std::runtime_error("unimpled");
+            //v.requireStorage(i,cmn::tgt::kStorageStackLocal);
+            //::printf("> assigning RSP-%lld to %s\n",m_stackSpace,v.name.c_str());
+            //m_stackSpace -= v.getSize();
          }
          else
          {
             // coming in
-            v.requireStorage(i,cmn::tgt::kStorageStackArg);
-            ::printf("> assigning RSP+%lld to %s\n",shadow + v.getSize(),v.name.c_str());
+            throw std::runtime_error("unimpled");
+            //v.requireStorage(i,cmn::tgt::kStorageStackArg);
+            //::printf("> assigning RSP+%lld to %s\n",shadow + v.getSize(),v.name.c_str());
          }
       }
       else

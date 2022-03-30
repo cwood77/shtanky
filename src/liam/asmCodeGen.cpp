@@ -1,7 +1,6 @@
 #include "../cmn/out.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/textTable.hpp"
-#include "../cmn/trace.hpp"
 #include "asmCodeGen.hpp"
 #include "lir.hpp"
 #include "varGen.hpp"
@@ -26,7 +25,6 @@ void asmCodeGen::generate(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t, c
          case cmn::tgt::kRet:
          case cmn::tgt::kSyscall:
             {
-               cdwDEBUG("%s\n",t.getProc().getInstr(pInstr->instrId)->name);
                w[1] << t.getProc().getInstr(pInstr->instrId)->name;
                generateArgs(*pInstr,v,t,w);
                if(!pInstr->comment.empty())
@@ -55,12 +53,12 @@ void asmCodeGen::generateArgs(lirInstr& i, varTable& v, cmn::tgt::iTargetInfo& t
          w[1] << ", ";
       size_t stor = v.getStorageFor(i.orderNum,**it);
 
-      if((*it)->addrOf)
-         cdwDEBUG("   [%s]\n",t.getProc().getRegName(stor));
-      else
-         cdwDEBUG("   %s\n",t.getProc().getRegName(stor));
-
-      if((*it)->addrOf)
+      if(cmn::tgt::isStackStorage(stor))
+         w[1] << "["
+            << t.getProc().getRegName(cmn::tgt::kStorageStack)
+            << cmn::tgt::getStackDisp(stor)
+         << "]";
+      else if((*it)->addrOf)
          w[1] << "[" << t.getProc().getRegName(stor) << "]";
       else
          w[1] << t.getProc().getRegName(stor);

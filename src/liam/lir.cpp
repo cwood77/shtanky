@@ -112,6 +112,7 @@ lirInstr::lirInstr(const cmn::tgt::instrIds id)
 {
 }
 
+/*
 lirVarStorage lirVarStorage::reg(size_t s)
 {
    lirVarStorage x;
@@ -127,6 +128,7 @@ lirVarStorage lirVarStorage::stack(int offset)
    x.targetStorage = cmn::tgt::kStorageStackArg; // TODO
    return x;
 }
+*/
 
 lirVar::lirVar()
 : firstAccess(0)

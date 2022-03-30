@@ -16,8 +16,6 @@ static const instrInfo kInstrs[] = {
 void x8664Processor::createRegisterBank(std::vector<size_t>& v) const
 {
    v.push_back(i64::kRegB);
-   v.push_back(i64::kReg10);
-   v.push_back(i64::kReg11);
    v.push_back(i64::kReg12);
    v.push_back(i64::kReg13);
    v.push_back(i64::kReg14);
@@ -25,7 +23,11 @@ void x8664Processor::createRegisterBank(std::vector<size_t>& v) const
    v.push_back(i64::kRegSI);
    v.push_back(i64::kRegDI);
 
-   // used in cc
+   // don't prefer these - trashed
+   v.push_back(i64::kReg10);
+   v.push_back(i64::kReg11);
+
+   // don't prefer these - cconvention
    v.push_back(i64::kRegC);
    v.push_back(i64::kRegD);
    v.push_back(i64::kReg8);
@@ -63,6 +65,7 @@ const char *x8664Processor::getRegName(size_t r) const
       case kStorageUnassigned:
          return "<unassigned>";
          break;
+         /*
       case kStorageStackArg:
          return "<stackarg>";
          break;
@@ -72,6 +75,7 @@ const char *x8664Processor::getRegName(size_t r) const
       case kStoragePatch:
          return "<patch>";
          break;
+         */
       case kStorageImmediate:
          return "<immediate>";
          break;
@@ -90,6 +94,7 @@ const char *x8664Processor::getRegName(size_t r) const
       case i64::kRegBP:
          return "rbp";
          break;
+      case kStorageStack:
       case i64::kRegSP:
          return "rsp";
          break;
