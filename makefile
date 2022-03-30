@@ -12,7 +12,8 @@ SCRIPTLIB = scriptlib/xcopy-deploy.bat
 debug: \
 	dirs \
 	$(OUT_DIR)/debug/araceli.exe \
-	$(OUT_DIR)/debug/liam.exe \
+	$(OUT_DIR)/debug/liam.exe
+	@cmd /c test.bat
 
 all: \
 	debug \
