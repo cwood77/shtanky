@@ -9,6 +9,7 @@ namespace liam {
 class lirArg;
 class lirInstr;
 class lirStream;
+class varFinder;
 class varTable;
 
 class asmArgWriter {
@@ -28,17 +29,18 @@ private:
 
 class asmCodeGen {
 public:
-   static void generate(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t, cmn::outStream& o);
+   static void generate(lirStream& s, varTable& v, varFinder& f, cmn::tgt::iTargetInfo& t, cmn::outStream& o);
 
 private:
-   asmCodeGen(varTable& v, cmn::tgt::iTargetInfo& t, cmn::textTableLineWriter& w)
-   : m_v(v), m_t(t), m_w(w) {}
+   asmCodeGen(varTable& v, varFinder& f, cmn::tgt::iTargetInfo& t, cmn::textTableLineWriter& w)
+   : m_v(v), m_f(f), m_t(t), m_w(w) {}
 
    void handleInstr(lirInstr& i);
    void handlePrePostCallStackAlloc(lirInstr& i, cmn::tgt::instrIds x);
    void handleComment(lirInstr& i);
 
    varTable& m_v;
+   varFinder& m_f;
    cmn::tgt::iTargetInfo& m_t;
    cmn::textTableLineWriter& m_w;
 };

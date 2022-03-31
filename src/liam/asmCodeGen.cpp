@@ -3,6 +3,7 @@
 #include "../cmn/textTable.hpp"
 #include "asmCodeGen.hpp"
 #include "lir.hpp"
+#include "varFinder.hpp"
 #include "varGen.hpp"
 
 namespace liam {
@@ -44,11 +45,11 @@ void asmArgWriter::write(size_t orderNum, lirArg& a)
    m_first = false;
 }
 
-void asmCodeGen::generate(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t, cmn::outStream& o)
+void asmCodeGen::generate(lirStream& s, varTable& v, varFinder& f, cmn::tgt::iTargetInfo& t, cmn::outStream& o)
 {
    cmn::textTable tt;
    cmn::textTableLineWriter w(tt);
-   asmCodeGen self(v,t,w);
+   asmCodeGen self(v,f,t,w);
 
    lirInstr *pInstr = &s.pTail->head();
    while(true)
@@ -72,6 +73,24 @@ void asmCodeGen::handleInstr(lirInstr& i)
          {
             m_w[0] << i.comment << ":";
             m_w.advanceLine();
+            auto& regs = m_f.getUsedRegs();
+            for(auto it=regs.begin();it!=regs.end();++it)
+            {
+               if(m_t.getCallConvention().requiresPrologEpilogSave(*it))
+               {
+                  m_w[1] << "push " << m_t.getProc().getRegName(*it);
+                  m_w.advanceLine();
+               }
+            }
+            size_t locals = m_f.getUsedStackSpace();
+            if(locals)
+            {
+               m_w[1]
+                  << "sub "
+                  << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
+                  << locals;
+               m_w.advanceLine();
+            }
          }
          break;
       case cmn::tgt::kPush:

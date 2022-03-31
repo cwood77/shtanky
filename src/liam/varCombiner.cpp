@@ -61,7 +61,7 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
             cdwDEBUG("   handling loser %s\n",(*jit)->name.c_str());
 
             // stash loser to a free storage loc and fixup subsequent refs
-            size_t altStorage = m_f.chooseFreeStorage();
+            size_t altStorage = m_f.chooseFreeStorage((*jit)->getSize());
             (*jit)->updateStorageHereAndAfter(i,it->first,altStorage);
             cdwDEBUG("      evicting to %lld\n",altStorage);
 

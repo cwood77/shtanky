@@ -25,7 +25,7 @@ int main(int,const char*[])
 
    varTable vTbl;
    lirStreams lir;
-   cmn::tgt::w64EnumTargetInfo t;
+   cmn::tgt::w64EmuTargetInfo t;
    {
       varGenerator vGen(vTbl);
       { astCodeGen v(lir,vGen,t); prj.acceptVisitor(v); }
@@ -49,6 +49,6 @@ int main(int,const char*[])
 
       { varAllocator p(it->second,vTbl,t,f); p.run(); }
 
-      asmCodeGen::generate(it->second,vTbl,t,out.get<cmn::outStream>("testdata\\test\\test.ara.ls","asm"));
+      asmCodeGen::generate(it->second,vTbl,f,t,out.get<cmn::outStream>("testdata\\test\\test.ara.ls","asm"));
    }
 }

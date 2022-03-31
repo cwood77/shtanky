@@ -1,6 +1,5 @@
 #include "../cmn/target.hpp"
 #include "varFinder.hpp"
-#include <stdexcept>
 
 namespace liam {
 
@@ -10,10 +9,16 @@ void varFinder::reset()
    m_t.getProc().createRegisterMap(m_inUse);
 }
 
-size_t varFinder::chooseFreeStorage()
+void varFinder::recordStorageUsed(size_t s)
+{
+   m_inUse[s]++;
+   m_regsUsed.insert(s);
+}
+
+size_t varFinder::chooseFreeStorage(size_t pseudoSize)
 {
    std::vector<size_t> regs;
-   m_t.getProc().createRegisterBank(regs);
+   m_t.getCallConvention().createRegisterBankInPreferredOrder(regs);
 
    for(size_t i=0;i<regs.size();i++)
    {
@@ -24,7 +29,12 @@ size_t varFinder::chooseFreeStorage()
       }
    }
 
-   throw std::runtime_error("no free register in combine");
+   // use a stack slot
+   size_t actualSize = m_t.getRealSize(pseudoSize);
+   size_t s =  cmn::tgt::makeStackStorage(m_stackLocalSpace-actualSize);
+   m_stackLocalSpace += actualSize;
+   recordStorageUsed(cmn::tgt::kStorageStackFramePtr);
+   return s;
 }
 
 } // namespace liam

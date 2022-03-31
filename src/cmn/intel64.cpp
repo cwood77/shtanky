@@ -1,4 +1,5 @@
 #include "intel64.hpp"
+#include <stdexcept>
 
 namespace cmn {
 namespace tgt {
@@ -16,28 +17,6 @@ static const instrInfo kInstrs[] = {
    { "ret",        NULL },
    { "system",     NULL },
 };
-
-void x8664Processor::createRegisterBank(std::vector<size_t>& v) const
-{
-   v.push_back(i64::kRegB);
-   v.push_back(i64::kReg12);
-   v.push_back(i64::kReg13);
-   v.push_back(i64::kReg14);
-   v.push_back(i64::kReg15);
-   v.push_back(i64::kRegSI);
-   v.push_back(i64::kRegDI);
-
-   // don't prefer these - trashed
-   v.push_back(i64::kReg10);
-   v.push_back(i64::kReg11);
-
-   // don't prefer these - cconvention
-   v.push_back(i64::kRegC);
-   v.push_back(i64::kRegD);
-   v.push_back(i64::kReg8);
-   v.push_back(i64::kReg9);
-   v.push_back(i64::kRegA);
-}
 
 void x8664Processor::createRegisterMap(std::map<size_t,size_t>& m) const
 {
@@ -70,12 +49,6 @@ const char *x8664Processor::getRegName(size_t r) const
          return "<unassigned>";
          break;
          /*
-      case kStorageStackArg:
-         return "<stackarg>";
-         break;
-      case kStorageStackLocal:
-         return "<stacklocal>";
-         break;
       case kStoragePatch:
          return "<patch>";
          break;
@@ -134,7 +107,7 @@ const char *x8664Processor::getRegName(size_t r) const
          return "r15";
          break;
       default:
-         throw 3.14;
+         throw std::runtime_error("unknown reg:" __FILE__);
    }
 }
 
@@ -159,7 +132,7 @@ size_t w64CallingConvention::getArgumentStackSpace(std::vector<size_t>& v) const
    for(size_t i=0;i<v.size();i++)
    {
       if(i<4)
-         continue;
+         continue; // first 4 args are regs
       rVal += v[i];
    }
    return rVal;
@@ -175,19 +148,63 @@ void w64CallingConvention::getRValAndArgBank(std::vector<size_t>& v) const
    v.push_back(i64::kReg9);
 }
 
-void w64CallingConvention::getTrashBank(std::vector<size_t>& v) const
+bool w64CallingConvention::requiresPrologEpilogSave(size_t r) const
 {
-   v.reserve(7);
+   if(r == i64::kRegB) return true;
+   else if(r == i64::kRegBP) return true;
+   else if(r == i64::kRegDI) return true;
+   else if(r == i64::kRegSI) return true;
+   else if(r == i64::kRegSP) return true;
+   else if(r == i64::kReg12) return true;
+   else if(r == i64::kReg13) return true;
+   else if(r == i64::kReg14) return true;
+   else if(r == i64::kReg15) return true;
+   return false;
+}
+
+bool w64CallingConvention::requiresSubCallSave(size_t r) const
+{
+   if(r == i64::kRegA) return true;
+   else if(r == i64::kRegC) return true;
+   else if(r == i64::kRegD) return true;
+   else if(r == i64::kReg8) return true;
+   else if(r == i64::kReg9) return true;
+   else if(r == i64::kReg10) return true;
+   else if(r == i64::kReg11) return true;
+   return false;
+}
+
+// registers RBX, RBP, RDI, RSI, RSP, R12, R13, R14, R15, are nonvolatile. They must be saved and restored by a function that uses them.
+
+// registers RAX, RCX, RDX, R8, R9, R10, R11, are volatile. Consider volatile registers destroyed on function calls unless otherwise safety-provable by analysis such as whole program optimization.
+
+void w64CallingConvention::createRegisterBankInPreferredOrder(std::vector<size_t>& v) const
+{
+   // nonvolatile - saved in pro/epilog
+   v.push_back(i64::kRegB);
+   // RBP
+   v.push_back(i64::kRegDI);
+   v.push_back(i64::kRegSI);
+   // RSP
+   v.push_back(i64::kReg12);
+   v.push_back(i64::kReg13);
+   v.push_back(i64::kReg14);
+   v.push_back(i64::kReg15);
+
+   // volatile - saved around subcalls
+   // cc cconvention
    v.push_back(i64::kRegA);
    v.push_back(i64::kRegC);
    v.push_back(i64::kRegD);
    v.push_back(i64::kReg8);
    v.push_back(i64::kReg9);
+   // scratch
    v.push_back(i64::kReg10);
    v.push_back(i64::kReg11);
 }
 
-const iSyscallConvention& w64EnumTargetInfo::getSyscallConvention() const
+
+const iSyscallConvention& w64EmuTargetInfo::getSyscallConvention() const
 {
    throw 3.14;
 }

@@ -58,7 +58,7 @@ void astCodeGen::visit(cmn::invokeFuncPtrNode& n)
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
    {
       auto& arg = m_vGen.claimAndAddArgOffWire(call,**it);
-      argSizes.push_back(arg.getSize());
+      argSizes.push_back(m_t.getRealSize(arg.getSize()));
    }
    subcallStackSize += m_t.getCallConvention().getArgumentStackSpace(argSizes);
    pre.addArg<lirArgConst>("",subcallStackSize);

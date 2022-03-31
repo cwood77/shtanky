@@ -103,7 +103,7 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
             size_t stor = cmn::tgt::makeStackStorage(stackSpace);
             stor = m_vTable.getVirtualStack().reserveVirtStorage(stor);
             v.requireStorage(i,stor);
-            stackSpace -= m_target.getSize(v.getSize());
+            stackSpace -= m_target.getRealSize(v.getSize());
          }
          else
          {

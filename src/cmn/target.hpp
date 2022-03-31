@@ -65,8 +65,6 @@ enum genericStorageClasses {
    kStorageUnassigned,
    kStorageStackPtr,
    kStorageStackFramePtr,
-   //kStorageStackArg,
-   //kStorageStackLocal,
    //kStoragePatch,
    kStorageImmediate,
    _kStorageFirstReg  = 23,
@@ -90,17 +88,20 @@ public:
    const instrFmt *fmts;
 };
 
-// which args are stack and which are reg
-// which reg are scratch
-// shadow stack space
 class iCallingConvention {
 public:
    virtual bool stackArgsPushRToL() const = 0;
+
    virtual size_t getShadowSpace() const = 0;
    //virtual size_t getRegisterHome(size_t r) const = 0;
+
    virtual size_t getArgumentStackSpace(std::vector<size_t>& v) const = 0;
    virtual void getRValAndArgBank(std::vector<size_t>& v) const = 0;
-   virtual void getTrashBank(std::vector<size_t>& v) const = 0;
+
+   virtual bool requiresPrologEpilogSave(size_t r) const = 0;
+   virtual bool requiresSubCallSave(size_t r) const = 0;
+
+   virtual void createRegisterBankInPreferredOrder(std::vector<size_t>& v) const = 0;
 };
 
 class iSyscallConvention : public iCallingConvention {
@@ -110,7 +111,6 @@ public:
 
 class iProcessorInfo {
 public:
-   virtual void createRegisterBank(std::vector<size_t>& v) const = 0;
    virtual void createRegisterMap(std::map<size_t,size_t>& m) const = 0;
    virtual const char *getRegName(size_t r) const = 0;
    virtual const instrInfo *getInstr(instrIds i) const = 0;
@@ -118,7 +118,7 @@ public:
 
 class iTargetInfo {
 public:
-   virtual size_t getSize(size_t s) const = 0;
+   virtual size_t getRealSize(size_t s) const = 0;
    virtual const iProcessorInfo& getProc() const = 0;
    virtual const iCallingConvention& getCallConvention() const = 0;
    virtual const iSyscallConvention& getSyscallConvention() const = 0;

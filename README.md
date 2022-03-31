@@ -38,8 +38,8 @@ Technical ideas and decisions thus far:
 - emulate on Windows 64 by generating the `.osCall` intrinsic differently in liam (and below?)
 
 ## todo
-- [ ] notice that calls trash regs
-- [ ] preserve nonvolitile regs in pro/epilogue
+- [ ] handle volatile regs (i.e. regs must be preserved around calls if in use)
+- [ ] handle nonvolitile regs (i.e. must be preserved in pro/epilog if used)
 - [ ] use shadow space for spilling 4 regs
 - [x] change 'storage' to allow for stack vars
 ~~- [ ] more codegen tests~~
