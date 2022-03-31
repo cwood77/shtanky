@@ -91,10 +91,11 @@ const char *x8664Processor::getRegName(size_t r) const
       case i64::kRegD:
          return "rdx";
          break;
+      case kStorageStackFramePtr:
       case i64::kRegBP:
          return "rbp";
          break;
-      case kStorageStack:
+      case kStorageStackPtr:
       case i64::kRegSP:
          return "rsp";
          break;

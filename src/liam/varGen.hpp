@@ -39,6 +39,18 @@ public:
    void updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu);
 };
 
+class virtStackTable {
+public:
+   virtStackTable() : m_next(0) {}
+
+   size_t reserveVirtStorage(size_t real);
+   size_t mapToReal(size_t virt);
+
+private:
+   std::map<size_t,size_t> m_map;
+   int m_next;
+};
+
 class varTable {
 public:
    ~varTable();
@@ -52,8 +64,11 @@ public:
 
    size_t getStorageFor(size_t orderNum, lirArg& a);
 
+   virtStackTable& getVirtualStack() { return m_vSTable; }
+
 private:
    std::map<std::string,var*> m_vars;
+   virtStackTable m_vSTable;
 };
 
 class varWriter;

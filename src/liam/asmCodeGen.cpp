@@ -52,10 +52,17 @@ void asmCodeGen::generateArgs(lirInstr& i, varTable& v, cmn::tgt::iTargetInfo& t
       if(!first)
          w[1] << ", ";
       size_t stor = v.getStorageFor(i.orderNum,**it);
+      size_t framePtr = cmn::tgt::kStorageStackFramePtr;
+
+      if(cmn::tgt::isVStack(stor))
+      {
+         stor = v.getVirtualStack().mapToReal(stor);
+         framePtr = cmn::tgt::kStorageStackPtr;
+      }
 
       if(cmn::tgt::isStackStorage(stor))
          w[1] << "["
-            << t.getProc().getRegName(cmn::tgt::kStorageStack)
+            << t.getProc().getRegName(framePtr)
             << cmn::tgt::getStackDisp(stor)
          << "]";
       else if((*it)->addrOf)

@@ -57,18 +57,24 @@ public:
 
 enum genericStorageClasses {
    kStorageUnassigned,
-   kStorageStack,
+   kStorageStackPtr,
+   kStorageStackFramePtr,
    //kStorageStackArg,
    //kStorageStackLocal,
    //kStoragePatch,
    kStorageImmediate,
    _kStorageFirstReg  = 23,
    _kStackFlag        = 0x10000, // this leaves 16-bits for disp
+   _kVirtStackFlag    = 0x20000,
 };
 
 inline bool isStackStorage(size_t s) { return s & _kStackFlag; }
 inline int getStackDisp(size_t s) { return (short)(s & 0xFFFF); }
 inline size_t makeStackStorage(int disp) { return ((size_t)disp) | _kStackFlag; }
+
+inline bool isVStack(size_t s) { return s & _kVirtStackFlag; }
+inline int getVStackInt(size_t s) { return (short)(s & 0xFFFF); }
+inline size_t makeVStack(int disp) { return ((size_t)disp) | _kVirtStackFlag; }
 
 class instrInfo {
 public:

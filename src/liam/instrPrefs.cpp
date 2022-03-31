@@ -80,7 +80,7 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
 {
    std::vector<size_t> argStorage;
    cc.getRValAndArgBank(argStorage);
-   size_t shadow = cc.getShadowSpace();
+   //size_t shadow = cc.getShadowSpace();
    int stackSpace = 0;
 
    // decl nodes have no return vallue
@@ -98,13 +98,9 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
          if(outOrIn)
          {
             // going out
-            //throw std::runtime_error("unimpled 2");
-            // RSP-8, but RSP _when_?  push for a call needs to be done _before_ the call
-            // ... I guess I need to use a frame ptr?
-            v.requireStorage(i,cmn::tgt::makeStackStorage(stackSpace));
-            //v.requireStorage(i,cmn::tgt::kStorageStackLocal);
-            //::printf("> assigning RSP-%lld to %s\n",m_stackSpace,v.name.c_str());
-            //m_stackSpace -= v.getSize();
+            size_t stor = cmn::tgt::makeStackStorage(stackSpace);
+            stor = m_vTable.getVirtualStack().reserveVirtStorage(stor);
+            v.requireStorage(i,stor);
             stackSpace -= m_target.getSize(v.getSize());
          }
          else

@@ -106,6 +106,21 @@ void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
    }
 }
 
+size_t virtStackTable::reserveVirtStorage(size_t real)
+{
+   size_t v = cmn::tgt::makeVStack(m_next++);
+   m_map[v] = real;
+   return v;
+}
+
+size_t virtStackTable::mapToReal(size_t virt)
+{
+   auto it = m_map.find(virt);
+   if(it == m_map.end())
+      throw std::runtime_error("unknown virtual stack storage");
+   return it->second;
+}
+
 varTable::~varTable()
 {
    for(auto it=m_vars.begin();it!=m_vars.end();++it)
