@@ -4,13 +4,17 @@ namespace cmn {
 namespace tgt {
 
 static const instrInfo kInstrs[] = {
-   { "<decl>", NULL },
-   { "push",   NULL },
-   { "pop",    NULL },
-   { "mov",    NULL },
-   { "call",   NULL },
-   { "ret",    NULL },
-   { "system", NULL },
+   { "<decl>",     NULL },
+   { "push",       NULL },
+   { "pop",        NULL },
+   { "sub",        NULL },
+   { "add",        NULL },
+   { "mov",        NULL },
+   { "<precall>",  NULL },
+   { "call",       NULL },
+   { "<postcall>", NULL },
+   { "ret",        NULL },
+   { "system",     NULL },
 };
 
 void x8664Processor::createRegisterBank(std::vector<size_t>& v) const
@@ -147,6 +151,18 @@ bool w64CallingConvention::stackArgsPushRToL() const
 size_t w64CallingConvention::getShadowSpace() const
 {
    return 32;
+}
+
+size_t w64CallingConvention::getArgumentStackSpace(std::vector<size_t>& v) const
+{
+   size_t rVal = 0;
+   for(size_t i=0;i<v.size();i++)
+   {
+      if(i<4)
+         continue;
+      rVal += v[i];
+   }
+   return rVal;
 }
 
 void w64CallingConvention::getRValAndArgBank(std::vector<size_t>& v) const

@@ -51,6 +51,6 @@ Technical ideas and decisions thus far:
 - [ ] patchable immediate ops
 - [ ] func labels
 - [ ] instr overload selection
-- [ ] call decomposition
+   - [ ] call decomposition
 
 [^1]: The name "shtanky" was suggested by my son, Ethan (age 11).  I selected the first of his suggestions that didn't include "my dad's butt" somewhere in the title.

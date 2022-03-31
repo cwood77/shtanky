@@ -2,6 +2,8 @@
 #include "../cmn/ast.hpp"
 #include <map>
 
+namespace cmn { namespace tgt { class iTargetInfo; } }
+
 namespace liam {
 
 class lirArg;
@@ -14,7 +16,8 @@ class varGenerator;
 
 class astCodeGen : public cmn::liamVisitor<> {
 public:
-   astCodeGen(lirStreams& l, varGenerator& v) : m_lir(l), m_vGen(v) {}
+   astCodeGen(lirStreams& l, varGenerator& v, cmn::tgt::iTargetInfo& t)
+   : m_lir(l), m_vGen(v), m_t(t) {}
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
    virtual void visit(cmn::funcNode& n);
@@ -29,6 +32,7 @@ public:
 private:
    lirStreams& m_lir;
    varGenerator& m_vGen;
+   cmn::tgt::iTargetInfo& m_t;
    std::string m_currFunc;
 };
 

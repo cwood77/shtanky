@@ -51,6 +51,7 @@ class w64CallingConvention : public tgt::iCallingConvention {
 public:
    virtual bool stackArgsPushRToL() const;
    virtual size_t getShadowSpace() const;
+   virtual size_t getArgumentStackSpace(std::vector<size_t>& v) const;
    virtual void getRValAndArgBank(std::vector<size_t>& v) const;
    virtual void getTrashBank(std::vector<size_t>& v) const;
 };

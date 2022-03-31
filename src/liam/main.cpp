@@ -25,13 +25,13 @@ int main(int,const char*[])
 
    varTable vTbl;
    lirStreams lir;
+   cmn::tgt::w64EnumTargetInfo t;
    {
       varGenerator vGen(vTbl);
-      { astCodeGen v(lir,vGen); prj.acceptVisitor(v); }
+      { astCodeGen v(lir,vGen,t); prj.acceptVisitor(v); }
    }
    lir.dump();
 
-   cmn::tgt::w64EnumTargetInfo t;
    instrPrefs::publishRequirements(lir,vTbl,t);
 
    cmn::outBundle out;

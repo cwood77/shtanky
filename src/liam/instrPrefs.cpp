@@ -40,6 +40,8 @@ void instrPrefs::handle(lirInstr& i)
       case cmn::tgt::kPush: // no prefs
       case cmn::tgt::kPop:
       case cmn::tgt::kMov:
+      case cmn::tgt::kPreCallStackAlloc:
+      case cmn::tgt::kPostCallStackAlloc:
          break;
       case cmn::tgt::kCall:
          {

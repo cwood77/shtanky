@@ -34,18 +34,35 @@ void astCodeGen::visit(cmn::funcNode& n)
 
 void astCodeGen::visit(cmn::invokeFuncPtrNode& n)
 {
+   auto& stream = m_lir.page[m_currFunc];
+   auto& pre = lirInstr::append(
+      stream.pTail,
+      cmn::tgt::kPreCallStackAlloc,
+      "");
+   size_t subcallStackSize = m_t.getCallConvention().getShadowSpace();
+   std::vector<size_t> argSizes;
+
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       (*it)->acceptVisitor(*this);
 
-   auto& stream = m_lir.page[m_currFunc];
    auto& call = lirInstr::append(
       stream.pTail,
       cmn::tgt::kCall,
       "");
+   auto& post = lirInstr::append(
+      stream.pTail,
+      cmn::tgt::kPostCallStackAlloc,
+      "");
    auto& rval = call.addArg(*new lirArgVar("rval",0));
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
-      m_vGen.claimAndAddArgOffWire(call,**it);
+   {
+      auto& arg = m_vGen.claimAndAddArgOffWire(call,**it);
+      argSizes.push_back(arg.getSize());
+   }
+   subcallStackSize += m_t.getCallConvention().getArgumentStackSpace(argSizes);
+   pre.addArg<lirArgConst>("",subcallStackSize);
+   post.addArg<lirArgConst>("",subcallStackSize);
 
    m_vGen.createPrivateVar(call.orderNum,rval,"rval").publishOnWire(n);
 }

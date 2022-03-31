@@ -32,9 +32,15 @@ enum instrIds {
    kPush,
    kPop,
 
+   kSub,
+   kAdd,
+
    kMov,
 
+   kPreCallStackAlloc,
    kCall,
+   kPostCallStackAlloc,
+
    kRet,
 
    kSyscall,
@@ -92,6 +98,7 @@ public:
    virtual bool stackArgsPushRToL() const = 0;
    virtual size_t getShadowSpace() const = 0;
    //virtual size_t getRegisterHome(size_t r) const = 0;
+   virtual size_t getArgumentStackSpace(std::vector<size_t>& v) const = 0;
    virtual void getRValAndArgBank(std::vector<size_t>& v) const = 0;
    virtual void getTrashBank(std::vector<size_t>& v) const = 0;
 };
