@@ -16,7 +16,7 @@ public:
    asmArgWriter(varTable& v, cmn::tgt::iTargetInfo& t, cmn::textTableLineWriter& w)
    : m_v(v), m_t(t), m_w(w), m_first(true) {}
 
-   void write(lirInstr& i);
+   void write(lirInstr& i, size_t firstArg = 0);
    void write(size_t orderNum, lirArg& a);
 
 private:

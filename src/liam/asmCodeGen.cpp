@@ -7,11 +7,13 @@
 
 namespace liam {
 
-void asmArgWriter::write(lirInstr& i)
+void asmArgWriter::write(lirInstr& i, size_t firstArg)
 {
    auto& args = i.getArgs();
-   for(auto it=args.begin();it!=args.end();++it)
-      write(i.orderNum,**it);
+   size_t j=0;
+   for(auto it=args.begin();it!=args.end();++it,j++)
+      if(j>=firstArg)
+         write(i.orderNum,**it);
 }
 
 void asmArgWriter::write(size_t orderNum, lirArg& a)
@@ -66,16 +68,31 @@ void asmCodeGen::handleInstr(lirInstr& i)
 {
    switch(i.instrId)
    {
+#if 0
+      case cmn::tgt::kDeclParam:
+         {
+            m_w[0] << i.comment << ":";
+            m_w.advanceLine();
+         }
+         break;
+#endif
       case cmn::tgt::kDeclParam:
       case cmn::tgt::kPush:
       case cmn::tgt::kPop:
       case cmn::tgt::kMov:
-      case cmn::tgt::kCall:
       case cmn::tgt::kRet:
-      case cmn::tgt::kSyscall:
          {
             m_w[1] << m_t.getProc().getInstr(i.instrId)->name;
             asmArgWriter(m_v,m_t,m_w).write(i);
+            handleComment(i);
+            m_w.advanceLine();
+         }
+         break;
+      case cmn::tgt::kCall:
+      case cmn::tgt::kSyscall:
+         {
+            m_w[1] << m_t.getProc().getInstr(i.instrId)->name;
+            asmArgWriter(m_v,m_t,m_w).write(i,1);
             handleComment(i);
             m_w.advanceLine();
          }
