@@ -68,15 +68,12 @@ void asmCodeGen::handleInstr(lirInstr& i)
 {
    switch(i.instrId)
    {
-#if 0
       case cmn::tgt::kDeclParam:
          {
             m_w[0] << i.comment << ":";
             m_w.advanceLine();
          }
          break;
-#endif
-      case cmn::tgt::kDeclParam:
       case cmn::tgt::kPush:
       case cmn::tgt::kPop:
       case cmn::tgt::kMov:

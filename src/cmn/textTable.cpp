@@ -39,7 +39,7 @@ void textTable::compiledCells::compile(const std::map<size_t,std::map<size_t,std
          auto width = s.length();
          auto& maxW = m_colWidths[jit->first];
          if(width > maxW)
-            maxW = width;
+            maxW = width + 1; // add one so columns have a 'border'
 
          if(jit->first > m_lastCol)
             m_lastCol = jit->first;
@@ -47,12 +47,22 @@ void textTable::compiledCells::compile(const std::map<size_t,std::map<size_t,std
    }
 }
 
+std::string textTable::compiledCells::indent(size_t firstCol) const
+{
+   std::stringstream indent;
+
+   for(auto it=m_colWidths.begin();it!=m_colWidths.end()&&it->first<firstCol;++it)
+      indent << std::string(it->second,' ');
+
+   return indent.str();
+}
+
 std::string textTable::compiledCells::pad(size_t col, const std::string& text) const
 {
    if(m_lastCol == col)
       return text;
 
-   auto w = m_colWidths.find(col)->second + 1; // add one so columns have a 'border'
+   auto w = m_colWidths.find(col)->second;
    auto l = text.length();
    if(l < w)
    {
@@ -67,6 +77,7 @@ void textTable::writer::writeLine(size_t row, const std::map<size_t,std::string>
    for(;m_currRow<row;m_currRow++)
       m_stream << std::endl;
 
+   m_stream << m_cc.indent(cols.begin()->first);
    for(auto it=cols.begin();it!=cols.end();++it)
       m_stream << m_cc.pad(it->first,it->second);
 }

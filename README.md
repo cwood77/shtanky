@@ -49,8 +49,9 @@ Technical ideas and decisions thus far:
 - [ ] exercise splitter
 - [ ] immediate ops
 - [ ] patchable immediate ops
-- [ ] func labels
+- [x] func labels
 - [ ] instr overload selection
-   - [ ] call decomposition
+- [x] call decomposition
+- [ ] impl frame ptrs
 
 [^1]: The name "shtanky" was suggested by my son, Ethan (age 11).  I selected the first of his suggestions that didn't include "my dad's butt" somewhere in the title.

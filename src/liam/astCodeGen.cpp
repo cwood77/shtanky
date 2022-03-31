@@ -19,7 +19,7 @@ void astCodeGen::visit(cmn::funcNode& n)
       auto& i = lirInstr::append(
          stream.pTail,
          cmn::tgt::kDeclParam,
-         cmn::fmt("func %s",n.name.c_str()));
+         n.name);
 
       for(auto it=args.begin();it!=args.end();++it)
       {
