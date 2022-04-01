@@ -69,7 +69,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
 {
    switch(i.instrId)
    {
-      case cmn::tgt::kDeclParam:
+      case cmn::tgt::kEnterFunc:
          {
             m_w[0] << i.comment << ":";
             m_w.advanceLine();
@@ -90,6 +90,28 @@ void asmCodeGen::handleInstr(lirInstr& i)
                   << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
                   << locals;
                m_w.advanceLine();
+            }
+         }
+         break;
+      case cmn::tgt::kExitFunc:
+         {
+            size_t locals = m_f.getUsedStackSpace();
+            if(locals)
+            {
+               m_w[1]
+                  << "add "
+                  << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
+                  << locals;
+               m_w.advanceLine();
+            }
+            auto& regs = m_f.getUsedRegs();
+            for(auto it=regs.rbegin();it!=regs.rend();++it)
+            {
+               if(m_t.getCallConvention().requiresPrologEpilogSave(*it))
+               {
+                  m_w[1] << "pop " << m_t.getProc().getRegName(*it);
+                  m_w.advanceLine();
+               }
             }
          }
          break;

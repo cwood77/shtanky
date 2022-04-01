@@ -27,7 +27,8 @@ enum argTypes {
 };
 
 enum instrIds {
-   kDeclParam,
+   kEnterFunc,
+   kExitFunc,
 
    kPush,
    kPop,

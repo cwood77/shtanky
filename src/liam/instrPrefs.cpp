@@ -31,13 +31,14 @@ void instrPrefs::handle(lirInstr& i)
 {
    switch(i.instrId)
    {
-      case cmn::tgt::kDeclParam:
+      case cmn::tgt::kEnterFunc:
          {
             auto& cc = m_target.getCallConvention();
             handle(i,cc,/*outOrIn*/false);
          }
          break;
-      case cmn::tgt::kPush: // no prefs
+      case cmn::tgt::kExitFunc: // no prefs
+      case cmn::tgt::kPush:
       case cmn::tgt::kPop:
       case cmn::tgt::kMov:
       case cmn::tgt::kPreCallStackAlloc:

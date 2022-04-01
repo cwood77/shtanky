@@ -5,17 +5,18 @@ namespace cmn {
 namespace tgt {
 
 static const instrInfo kInstrs[] = {
-   { "<decl>",     NULL },
-   { "push",       NULL },
-   { "pop",        NULL },
-   { "sub",        NULL },
-   { "add",        NULL },
-   { "mov",        NULL },
-   { "<precall>",  NULL },
-   { "call",       NULL },
-   { "<postcall>", NULL },
-   { "ret",        NULL },
-   { "system",     NULL },
+   { "<enterFunc>", NULL },
+   { "<exitFunc>",  NULL },
+   { "push",        NULL },
+   { "pop",         NULL },
+   { "sub",         NULL },
+   { "add",         NULL },
+   { "mov",         NULL },
+   { "<precall>",   NULL },
+   { "call",        NULL },
+   { "<postcall>",  NULL },
+   { "ret",         NULL },
+   { "system",      NULL },
 };
 
 void x8664Processor::createRegisterMap(std::map<size_t,size_t>& m) const

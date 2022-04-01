@@ -9,3 +9,5 @@
                 mov rdx, [rbx]    ;    :_out
                 call rcx, rdx, r8 
                 add rsp, 32       
+                pop rdi           
+                pop rbx           
