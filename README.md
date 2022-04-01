@@ -39,7 +39,7 @@ Technical ideas and decisions thus far:
 
 ## todo
 - [ ] handle volatile regs (i.e. regs must be preserved around calls if in use)
-- [ ] handle nonvolitile regs (i.e. must be preserved in pro/epilog if used)
+- [x] handle nonvolitile regs (i.e. must be preserved in pro/epilog if used)
 - [ ] use shadow space for spilling 4 regs
 - [x] change 'storage' to allow for stack vars
 ~~- [ ] more codegen tests~~
@@ -48,7 +48,7 @@ Technical ideas and decisions thus far:
 - [x] subcall locals
 - [ ] exercise splitter
 - [ ] immediate ops
-- [ ] patchable immediate ops
+- [ ] patchable ops
 - [x] func labels
 - [ ] instr overload selection
 - [x] call decomposition
