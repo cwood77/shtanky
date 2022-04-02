@@ -28,8 +28,8 @@ class assembler {
 public:
    void sink(iObjWriter& o) {}
 
-   void assemble(const cmn::tgt::i64::genInfo& gi);
-   void addArg(const std::string& a);
+   void assemble(const cmn::tgt::i64::genInfo& gi) {}
+   void addArg(const std::string& a) {}
 };
 
 } // namespace shtasm

@@ -9,34 +9,39 @@
 
 namespace shtasm {
 
-void processor::process()
+processor::processor(parser& p, cmn::objfmt::objFile& o)
+: m_parser(p)
+, m_oFile(o)
+, m_pListingFile(NULL)
+, m_pCurrObj(NULL)
 {
-   std::unique_ptr<assembler> pAsm;
-   std::unique_ptr<compositeObjWriter> pBlock;
-   std::map<std::string,const cmn::tgt::i64::genInfo*> genInfos;
-
+   // prepare genInfos
    {
-      // prepare genInfos
       auto *pInfo = cmn::tgt::i64::getGenInfo();
       while(pInfo->guid)
       {
-         auto& pI = genInfos[pInfo->guid];
+         auto& pI = m_genInfos[pInfo->guid];
          pI = pInfo;
          pInfo++;
       }
    }
+}
 
+void processor::process()
+{
    while(!m_parser.getLexor().isDone())
    {
       std::string l,c;
       std::vector<std::string> a;
       m_parser.parseLine(l,a,c);
 
-      // dbg trace
-      cdwDEBUG("lable=%s]]\n",l.c_str());
-      for(auto it=a.begin();it!=a.end();++it)
-         cdwDEBUG("   a=%s]]\n",it->c_str());
-      cdwDEBUG("comm=%s]]\n",c.c_str());
+      {
+         // dbg trace
+         cdwDEBUG("lable=%s]]\n",l.c_str());
+         for(auto it=a.begin();it!=a.end();++it)
+            cdwDEBUG("   a=%s]]\n",it->c_str());
+         cdwDEBUG("comm=%s]]\n",c.c_str());
+      }
 
       if(a.size() == 0)
          ; // blank line
@@ -48,8 +53,8 @@ void processor::process()
          ::sscanf(a[0].c_str()+5,"%lu",&m_pCurrObj->flags);
 
          // setup assembler for new object
-         pBlock.reset(new compositeObjWriter());
-         pBlock->sink(
+         m_pBlock.reset(new compositeObjWriter());
+         m_pBlock->sink(
             *new retailObjWriter(
                *new binFileWriter(".\\testdata\\test\\fake.shtasm.o")));
          /*
@@ -61,19 +66,22 @@ void processor::process()
          lineWriter l(*pBlock);
          l.setLineNumber(m_parser.getLexor().getLineNumber());
          */
-         pAsm.reset(new assembler());
-         pAsm->sink(*pBlock);
+         m_pAsm.reset(new assembler());
+         m_pAsm->sink(*m_pBlock);
       }
       else
       {
          // defer to assembler
 
          // look up instr
-         const cmn::tgt::i64::genInfo *pInfo = genInfos[a[0]];
+         const cmn::tgt::i64::genInfo *pInfo = m_genInfos[a[0]];
          if(!pInfo)
             throw std::runtime_error(cmn::fmt("no known instr for '%s'",a[0].c_str()));
+         m_pAsm->assemble(*pInfo);
 
          // add each arg
+         for(size_t i=1;i<a.size();i++)
+            m_pAsm->addArg(a[i]);
       }
    }
 }

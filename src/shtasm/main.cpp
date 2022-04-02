@@ -6,10 +6,6 @@
 
 #include "writer.hpp"
 
-namespace shtasm {
-
-} // namespace shtasm
-
 int main(int argc, const char *argv[])
 {
    using namespace shtasm;
