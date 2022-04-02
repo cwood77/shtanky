@@ -57,8 +57,8 @@ std::string parser::trimTrailingWhitespace(const std::string& w)
       if(w.c_str()[l-1] != ' ')
          break;
    }
-   // l is last non-space char or 0
-   return std::string(w.c_str(),l);
+   std::string copy(w.c_str(),l);
+   return 1 ? copy : w; // WTH?  Without the ?: op here, GNU link tanks silently?
 }
 
 bool parser::shaveOffPart(const char*& pThumb, char delim, std::string& part)
