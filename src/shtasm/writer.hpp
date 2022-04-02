@@ -8,6 +8,16 @@
 
 namespace shtasm {
 
+class iObjWriterSink2 {
+public:
+   virtual void write(const void *p, size_t n) = 0;
+   virtual int tell() = 0;
+   // no seek cuz this is a memory stream
+};
+
+// remove reserve/fill patch and just have ftell
+// linker will patch later differently
+
 class iObjWriterSink {
 public:
    virtual ~iObjWriterSink() {}

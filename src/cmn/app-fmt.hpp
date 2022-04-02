@@ -33,4 +33,43 @@ public:
 
 } // namespace appfmt
 
+class iBinFileInStream;
+class iBinFileOutStream;
+
+class patch {
+public:
+   enum types {
+      kCall;
+      kLea;
+   } type;
+   unsigned long offset;
+}:
+
+class exportTable {
+public:
+   std::map<std::string,unsigned long> toc;
+};
+
+class importTable {
+public:
+   std::map<std::string,std::list<patch> > patches;
+};
+
+class mcObj {
+public:
+   unsigned long flags;
+   exportTable xt;
+   importTable it;
+   std::unique_ptr<unsigned char[]> block;
+};
+
+class objFile {
+public:
+   unsigned long version;
+   std::list<mcObj*> objects;
+
+   void flatten(iBinFileOutStream& s) const;
+   void unflatten(iBinFileInStream& s);
+};
+
 } // namespace cmn
