@@ -1,7 +1,6 @@
 #pragma once
 #include <cstddef>
 #include <list>
-#include <map>
 #include <memory>
 #include <stdio.h>
 #include <string>
@@ -55,7 +54,6 @@ private:
    void fmtData(std::ostream& o, const void *p, size_t n);
 
    std::unique_ptr<iObjWriterSink> m_pS;
-   std::map<size_t,size_t> m_patchSizes;
 };
 
 class compositeObjWriter : public iObjWriter {

@@ -1,39 +1,18 @@
 #include "../cmn/i64asm.hpp"
+#include "../cmn/obj-fmt.hpp"
 #include "../cmn/trace.hpp"
 #include "frontend.hpp"
+#include "processor.hpp"
 
 #include "writer.hpp"
 
 namespace shtasm {
-
-#if 0
-class assembler {
-public:
-   void sink(iObjStream& o);
-
-   void assemble(const cmn::tgt::i64::genInfo& gi);
-   void addArg(const std::string& a);
-};
-#endif
 
 } // namespace shtasm
 
 int main(int argc, const char *argv[])
 {
    using namespace shtasm;
-
-   lexor l(".\\testdata\\test\\fake.shtasm");
-   parser p(l);
-   while(!p.getLexor().isDone())
-   {
-      std::string l,c;
-      std::vector<std::string> a;
-      p.parseLine(l,a,c);
-      cdwDEBUG("lable=%s]]\n",l.c_str());
-      for(auto it=a.begin();it!=a.end();++it)
-         cdwDEBUG("   a=%s]]\n",it->c_str());
-      cdwDEBUG("comm=%s]]\n",c.c_str());
-   }
 
    {
       compositeObjWriter w;
@@ -51,6 +30,15 @@ int main(int argc, const char *argv[])
          { unsigned long v = 0; l.write("version",&v,sizeof(v)); }
          l.under().nextPart();
       }
+   }
+
+   {
+      binFileWriter listingFile(".\\testdata\\test\\fake.shtasm.list");
+
+      lexor l(".\\testdata\\test\\fake.shtasm");
+      parser p(l);
+      cmn::objfmt::objFile o;
+      processor(p,o).setListingFile(listingFile).process();
    }
 
    return 0;
