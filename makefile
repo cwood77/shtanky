@@ -153,6 +153,7 @@ $(LIAM_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 SHTASM_SRC = \
 	src/shtasm/frontend.cpp \
 	src/shtasm/main.cpp \
+	src/shtasm/writer.cpp \
 
 SHTASM_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SHTASM_SRC)))
 

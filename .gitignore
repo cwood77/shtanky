@@ -5,6 +5,8 @@
 *.ara.lh
 *.ara.ls
 *.ara.ls.asm
+*.shtasm.o
+*.shtasm.list
 
 # Prerequisites
 *.d

@@ -2,19 +2,11 @@
 #include "../cmn/trace.hpp"
 #include "frontend.hpp"
 
+#include "writer.hpp"
+
 namespace shtasm {
 
 #if 0
-class iObjLineStream {
-public:
-   void writeBytes(const std::string& reason, void *p, size_t n);
-};
-
-class iObjStream {
-public:
-   iObjLineStream *create(size_t lineNum);
-};
-
 class assembler {
 public:
    void sink(iObjStream& o);
@@ -41,6 +33,24 @@ int main(int argc, const char *argv[])
       for(auto it=a.begin();it!=a.end();++it)
          cdwDEBUG("   a=%s]]\n",it->c_str());
       cdwDEBUG("comm=%s]]\n",c.c_str());
+   }
+
+   {
+      compositeObjWriter w;
+      w.sink(
+         *new retailObjWriter(
+            *new binFileWriter(".\\testdata\\test\\fake.shtasm.o")));
+      w.sink(
+         *new listingObjWriter(
+            *new binFileWriter(".\\testdata\\test\\fake.shtasm.list")));
+
+      lineWriter l(w);
+      l.setLineNumber(0);
+      {
+         l.write("header","cdwe o fmt",10);
+         { unsigned long v = 0; l.write("version",&v,sizeof(v)); }
+         l.under().nextPart();
+      }
    }
 
    return 0;
