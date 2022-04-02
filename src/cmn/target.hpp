@@ -8,22 +8,22 @@ namespace cmn {
 namespace tgt {
 
 enum argTypes {
-   kArgTypeNone,
+   kArgTypeNone = 0,
 
-   kR8,
-   kR16,
-   kR32,
-   kR64,
+   kR8          = 1 <<  1,
+   kR16         = 1 <<  2,
+   kR32         = 1 <<  3,
+   kR64         = 1 <<  4,
 
-   kI8,
-   kI16,
-   kI32,
-   kI64,
+   kI8          = 1 <<  5,
+   kI16         = 1 <<  6,
+   kI32         = 1 <<  7,
+   kI64         = 1 <<  8,
 
-   kM8,
-   kM16,
-   kM32,
-   kM64,
+   kM8          = 1 <<  9,
+   kM16         = 1 << 10,
+   kM32         = 1 << 11,
+   kM64         = 1 << 12,
 };
 
 enum instrIds {
@@ -49,17 +49,15 @@ enum instrIds {
 
 class instrFmt {
 public:
-   argTypes a1;
-   argTypes a2;
-   argTypes a3;
-   argTypes a4;
+   instrFmt(const char *g, size_t a1, size_t a2, size_t a3, size_t a4)
+   : guid(g), a1(a1), a2(a2), a3(a3), a4(a4) {}
 
-   size_t reqs1;
-   size_t reqs2;
-   size_t reqs3;
-   size_t reqs4;
+   const char *guid;
 
-   size_t trash;
+   size_t a1;
+   size_t a2;
+   size_t a3;
+   size_t a4;
 };
 
 enum genericStorageClasses {

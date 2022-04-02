@@ -12,13 +12,15 @@ SCRIPTLIB = scriptlib/xcopy-deploy.bat
 debug: \
 	dirs \
 	$(OUT_DIR)/debug/araceli.exe \
-	$(OUT_DIR)/debug/liam.exe
+	$(OUT_DIR)/debug/liam.exe \
+	$(OUT_DIR)/debug/shtasm.exe
 	@cmd /c _test.bat
 
 all: \
 	debug \
 	$(OUT_DIR)/release/araceli.exe \
 	$(OUT_DIR)/release/liam.exe \
+	$(OUT_DIR)/release/shtasm.exe \
 
 clean:
 	rm -rf bin
@@ -27,10 +29,12 @@ dirs:
 	@mkdir -p $(OUT_DIR)/debug
 	@mkdir -p $(OBJ_DIR)/debug/araceli
 	@mkdir -p $(OBJ_DIR)/debug/liam
+	@mkdir -p $(OBJ_DIR)/debug/shtasm
 	@mkdir -p $(OBJ_DIR)/debug/cmn
 	@mkdir -p $(OUT_DIR)/release
 	@mkdir -p $(OBJ_DIR)/release/araceli
 	@mkdir -p $(OBJ_DIR)/release/liam
+	@mkdir -p $(OBJ_DIR)/release/shtasm
 	@mkdir -p $(OBJ_DIR)/release/cmn
 
 .PHONY: debug all clean dirs
@@ -43,6 +47,7 @@ CMN_SRC = \
 	src/cmn/commonLexor.cpp \
 	src/cmn/commonParser.cpp \
 	src/cmn/fmt.cpp \
+	src/cmn/i64asm.cpp \
 	src/cmn/intel64.cpp \
 	src/cmn/lexor.cpp \
 	src/cmn/out.cpp \
@@ -139,5 +144,32 @@ $(OUT_DIR)/release/liam.exe: $(LIAM_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
 	@$(LINK_CMD) -o $@ $(LIAM_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
 
 $(LIAM_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# shtasm
+
+SHTASM_SRC = \
+	src/shtasm/frontend.cpp \
+	src/shtasm/main.cpp \
+
+SHTASM_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SHTASM_SRC)))
+
+$(OUT_DIR)/debug/shtasm.exe: $(SHTASM_DEBUG_OBJ) $(OUT_DIR)/debug/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(SHTASM_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lcmn
+
+$(SHTASM_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+SHTASM_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(SHTASM_SRC)))
+
+$(OUT_DIR)/release/shtasm.exe: $(SHTASM_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(SHTASM_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
+
+$(SHTASM_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@

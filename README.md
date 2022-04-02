@@ -37,6 +37,38 @@ Technical ideas and decisions thus far:
 - gates to kernel mode done via `.osCall` instrinsic which is typically a `syscall` instruction
 - emulate on Windows 64 by generating the `.osCall` intrinsic differently in liam (and below?)
 
+### shtasm / shlink / shload boundaries
+
+#### `app` format and loaders
+- `Shlink` produces position-independent code (PIC), generally in the following format
+  - header
+  - metadata
+  - payload section boundaries and attributes
+  - import table
+  - export table
+  - payload
+- `Shload` both the emulator _and_ the OS loader can read this formats
+- Import/export is used to
+  - locate the primary entrypoint
+  - house runtime linking.
+- Loaders patch import tables to implement runtime linking
+
+#### `o` format and the linker
+- `Shtasm` output files contain a stream objects, each earmarked with one of the following sections
+  - zero-initialized
+  - constant, initialized
+  - initialized
+  - uniniatilied
+  - code
+  - patch tables
+- `Shtasm` source demarkates the sections
+- Runtime linking is done by generating import tables, which are patched by the loader
+- `Shlink` is responsible for statically linking a single binary into PIC, which include potentially disassembling/reassembling instructions with patches
+  - types of patching shlink must understand
+    - call immediate
+    - call variable
+    - global var refs (`LEA REX.W + 8D /r`)
+
 ## todo
 - [ ] handle volatile regs (i.e. regs must be preserved around calls if in use)
 - [x] handle nonvolitile regs (i.e. must be preserved in pro/epilog if used)

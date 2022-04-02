@@ -1,4 +1,5 @@
 @echo off
+goto end
 
 del /S /Q testdata\*.ara.lh >nul 2>&1
 del /S /Q testdata\*.ara.ls >nul 2>&1

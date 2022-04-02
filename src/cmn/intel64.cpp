@@ -4,19 +4,35 @@
 namespace cmn {
 namespace tgt {
 
+static const instrFmt subFmts[] = {
+   { "SUB{REX.W + 83 /5 ib}",
+      kR64 | kM64,
+      kI8,
+      kArgTypeNone, kArgTypeNone },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+};
+
+static const instrFmt addFmts[] = {
+   { "ADD{REX.W + 83 /0 ib}",
+      kR64 | kM64,
+      kI8,
+      kArgTypeNone, kArgTypeNone },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+};
+
 static const instrInfo kInstrs[] = {
-   { "<enterFunc>", NULL },
-   { "<exitFunc>",  NULL },
-   { "push",        NULL },
-   { "pop",         NULL },
-   { "sub",         NULL },
-   { "add",         NULL },
-   { "mov",         NULL },
-   { "<precall>",   NULL },
-   { "call",        NULL },
-   { "<postcall>",  NULL },
-   { "ret",         NULL },
-   { "system",      NULL },
+   { "<enterFunc>", NULL     },
+   { "<exitFunc>",  NULL     },
+   { "push",        NULL     },
+   { "pop",         NULL     },
+   { "sub",         (const instrFmt*)&subFmts },
+   { "add",         (const instrFmt*)&addFmts },
+   { "mov",         NULL     },
+   { "<precall>",   NULL     },
+   { "call",        NULL     },
+   { "<postcall>",  NULL     },
+   { "ret",         NULL     },
+   { "system",      NULL     },
 };
 
 void x8664Processor::createRegisterMap(std::map<size_t,size_t>& m) const
