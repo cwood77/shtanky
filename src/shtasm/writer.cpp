@@ -29,6 +29,34 @@ int binFileWriter::tell()
    return ::ftell(m_pFile);
 }
 
+binMemoryWriter::binMemoryWriter(std::unique_ptr<unsigned char[]>& block)
+: m_block(block)
+, m_s(0)
+{
+   m_alloc.resize(1024);
+}
+
+binMemoryWriter::~binMemoryWriter()
+{
+   m_block.reset(new unsigned char [m_s]);
+   ::memcpy(m_block.get(),&m_alloc[0],m_s);
+}
+
+void binMemoryWriter::write(const void *p, size_t n)
+{
+   size_t left = m_alloc.size() - m_s;
+   if(left >= n)
+   {
+      ::memcpy(&m_alloc[0] + m_s,p,n);
+      m_s += n;
+   }
+   else
+   {
+      m_alloc.resize(m_alloc.size() * 2);
+      write(p,n);
+   }
+}
+
 void retailObjWriter::write(size_t lineNum, const std::string& reason, const void *p, size_t n)
 {
    m_pS->write(p,n);

@@ -56,12 +56,11 @@ void processor::process()
          m_pBlock.reset(new compositeObjWriter());
          m_pBlock->sink(
             *new retailObjWriter(
-               *new binFileWriter(".\\testdata\\test\\fake.shtasm.o")));
-         /*
-         w.sink(
-            *new listingObjWriter(
-               *new binFileWriter(".\\testdata\\test\\fake.shtasm.list")));
-               */
+               *new binMemoryWriter(m_pCurrObj->block)));
+         if(m_pListingFile)
+            m_pBlock->sink(
+               *new listingObjWriter(
+                  *new singleUseWriter(*m_pListingFile)));
          /*
          lineWriter l(*pBlock);
          l.setLineNumber(m_parser.getLexor().getLineNumber());

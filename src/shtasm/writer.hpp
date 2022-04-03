@@ -4,6 +4,7 @@
 #include <memory>
 #include <stdio.h>
 #include <string>
+#include <vector>
 
 namespace shtasm {
 
@@ -23,6 +24,30 @@ public:
 
 private:
    FILE *m_pFile;
+};
+
+class binMemoryWriter : public iObjWriterSink {
+public:
+   explicit binMemoryWriter(std::unique_ptr<unsigned char[]>& block);
+   ~binMemoryWriter();
+   virtual void write(const void *p, size_t n);
+   virtual int tell() { return m_s; }
+
+private:
+   std::unique_ptr<unsigned char[]>& m_block;
+   std::vector<unsigned char> m_alloc;
+   size_t m_s;
+};
+
+class singleUseWriter : public iObjWriterSink {
+public:
+   explicit singleUseWriter(iObjWriterSink& inner) : m_inner(inner) {}
+
+   virtual void write(const void *p, size_t n) { m_inner.write(p,n); }
+   virtual int tell() { return m_inner.tell(); }
+
+private:
+   iObjWriterSink& m_inner;
 };
 
 class iObjWriter {
