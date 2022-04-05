@@ -60,6 +60,8 @@ static const genInfo2 kGen2[] = {
    { genInfo2::kModRmR, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
 };
 
+const genInfo2 *getGenInfo2() { return kGen2; }
+
 argTypes asmArgInfo::computeArgType()
 {
    if(flags & kReg64)

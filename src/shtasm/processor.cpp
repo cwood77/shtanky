@@ -113,6 +113,28 @@ void processor::process()
          auto *pInfo = m_genInfos[iFmt.guid];
          if(!pInfo)
             throw std::runtime_error(cmn::fmt("no known instr for '%s'",a[0].c_str()));
+
+	 // build args
+	unsigned char rex = 0;
+	unsigned char modRmByte = 0;
+	for(size_t i=0;i<3;i++)
+	{
+		if(pInfo->ae[i] == genInfo2::kModRmR)
+		{
+			modRm::encodeRArgs(storage,rex,modRmByte);
+		}
+	}
+
+	// implement the byte stream
+	unsigned char *pByte = pInfo->byteStream;
+	for(;*pByte != genInfo2::kEndOfInstr;++pByte)
+	{
+		if(*pByte == genInfo2::kFixedByte)
+		{
+			m_pWriter->write("fixed8",++pByte,1);
+		}
+	}
+
 #if 0
          m_pWriter->setLineNumber(m_parser.getLexor().getLineNumber());
          m_pAsm->assemble(*pInfo);
