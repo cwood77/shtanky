@@ -83,6 +83,8 @@ void processor::process()
       {
          // defer to assembler
 
+         // ---------- all below here move to assembler ---------
+
          // find instr
          auto instrId = cmn::tgt::kFirstInstr;
          {
@@ -107,11 +109,11 @@ void processor::process()
          // locate the instr fmt to use
          auto& iFmt = m_t.getProc().getInstr(instrId)->demandFmt(aTypes);
 
-#if 0
-         // look up instr
-         const cmn::tgt::i64::genInfo *pInfo = m_genInfos[a[0]];
+         // look up genInfo
+         const cmn::tgt::i64::genInfo *pInfo = m_genInfos[iFmt.guid];
          if(!pInfo)
             throw std::runtime_error(cmn::fmt("no known instr for '%s'",a[0].c_str()));
+#if 0
          m_pWriter->setLineNumber(m_parser.getLexor().getLineNumber());
          m_pAsm->assemble(*pInfo);
 
