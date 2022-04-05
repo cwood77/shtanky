@@ -29,7 +29,7 @@ processor::processor(parser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFile& 
 
    // prepare genInfos
    {
-      auto *pInfo = cmn::tgt::i64::getGenInfo();
+      auto *pInfo = cmn::tgt::i64::getGenInfo2();
       while(pInfo->guid)
       {
          auto& pI = m_genInfos[pInfo->guid];
@@ -110,7 +110,7 @@ void processor::process()
          auto& iFmt = m_t.getProc().getInstr(instrId)->demandFmt(aTypes);
 
          // look up genInfo
-         const cmn::tgt::i64::genInfo *pInfo = m_genInfos[iFmt.guid];
+         auto *pInfo = m_genInfos[iFmt.guid];
          if(!pInfo)
             throw std::runtime_error(cmn::fmt("no known instr for '%s'",a[0].c_str()));
 #if 0

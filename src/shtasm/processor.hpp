@@ -31,7 +31,7 @@ private:
 
    iObjWriterSink *m_pListingFile;
 
-   std::map<std::string,const cmn::tgt::i64::genInfo*> m_genInfos;
+   std::map<std::string,const cmn::tgt::i64::genInfo2*> m_genInfos;
    std::map<std::string,cmn::tgt::instrIds> m_instrMap;
 
    cmn::objfmt::obj *m_pCurrObj;
