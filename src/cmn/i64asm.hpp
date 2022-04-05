@@ -1,7 +1,12 @@
 #pragma once
+#include "target.hpp"
+#include <cstddef>
 
 namespace cmn {
 namespace tgt {
+
+enum argTypes;
+
 namespace i64 {
 
 class genInfo {
@@ -17,9 +22,80 @@ public:
    bool          sib;
    char          dispSize;
    char          immSize;
+
+   size_t numOpcodes() const;
 };
 
 const genInfo *getGenInfo();
+
+class genInfo2 {
+public:
+   enum byteType {
+      kFixedByte,
+      kArg1Imm8,
+      kArg2Imm8,
+      kArg1RipRelAddr32,
+      kModRMBothArgs,
+      kModRMArg1FixedByte,
+      kSIB,
+      kEndOfInstr
+   };
+
+   const char *guid;
+
+   unsigned char *byteStream;
+
+   enum argEncoding {
+      kNa,
+      kModRmR,
+   };
+
+   argEncoding ae[4];
+};
+
+const genInfo2 *getGenInfo2();
+
+// [size][r1 + (r2*s) + d]
+class asmArgInfo {
+public:
+   enum argFlags {
+      kMem8     = 1<< 1,
+      kPtr      = 1<< 2,
+      kHasIndex = 1<< 3,
+      kScale8   = 1<< 4,
+      kDisp8    = 1<< 5,
+      kLabel    = 1<< 6,
+      kImm8     = 1<< 7,
+      kReg64    = 1<< 8,
+   };
+   size_t flags;
+   union {
+      struct {
+         unsigned char v[8];
+      } bytes;
+      struct {
+         unsigned short v[4];
+      } words;
+      struct {
+         unsigned long v[2];
+      } dwords;
+      struct {
+         unsigned __int64 v[1];
+      } qwords;
+   } data;
+
+   argTypes computeArgType();
+};
+
+class modRm {
+public:
+   static void encodeRArg(size_t storage, unsigned char& rex, unsigned char& modRmByte);
+
+private:
+   modRm();
+   modRm(const modRm&);
+   modRm& operator=(const modRm&);
+};
 
 } // namespace i64
 } // namespace tgt

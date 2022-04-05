@@ -52,6 +52,7 @@ CMN_SRC = \
 	src/cmn/lexor.cpp \
 	src/cmn/out.cpp \
 	src/cmn/pathUtil.cpp \
+	src/cmn/target.cpp \
 	src/cmn/textTable.cpp \
 	src/cmn/trace.cpp \
 
@@ -151,6 +152,7 @@ $(LIAM_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # shtasm
 
 SHTASM_SRC = \
+	src/shtasm/assembler.cpp \
 	src/shtasm/frontend.cpp \
 	src/shtasm/main.cpp \
 	src/shtasm/processor.cpp \

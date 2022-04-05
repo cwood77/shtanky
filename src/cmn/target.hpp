@@ -8,26 +8,28 @@ namespace cmn {
 namespace tgt {
 
 enum argTypes {
-   kArgTypeNone = 0,
+   kArgTypeNone = 1 <<  1,
 
-   kR8          = 1 <<  1,
-   kR16         = 1 <<  2,
-   kR32         = 1 <<  3,
-   kR64         = 1 <<  4,
+   kR8          = 1 <<  2,
+   kR16         = 1 <<  3,
+   kR32         = 1 <<  4,
+   kR64         = 1 <<  5,
 
-   kI8          = 1 <<  5,
-   kI16         = 1 <<  6,
-   kI32         = 1 <<  7,
-   kI64         = 1 <<  8,
+   kI8          = 1 <<  6,
+   kI16         = 1 <<  7,
+   kI32         = 1 <<  8,
+   kI64         = 1 <<  9,
 
-   kM8          = 1 <<  9,
-   kM16         = 1 << 10,
-   kM32         = 1 << 11,
-   kM64         = 1 << 12,
+   kM8          = 1 << 10,
+   kM16         = 1 << 11,
+   kM32         = 1 << 12,
+   kM64         = 1 << 13,
 };
 
 enum instrIds {
-   kEnterFunc,
+   kFirstInstr,
+
+   kEnterFunc = kFirstInstr,
    kExitFunc,
 
    kPush,
@@ -44,7 +46,8 @@ enum instrIds {
 
    kRet,
 
-   kSyscall,
+   kLastInstr,
+   kSyscall = kLastInstr,
 };
 
 class instrFmt {
@@ -85,6 +88,8 @@ public:
 
    const char *name;
    const instrFmt *fmts;
+
+   const instrFmt& demandFmt(const std::vector<argTypes> a) const;
 };
 
 class iCallingConvention {
@@ -124,5 +129,4 @@ public:
 };
 
 } // namespace tgt
-
 } // namespace cmn

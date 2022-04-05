@@ -1,5 +1,6 @@
 #include "../cmn/fmt.hpp"
 #include "../cmn/obj-fmt.hpp"
+#include "../cmn/target.hpp"
 #include "../cmn/trace.hpp"
 #include "assembler.hpp"
 #include "frontend.hpp"
@@ -9,12 +10,23 @@
 
 namespace shtasm {
 
-processor::processor(parser& p, cmn::objfmt::objFile& o)
+processor::processor(parser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFile& o)
 : m_parser(p)
+, m_t(t)
 , m_oFile(o)
 , m_pListingFile(NULL)
 , m_pCurrObj(NULL)
 {
+   // prepare instrMap
+   {
+      for(size_t i=cmn::tgt::kFirstInstr;i<=cmn::tgt::kLastInstr;i++)
+      {
+         auto asId = static_cast<cmn::tgt::instrIds>(i);
+         auto pInstr = t.getProc().getInstr(asId);
+         m_instrMap[pInstr->name] = asId;
+      }
+   }
+
    // prepare genInfos
    {
       auto *pInfo = cmn::tgt::i64::getGenInfo();
@@ -52,7 +64,7 @@ void processor::process()
          m_pCurrObj = m_oFile.objects.back();
          ::sscanf(a[0].c_str()+5,"%lu",&m_pCurrObj->flags);
 
-         // setup assembler for new object
+         // setup stream for new object
          m_pBlock.reset(new compositeObjWriter());
          m_pBlock->sink(
             *new retailObjWriter(
@@ -61,26 +73,52 @@ void processor::process()
             m_pBlock->sink(
                *new listingObjWriter(
                   *new singleUseWriter(*m_pListingFile)));
-         /*
-         lineWriter l(*pBlock);
-         l.setLineNumber(m_parser.getLexor().getLineNumber());
-         */
+         m_pWriter.reset(new lineWriter(*m_pBlock));
+
+         // prep assembler
          m_pAsm.reset(new assembler());
-         m_pAsm->sink(*m_pBlock);
+         m_pAsm->sink(*m_pWriter);
       }
       else
       {
          // defer to assembler
 
+         // find instr
+         auto instrId = cmn::tgt::kFirstInstr;
+         {
+            auto it = m_instrMap.find(a[0]);
+            if(it == m_instrMap.end())
+               throw std::runtime_error(cmn::fmt("instr '%s' isn't known?",a[0].c_str()));
+            instrId = it->second;
+         }
+
+         // fine parse each argument
+         std::vector<cmn::tgt::i64::asmArgInfo> ai;
+         std::vector<cmn::tgt::argTypes> aTypes;
+         for(size_t i=1;i<a.size();i++)
+         {
+            ai.push_back(cmn::tgt::i64::asmArgInfo());
+            fineLexor l(a[i].c_str());
+            fineParser p(l);
+            p.parseArg(ai.back());
+            aTypes.push_back(ai.back().computeArgType());
+         }
+
+         // locate the instr fmt to use
+         auto& iFmt = m_t.getProc().getInstr(instrId)->demandFmt(aTypes);
+
+#if 0
          // look up instr
          const cmn::tgt::i64::genInfo *pInfo = m_genInfos[a[0]];
          if(!pInfo)
             throw std::runtime_error(cmn::fmt("no known instr for '%s'",a[0].c_str()));
+         m_pWriter->setLineNumber(m_parser.getLexor().getLineNumber());
          m_pAsm->assemble(*pInfo);
 
          // add each arg
          for(size_t i=1;i<a.size();i++)
             m_pAsm->addArg(a[i]);
+#endif
       }
    }
 }

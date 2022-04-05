@@ -20,10 +20,17 @@ static const instrFmt addFmts[] = {
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
 };
 
+static const instrFmt pushFmts[] = {
+   { "PUSH{FF /6}",
+      kR64 | kM64,
+      kArgTypeNone, kArgTypeNone, kArgTypeNone },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+};
+
 static const instrInfo kInstrs[] = {
    { "<enterFunc>", NULL     },
    { "<exitFunc>",  NULL     },
-   { "push",        NULL     },
+   { "push",        (const instrFmt*)&pushFmts },
    { "pop",         NULL     },
    { "sub",         (const instrFmt*)&subFmts },
    { "add",         (const instrFmt*)&addFmts },

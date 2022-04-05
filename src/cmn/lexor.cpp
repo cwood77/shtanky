@@ -131,7 +131,7 @@ std::string lexorBase::getTokenName(size_t t)
    else if(t == kIntLiteral)
       return "int literal";
    else
-      return m_lexemeDict[t]->name;
+      return m_lexemeDict[t];
 }
 
 void lexorBase::demand(size_t t)
@@ -212,7 +212,7 @@ void lexorBase::addTable(const lexemeInfo *pTable, const size_t *pUnsupported)
             m_alphas[l.lexeme] = &l;
       }
 
-      m_lexemeDict[l.token] = &l;
+      m_lexemeDict[l.token] = l.name;
    }
 }
 
@@ -223,6 +223,8 @@ void lexorBase::addClasses(const lexemeClassInfo *pClasses)
       const lexemeClassInfo& c = pClasses[i];
       if(c.Class == kNoClass)
          break;
+
+      m_lexemeDict[c.Class] = c.name;
 
       for(size_t j=0;;j++)
       {

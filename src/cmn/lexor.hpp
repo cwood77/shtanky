@@ -115,7 +115,7 @@ private:
    std::list<iLexorPhase*> m_phases;
    std::map<std::string,const lexemeInfo*> m_symbolics;
    std::map<std::string,const lexemeInfo*> m_alphas;
-   std::map<size_t,const lexemeInfo*> m_lexemeDict;
+   std::map<size_t,const char*> m_lexemeDict;
    std::set<size_t> m_unsupported;
    std::string m_terminators;
    std::map<size_t,size_t> m_tokenToClassMap;

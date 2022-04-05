@@ -15,7 +15,7 @@
 
 namespace shtasm {
 
-class iObjWriter;
+class lineWriter;
 
 class iTableWriter {
 public:
@@ -26,10 +26,15 @@ public:
 
 class assembler {
 public:
-   void sink(iObjWriter& o) {}
+   assembler() : m_pW(NULL), m_pGenInfo(NULL) {}
+   void sink(lineWriter& o) { m_pW = &o; }
 
-   void assemble(const cmn::tgt::i64::genInfo& gi) {}
+   void assemble(const cmn::tgt::i64::genInfo& gi);
    void addArg(const std::string& a) {}
+
+private:
+   lineWriter *m_pW;
+   const cmn::tgt::i64::genInfo *m_pGenInfo;
 };
 
 } // namespace shtasm

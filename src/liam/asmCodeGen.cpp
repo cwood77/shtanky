@@ -78,7 +78,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
             {
                if(m_t.getCallConvention().requiresPrologEpilogSave(*it))
                {
-                  m_w[1] << "push " << m_t.getProc().getRegName(*it);
+                  m_w[1] << "push, " << m_t.getProc().getRegName(*it);
                   m_w.advanceLine();
                }
             }
@@ -86,7 +86,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
             if(locals)
             {
                m_w[1]
-                  << "sub "
+                  << "sub, "
                   << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
                   << locals;
                m_w.advanceLine();
@@ -99,7 +99,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
             if(locals)
             {
                m_w[1]
-                  << "add "
+                  << "add, "
                   << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
                   << locals;
                m_w.advanceLine();
@@ -109,7 +109,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
             {
                if(m_t.getCallConvention().requiresPrologEpilogSave(*it))
                {
-                  m_w[1] << "pop " << m_t.getProc().getRegName(*it);
+                  m_w[1] << "pop, " << m_t.getProc().getRegName(*it);
                   m_w.advanceLine();
                }
             }
@@ -120,7 +120,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
       case cmn::tgt::kMov:
       case cmn::tgt::kRet:
          {
-            m_w[1] << m_t.getProc().getInstr(i.instrId)->name;
+            m_w[1] << m_t.getProc().getInstr(i.instrId)->name << ",";
             asmArgWriter(m_v,m_t,m_w).write(i);
             handleComment(i);
             m_w.advanceLine();
@@ -129,7 +129,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
       case cmn::tgt::kCall:
       case cmn::tgt::kSyscall:
          {
-            m_w[1] << m_t.getProc().getInstr(i.instrId)->name;
+            m_w[1] << m_t.getProc().getInstr(i.instrId)->name << ",";
             asmArgWriter(m_v,m_t,m_w).write(i,1);
             handleComment(i);
             m_w.advanceLine();
@@ -153,7 +153,7 @@ void asmCodeGen::handlePrePostCallStackAlloc(lirInstr& i, cmn::tgt::instrIds x)
       m_w[1] << "; ";
 
    m_w[1] << m_t.getProc().getInstr(x)->name
-      << " " << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr)
+      << ", " << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr)
       << ", " << size;
 
    handleComment(i);
