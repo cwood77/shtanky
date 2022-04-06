@@ -3,7 +3,7 @@
 3://                 push, rdi          
 3:rex(48)3:op(ff)3:modR/M(38)
 4://                 sub, rsp, 32       
-4:rex(48)4:op(83)4:modR/M(ec)4:i8(00)
+4:rex(48)4:op(83)4:modR/M(ec)4:i8(20)
 5://                 mov, rbx, [rcx]    ;    :_out
 5:op(de)5:op(ad)
 6://                 mov, rdi, [rbx]    ;    :type
@@ -17,7 +17,7 @@
 10://                 call, rcx, rdx, r8 
 10:op(e8)
 11://                 add, rsp, 32       
-11:rex(48)11:op(83)11:modR/M(c4)11:i8(00)
+11:rex(48)11:op(83)11:modR/M(c4)11:i8(20)
 12://                 pop, rdi           
 12:rex(48)12:op(8f)12:modR/M(38)
 13://                 pop, rbx           

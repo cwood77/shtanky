@@ -170,6 +170,7 @@ void fineParser::parseArg(cmn::tgt::i64::asmArgInfo& i)
    else if(m_l.getToken() == fineLexor::kIntLiteral)
    {
       m_pAi->flags |= cmn::tgt::i64::asmArgInfo::kImm8;
+      m_pAi->data.bytes.v[0] = ::atoi(m_l.getLexeme().c_str());
       m_l.advance();
    }
    else if(m_l.getToken() == fineLexor::kName)
