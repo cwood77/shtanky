@@ -37,7 +37,7 @@ void stringLiteralReader::advance(lexorState& s) const
 
 void intLiteralReader::collectTerminators(std::string& t) const
 {
-   t += "0123456789";
+   //t += "0123456789";
 }
 
 void intLiteralReader::advance(lexorState& s) const

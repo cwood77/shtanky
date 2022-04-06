@@ -38,7 +38,22 @@ public:
       kModRMBothArgs,
       kModRMArg1FixedByte,
       kSIB,
-      kEndOfInstr
+      kEndOfInstr,
+
+
+      // new ideas
+#if 0
+      kRexByte,
+      kOpcode1,
+      kOpcode2,
+      kOpcode3,
+      kCodeOffset32,
+      kArg1Imm8,
+      kModRMByteWithFixedOp,
+      kModRMByte,
+      kSIBByte,
+      kEndOfInstr,
+#endif
    };
 
    const char *guid;
@@ -47,7 +62,7 @@ public:
 
    enum argEncoding {
       kNa,
-      kModRmR,
+      kModRmReg,
    };
 
    argEncoding ae[4];
@@ -55,6 +70,7 @@ public:
 
 const genInfo2 *getGenInfo2();
 
+// TODO HACK LAME - is this really 64-bit specific?
 // [size][r1 + (r2*s) + d]
 class asmArgInfo {
 public:
@@ -89,7 +105,7 @@ public:
 
 class modRm {
 public:
-   static void encodeRArg(size_t storage, unsigned char& rex, unsigned char& modRmByte);
+   static void encodeRegArg(size_t storage, unsigned char& rex, unsigned char& modRmByte) {}
 
 private:
    modRm();

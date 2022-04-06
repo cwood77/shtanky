@@ -55,17 +55,54 @@ static const genInfo2 kGen2[] = {
 
    { "PUSH{FF /6}", (unsigned char[]){
       genInfo2::kFixedByte, 0xFF,
-      genInfo2::kModRMArg1FixedByte, 0x6
+      genInfo2::kModRMArg1FixedByte, 0x6,
    },
-   { genInfo2::kModRmR, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
+   { genInfo2::kModRmReg, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
+
+   { "SUB{REX.W + 83 /5 ib}", (unsigned char[]){
+      genInfo2::kFixedByte, 0x83,
+      genInfo2::kModRMArg1FixedByte, 0x5,
+      genInfo2::kArg2Imm8,
+   },
+   { genInfo2::kModRmReg, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
+
+   { "ADD{REX.W + 83 /0 ib}", (unsigned char[]){
+      genInfo2::kFixedByte, 0xDE,
+      genInfo2::kFixedByte, 0xAD,
+   },
+   { genInfo2::kModRmReg, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
+
+   { "MOV(HACK)", (unsigned char[]){
+      genInfo2::kFixedByte, 0xDE,
+      genInfo2::kFixedByte, 0xAD,
+   },
+   { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
+
+   { "POP{HACK}", (unsigned char[]){
+      genInfo2::kFixedByte, 0xDE,
+      genInfo2::kFixedByte, 0xAD,
+   },
+   { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
+
+   { "CALL(HACK)", (unsigned char[]){
+      genInfo2::kFixedByte, 0xDE,
+      genInfo2::kFixedByte, 0xAD,
+   },
+   { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
+
+   { NULL, NULL, { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } }
 };
 
 const genInfo2 *getGenInfo2() { return kGen2; }
 
 argTypes asmArgInfo::computeArgType()
 {
-   if(flags & kReg64)
+   if(flags & kMem8)
+      return kM8;
+   else if(flags & kReg64)
       return kR64;
+   else if(flags & kImm8)
+      return kI8;
    else
       throw std::runtime_error("can't compute arg type in " __FILE__);
 }

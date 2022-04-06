@@ -165,29 +165,55 @@ void fineParser::parseArg(cmn::tgt::i64::asmArgInfo& i)
    m_pAi = &i;
 
    if(m_l.getTokenClass() & fineLexor::kClassRegAny)
-   {
-      if(m_l.getTokenClass() & fineLexor::kClassReg64)
-      {
-         m_pAi->flags |= cmn::tgt::i64::asmArgInfo::kReg64;
-         m_pAi->data.qwords.v[0] =
-            m_l.getToken() - fineLexor::kRegRax
-               + cmn::tgt::i64::kRegA;
-      }
-      else
-         m_l.error(cmn::fmt("unknown register '%s'",m_l.getLexeme().c_str()));
-   }
+      parseReg();
    else if(m_l.getToken() == fineLexor::kIntLiteral)
-      ;
+   {
+      m_pAi->flags |= cmn::tgt::i64::asmArgInfo::kImm8;
+      m_l.advance();
+   }
    else if(m_l.getToken() == fineLexor::kName)
-      ;
+   {
+      m_pAi->flags |= cmn::tgt::i64::asmArgInfo::kLabel;
+      m_l.advance();
+   }
    else
       parseMemExpr();
+
+   m_l.demand(fineLexor::kEOI);
+}
+
+void fineParser::parseReg()
+{
+   if((m_l.getTokenClass() & fineLexor::kClassRegAny) == 0)
+      m_l.error("expected register");
+
+   if(m_l.getTokenClass() & fineLexor::kClassReg64)
+   {
+      m_pAi->flags |= cmn::tgt::i64::asmArgInfo::kReg64;
+      m_pAi->data.qwords.v[0] =
+         m_l.getToken() - fineLexor::kRegRax
+            + cmn::tgt::i64::kRegA;
+   }
+   else
+      m_l.error(cmn::fmt("unknown register '%s'",m_l.getLexeme().c_str()));
+
+   m_l.advance();
 }
 
 void fineParser::parseMemExpr()
 {
-   //m_l.demandOneOf(2,fineLexor::kLParen,fineLexor::kLBracket);
-   m_l.error("mem expr unimplemented");
+   if(m_l.getToken() == fineLexor::kLBracket)
+   {
+      m_l.advance();
+      m_pAi->flags |= cmn::tgt::i64::asmArgInfo::kPtr;
+      m_pAi->flags |= cmn::tgt::i64::asmArgInfo::kMem8; // 64?
+
+      parseReg();
+
+      m_l.demandAndEat(fineLexor::kRBracket);
+   }
+   else
+      m_l.demand(fineLexor::kLBracket);
 }
 
 } // namespace shtasm

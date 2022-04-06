@@ -97,6 +97,7 @@ public:
    void parseArg(cmn::tgt::i64::asmArgInfo& i);
 
 private:
+   void parseReg();
    void parseMemExpr();
 
    fineLexor& m_l;

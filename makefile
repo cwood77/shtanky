@@ -15,6 +15,7 @@ debug: \
 	$(OUT_DIR)/debug/liam.exe \
 	$(OUT_DIR)/debug/shtasm.exe
 	@cmd /c _test.bat
+	bin/out/debug/shtasm.exe
 
 all: \
 	debug \

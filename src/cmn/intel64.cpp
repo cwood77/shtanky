@@ -27,16 +27,40 @@ static const instrFmt pushFmts[] = {
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
 };
 
+static const instrFmt popFmts[] = {
+   { "POP{HACK}",
+      kR64 | kM64,
+      kArgTypeNone, kArgTypeNone, kArgTypeNone },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+};
+
+static const instrFmt movFmts[] = {
+   { "MOV(HACK)",
+      kR64,
+      kR64 | kM8,
+      kArgTypeNone, kArgTypeNone },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+};
+
+static const instrFmt callFmts[] = {
+   { "CALL(HACK)",
+      kR64,
+      kR64,
+      kR64,
+      kArgTypeNone },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+};
+
 static const instrInfo kInstrs[] = {
    { "<enterFunc>", NULL     },
    { "<exitFunc>",  NULL     },
    { "push",        (const instrFmt*)&pushFmts },
-   { "pop",         NULL     },
+   { "pop",         (const instrFmt*)&popFmts },
    { "sub",         (const instrFmt*)&subFmts },
    { "add",         (const instrFmt*)&addFmts },
-   { "mov",         NULL     },
+   { "mov",         (const instrFmt*)&movFmts },
    { "<precall>",   NULL     },
-   { "call",        NULL     },
+   { "call",        (const instrFmt*)&callFmts },
    { "<postcall>",  NULL     },
    { "ret",         NULL     },
    { "system",      NULL     },

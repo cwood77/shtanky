@@ -2,6 +2,7 @@
 #include "../cmn/obj-fmt.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/trace.hpp"
+#include "../cmn/i64asm.hpp" // remove?
 #include "assembler.hpp"
 #include "frontend.hpp"
 #include "processor.hpp"
@@ -41,11 +42,21 @@ processor::processor(parser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFile& 
 
 void processor::process()
 {
+   bool firstHack = true;
+
    while(!m_parser.getLexor().isDone())
    {
       std::string l,c;
       std::vector<std::string> a;
-      m_parser.parseLine(l,a,c);
+      if(!firstHack)
+         m_parser.parseLine(l,a,c);
+      else
+      {
+         // TODO HACK LAME - liam isn't generating segment directives yet
+         a.push_back(".seg");
+         a.push_back("1");
+         firstHack = false;
+      }
 
       {
          // dbg trace
@@ -57,7 +68,7 @@ void processor::process()
 
       if(a.size() == 0)
          ; // blank line
-      else if(a.size() == 1 && a[0] == ".seg ")
+      else if(a.size() == 2 && a[0] == ".seg")
       {
          // segment directives
          m_oFile.objects.push_back(new cmn::objfmt::obj());
@@ -114,26 +125,26 @@ void processor::process()
          if(!pInfo)
             throw std::runtime_error(cmn::fmt("no known instr for '%s'",a[0].c_str()));
 
-	 // build args
-	unsigned char rex = 0;
-	unsigned char modRmByte = 0;
-	for(size_t i=0;i<3;i++)
-	{
-		if(pInfo->ae[i] == genInfo2::kModRmR)
-		{
-			modRm::encodeRArgs(storage,rex,modRmByte);
-		}
-	}
+         // build args
+         unsigned char rex = 0;
+         unsigned char modRmByte = 0;
+         for(size_t i=0;i<3;i++)
+         {
+            if(pInfo->ae[i] == cmn::tgt::i64::genInfo2::kModRmReg)
+            {
+               cmn::tgt::i64::modRm::encodeRegArg(ai[i].data.qwords.v[0],rex,modRmByte);
+            }
+         }
 
-	// implement the byte stream
-	unsigned char *pByte = pInfo->byteStream;
-	for(;*pByte != genInfo2::kEndOfInstr;++pByte)
-	{
-		if(*pByte == genInfo2::kFixedByte)
-		{
-			m_pWriter->write("fixed8",++pByte,1);
-		}
-	}
+         // implement the byte stream
+         unsigned char *pByte = pInfo->byteStream;
+         for(;*pByte != cmn::tgt::i64::genInfo2::kEndOfInstr;++pByte)
+         {
+            if(*pByte == cmn::tgt::i64::genInfo2::kFixedByte)
+            {
+               m_pWriter->write("fixed8",++pByte,1);
+            }
+         }
 
 #if 0
          m_pWriter->setLineNumber(m_parser.getLexor().getLineNumber());
