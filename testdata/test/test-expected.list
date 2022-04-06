@@ -1,0 +1,24 @@
+3://                 push, rbx          
+3:fixed8(ff)
+4://                 push, rdi          
+4:fixed8(ff)
+5://                 sub, rsp, 32       
+5:fixed8(83)
+6://                 mov, rbx, [rcx]    ;    :_out
+6:fixed8(de)
+7://                 mov, rdi, [rbx]    ;    :type
+7:fixed8(de)
+8://                 mov, rbx, rcx      ;       (preserve) [combiner]
+8:fixed8(de)
+9://                 mov, rcx, [rdi]    ;    :printLn
+9:fixed8(de)
+10://                 mov, rdx, [rbx]    ;    :_out
+10:fixed8(de)
+11://                 call, rcx, rdx, r8 
+11:fixed8(de)
+12://                 add, rsp, 32       
+12:fixed8(de)
+13://                 pop, rdi           
+13:fixed8(de)
+14://                 pop, rbx           
+14:fixed8(de)
