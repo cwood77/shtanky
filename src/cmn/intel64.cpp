@@ -43,8 +43,8 @@ static const instrFmt movFmts[] = {
 };
 
 static const instrFmt callFmts[] = {
-   { "CALL(HACK)",
-      kR64,
+   { "CALL(E8 cd)",
+      kR64, // TODO HACK LAME wtf with 3 args?  Should be 1!
       kR64,
       kR64,
       kArgTypeNone },

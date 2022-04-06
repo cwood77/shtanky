@@ -7,26 +7,11 @@ namespace cmn {
 namespace tgt {
 namespace i64 {
 
-static const genInfo kGen[] = {
-
    // some examples from MSVC disassembly
    // 48 83 ec 28    == sub rsp,28h
    // e8 10 00 00 00 == call 07FF7F5891020h
    // 48 83 c4 28    == add rsp,28h
    // c3             == ret
-
-   //                                                      *see kRmYes
-   //         guid            rex        opcode       co  M*  SIB  di imm
-   { "SUB{REX.W + 83 /5 ib}", 0x48, {0x83,   0,   0},  0, 5, false, 0 ,1 }, // r/m64, imm8
-   { "CALL{E8 cd}",              0, {0xE8,   0,   0},  4, 0, false, 0 ,0 },
-   { "ADD{REX.W + 83 /0 ib}", 0x48, {0x83,   0,   0},  0, 8, false, 0, 1 }, // r/m64, imm8
-   { "RET{near}",                0, {0xC3,   0,   0},  0, 0, false, 0, 0 },
-
-   { NULL,                       0, {   0,   0,   0},  0, 0, false, 0, 0 },
-
-};
-
-const genInfo *getGenInfo() { return kGen; }
 
 static const genInfo2 kGen2[] = {
    { "PUSH{FF /6}", (unsigned char[]){
@@ -45,8 +30,9 @@ static const genInfo2 kGen2[] = {
    { genInfo2::kModRmRm, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
 
    { "ADD{REX.W + 83 /0 ib}", (unsigned char[]){
-      genInfo2::kOpcode1, 0xDE,
-      genInfo2::kOpcode1, 0xAD,
+      genInfo2::kOpcode1, 0x83,
+      genInfo2::kArgFmtBytesWithFixedOp, 0x0,
+      genInfo2::kArg2Imm8,
       genInfo2::kEndOfInstr,
    },
    { genInfo2::kModRmRm, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
@@ -65,9 +51,8 @@ static const genInfo2 kGen2[] = {
    },
    { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
 
-   { "CALL(HACK)", (unsigned char[]){
-      genInfo2::kOpcode1, 0xDE,
-      genInfo2::kOpcode1, 0xAD,
+   { "CALL(E8 cd)", (unsigned char[]){
+      genInfo2::kOpcode1, 0xE8,
       genInfo2::kEndOfInstr,
    },
    { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
@@ -376,7 +361,7 @@ void argFmtBytes::gather(unsigned char& rex, unsigned char& modRm)
    if(m_prefixByteStream.size())
       rex = m_prefixByteStream[1];
    if(m_argFmtByteStream.size())
-      modRm = m_argFmtByteStream[2];
+      modRm = m_argFmtByteStream[1];
 }
 
 void argFmtBytes::release(const unsigned char& rex, const unsigned char& modRm)
@@ -390,7 +375,7 @@ void argFmtBytes::release(const unsigned char& rex, const unsigned char& modRm)
       m_prefixByteStream[1] = (0x40 | rex);
    }
    if(m_argFmtByteStream.size())
-      m_argFmtByteStream[2] = modRm;
+      m_argFmtByteStream[1] = modRm;
    else
    {
       m_argFmtByteStream.resize(2);
