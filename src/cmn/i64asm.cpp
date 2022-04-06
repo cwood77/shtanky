@@ -14,6 +14,34 @@ namespace i64 {
    // c3             == ret
 
 static const genInfo2 kGen2[] = {
+   { "ADD{REX.W + 83 /0 ib}", (unsigned char[]){
+      genInfo2::kOpcode1, 0x83,
+      genInfo2::kArgFmtBytesWithFixedOp, 0x0,
+      genInfo2::kArg2Imm8,
+      genInfo2::kEndOfInstr,
+   },
+   { genInfo2::kModRmRm, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
+
+   { "CALL(E8 cd)", (unsigned char[]){
+      genInfo2::kOpcode1, 0xE8,
+      genInfo2::kEndOfInstr,
+   },
+   { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
+
+   { "MOV(HACK)", (unsigned char[]){
+      genInfo2::kOpcode1, 0xDE,
+      genInfo2::kOpcode1, 0xAD,
+      genInfo2::kEndOfInstr,
+   },
+   { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
+
+   { "POP{8F /0}", (unsigned char[]){
+      genInfo2::kOpcode1, 0x8F,
+      genInfo2::kArgFmtBytesWithFixedOp, 0x0,
+      genInfo2::kEndOfInstr,
+   },
+   { genInfo2::kModRmReg, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
+
    { "PUSH{FF /6}", (unsigned char[]){
       genInfo2::kOpcode1, 0xFF,
       genInfo2::kArgFmtBytesWithFixedOp, 0x6,
@@ -28,34 +56,6 @@ static const genInfo2 kGen2[] = {
       genInfo2::kEndOfInstr,
    },
    { genInfo2::kModRmRm, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
-
-   { "ADD{REX.W + 83 /0 ib}", (unsigned char[]){
-      genInfo2::kOpcode1, 0x83,
-      genInfo2::kArgFmtBytesWithFixedOp, 0x0,
-      genInfo2::kArg2Imm8,
-      genInfo2::kEndOfInstr,
-   },
-   { genInfo2::kModRmRm, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
-
-   { "MOV(HACK)", (unsigned char[]){
-      genInfo2::kOpcode1, 0xDE,
-      genInfo2::kOpcode1, 0xAD,
-      genInfo2::kEndOfInstr,
-   },
-   { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
-
-   { "POP{HACK}", (unsigned char[]){
-      genInfo2::kOpcode1, 0xDE,
-      genInfo2::kOpcode1, 0xAD,
-      genInfo2::kEndOfInstr,
-   },
-   { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
-
-   { "CALL(E8 cd)", (unsigned char[]){
-      genInfo2::kOpcode1, 0xE8,
-      genInfo2::kEndOfInstr,
-   },
-   { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
 
    { NULL, NULL, { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } }
 };
@@ -313,19 +313,14 @@ unsigned char *argFmtBytes::computeTotalByteStream()
       }
       else if(*pThumb == genInfo2::kCodeOffset32)
       {
-         m_totalByteStream.push_back(*pThumb); pThumb++;
-         m_totalByteStream.push_back(*pThumb); pThumb++;
-         m_totalByteStream.push_back(*pThumb); pThumb++;
          m_totalByteStream.push_back(*pThumb);
       }
       else if(*pThumb == genInfo2::kArg1Imm8)
       {
-         m_totalByteStream.push_back(*pThumb); pThumb++;
          m_totalByteStream.push_back(*pThumb);
       }
       else if(*pThumb == genInfo2::kArg2Imm8)
       {
-         m_totalByteStream.push_back(*pThumb); pThumb++;
          m_totalByteStream.push_back(*pThumb);
       }
       else if(*pThumb == genInfo2::kArgFmtBytes)

@@ -4,6 +4,20 @@
 namespace cmn {
 namespace tgt {
 
+static const instrFmt pushFmts[] = {
+   { "PUSH{FF /6}",
+      kR64 | kM64,
+      kArgTypeNone, kArgTypeNone, kArgTypeNone },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+};
+
+static const instrFmt popFmts[] = {
+   { "POP{8F /0}",
+      kR64 | kM64,
+      kArgTypeNone, kArgTypeNone, kArgTypeNone },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+};
+
 static const instrFmt subFmts[] = {
    { "SUB{REX.W + 83 /5 ib}",
       kR64 | kM64,
@@ -17,20 +31,6 @@ static const instrFmt addFmts[] = {
       kR64 | kM64,
       kI8,
       kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
-};
-
-static const instrFmt pushFmts[] = {
-   { "PUSH{FF /6}",
-      kR64 | kM64,
-      kArgTypeNone, kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
-};
-
-static const instrFmt popFmts[] = {
-   { "POP{HACK}",
-      kR64 | kM64,
-      kArgTypeNone, kArgTypeNone, kArgTypeNone },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
 };
 
