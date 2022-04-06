@@ -1,24 +1,24 @@
-3://                 push, rbx          
-3:fixed8(ff)
-4://                 push, rdi          
-4:fixed8(ff)
-5://                 sub, rsp, 32       
-5:fixed8(83)
-6://                 mov, rbx, [rcx]    ;    :_out
-6:fixed8(de)
-7://                 mov, rdi, [rbx]    ;    :type
-7:fixed8(de)
-8://                 mov, rbx, rcx      ;       (preserve) [combiner]
-8:fixed8(de)
-9://                 mov, rcx, [rdi]    ;    :printLn
-9:fixed8(de)
-10://                 mov, rdx, [rbx]    ;    :_out
-10:fixed8(de)
-11://                 call, rcx, rdx, r8 
-11:fixed8(de)
-12://                 add, rsp, 32       
-12:fixed8(de)
-13://                 pop, rdi           
-13:fixed8(de)
-14://                 pop, rbx           
-14:fixed8(de)
+2://                 push, rbx          
+2:op(ff)2:modR/M(00)
+3://                 push, rdi          
+3:op(ff)3:modR/M(00)
+4://                 sub, rsp, 32       
+4:op(83)4:modR/M(00)4:i8(00)
+5://                 mov, rbx, [rcx]    ;    :_out
+5:op(de)5:op(ad)
+6://                 mov, rdi, [rbx]    ;    :type
+6:op(de)6:op(ad)
+7://                 mov, rbx, rcx      ;       (preserve) [combiner]
+7:op(de)7:op(ad)
+8://                 mov, rcx, [rdi]    ;    :printLn
+8:op(de)8:op(ad)
+9://                 mov, rdx, [rbx]    ;    :_out
+9:op(de)9:op(ad)
+10://                 call, rcx, rdx, r8 
+10:op(de)10:op(ad)
+11://                 add, rsp, 32       
+11:op(de)11:op(ad)11:modR/M(00)
+12://                 pop, rdi           
+12:op(de)12:op(ad)
+13://                 pop, rbx           
+13:op(de)13:op(ad)

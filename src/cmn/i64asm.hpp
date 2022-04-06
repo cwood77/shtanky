@@ -31,29 +31,22 @@ const genInfo *getGenInfo();
 class genInfo2 {
 public:
    enum byteType {
-      kFixedByte,
-      kArg1Imm8,
-      kArg2Imm8,
-      kArg1RipRelAddr32,
-      kModRMBothArgs,
-      kModRMArg1FixedByte,
-      kSIB,
-      kEndOfInstr,
-
-
-      // new ideas
-#if 0
-      kRexByte,
+      // safe to use in constants
       kOpcode1,
-      kOpcode2,
-      kOpcode3,
+      //kOpcode2,
+      //kOpcode3,
       kCodeOffset32,
       kArg1Imm8,
-      kModRMByteWithFixedOp,
-      kModRMByte,
-      kSIBByte,
+      kArg2Imm8,
+      kArgFmtBytes, // optional; if omitted arg bytes are suffixed, if any
+      kArgFmtBytesWithFixedOp,
       kEndOfInstr,
-#endif
+
+      // generated only; do not use in constants
+      kRexByte,
+      kModRmByte,
+      // disp 32
+      // sib byte
    };
 
    const char *guid;
@@ -111,6 +104,23 @@ private:
    modRm();
    modRm(const modRm&);
    modRm& operator=(const modRm&);
+};
+
+class argFmtBytes {
+public:
+   explicit argFmtBytes(unsigned char *pInstrByteStream)
+   : m_pInstrByteStream(pInstrByteStream) {}
+
+   void encodeArgModRmReg(asmArgInfo& a);
+   void encodeFixedOp(unsigned char op);
+
+   unsigned char *computeTotalByteStream();
+
+private:
+   unsigned char *m_pInstrByteStream;
+   std::vector<unsigned char> m_prefixByteStream;
+   std::vector<unsigned char> m_argFmtByteStream;
+   std::vector<unsigned char> m_totalByteStream;
 };
 
 } // namespace i64

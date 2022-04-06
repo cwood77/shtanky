@@ -129,25 +129,37 @@ void processor::process()
             throw std::runtime_error(cmn::fmt("no known instr for '%s'",a[0].c_str()));
 
          // build args
-         unsigned char rex = 0;
-         unsigned char modRmByte = 0;
+         cmn::tgt::i64::argFmtBytes argBytes(pInfo->byteStream);
          for(size_t i=0;i<3;i++)
          {
             if(pInfo->ae[i] == cmn::tgt::i64::genInfo2::kModRmReg)
             {
-               cmn::tgt::i64::modRm::encodeRegArg(ai[i].data.qwords.v[0],rex,modRmByte);
+               argBytes.encodeArgModRmReg(ai[i]);
             }
          }
 
          // implement the byte stream
-         unsigned char *pByte = pInfo->byteStream;
+         unsigned char *pByte = argBytes.computeTotalByteStream();
          for(;*pByte != cmn::tgt::i64::genInfo2::kEndOfInstr;++pByte)
          {
-            if(*pByte == cmn::tgt::i64::genInfo2::kFixedByte)
+            if(*pByte == cmn::tgt::i64::genInfo2::kOpcode1)
             {
-               m_pWriter->write("fixed8",++pByte,1);
+               m_pWriter->write("op",++pByte,1);
             }
-               break;
+            else if(*pByte == cmn::tgt::i64::genInfo2::kArg2Imm8)
+            {
+               m_pWriter->write("i8",&ai[1].data.bytes.v[0],1);
+            }
+            else if(*pByte == cmn::tgt::i64::genInfo2::kRexByte)
+            {
+               m_pWriter->write("rex",++pByte,1);
+            }
+            else if(*pByte == cmn::tgt::i64::genInfo2::kModRmByte)
+            {
+               m_pWriter->write("modR/M",++pByte,1);
+            }
+            else
+               throw std::runtime_error(cmn::fmt("don't know how to write byte %d",(int)*pByte));
          }
 
          m_pWriter->under().nextPart();

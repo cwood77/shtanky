@@ -1,3 +1,4 @@
+#include "../cmn/fmt.hpp"
 #include "i64asm.hpp"
 #include <stdexcept>
 
@@ -27,66 +28,46 @@ static const genInfo kGen[] = {
 const genInfo *getGenInfo() { return kGen; }
 
 static const genInfo2 kGen2[] = {
-   /*
-   { "SUB{REX.W + 83 /5 ib}", (unsigned char[]){
-      genInfo2::kFixedByte, 0x48,
-      genInfo2::kFixedByte, 0x83,
-      genInfo2::kModRMArg1FixedByte, 0x5,
-      genInfo2::kArg2Imm8,
-      genInfo2::kEndOfInstr
-   } },
-   { "CALL{E8 cd}", (unsigned char[]){
-      genInfo2::kFixedByte, 0xe8,
-      genInfo2::kArg1RipRelAddr32,
-      genInfo2::kEndOfInstr
-   } },
-   { "ADD{REX.W + 83 /0 ib}", (unsigned char[]){
-      genInfo2::kFixedByte, 0x48,
-      genInfo2::kFixedByte, 0x83,
-      genInfo2::kModRMArg1FixedByte, 0x0,
-      genInfo2::kArg2Imm8,
-      genInfo2::kEndOfInstr
-   } },
-   { "RET{near}", (unsigned char[]){
-      genInfo2::kFixedByte, 0xC3,
-      genInfo2::kEndOfInstr
-   } },
-   */
-
    { "PUSH{FF /6}", (unsigned char[]){
-      genInfo2::kFixedByte, 0xFF,
-      genInfo2::kModRMArg1FixedByte, 0x6,
+      genInfo2::kOpcode1, 0xFF,
+      genInfo2::kArgFmtBytesWithFixedOp, 0x6,
+      genInfo2::kEndOfInstr,
    },
    { genInfo2::kModRmReg, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
 
    { "SUB{REX.W + 83 /5 ib}", (unsigned char[]){
-      genInfo2::kFixedByte, 0x83,
-      genInfo2::kModRMArg1FixedByte, 0x5,
+      genInfo2::kOpcode1, 0x83,
+      genInfo2::kArgFmtBytesWithFixedOp, 0x5,
       genInfo2::kArg2Imm8,
+      genInfo2::kEndOfInstr,
    },
    { genInfo2::kModRmReg, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
 
    { "ADD{REX.W + 83 /0 ib}", (unsigned char[]){
-      genInfo2::kFixedByte, 0xDE,
-      genInfo2::kFixedByte, 0xAD,
+      genInfo2::kOpcode1, 0xDE,
+      genInfo2::kOpcode1, 0xAD,
+      genInfo2::kEndOfInstr,
    },
    { genInfo2::kModRmReg, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
 
    { "MOV(HACK)", (unsigned char[]){
-      genInfo2::kFixedByte, 0xDE,
-      genInfo2::kFixedByte, 0xAD,
+      genInfo2::kOpcode1, 0xDE,
+      genInfo2::kOpcode1, 0xAD,
+      genInfo2::kEndOfInstr,
    },
    { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
 
    { "POP{HACK}", (unsigned char[]){
-      genInfo2::kFixedByte, 0xDE,
-      genInfo2::kFixedByte, 0xAD,
+      genInfo2::kOpcode1, 0xDE,
+      genInfo2::kOpcode1, 0xAD,
+      genInfo2::kEndOfInstr,
    },
    { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
 
    { "CALL(HACK)", (unsigned char[]){
-      genInfo2::kFixedByte, 0xDE,
-      genInfo2::kFixedByte, 0xAD,
+      genInfo2::kOpcode1, 0xDE,
+      genInfo2::kOpcode1, 0xAD,
+      genInfo2::kEndOfInstr,
    },
    { genInfo2::kNa, genInfo2::kNa, genInfo2::kNa, genInfo2::kNa } },
 
@@ -105,6 +86,92 @@ argTypes asmArgInfo::computeArgType()
       return kI8;
    else
       throw std::runtime_error("can't compute arg type in " __FILE__);
+}
+
+void argFmtBytes::encodeArgModRmReg(asmArgInfo& a)
+{
+   unsigned char rex = 0;
+   unsigned char _modRm = 0;
+
+   if(m_prefixByteStream.size())
+      rex = m_prefixByteStream[1];
+   if(m_argFmtByteStream.size())
+      _modRm = m_argFmtByteStream[2];
+
+   modRm::encodeRegArg(a.data.qwords.v[0],rex,_modRm);
+
+   if(m_prefixByteStream.size())
+      m_prefixByteStream[1] = rex;
+   else if(rex)
+   {
+      m_prefixByteStream.resize(2);
+      m_prefixByteStream[0] = genInfo2::kRexByte;
+      m_prefixByteStream[1] = (0x40 | rex);
+   }
+   if(m_argFmtByteStream.size())
+      m_argFmtByteStream[2] = _modRm;
+   else
+   {
+      m_argFmtByteStream.resize(2);
+      m_argFmtByteStream[0] = genInfo2::kModRmByte;
+      m_argFmtByteStream[1] = _modRm;
+   }
+}
+
+unsigned char *argFmtBytes::computeTotalByteStream()
+{
+   m_totalByteStream = m_prefixByteStream;
+   bool argsInserted = false;
+   for(auto pThumb=m_pInstrByteStream;*pThumb!=genInfo2::kEndOfInstr;pThumb++)
+   {
+      if(*pThumb == genInfo2::kOpcode1)
+      {
+         m_totalByteStream.push_back(*pThumb); pThumb++;
+         m_totalByteStream.push_back(*pThumb);
+      }
+      else if(*pThumb == genInfo2::kCodeOffset32)
+      {
+         m_totalByteStream.push_back(*pThumb); pThumb++;
+         m_totalByteStream.push_back(*pThumb); pThumb++;
+         m_totalByteStream.push_back(*pThumb); pThumb++;
+         m_totalByteStream.push_back(*pThumb);
+      }
+      else if(*pThumb == genInfo2::kArg1Imm8)
+      {
+         m_totalByteStream.push_back(*pThumb); pThumb++;
+         m_totalByteStream.push_back(*pThumb);
+      }
+      else if(*pThumb == genInfo2::kArg2Imm8)
+      {
+         m_totalByteStream.push_back(*pThumb); pThumb++;
+         m_totalByteStream.push_back(*pThumb);
+      }
+      else if(*pThumb == genInfo2::kArgFmtBytes)
+      {
+         m_totalByteStream.insert(
+            m_totalByteStream.end(),
+            m_argFmtByteStream.begin(),m_argFmtByteStream.end());
+         argsInserted = true;
+      }
+      else if(*pThumb == genInfo2::kArgFmtBytesWithFixedOp)
+      {
+         pThumb++;
+         m_totalByteStream.insert(
+            m_totalByteStream.end(),
+            m_argFmtByteStream.begin(),m_argFmtByteStream.end());
+         argsInserted = true;
+      }
+      else
+         throw std::runtime_error(cmn::fmt("don't know byte %d",(int)*pThumb));
+   }
+
+   if(!argsInserted)
+      m_totalByteStream.insert(
+         m_totalByteStream.end(),
+         m_argFmtByteStream.begin(),m_argFmtByteStream.end());
+
+   m_totalByteStream.push_back(genInfo2::kEndOfInstr);
+   return &m_totalByteStream[0];
 }
 
 } // namespace i64
