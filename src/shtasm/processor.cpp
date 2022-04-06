@@ -132,9 +132,21 @@ void processor::process()
          cmn::tgt::i64::argFmtBytes argBytes(pInfo->byteStream);
          for(size_t i=0;i<3;i++)
          {
-            if(pInfo->ae[i] == cmn::tgt::i64::genInfo2::kModRmReg)
+            switch(pInfo->ae[i])
             {
-               argBytes.encodeArgModRmReg(ai[i]);
+               case cmn::tgt::i64::genInfo2::kNa:
+                  break;
+
+               case cmn::tgt::i64::genInfo2::kModRmReg:
+                  argBytes.encodeArgModRmReg(ai[i],true);
+                  break;
+
+               case cmn::tgt::i64::genInfo2::kModRmRm:
+                  argBytes.encodeArgModRmReg(ai[i],false);
+                  break;
+
+               default:
+                  throw std::runtime_error("unknown arg type in " __FILE__);
             }
          }
 

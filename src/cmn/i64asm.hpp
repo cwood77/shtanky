@@ -55,7 +55,8 @@ public:
 
    enum argEncoding {
       kNa,
-      kModRmReg,
+      kModRmReg, // arg is in reg field of ModR/M byte
+      kModRmRm,  // arg is in Mod/RM fields of ModR/M byte
    };
 
    argEncoding ae[4];
@@ -98,7 +99,8 @@ public:
 
 class modRm {
 public:
-   static void encodeRegArg(size_t storage, unsigned char& rex, unsigned char& modRmByte) {}
+   static void encodeRegArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte);
+   static void encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte);
 
 private:
    modRm();
@@ -111,7 +113,7 @@ public:
    explicit argFmtBytes(unsigned char *pInstrByteStream)
    : m_pInstrByteStream(pInstrByteStream) {}
 
-   void encodeArgModRmReg(asmArgInfo& a);
+   void encodeArgModRmReg(asmArgInfo& a, bool regOrRm);
    void encodeFixedOp(unsigned char op);
 
    unsigned char *computeTotalByteStream();
