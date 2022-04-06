@@ -100,6 +100,7 @@ public:
 class modRm {
 public:
    static void encodeRegArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte);
+   static void encodeOpcodeArg(unsigned char opcode, unsigned char& rex, unsigned char& modRmByte);
    static void encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte);
 
 private:
@@ -119,6 +120,9 @@ public:
    unsigned char *computeTotalByteStream();
 
 private:
+   void gather(unsigned char& rex, unsigned char& modRm);
+   void release(const unsigned char& rex, const unsigned char& modRm);
+
    unsigned char *m_pInstrByteStream;
    std::vector<unsigned char> m_prefixByteStream;
    std::vector<unsigned char> m_argFmtByteStream;

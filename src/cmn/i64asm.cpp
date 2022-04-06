@@ -170,6 +170,11 @@ void modRm::encodeRegArg(const asmArgInfo& ai, unsigned char& rex, unsigned char
    modRmByte |= (reg << 3);
 }
 
+void modRm::encodeOpcodeArg(unsigned char opcode, unsigned char& rex, unsigned char& modRmByte)
+{
+   modRmByte |= (opcode << 3);
+}
+
 void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte)
 {
    if(ai.flags & (
@@ -289,33 +294,25 @@ void argFmtBytes::encodeArgModRmReg(asmArgInfo& a, bool regOrRm)
 {
    unsigned char rex = 0;
    unsigned char _modRm = 0;
-
-   if(m_prefixByteStream.size())
-      rex = m_prefixByteStream[1];
-   if(m_argFmtByteStream.size())
-      _modRm = m_argFmtByteStream[2];
+   gather(rex,_modRm);
 
    if(regOrRm)
       modRm::encodeRegArg(a,rex,_modRm);
    else
       modRm::encodeModRmArg(a,rex,_modRm);
 
-   if(m_prefixByteStream.size())
-      m_prefixByteStream[1] = rex;
-   else if(rex)
-   {
-      m_prefixByteStream.resize(2);
-      m_prefixByteStream[0] = genInfo2::kRexByte;
-      m_prefixByteStream[1] = (0x40 | rex);
-   }
-   if(m_argFmtByteStream.size())
-      m_argFmtByteStream[2] = _modRm;
-   else
-   {
-      m_argFmtByteStream.resize(2);
-      m_argFmtByteStream[0] = genInfo2::kModRmByte;
-      m_argFmtByteStream[1] = _modRm;
-   }
+   release(rex,_modRm);
+}
+
+void argFmtBytes::encodeFixedOp(unsigned char op)
+{
+   unsigned char rex = 0;
+   unsigned char _modRm = 0;
+   gather(rex,_modRm);
+
+   modRm::encodeOpcodeArg(op,rex,_modRm);
+
+   release(rex,_modRm);
 }
 
 unsigned char *argFmtBytes::computeTotalByteStream()
@@ -355,7 +352,7 @@ unsigned char *argFmtBytes::computeTotalByteStream()
       }
       else if(*pThumb == genInfo2::kArgFmtBytesWithFixedOp)
       {
-         pThumb++;
+         encodeFixedOp(*(++pThumb));
          m_totalByteStream.insert(
             m_totalByteStream.end(),
             m_argFmtByteStream.begin(),m_argFmtByteStream.end());
@@ -372,6 +369,34 @@ unsigned char *argFmtBytes::computeTotalByteStream()
 
    m_totalByteStream.push_back(genInfo2::kEndOfInstr);
    return &m_totalByteStream[0];
+}
+
+void argFmtBytes::gather(unsigned char& rex, unsigned char& modRm)
+{
+   if(m_prefixByteStream.size())
+      rex = m_prefixByteStream[1];
+   if(m_argFmtByteStream.size())
+      modRm = m_argFmtByteStream[2];
+}
+
+void argFmtBytes::release(const unsigned char& rex, const unsigned char& modRm)
+{
+   if(m_prefixByteStream.size())
+      m_prefixByteStream[1] = rex;
+   else if(rex)
+   {
+      m_prefixByteStream.resize(2);
+      m_prefixByteStream[0] = genInfo2::kRexByte;
+      m_prefixByteStream[1] = (0x40 | rex);
+   }
+   if(m_argFmtByteStream.size())
+      m_argFmtByteStream[2] = modRm;
+   else
+   {
+      m_argFmtByteStream.resize(2);
+      m_argFmtByteStream[0] = genInfo2::kModRmByte;
+      m_argFmtByteStream[1] = modRm;
+   }
 }
 
 } // namespace i64
