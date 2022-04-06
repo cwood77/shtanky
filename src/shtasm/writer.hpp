@@ -99,6 +99,7 @@ public:
    void setLineNumber(size_t l) { m_lineNumber = l; }
    void write(const std::string& reason, const void *p, size_t n)
    { m_o.write(m_lineNumber,reason,p,n); }
+   void writeComment(const std::string& reason);
    iObjWriter& under() { return m_o; }
 
 private:

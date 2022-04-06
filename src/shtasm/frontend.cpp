@@ -10,13 +10,14 @@ std::string lexor::getNextLine()
 {
    std::string line;
    std::getline(m_file,line);
+   m_line++;
    return line;
 }
 
-void parser::parseLine(std::string& label, std::vector<std::string>& words, std::string& comment)
+void parser::parseLine(std::string& label, std::vector<std::string>& words, std::string& comment, std::string& rawLine)
 {
-   std::string l = m_l.getNextLine();
-   const char *pThumb = l.c_str();
+   rawLine = m_l.getNextLine();
+   const char *pThumb = rawLine.c_str();
    eatWhitespace(pThumb);
 
    // first, split on ;

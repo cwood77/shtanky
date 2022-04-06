@@ -10,7 +10,7 @@ namespace shtasm {
 
 class lexor {
 public:
-   explicit lexor(const std::string& file) : m_file(file.c_str()), m_line(1) {}
+   explicit lexor(const std::string& file) : m_file(file.c_str()), m_line(0) {}
 
    bool isDone() const { return !m_file.good(); }
    std::string getNextLine();
@@ -26,7 +26,7 @@ public:
    explicit parser(lexor& l) : m_l(l) {}
 
    const lexor& getLexor() const { return m_l; }
-   void parseLine(std::string& label, std::vector<std::string>& words, std::string& comment);
+   void parseLine(std::string& label, std::vector<std::string>& words, std::string& comment, std::string& rawLine);
 
 private:
    void eatWhitespace(const char*& pThumb);

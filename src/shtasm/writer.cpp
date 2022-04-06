@@ -65,9 +65,13 @@ void retailObjWriter::write(size_t lineNum, const std::string& reason, const voi
 void listingObjWriter::write(size_t lineNum, const std::string& reason, const void *p, size_t n)
 {
    std::stringstream stream;
-   stream << reason << "(";
-   fmtData(stream,p,n);
-   stream << ")";
+   stream << lineNum << ":" << reason;
+   if(p && n)
+   {
+      stream << "(";
+      fmtData(stream,p,n);
+      stream << ")";
+   }
 
    std::string copy = stream.str();
    m_pS->write(copy.c_str(),copy.length());
@@ -117,6 +121,13 @@ void compositeObjWriter::nextPart()
 {
    for(auto it=m_o.begin();it!=m_o.end();++it)
       (*it)->nextPart();
+}
+
+void lineWriter::writeComment(const std::string& reason)
+{
+   std::stringstream buffer;
+   buffer << "// " << reason << std::endl;
+   m_o.write(m_lineNumber,buffer.str(),NULL,0);
 }
 
 } // namespace shtasm

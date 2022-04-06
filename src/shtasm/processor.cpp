@@ -46,10 +46,10 @@ void processor::process()
 
    while(!m_parser.getLexor().isDone())
    {
-      std::string l,c;
+      std::string l,c,rawLine;
       std::vector<std::string> a;
       if(!firstHack)
-         m_parser.parseLine(l,a,c);
+         m_parser.parseLine(l,a,c,rawLine);
       else
       {
          // TODO HACK LAME - liam isn't generating segment directives yet
@@ -95,6 +95,9 @@ void processor::process()
          // defer to assembler
 
          // ---------- all below here move to assembler ---------
+
+         m_pWriter->setLineNumber(m_parser.getLexor().getLineNumber());
+         m_pWriter->writeComment(rawLine);
 
          // find instr
          auto instrId = cmn::tgt::kFirstInstr;
@@ -144,7 +147,10 @@ void processor::process()
             {
                m_pWriter->write("fixed8",++pByte,1);
             }
+               break;
          }
+
+         m_pWriter->under().nextPart();
 
 #if 0
          m_pWriter->setLineNumber(m_parser.getLexor().getLineNumber());
