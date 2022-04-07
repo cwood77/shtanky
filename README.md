@@ -4,13 +4,13 @@
 
 ## parts, and their status
 
-(status updated 30-march-2022)
+(status updated 7-april-2022)
 |part|description|status|
 |---|---|---|
 |`araceli`|an OO homebrewed language that generates `liam` code|working towards "hello world" app|
 |`liam`|a C-like homebrewed language that generates `shtasm` code|working towards "hello world" app|
-|`shtasm`|a assembler that generates x86-64 code|_not started_|
-|`shlink`|a linker that links shtasm object code into executables|_not started_|
+|`shtasm`|a assembler that generates x86-64 code|working towards "hello world" app|
+|`shlink`|a linker that links shtasm object code into executables|working towards "hello world" app|
 |`shtemu`|an emulator that runs shtanky executables on Windows 64|_not started_|
 |...???...|I haven't really elaborated anything past here yet...|
 |`shboot`|UEFI bootloader written in C++/MSVC|_not started_|

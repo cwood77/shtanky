@@ -6,6 +6,7 @@
 
 namespace cmn {
 
+class iObjReader;
 class iObjWriter;
 
 namespace objfmt {
@@ -25,6 +26,7 @@ public:
    std::map<std::string,unsigned long> toc;
 
    void flatten(iObjWriter& w) const;
+   void unflatten(iObjReader& r);
 };
 
 class importTable {
@@ -43,6 +45,7 @@ public:
    size_t blockSize;
 
    void flatten(iObjWriter& w) const;
+   void unflatten(iObjReader& r);
 };
 
 class objFile {
@@ -54,7 +57,7 @@ public:
    std::list<obj*> objects;
 
    void flatten(iObjWriter& w) const;
-   //void unflatten(iBinInStream& s);
+   void unflatten(iObjReader& r);
 };
 
 } // namespace objfmt
