@@ -1,7 +1,6 @@
 #include "obj-fmt.hpp"
 #include "reader.hpp"
 #include "writer.hpp"
-//#include <cstring>
 #include <stdexcept>
 
 namespace cmn {
@@ -15,8 +14,7 @@ void exportTable::flatten(iObjWriter& w) const
 
    for(auto it=toc.begin();it!=toc.end();++it)
    {
-      w.write<size_t>("namelen",it->first.length());
-      w.write("name",it->first.c_str(),it->first.length());
+      w.writeString("name",it->first);
       w.write("offset",it->second);
       w.nextPart();
    }
@@ -27,7 +25,6 @@ void exportTable::unflatten(iObjReader& r)
    auto n = r.read<size_t>();
    for(size_t i=0;i<n;i++)
    {
-      // TODO READSTRING & WRITESTRING
       auto key = r.readString();
       toc[key] = r.read<unsigned long>();
    }
@@ -50,7 +47,12 @@ void obj::flatten(iObjWriter& w) const
 void obj::unflatten(iObjReader& r)
 {
    r.read(flags);
+
    xt.unflatten(r);
+
+   r.read(blockSize);
+   block.reset(new unsigned char[blockSize]);
+   r.read(block.get(),blockSize);
 }
 
 objFile::~objFile()
@@ -73,13 +75,6 @@ void objFile::flatten(iObjWriter& w) const
 
 void objFile::unflatten(iObjReader& r)
 {
-#if 0
-   char thumbprint[9+1]; // TODO push this into the reader.readThumbprint()
-   ::memset(thumbprint,0,sizeof(thumbprint));
-   r.read(thumbprint,9);
-   if(std::string("cdwe ofmt") != thumbprint)
-      throw std::runtime_error("bad file format");
-#endif
    r.readThumbprint("cdwe ofmt");
 
    auto v = r.read<unsigned long>();

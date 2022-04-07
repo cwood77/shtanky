@@ -57,6 +57,7 @@ CMN_SRC = \
 	src/cmn/obj-fmt.cpp \
 	src/cmn/out.cpp \
 	src/cmn/pathUtil.cpp \
+	src/cmn/reader.cpp \
 	src/cmn/target.cpp \
 	src/cmn/textTable.cpp \
 	src/cmn/trace.cpp \
@@ -188,6 +189,7 @@ $(SHTASM_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 
 SHLINK_SRC = \
 	src/shlink/main.cpp \
+	src/shlink/objdir.cpp \
 
 SHLINK_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SHLINK_SRC)))
 

@@ -36,6 +36,8 @@ if %ERRORLEVEL% == 0 goto next6
 echo shtasm FAILED to generate _correct_ listing
 goto fail
 :next6
+
+bin\out\debug\shlink.exe
 echo pass
 
 goto end

@@ -54,7 +54,7 @@ void processor::process()
          cdwDEBUG("comm=%s]]\n",c.c_str());
       }
 
-      if(a.size() == 0)
+      if(l.empty() && a.size() == 0)
          ; // blank line
       else if(a.size() == 1 && ::strncmp(a[0].c_str(),".seg ",5)==0)
       {
@@ -86,33 +86,36 @@ void processor::process()
 
          m_pBlock->writeCommentLine(m_parser.getLexor().getLineNumber(),rawLine);
 
-         // find instr
-         auto instrId = cmn::tgt::kFirstInstr;
+         if(a.size())
          {
-            auto it = m_instrMap.find(a[0]);
-            if(it == m_instrMap.end())
-               throw std::runtime_error(cmn::fmt("instr '%s' isn't known?",a[0].c_str()));
-            instrId = it->second;
+            // find instr
+            auto instrId = cmn::tgt::kFirstInstr;
+            {
+               auto it = m_instrMap.find(a[0]);
+               if(it == m_instrMap.end())
+                  throw std::runtime_error(cmn::fmt("instr '%s' isn't known?",a[0].c_str()));
+               instrId = it->second;
+            }
+
+            // fine parse each argument
+            std::vector<cmn::tgt::asmArgInfo> ai;
+            std::vector<cmn::tgt::argTypes> aTypes;
+            for(size_t i=1;i<a.size();i++)
+            {
+               ai.push_back(cmn::tgt::asmArgInfo());
+               fineLexor l(a[i].c_str());
+               fineParser p(l);
+               p.parseArg(ai.back());
+               aTypes.push_back(ai.back().computeArgType());
+            }
+
+            // locate the instr fmt to use
+            auto& iFmt = m_t.getProc().getInstr(instrId)->demandFmt(aTypes);
+
+            // go go gadet assembler!
+            m_pAsm->assemble(iFmt,ai,*m_pBlock);
+            m_pCurrObj->blockSize = m_pBlock->tell();
          }
-
-         // fine parse each argument
-         std::vector<cmn::tgt::asmArgInfo> ai;
-         std::vector<cmn::tgt::argTypes> aTypes;
-         for(size_t i=1;i<a.size();i++)
-         {
-            ai.push_back(cmn::tgt::asmArgInfo());
-            fineLexor l(a[i].c_str());
-            fineParser p(l);
-            p.parseArg(ai.back());
-            aTypes.push_back(ai.back().computeArgType());
-         }
-
-         // locate the instr fmt to use
-         auto& iFmt = m_t.getProc().getInstr(instrId)->demandFmt(aTypes);
-
-         // go go gadet assembler!
-         m_pAsm->assemble(iFmt,ai,*m_pBlock);
-         m_pCurrObj->blockSize = m_pBlock->tell();
       }
    }
 }

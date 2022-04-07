@@ -57,6 +57,8 @@ public:
    virtual ~iObjWriter() {}
 
    virtual void write(const std::string& reason, const void *p, size_t n) = 0;
+   void writeString(const std::string& reason, const std::string& v)
+   { write<size_t>(reason+":len",v.length()); write(reason+":bytes",v.c_str(),v.length()); }
    template<class T> void write(const std::string& reason, const T& d)
    { write(reason,&d,sizeof(T)); }
 

@@ -1,4 +1,6 @@
 #pragma once
+#include <stdio.h>
+#include <string>
 
 namespace cmn {
 
@@ -18,7 +20,9 @@ class binFileReader : public iObjReader {
 public:
    explicit binFileReader(const std::string& filePath);
    ~binFileReader();
-   virtual void read(void *p, size_t& n);
+   virtual void read(void *p, size_t n);
+   virtual std::string readString();
+   virtual void readThumbprint(const char *pExpected);
 
 private:
    FILE *m_pFile;
