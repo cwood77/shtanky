@@ -10,7 +10,7 @@
 
 namespace shtasm {
 
-class lineWriter;
+class iObjWriter;
 
 class iTableWriter {
 public:
@@ -27,7 +27,7 @@ public:
    void assemble(
       const cmn::tgt::instrFmt& f,
       std::vector<cmn::tgt::asmArgInfo>& ai,
-      lineWriter& w);
+      iObjWriter& w);
 
 private:
    void cacheGenInfos();

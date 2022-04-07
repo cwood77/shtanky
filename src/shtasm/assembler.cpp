@@ -5,7 +5,7 @@
 
 namespace shtasm {
 
-void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmArgInfo>& ai, lineWriter& w)
+void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmArgInfo>& ai, iObjWriter& w)
 {
    // look up genInfo
    auto *pInfo = m_genInfos[f.guid];
@@ -58,7 +58,7 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
          throw std::runtime_error(cmn::fmt("don't know how to write byte %d",(int)*pByte));
    }
 
-   w.under().nextPart();
+   w.nextPart();
 }
 
 void assembler::cacheGenInfos()

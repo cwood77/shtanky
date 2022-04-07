@@ -71,8 +71,7 @@ void processor::process()
          if(m_pListingFile)
             m_pBlock->sink(
                *new listingObjWriter(
-                  *new singleUseWriter(*m_pListingFile)));
-         m_pWriter.reset(new lineWriter(*m_pBlock));
+                  *new singleUseWriterSink(*m_pListingFile)));
 
          // prep assembler
          m_pAsm.reset(new assembler(m_t,*this));
@@ -85,8 +84,7 @@ void processor::process()
          if(!l.empty())
             exportSymbol(l);
 
-         m_pWriter->setLineNumber(m_parser.getLexor().getLineNumber());
-         m_pWriter->writeComment(rawLine);
+         m_pBlock->writeCommentLine(m_parser.getLexor().getLineNumber(),rawLine);
 
          // find instr
          auto instrId = cmn::tgt::kFirstInstr;
@@ -113,7 +111,7 @@ void processor::process()
          auto& iFmt = m_t.getProc().getInstr(instrId)->demandFmt(aTypes);
 
          // go go gadet assembler!
-         m_pAsm->assemble(iFmt,ai,*m_pWriter);
+         m_pAsm->assemble(iFmt,ai,*m_pBlock);
       }
    }
 }
@@ -124,7 +122,7 @@ void processor::exportSymbol(const std::string& name)
    if(it != m_pCurrObj->xt.toc.end())
       throw std::runtime_error(cmn::fmt("duplicate exported symbol '%s'",name.c_str()));
 
-   m_pCurrObj->xt.toc[name] = m_pWriter->under().tell();
+   m_pCurrObj->xt.toc[name] = m_pBlock->tell();
 }
 
 } // namespace shtasm

@@ -39,9 +39,9 @@ private:
    size_t m_s;
 };
 
-class singleUseWriter : public iObjWriterSink {
+class singleUseWriterSink : public iObjWriterSink {
 public:
-   explicit singleUseWriter(iObjWriterSink& inner) : m_inner(inner) {}
+   explicit singleUseWriterSink(iObjWriterSink& inner) : m_inner(inner) {}
 
    virtual void write(const void *p, size_t n) { m_inner.write(p,n); }
    virtual int tell() { return m_inner.tell(); }
@@ -54,7 +54,10 @@ class iObjWriter {
 public:
    virtual ~iObjWriter() {}
 
-   virtual void write(size_t lineNum, const std::string& reason, const void *p, size_t n) = 0;
+   virtual void write(const std::string& reason, const void *p, size_t n) = 0;
+
+   void writeCommentLine(const std::string& comment);
+   void writeCommentLine(unsigned long line, const std::string& comment);
 
    virtual void nextPart() = 0;
    virtual unsigned long tell() = 0;
@@ -63,7 +66,7 @@ public:
 class retailObjWriter : public iObjWriter {
 public:
    explicit retailObjWriter(iObjWriterSink& s) : m_pS(&s) {}
-   virtual void write(size_t lineNum, const std::string& reason, const void *p, size_t n);
+   virtual void write(const std::string& reason, const void *p, size_t n);
    virtual void nextPart() {}
    virtual unsigned long tell() { throw 3.14; }
 
@@ -74,7 +77,7 @@ private:
 class listingObjWriter : public iObjWriter {
 public:
    explicit listingObjWriter(iObjWriterSink& s) : m_pS(&s) {}
-   virtual void write(size_t lineNum, const std::string& reason, const void *p, size_t n);
+   virtual void write(const std::string& reason, const void *p, size_t n);
    virtual void nextPart();
    virtual unsigned long tell() { throw 3.14; }
 
@@ -90,27 +93,13 @@ public:
    ~compositeObjWriter();
 
    void sink(iObjWriter& o) { m_o.push_back(&o); }
-   virtual void write(size_t lineNum, const std::string& reason, const void *p, size_t n);
+   virtual void write(const std::string& reason, const void *p, size_t n);
    virtual void nextPart();
    virtual unsigned long tell() { return m_offset; }
 
 private:
    std::list<iObjWriter*> m_o;
    unsigned long m_offset;
-};
-
-class lineWriter {
-public:
-   explicit lineWriter(iObjWriter& o) : m_o(o), m_lineNumber(1) {}
-   void setLineNumber(size_t l) { m_lineNumber = l; }
-   void write(const std::string& reason, const void *p, size_t n)
-   { m_o.write(m_lineNumber,reason,p,n); }
-   void writeComment(const std::string& reason);
-   iObjWriter& under() { return m_o; }
-
-private:
-   iObjWriter& m_o;
-   size_t m_lineNumber;
 };
 
 } // namespace shtasm

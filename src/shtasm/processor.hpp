@@ -38,7 +38,6 @@ private:
 
    cmn::objfmt::obj *m_pCurrObj;
    std::unique_ptr<compositeObjWriter> m_pBlock;
-   std::unique_ptr<lineWriter> m_pWriter;
    std::unique_ptr<assembler> m_pAsm;
 };
 

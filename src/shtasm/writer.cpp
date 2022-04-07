@@ -57,15 +57,29 @@ void binMemoryWriter::write(const void *p, size_t n)
    }
 }
 
-void retailObjWriter::write(size_t lineNum, const std::string& reason, const void *p, size_t n)
+void iObjWriter::writeCommentLine(const std::string& comment)
+{
+   std::stringstream buffer;
+   buffer << "// " << comment << std::endl;
+   write(buffer.str(),NULL,0);
+}
+
+void iObjWriter::writeCommentLine(unsigned long line, const std::string& comment)
+{
+   std::stringstream buffer;
+   buffer << "// " << line << ": " << comment << std::endl;
+   write(buffer.str(),NULL,0);
+}
+
+void retailObjWriter::write(const std::string& reason, const void *p, size_t n)
 {
    m_pS->write(p,n);
 }
 
-void listingObjWriter::write(size_t lineNum, const std::string& reason, const void *p, size_t n)
+void listingObjWriter::write(const std::string& reason, const void *p, size_t n)
 {
    std::stringstream stream;
-   stream << lineNum << ":" << reason;
+   stream << reason;
    if(p && n)
    {
       stream << "(";
@@ -111,10 +125,10 @@ compositeObjWriter::~compositeObjWriter()
       delete *it;
 }
 
-void compositeObjWriter::write(size_t lineNum, const std::string& reason, const void *p, size_t n)
+void compositeObjWriter::write(const std::string& reason, const void *p, size_t n)
 {
    for(auto it=m_o.begin();it!=m_o.end();++it)
-      (*it)->write(lineNum,reason,p,n);
+      (*it)->write(reason,p,n);
 
    m_offset += n;
 }
@@ -123,13 +137,6 @@ void compositeObjWriter::nextPart()
 {
    for(auto it=m_o.begin();it!=m_o.end();++it)
       (*it)->nextPart();
-}
-
-void lineWriter::writeComment(const std::string& reason)
-{
-   std::stringstream buffer;
-   buffer << "// " << reason << std::endl;
-   m_o.write(m_lineNumber,buffer.str(),NULL,0);
 }
 
 } // namespace shtasm
