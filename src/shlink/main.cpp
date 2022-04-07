@@ -1,22 +1,10 @@
 #include "../cmn/obj-fmt.hpp"
 #include "../cmn/reader.hpp"
 #include "../cmn/trace.hpp"
+#include "layout.hpp"
+#include "objdir.hpp"
 #include <set>
 #include <vector>
-#include "objdir.hpp"
-
-// a flat list of all the objects in a given segments
-// keeps track of total size
-class segmentBucket {
-public:
-   segmentBucket() : offset(0) {}
-
-   unsigned long offset;
-
-   std::vector<unsigned char> bytes;
-
-   unsigned long append(cmn::objfmt::obj& o) { return 0; }
-};
 
 #if 0
 // knows how to incorporate a new object
@@ -41,41 +29,23 @@ void layout::addObject(std::map<cmn::objfmt::obj*,unsigned long>& ops, segmentBu
 }
 #endif
 
-class layoutProgress {
-public:
-   void seedRequiredObject(const std::string& oName);
-
-   bool isDone() const;
-   std::string getUnplacedObjectName();
-
-   void markObjectPlaced(cmn::objfmt::obj& o);
-
-private:
-   std::set<std::string> m_placed;
-   std::set<std::string> m_unplaced;
-};
-
-class layout {
-public:
-   void place(cmn::objfmt::obj& o);
-
-   void markDonePlacing();
-
-   void link();
-
-private:
-   void link(cmn::objfmt::obj& o);
-
-   std::map<cmn::objfmt::obj*,unsigned long> m_objPlacements;
-   std::map<unsigned long,segmentBucket> m_segments;
-};
-
 using namespace shlink;
 
 int main(int argc, const char *argv[])
 {
    objectDirectory oDir;
    oDir.loadObjectFile(".\\testdata\\test\\test.ara.ls.asm.o");
+
+   {
+      layoutProgress lProg;
+      lProg.seedRequiredObject("entrypoint");
+
+      while(!lProg.isDone())
+      {
+         auto name = lProg.getUnplacedObjectName();
+         auto& o = oDir.demand(name);
+      }
+   }
 
 #if 0
    cmn::objfmt::objFile o;

@@ -42,4 +42,12 @@ void objectDirectory::loadObjectFile(const std::string& path)
    m_files.insert(pOFile.release());
 }
 
+cmn::objfmt::obj& objectDirectory::demand(const std::string& oName)
+{
+   auto it = m_objDir.find(oName);
+   if(it == m_objDir.end())
+      throw std::runtime_error(cmn::fmt("can't find symbol '%s'",oName.c_str()));
+   return *it->second;
+}
+
 } // namespace shlink
