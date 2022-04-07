@@ -115,6 +115,8 @@ void compositeObjWriter::write(size_t lineNum, const std::string& reason, const 
 {
    for(auto it=m_o.begin();it!=m_o.end();++it)
       (*it)->write(lineNum,reason,p,n);
+
+   m_offset += n;
 }
 
 void compositeObjWriter::nextPart()

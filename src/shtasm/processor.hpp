@@ -25,7 +25,7 @@ public:
 
 private:
    /* iTableWriter */
-   virtual void exportSymbol(const std::string& name) {}
+   virtual void exportSymbol(const std::string& name);
    virtual void importSymbol(const std::string& name, cmn::objfmt::patch::types t) {}
 
    parser& m_parser;

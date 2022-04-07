@@ -15,10 +15,10 @@ class patch {
 public:
    enum types {
       kAbs,
-      kRel,
+      kRelToNextInstr,
    } type;
    unsigned long offset;
-   unsigned long relTo;
+   unsigned long instrSize;
 };
 
 class exportTable {

@@ -59,15 +59,6 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
    }
 
    w.under().nextPart();
-
-#if 0
-   w.setLineNumber(m_parser.getLexor().getLineNumber());
-   m_pAsm->assemble(*pInfo);
-
-   // add each arg
-   for(size_t i=1;i<a.size();i++)
-      m_pAsm->addArg(a[i]);
-#endif
 }
 
 void assembler::cacheGenInfos()

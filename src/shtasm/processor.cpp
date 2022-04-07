@@ -81,6 +81,10 @@ void processor::process()
       {
          // defer to assembler
 
+         // export symbol
+         if(!l.empty())
+            exportSymbol(l);
+
          m_pWriter->setLineNumber(m_parser.getLexor().getLineNumber());
          m_pWriter->writeComment(rawLine);
 
@@ -112,6 +116,15 @@ void processor::process()
          m_pAsm->assemble(iFmt,ai,*m_pWriter);
       }
    }
+}
+
+void processor::exportSymbol(const std::string& name)
+{
+   auto it = m_pCurrObj->xt.toc.find(name);
+   if(it != m_pCurrObj->xt.toc.end())
+      throw std::runtime_error(cmn::fmt("duplicate exported symbol '%s'",name.c_str()));
+
+   m_pCurrObj->xt.toc[name] = m_pWriter->under().tell();
 }
 
 } // namespace shtasm

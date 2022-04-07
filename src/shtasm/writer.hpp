@@ -12,7 +12,7 @@ class iObjWriterSink {
 public:
    virtual ~iObjWriterSink() {}
    virtual void write(const void *p, size_t n) = 0;
-   virtual int tell() = 0;
+   virtual int tell() = 0; // anybody use this?
 };
 
 class binFileWriter : public iObjWriterSink {
@@ -57,6 +57,7 @@ public:
    virtual void write(size_t lineNum, const std::string& reason, const void *p, size_t n) = 0;
 
    virtual void nextPart() = 0;
+   virtual unsigned long tell() = 0;
 };
 
 class retailObjWriter : public iObjWriter {
@@ -64,6 +65,7 @@ public:
    explicit retailObjWriter(iObjWriterSink& s) : m_pS(&s) {}
    virtual void write(size_t lineNum, const std::string& reason, const void *p, size_t n);
    virtual void nextPart() {}
+   virtual unsigned long tell() { throw 3.14; }
 
 private:
    std::unique_ptr<iObjWriterSink> m_pS;
@@ -74,6 +76,7 @@ public:
    explicit listingObjWriter(iObjWriterSink& s) : m_pS(&s) {}
    virtual void write(size_t lineNum, const std::string& reason, const void *p, size_t n);
    virtual void nextPart();
+   virtual unsigned long tell() { throw 3.14; }
 
 private:
    void fmtData(std::ostream& o, const void *p, size_t n);
@@ -83,14 +86,17 @@ private:
 
 class compositeObjWriter : public iObjWriter {
 public:
+   compositeObjWriter() : m_offset(0) {}
    ~compositeObjWriter();
 
    void sink(iObjWriter& o) { m_o.push_back(&o); }
    virtual void write(size_t lineNum, const std::string& reason, const void *p, size_t n);
    virtual void nextPart();
+   virtual unsigned long tell() { return m_offset; }
 
 private:
    std::list<iObjWriter*> m_o;
+   unsigned long m_offset;
 };
 
 class lineWriter {
