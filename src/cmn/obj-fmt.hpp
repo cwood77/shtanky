@@ -6,8 +6,7 @@
 
 namespace cmn {
 
-class iBinInStream;
-class iBinOutStream;
+class iObjWriter;
 
 namespace objfmt {
 
@@ -37,6 +36,8 @@ public:
    exportTable xt;
    importTable it;
    std::unique_ptr<unsigned char[]> block;
+
+   void flatten(iObjWriter& w) const;
 };
 
 class objFile {
@@ -47,8 +48,8 @@ public:
    unsigned long version;
    std::list<obj*> objects;
 
-   void flatten(iBinOutStream& s) const;
-   void unflatten(iBinInStream& s);
+   void flatten(iObjWriter& w) const;
+   //void unflatten(iBinInStream& s);
 };
 
 } // namespace objfmt

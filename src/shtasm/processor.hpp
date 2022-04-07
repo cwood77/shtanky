@@ -1,6 +1,6 @@
 #pragma once
+#include "../cmn/writer.hpp"
 #include "assembler.hpp"
-#include "writer.hpp"
 #include <memory>
 
 // the processor reads from the parser and decides what to do.

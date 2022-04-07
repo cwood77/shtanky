@@ -2,10 +2,10 @@
 #include "../cmn/obj-fmt.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/trace.hpp"
+#include "../cmn/writer.hpp"
 #include "assembler.hpp"
 #include "frontend.hpp"
 #include "processor.hpp"
-#include "writer.hpp"
 #include <memory>
 
 namespace shtasm {

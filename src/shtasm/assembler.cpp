@@ -1,6 +1,6 @@
 #include "../cmn/fmt.hpp"
+#include "../cmn/writer.hpp"
 #include "assembler.hpp"
-#include "writer.hpp"
 #include <stdexcept>
 
 namespace shtasm {

@@ -56,6 +56,7 @@ CMN_SRC = \
 	src/cmn/target.cpp \
 	src/cmn/textTable.cpp \
 	src/cmn/trace.cpp \
+	src/cmn/writer.cpp \
 
 CMN_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(CMN_SRC)))
 
@@ -157,7 +158,6 @@ SHTASM_SRC = \
 	src/shtasm/frontend.cpp \
 	src/shtasm/main.cpp \
 	src/shtasm/processor.cpp \
-	src/shtasm/writer.cpp \
 
 SHTASM_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SHTASM_SRC)))
 
