@@ -57,6 +57,8 @@ public:
    virtual ~iObjWriter() {}
 
    virtual void write(const std::string& reason, const void *p, size_t n) = 0;
+   template<class T> void write(const std::string& reason, const T& d)
+   { write(reason,&d,sizeof(T)); }
 
    void writeCommentLine(const std::string& comment);
    void writeCommentLine(unsigned long line, const std::string& comment);

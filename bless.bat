@@ -10,7 +10,7 @@ copy testdata\test\test.ara.ls.asm testdata\test\test-expected.asm
 goto end
 
 :list
-copy testdata\test\test.ara.ls.asm.list testdata\test\test-expected.list
+copy testdata\test\test.ara.ls.asm.o.mclist testdata\test\test-expected.list
 goto end
 
 :end

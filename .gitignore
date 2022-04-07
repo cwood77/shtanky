@@ -6,7 +6,8 @@
 *.ara.ls
 *.ara.ls.asm
 *.ara.ls.asm.o
-*.ara.ls.asm.list
+*.ara.ls.asm.o.list
+*.ara.ls.asm.o.mclist
 
 # Prerequisites
 *.d

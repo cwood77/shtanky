@@ -7,6 +7,7 @@
 #include "frontend.hpp"
 #include "processor.hpp"
 #include <memory>
+#include <string.h>
 
 namespace shtasm {
 
@@ -41,8 +42,7 @@ void processor::process()
       else
       {
          // TODO HACK LAME - liam isn't generating segment directives yet
-         a.push_back(".seg");
-         a.push_back("1");
+         a.push_back(".seg 1");
          firstHack = false;
       }
 
@@ -56,7 +56,7 @@ void processor::process()
 
       if(a.size() == 0)
          ; // blank line
-      else if(a.size() == 2 && a[0] == ".seg")
+      else if(a.size() == 1 && ::strncmp(a[0].c_str(),".seg ",5)==0)
       {
          // segment directives
          m_oFile.objects.push_back(new cmn::objfmt::obj());
@@ -112,6 +112,7 @@ void processor::process()
 
          // go go gadet assembler!
          m_pAsm->assemble(iFmt,ai,*m_pBlock);
+         m_pCurrObj->blockSize = m_pBlock->tell();
       }
    }
 }

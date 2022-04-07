@@ -23,6 +23,8 @@ public:
 class exportTable {
 public:
    std::map<std::string,unsigned long> toc;
+
+   void flatten(iObjWriter& w) const;
 };
 
 class importTable {
@@ -32,10 +34,13 @@ public:
 
 class obj {
 public:
+   obj() : flags(0), blockSize(0) {}
+
    unsigned long flags;
    exportTable xt;
    importTable it;
    std::unique_ptr<unsigned char[]> block;
+   size_t blockSize;
 
    void flatten(iObjWriter& w) const;
 };
