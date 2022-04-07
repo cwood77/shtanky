@@ -13,13 +13,12 @@ namespace cmn { namespace tgt { class iTargetInfo; } }
 
 namespace shtasm {
 
-class iObjWriterSink;
 class parser;
 
 class processor : private iTableWriter {
 public:
    processor(parser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFile& o);
-   processor& setListingFile(iObjWriterSink& s) { m_pListingFile = &s; return *this; }
+   processor& setListingFile(cmn::iObjWriterSink& s) { m_pListingFile = &s; return *this; }
 
    void process();
 
@@ -32,12 +31,12 @@ private:
    cmn::tgt::iTargetInfo& m_t;
    cmn::objfmt::objFile& m_oFile;
 
-   iObjWriterSink *m_pListingFile;
+   cmn::iObjWriterSink *m_pListingFile;
 
    std::map<std::string,cmn::tgt::instrIds> m_instrMap;
 
    cmn::objfmt::obj *m_pCurrObj;
-   std::unique_ptr<compositeObjWriter> m_pBlock;
+   std::unique_ptr<cmn::compositeObjWriter> m_pBlock;
    std::unique_ptr<assembler> m_pAsm;
 };
 

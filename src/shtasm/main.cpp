@@ -9,7 +9,7 @@ int main(int argc, const char *argv[])
 {
    using namespace shtasm;
 
-   binFileWriter listingFile(".\\testdata\\test\\test.ara.ls.asm.list");
+   cmn::binFileWriter listingFile(".\\testdata\\test\\test.ara.ls.asm.list");
 
    lexor l(".\\testdata\\test\\test.ara.ls.asm");
    parser p(l);

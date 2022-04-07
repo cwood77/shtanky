@@ -4,7 +4,7 @@
 #include <sstream>
 #include <stdexcept>
 
-namespace shtasm {
+namespace cmn {
 
 binFileWriter::binFileWriter(const std::string& filePath)
 : m_pFile(NULL)
@@ -139,4 +139,4 @@ void compositeObjWriter::nextPart()
       (*it)->nextPart();
 }
 
-} // namespace shtasm
+} // namespace cmn

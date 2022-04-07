@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-namespace shtasm {
+namespace cmn { class iObjWriter; }
 
-class iObjWriter;
+namespace shtasm {
 
 class iTableWriter {
 public:
@@ -27,7 +27,7 @@ public:
    void assemble(
       const cmn::tgt::instrFmt& f,
       std::vector<cmn::tgt::asmArgInfo>& ai,
-      iObjWriter& w);
+      cmn::iObjWriter& w);
 
 private:
    void cacheGenInfos();

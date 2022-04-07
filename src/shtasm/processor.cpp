@@ -64,14 +64,14 @@ void processor::process()
          ::sscanf(a[0].c_str()+5,"%lu",&m_pCurrObj->flags);
 
          // setup stream for new object
-         m_pBlock.reset(new compositeObjWriter());
+         m_pBlock.reset(new cmn::compositeObjWriter());
          m_pBlock->sink(
-            *new retailObjWriter(
-               *new binMemoryWriter(m_pCurrObj->block)));
+            *new cmn::retailObjWriter(
+               *new cmn::binMemoryWriter(m_pCurrObj->block)));
          if(m_pListingFile)
             m_pBlock->sink(
-               *new listingObjWriter(
-                  *new singleUseWriterSink(*m_pListingFile)));
+               *new cmn::listingObjWriter(
+                  *new cmn::singleUseWriterSink(*m_pListingFile)));
 
          // prep assembler
          m_pAsm.reset(new assembler(m_t,*this));

@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace shtasm {
+namespace cmn {
 
 class iObjWriterSink {
 public:
@@ -39,6 +39,8 @@ private:
    size_t m_s;
 };
 
+// sole purpose is to _not_ delete it's inner, so inner can be
+// re-used
 class singleUseWriterSink : public iObjWriterSink {
 public:
    explicit singleUseWriterSink(iObjWriterSink& inner) : m_inner(inner) {}
@@ -102,4 +104,4 @@ private:
    unsigned long m_offset;
 };
 
-} // namespace shtasm
+} // namespace cmn

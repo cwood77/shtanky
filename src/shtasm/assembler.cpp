@@ -5,7 +5,7 @@
 
 namespace shtasm {
 
-void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmArgInfo>& ai, iObjWriter& w)
+void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmArgInfo>& ai, cmn::iObjWriter& w)
 {
    // look up genInfo
    auto *pInfo = m_genInfos[f.guid];
