@@ -1,3 +1,8 @@
+// contains helper logic for assembling a specific target
+//
+// shared in case linker/disassembler/reflection.emit, etc., might need this besides just
+// the assembler
+
 #pragma once
 #include "target.hpp"
 #include <cstddef>
@@ -9,29 +14,22 @@ enum argTypes;
 
 namespace i64 {
 
-class genInfo {
-public:
-   enum { kMRmYes = 8 };
-
-   const char   *guid;
-
-   unsigned char rex;
-   unsigned char opcode[3];
-   char          coSize;   // code offset size (e.g. cd = 4)
-   char          modRm;    // prescribed part of Mod/RM byte, if any
-   bool          sib;
-   char          dispSize;
-   char          immSize;
-
-   size_t numOpcodes() const;
-};
-
-const genInfo *getGenInfo();
-
+// all necessary information for generating machine code for a given instruction.
+// genInfo's are looked up by guid.
+// encoding is generally a two-step process: (1) arguments are encoded following the
+// argEncoding for each, (2) a byteStream is used to arrange the results into the ordering
+// desired.
+//
+// beware that the byte stream is evaluated/compiled in multiple phases and some bytes
+// are illegal in some phases, or behave differently (i.e. have a payload only in some
+// phases);
+//    phase 1: argFmtBytes::computeTotalByteStream,
+//    phase 2: assembler::assemble
+//
 class genInfo2 {
 public:
    enum byteType {
-      // safe to use in constants
+      // ---------- safe to use in constants
       kOpcode1,
       //kOpcode2,
       //kOpcode3,
@@ -42,7 +40,7 @@ public:
       kArgFmtBytesWithFixedOp,
       kEndOfInstr,
 
-      // generated only; do not use in constants
+      // ---------- generated only; do not use in constants
       kRexByte,
       kModRmByte,
       // disp 32
@@ -64,8 +62,8 @@ public:
 
 const genInfo2 *getGenInfo2();
 
-// TODO HACK LAME - not really i64-specific; move it
-// [size][r1 + (r2*s) + d]
+// represents everything expressed in a single assembly-level argument.
+// this includes all addressing modes [reg+8*reg+23], etc.
 class asmArgInfo {
 public:
    enum argFlags {
@@ -97,6 +95,8 @@ public:
    argTypes computeArgType();
 };
 
+// very literal class that implements the ModR/M encoding tables as described in the
+// x86-64 Software Developer's Guide
 class modRm {
 public:
    static void encodeRegArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte);
@@ -109,6 +109,8 @@ private:
    modRm& operator=(const modRm&);
 };
 
+// helper class that assembles ModR/M, SIB, etc. bytes depending on arguments and instruction
+// encoding information
 class argFmtBytes {
 public:
    explicit argFmtBytes(unsigned char *pInstrByteStream)
