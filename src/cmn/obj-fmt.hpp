@@ -41,6 +41,9 @@ public:
 
 class objFile {
 public:
+   objFile() : version(0) {}
+   ~objFile();
+
    unsigned long version;
    std::list<obj*> objects;
 
