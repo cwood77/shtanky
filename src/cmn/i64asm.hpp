@@ -64,7 +64,7 @@ public:
 
 const genInfo2 *getGenInfo2();
 
-// TODO HACK LAME - is this really 64-bit specific?
+// TODO HACK LAME - not really i64-specific; move it
 // [size][r1 + (r2*s) + d]
 class asmArgInfo {
 public:

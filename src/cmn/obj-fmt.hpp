@@ -14,10 +14,11 @@ namespace objfmt {
 class patch {
 public:
    enum types {
-      kCall,
-      kLea,
+      kAbs,
+      kRel,
    } type;
    unsigned long offset;
+   unsigned long relTo;
 };
 
 class exportTable {

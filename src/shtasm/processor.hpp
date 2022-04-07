@@ -9,7 +9,6 @@
 
 namespace cmn { namespace objfmt { class obj; } }
 namespace cmn { namespace objfmt { class objFile; } }
-namespace cmn { namespace tgt { namespace i64 { class genInfo; } } }
 namespace cmn { namespace tgt { class iTargetInfo; } }
 
 namespace shtasm {
@@ -17,7 +16,7 @@ namespace shtasm {
 class iObjWriterSink;
 class parser;
 
-class processor {
+class processor : private iTableWriter {
 public:
    processor(parser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFile& o);
    processor& setListingFile(iObjWriterSink& s) { m_pListingFile = &s; return *this; }
@@ -25,13 +24,16 @@ public:
    void process();
 
 private:
+   /* iTableWriter */
+   virtual void exportSymbol(const std::string& name) {}
+   virtual void importSymbol(const std::string& name, cmn::objfmt::patch::types t) {}
+
    parser& m_parser;
    cmn::tgt::iTargetInfo& m_t;
    cmn::objfmt::objFile& m_oFile;
 
    iObjWriterSink *m_pListingFile;
 
-   std::map<std::string,const cmn::tgt::i64::genInfo2*> m_genInfos;
    std::map<std::string,cmn::tgt::instrIds> m_instrMap;
 
    cmn::objfmt::obj *m_pCurrObj;
