@@ -29,5 +29,17 @@ const instrFmt& instrInfo::demandFmt(const std::vector<argTypes> a) const
    }
 }
 
+argTypes asmArgInfo::computeArgType()
+{
+   if(flags & kMem8)
+      return kM8;
+   else if(flags & kReg64)
+      return kR64;
+   else if(flags & kImm8)
+      return kI8;
+   else
+      throw std::runtime_error("can't compute arg type in " __FILE__);
+}
+
 } // namespace tgt
 } // namespace cmn

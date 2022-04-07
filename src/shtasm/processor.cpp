@@ -2,7 +2,6 @@
 #include "../cmn/obj-fmt.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/trace.hpp"
-#include "../cmn/i64asm.hpp" // remove?
 #include "assembler.hpp"
 #include "frontend.hpp"
 #include "processor.hpp"
@@ -97,11 +96,11 @@ void processor::process()
          }
 
          // fine parse each argument
-         std::vector<cmn::tgt::i64::asmArgInfo> ai;
+         std::vector<cmn::tgt::asmArgInfo> ai;
          std::vector<cmn::tgt::argTypes> aTypes;
          for(size_t i=1;i<a.size();i++)
          {
-            ai.push_back(cmn::tgt::i64::asmArgInfo());
+            ai.push_back(cmn::tgt::asmArgInfo());
             fineLexor l(a[i].c_str());
             fineParser p(l);
             p.parseArg(ai.back());

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace cmn { namespace tgt { namespace i64 { class asmArgInfo; } } };
+namespace cmn { namespace tgt { class asmArgInfo; } };
 
 namespace shtasm {
 
@@ -90,18 +90,22 @@ public:
 //            | e
 // <disp> ::== '+' <number>
 //           | e
+//
+// arguably this class belongs in cmn too, as the class it parses (asmArgInfo) is already
+// there.  I'm leaving it here for now, as I don't expect anybody to need parsing ability
+// except the assembler, and the reasons asmArgInfo is in cmn is already speculative
 class fineParser {
 public:
    explicit fineParser(fineLexor& l) : m_l(l), m_pAi(NULL) {}
 
-   void parseArg(cmn::tgt::i64::asmArgInfo& i);
+   void parseArg(cmn::tgt::asmArgInfo& i);
 
 private:
    void parseReg();
    void parseMemExpr();
 
    fineLexor& m_l;
-   cmn::tgt::i64::asmArgInfo *m_pAi;
+   cmn::tgt::asmArgInfo *m_pAi;
 };
 
 } // namespace shtasm

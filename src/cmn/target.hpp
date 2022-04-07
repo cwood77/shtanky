@@ -92,6 +92,39 @@ public:
    const instrFmt& demandFmt(const std::vector<argTypes> a) const;
 };
 
+// represents everything expressed in a single assembly-level argument.
+// this includes all addressing modes [reg+8*reg+23], etc.
+class asmArgInfo {
+public:
+   enum argFlags {
+      kMem8     = 1<< 1,
+      kPtr      = 1<< 2,
+      kHasIndex = 1<< 3,
+      kScale8   = 1<< 4,
+      kDisp8    = 1<< 5,
+      kLabel    = 1<< 6,
+      kImm8     = 1<< 7,
+      kReg64    = 1<< 8,
+   };
+   size_t flags;
+   union {
+      struct {
+         unsigned char v[8];
+      } bytes;
+      struct {
+         unsigned short v[4];
+      } words;
+      struct {
+         unsigned long v[2];
+      } dwords;
+      struct {
+         unsigned __int64 v[1];
+      } qwords;
+   } data;
+
+   argTypes computeArgType();
+};
+
 class iCallingConvention {
 public:
    virtual bool stackArgsPushRToL() const = 0;

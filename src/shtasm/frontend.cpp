@@ -161,7 +161,7 @@ fineLexor::fineLexor(const char *buffer)
    advance();
 }
 
-void fineParser::parseArg(cmn::tgt::i64::asmArgInfo& i)
+void fineParser::parseArg(cmn::tgt::asmArgInfo& i)
 {
    m_pAi = &i;
 
@@ -169,13 +169,13 @@ void fineParser::parseArg(cmn::tgt::i64::asmArgInfo& i)
       parseReg();
    else if(m_l.getToken() == fineLexor::kIntLiteral)
    {
-      m_pAi->flags |= cmn::tgt::i64::asmArgInfo::kImm8;
+      m_pAi->flags |= cmn::tgt::asmArgInfo::kImm8;
       m_pAi->data.bytes.v[0] = ::atoi(m_l.getLexeme().c_str());
       m_l.advance();
    }
    else if(m_l.getToken() == fineLexor::kName)
    {
-      m_pAi->flags |= cmn::tgt::i64::asmArgInfo::kLabel;
+      m_pAi->flags |= cmn::tgt::asmArgInfo::kLabel;
       m_l.advance();
    }
    else
@@ -191,7 +191,7 @@ void fineParser::parseReg()
 
    if(m_l.getTokenClass() & fineLexor::kClassReg64)
    {
-      m_pAi->flags |= cmn::tgt::i64::asmArgInfo::kReg64;
+      m_pAi->flags |= cmn::tgt::asmArgInfo::kReg64;
       m_pAi->data.qwords.v[0] =
          m_l.getToken() - fineLexor::kRegRax
             + cmn::tgt::i64::kRegA;
@@ -207,8 +207,8 @@ void fineParser::parseMemExpr()
    if(m_l.getToken() == fineLexor::kLBracket)
    {
       m_l.advance();
-      m_pAi->flags |= cmn::tgt::i64::asmArgInfo::kPtr;
-      m_pAi->flags |= cmn::tgt::i64::asmArgInfo::kMem8; // 64?
+      m_pAi->flags |= cmn::tgt::asmArgInfo::kPtr;
+      m_pAi->flags |= cmn::tgt::asmArgInfo::kMem8; // 64?
 
       parseReg();
 

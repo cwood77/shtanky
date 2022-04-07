@@ -1,12 +1,10 @@
 #pragma once
 #include "../cmn/i64asm.hpp"
 #include "../cmn/obj-fmt.hpp"
+#include "../cmn/target.hpp"
 #include <map>
 #include <string>
 #include <vector>
-
-namespace cmn { namespace tgt { class iTargetInfo; } }
-namespace cmn { namespace tgt { class instrFmt; } }
 
 namespace shtasm {
 
@@ -26,7 +24,7 @@ public:
 
    void assemble(
       const cmn::tgt::instrFmt& f,
-      std::vector<cmn::tgt::i64::asmArgInfo>& ai,
+      std::vector<cmn::tgt::asmArgInfo>& ai,
       lineWriter& w);
 
 private:

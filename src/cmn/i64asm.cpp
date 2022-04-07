@@ -62,18 +62,6 @@ static const genInfo2 kGen2[] = {
 
 const genInfo2 *getGenInfo2() { return kGen2; }
 
-argTypes asmArgInfo::computeArgType()
-{
-   if(flags & kMem8)
-      return kM8;
-   else if(flags & kReg64)
-      return kR64;
-   else if(flags & kImm8)
-      return kI8;
-   else
-      throw std::runtime_error("can't compute arg type in " __FILE__);
-}
-
 void modRm::encodeRegArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte)
 {
    if(ai.flags & (
