@@ -23,7 +23,7 @@ namespace i64 {
 //    phase 1: argFmtBytes::computeTotalByteStream,
 //    phase 2: assembler::assemble
 //
-class genInfo2 {
+class genInfo {
 public:
    enum byteType {
       // ---------- safe to use in constants
@@ -57,7 +57,7 @@ public:
    argEncoding ae[4];
 };
 
-const genInfo2 *getGenInfo2();
+const genInfo *getGenInfo();
 
 // very literal class that implements the ModR/M encoding tables as described in the
 // x86-64 Software Developer's Guide

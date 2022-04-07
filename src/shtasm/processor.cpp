@@ -81,8 +81,6 @@ void processor::process()
       {
          // defer to assembler
 
-         // ---------- all below here move to assembler ---------
-
          m_pWriter->setLineNumber(m_parser.getLexor().getLineNumber());
          m_pWriter->writeComment(rawLine);
 
@@ -110,6 +108,7 @@ void processor::process()
          // locate the instr fmt to use
          auto& iFmt = m_t.getProc().getInstr(instrId)->demandFmt(aTypes);
 
+         // go go gadet assembler!
          m_pAsm->assemble(iFmt,ai,*m_pWriter);
       }
    }

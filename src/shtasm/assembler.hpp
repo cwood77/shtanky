@@ -1,3 +1,5 @@
+// assembler IS target-specific, to reference to I64 here are ok.  but not before
+
 #pragma once
 #include "../cmn/i64asm.hpp"
 #include "../cmn/obj-fmt.hpp"
@@ -32,7 +34,7 @@ private:
 
    cmn::tgt::iTargetInfo& m_t;
    iTableWriter& m_tw;
-   std::map<std::string,const cmn::tgt::i64::genInfo2*> m_genInfos;
+   std::map<std::string,const cmn::tgt::i64::genInfo*> m_genInfos;
 };
 
 } // namespace shtasm

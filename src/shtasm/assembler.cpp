@@ -18,14 +18,14 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
    {
       switch(pInfo->ae[i])
       {
-         case cmn::tgt::i64::genInfo2::kNa:
+         case cmn::tgt::i64::genInfo::kNa:
             break;
 
-         case cmn::tgt::i64::genInfo2::kModRmReg:
+         case cmn::tgt::i64::genInfo::kModRmReg:
             argBytes.encodeArgModRmReg(ai[i],true);
             break;
 
-         case cmn::tgt::i64::genInfo2::kModRmRm:
+         case cmn::tgt::i64::genInfo::kModRmRm:
             argBytes.encodeArgModRmReg(ai[i],false);
             break;
 
@@ -36,21 +36,21 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
 
    // implement the byte stream
    unsigned char *pByte = argBytes.computeTotalByteStream();
-   for(;*pByte != cmn::tgt::i64::genInfo2::kEndOfInstr;++pByte)
+   for(;*pByte != cmn::tgt::i64::genInfo::kEndOfInstr;++pByte)
    {
-      if(*pByte == cmn::tgt::i64::genInfo2::kOpcode1)
+      if(*pByte == cmn::tgt::i64::genInfo::kOpcode1)
       {
          w.write("op",++pByte,1);
       }
-      else if(*pByte == cmn::tgt::i64::genInfo2::kArg2Imm8)
+      else if(*pByte == cmn::tgt::i64::genInfo::kArg2Imm8)
       {
          w.write("i8",&ai[1].data.bytes.v[0],1);
       }
-      else if(*pByte == cmn::tgt::i64::genInfo2::kRexByte)
+      else if(*pByte == cmn::tgt::i64::genInfo::kRexByte)
       {
          w.write("rex",++pByte,1);
       }
-      else if(*pByte == cmn::tgt::i64::genInfo2::kModRmByte)
+      else if(*pByte == cmn::tgt::i64::genInfo::kModRmByte)
       {
          w.write("modR/M",++pByte,1);
       }
@@ -72,7 +72,7 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
 
 void assembler::cacheGenInfos()
 {
-   auto *pInfo = cmn::tgt::i64::getGenInfo2();
+   auto *pInfo = cmn::tgt::i64::getGenInfo();
    while(pInfo->guid)
    {
       auto& pI = m_genInfos[pInfo->guid];
