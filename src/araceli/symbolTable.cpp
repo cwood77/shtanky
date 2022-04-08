@@ -107,14 +107,14 @@ void linkResolver::visit(cmn::classNode& n)
    if(m_l._getRefee())
       return;
 
-   fieldGatherer fields;
+   std::vector<cmn::fieldNode*> fields;
 
    if(m_mode & kOwnClass)
    {
       m_mode &= ~kOwnClass; // don't do this again
 
       if(m_mode & kLocalsAndFields)
-         n.acceptVisitor(fields);
+         n.getChildrenOf<cmn::fieldNode>(fields);
       else
       {
          tryResolve(cmn::fullyQualifiedName::build(n));
@@ -131,7 +131,7 @@ void linkResolver::visit(cmn::classNode& n)
          {
             if(m_mode & kLocalsAndFields)
             {
-               it->getRefee()->acceptVisitor(fields);
+               it->getRefee()->getChildrenOf<cmn::fieldNode>(fields);
                it->getRefee()->acceptVisitor(*this);
             }
             else
@@ -146,8 +146,8 @@ void linkResolver::visit(cmn::classNode& n)
 
    if(m_mode & kLocalsAndFields)
    {
-      n.acceptVisitor(fields);
-      for(auto it=fields.fields.begin();it!=fields.fields.end();++it)
+      n.getChildrenOf<cmn::fieldNode>(fields);
+      for(auto it=fields.begin();it!=fields.end();++it)
          if(m_l._getRefee() == NULL)
             m_sTable.tryResolveVarType((*it)->name,**it,m_l);
    }

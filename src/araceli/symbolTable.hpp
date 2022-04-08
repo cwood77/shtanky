@@ -36,25 +36,6 @@ private:
    bool tryBind(const std::string& fqn, cmn::linkBase& l);
 };
 
-// knows about scope-providing nodes
-// deprecated
-class fullScopeNameBuilder : public cmn::araceliVisitor<> {
-public:
-   virtual void visit(cmn::node& n);
-   virtual void visit(cmn::scopeNode& n);
-   virtual void visit(cmn::classNode& n);
-
-   std::string fqn;
-};
-
-class fieldGatherer : public cmn::araceliVisitor<> {
-public:
-   virtual void visit(cmn::node& n) { visitChildren(n); }
-   virtual void visit(cmn::fieldNode& n) { fields.insert(&n); hNodeVisitor::visit(n); }
-
-   std::set<cmn::fieldNode*> fields;
-};
-
 // knows all the scopes of a given node
 class linkResolver : public cmn::araceliVisitor<> {
 public:
