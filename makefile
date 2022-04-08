@@ -188,6 +188,7 @@ $(SHTASM_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # shlink
 
 SHLINK_SRC = \
+	src/shlink/formatter.cpp \
 	src/shlink/layout.cpp \
 	src/shlink/main.cpp \
 	src/shlink/objdir.cpp \

@@ -1,5 +1,8 @@
 #include "../cmn/obj-fmt.hpp"
+#include "../cmn/trace.hpp"
 #include "layout.hpp"
+#include "objdir.hpp"
+#include <stdexcept>
 
 namespace shlink {
 
@@ -42,6 +45,61 @@ unsigned long segmentBlock::append(cmn::objfmt::obj& o)
    m_size += o.blockSize;
 
    return rVal;
+}
+
+void layout::place(cmn::objfmt::obj& o)
+{
+   auto& seg = m_segments[o.flags];
+   auto loc = seg.append(o);
+
+   cdwVERBOSE("placing obj %lld in %lu at %lu\n",&o,o.flags,loc);
+
+   m_objPlacements[&o] = loc;
+}
+
+void layout::markDonePlacing()
+{
+   unsigned long total = 0;
+   for(auto it=m_segments.begin();it!=m_segments.end();++it)
+   {
+      it->second.offset = total;
+      total += it->second.getSize();
+      cdwVERBOSE("segment %lu starts at %lu\n",it->first,it->second.offset);
+   }
+}
+
+void layout::link(objectDirectory& d)
+{
+   cdwVERBOSE("start linking %lld objects...\n",m_objPlacements.size());
+
+   for(auto it=m_objPlacements.begin();it!=m_objPlacements.end();++it)
+      link(d,*it->first);
+
+   cdwVERBOSE("done linking\n");
+}
+
+void layout::link(objectDirectory& d, cmn::objfmt::obj& o)
+{
+   cdwVERBOSE("  object %lld has %lld imports\n",&o,o.it.patches.size());
+
+   int i=0;
+   for(auto it=o.it.patches.begin();it!=o.it.patches.end();++it,i++)
+   {
+      auto& target = d.demand(it->first);
+      auto targetAddr = calculateTotalOffset(target);
+      cdwVERBOSE("    %d addrOf '%s' = %lu\n",i,it->first,targetAddr);
+
+      auto& sites = it->second;
+      for(auto jit=sites.begin();jit!=sites.end();++jit)
+      {
+         throw std::runtime_error("unimplemented!");
+      }
+   }
+}
+
+unsigned long layout::calculateTotalOffset(cmn::objfmt::obj& o)
+{
+   return m_segments[o.flags].offset + m_objPlacements[&o];
 }
 
 } // namespace shlink
