@@ -2,6 +2,8 @@
 #include "../cmn/global.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/out.hpp"
+//#include "../cmn/symbolTable.hpp"
+#include "../cmn/trace.hpp"
 #include "../cmn/typeVisitor.hpp"
 #include "asmCodeGen.hpp"
 #include "astCodeGen.hpp"
@@ -23,7 +25,14 @@ int main(int,const char*[])
    prj.searchPaths.push_back("testdata\\test");
    prj.searchPaths.push_back("testdata\\sht");
    projectBuilder::build(prj);
+   cdwVERBOSE("graph after loading ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
+
+#if 0
+   cmn::nodeLinker().linkGraph(prj);
+   cdwVERBOSE("graph after linking ----\n");
+   { cmn::diagVisitor v; prj.acceptVisitor(v); }
+#endif
 
    { cmn::coarseTypeVisitor v; prj.acceptVisitor(v); }
    { cmn::diagVisitor v; prj.acceptVisitor(v); }

@@ -1,5 +1,5 @@
 #pragma once
-#include "../cmn/ast.hpp"
+#include "ast.hpp"
 #include <map>
 #include <set>
 
@@ -37,7 +37,7 @@ private:
 };
 
 // knows all the scopes of a given node
-class linkResolver : public araceliVisitor<> {
+class linkResolver : public hNodeVisitor {
 public:
    enum {
       kContainingScopes = 0x1,
@@ -54,6 +54,8 @@ public:
    virtual void visit(classNode& n);
    virtual void visit(methodNode& n);
 
+   virtual void _implementLanguage() {} // all
+
 private:
    void tryResolve(const std::string& refingScope);
 
@@ -63,19 +65,21 @@ private:
 };
 
 // knows all the links in a given node
-class nodePublisher : public araceliVisitor<> {
+class nodePublisher : public hNodeVisitor {
 public:
    explicit nodePublisher(symbolTable& st) : m_sTable(st) {}
 
    virtual void visit(classNode& n);
    virtual void visit(memberNode& n);
 
+   virtual void _implementLanguage() {} // all
+
 private:
    symbolTable& m_sTable;
 };
 
 // knows all the links in a given node
-class nodeResolver : public araceliVisitor<> {
+class nodeResolver : public hNodeVisitor {
 public:
    explicit nodeResolver(symbolTable& st) : m_sTable(st) {}
 
@@ -84,6 +88,8 @@ public:
    virtual void visit(userTypeNode& n);
    //virtual void visit(invokeNode& n);
    virtual void visit(varRefNode& n);
+
+   virtual void _implementLanguage() {} // all
 
 private:
    symbolTable& m_sTable;
