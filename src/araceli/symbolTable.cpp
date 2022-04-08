@@ -241,6 +241,7 @@ void nodeResolver::visit(cmn::methodNode& n)
 {
    if(n.flags & cmn::nodeFlags::kOverride)
    {
+      m_sTable.markRequired(n.baseImpl);
       linkResolver v(m_sTable,n.baseImpl,linkResolver::kBaseClasses);
       n.acceptVisitor(v);
    }
@@ -273,7 +274,6 @@ void nodeResolver::visit(invokeNode& n)
 
 void nodeResolver::visit(cmn::varRefNode& n)
 {
-   // TODO this needs to support arguments too!
    m_sTable.markRequired(n.pDef);
    linkResolver v(m_sTable,n.pDef,
       linkResolver::kBaseClasses | linkResolver::kLocalsAndFields);

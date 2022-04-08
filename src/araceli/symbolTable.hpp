@@ -5,17 +5,18 @@
 
 namespace araceli {
 
-// types of links:
+// the exhaustive list of linkages between AST nodes
+//
 // type name resolution                                                           enforced
 // -    baseClass -> class    via:: type name              for:: enabler           *
 // - userTypeNode -> class    via:: type name                                      *
 //
 // base class member
-// -       method -> baseImpl via:: method name
-// -   varRefNode -> type     via:: ?? fields and globals  for:: ara codegen       ~
+// -       method -> baseImpl via:: method name                                    *
+// -   varRefNode -> type     via:: ?? fields and globals  for:: ara codegen       *
 //
 // type prop
-// -   invokeNode -> method   via:: ?? type prop + name
+// -   invokeNode -> method   via:: ?? type prop + name                       NO, and unimpled
 //
 // anything else?
 // fieldAccessNode

@@ -324,7 +324,7 @@ public:
 
 class invokeNode : public node {
 public:
-   link<methodNode> proto; // unimpled
+   link<methodNode> proto; // the _ONLY_ unimpled link
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
