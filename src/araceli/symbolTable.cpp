@@ -77,25 +77,6 @@ bool symbolTable::tryBind(const std::string& fqn, cmn::linkBase& l)
    return false;
 }
 
-void fullScopeNameBuilder::visit(cmn::node& n)
-{
-   cmn::node *pParent = n.getParent();
-   if(pParent)
-      pParent->acceptVisitor(*this);
-}
-
-void fullScopeNameBuilder::visit(cmn::scopeNode& n)
-{
-   fqn = std::string(".") + n.scopeName + fqn;
-   cmn::hNodeVisitor::visit(n);
-}
-
-void fullScopeNameBuilder::visit(cmn::classNode& n)
-{
-   fqn = std::string(".") + n.name + fqn;
-   cmn::hNodeVisitor::visit(n);
-}
-
 void linkResolver::visit(cmn::node& n)
 {
    if(m_l._getRefee())
@@ -113,9 +94,7 @@ void linkResolver::visit(cmn::scopeNode& n)
 
    if(m_mode & kContainingScopes)
    {
-      fullScopeNameBuilder v; // redundant
-      n.acceptVisitor(v);
-      tryResolve(v.fqn);
+      tryResolve(cmn::fullyQualifiedName::build(n));
       if(m_l._getRefee())
          return;
    }
@@ -138,9 +117,7 @@ void linkResolver::visit(cmn::classNode& n)
          n.acceptVisitor(fields);
       else
       {
-         fullScopeNameBuilder v;
-         n.acceptVisitor(v);
-         tryResolve(v.fqn);
+         tryResolve(cmn::fullyQualifiedName::build(n));
          if(m_l._getRefee())
             return;
       }
@@ -159,9 +136,7 @@ void linkResolver::visit(cmn::classNode& n)
             }
             else
             {
-               fullScopeNameBuilder v;
-               it->getRefee()->acceptVisitor(v);
-               tryResolve(v.fqn);
+               tryResolve(cmn::fullyQualifiedName::build(*it->getRefee()));
                if(m_l._getRefee())
                   return;
             }
@@ -204,9 +179,7 @@ void linkResolver::tryResolve(const std::string& refingScope)
 
 void nodePublisher::visit(cmn::classNode& n)
 {
-   fullScopeNameBuilder v;
-   n.acceptVisitor(v);
-   m_sTable.publish(v.fqn,n);
+   m_sTable.publish(cmn::fullyQualifiedName::build(n),n);
 
    cmn::hNodeVisitor::visit(n);
 }
@@ -216,10 +189,7 @@ void nodePublisher::visit(cmn::memberNode& n)
    bool isField = (dynamic_cast<cmn::fieldNode*>(&n)!=NULL);
    if(isField || (n.flags & (cmn::nodeFlags::kOverride | cmn::nodeFlags::kAbstract)))
    {
-      fullScopeNameBuilder v;
-      v.fqn = std::string(".") + n.name;
-      n.acceptVisitor(v);
-      m_sTable.publish(v.fqn,n);
+      m_sTable.publish(cmn::fullyQualifiedName::build(n,n.name),n);
    }
 
    cmn::hNodeVisitor::visit(n);
@@ -305,20 +275,19 @@ void unloadedScopeFinder::visit(cmn::scopeNode& n)
 {
    if(!n.loaded)
    {
-      fullScopeNameBuilder v;
-      n.acceptVisitor(v);
+      std::string fqn = cmn::fullyQualifiedName::build(n);
 
       if(
-         ((v.fqn.length()-1) <= m_missingRef.length()) &&
-         ::strncmp(v.fqn.c_str()+1,m_missingRef.c_str(),v.fqn.length()-1)==0
+         ((fqn.length()-1) <= m_missingRef.length()) &&
+         ::strncmp(fqn.c_str()+1,m_missingRef.c_str(),fqn.length()-1)==0
         )
       {
-         m_candidates[v.fqn] = &n;
+         m_candidates[fqn] = &n;
       }
       else
       {
          ::printf("   scope %s not a candidate\n",n.path.c_str());
-         ::printf("      %s vs %s\n",v.fqn.c_str(),m_missingRef.c_str());
+         ::printf("      %s vs %s\n",fqn.c_str(),m_missingRef.c_str());
       }
    }
    else
