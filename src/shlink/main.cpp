@@ -1,3 +1,4 @@
+#include "../cmn/trace.hpp"
 #include "../cmn/writer.hpp"
 #include "formatter.hpp"
 #include "layout.hpp"
@@ -30,6 +31,7 @@ int main(int argc, const char *argv[])
    l.link(oDir);
 
    {
+      cdwVERBOSE("writing...\n");
       cmn::compositeObjWriter w;
       w.sink(
          *new cmn::retailObjWriter(
@@ -39,6 +41,7 @@ int main(int argc, const char *argv[])
             *new cmn::binFileWriter(".\\testdata\\test\\test.ara.ls.asm.o.app.list")));
 
       formatter(w).write(l);
+      cdwVERBOSE("done writing\n");
    }
 
    return 0;
