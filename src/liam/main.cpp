@@ -1,4 +1,5 @@
 #include "../cmn/ast.hpp"
+#include "../cmn/global.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/out.hpp"
 #include "asmCodeGen.hpp"
