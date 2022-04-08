@@ -54,10 +54,12 @@ CMN_SRC = \
 	src/cmn/i64asm.cpp \
 	src/cmn/intel64.cpp \
 	src/cmn/lexor.cpp \
+	src/cmn/nameUtil.cpp \
 	src/cmn/obj-fmt.cpp \
 	src/cmn/out.cpp \
 	src/cmn/pathUtil.cpp \
 	src/cmn/reader.cpp \
+	src/cmn/symbolTable.cpp \
 	src/cmn/target.cpp \
 	src/cmn/textTable.cpp \
 	src/cmn/trace.cpp \
@@ -95,7 +97,6 @@ ARACELI_SRC = \
 	src/araceli/loader.cpp \
 	src/araceli/main.cpp \
 	src/araceli/metadata.cpp \
-	src/araceli/nameUtil.cpp \
 	src/araceli/projectBuilder.cpp \
 	src/araceli/symbolTable.cpp \
 
