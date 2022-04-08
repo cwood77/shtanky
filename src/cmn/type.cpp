@@ -4,6 +4,38 @@
 namespace cmn {
 namespace type {
 
+bool typeBase::_is(const std::string& name) const
+{
+   if(name == typeid(iType).name())
+      return true;
+   else
+      return false;
+}
+
+void *typeBase::_as(const std::string& name)
+{
+   if(name == typeid(iType).name())
+      return static_cast<iType*>(this);
+   else
+      throw std::runtime_error(cmn::fmt("can't cast to type %s",name.c_str()));
+}
+
+iType& stubTypeWrapper::demandReal()
+{
+   if(pReal)
+      return *pReal;
+   else
+      throw std::runtime_error(cmn::fmt("type %s not resolved when needed",m_name.c_str()));
+}
+
+const iType& stubTypeWrapper::demandReal() const
+{
+   if(pReal)
+      return *pReal;
+   else
+      throw std::runtime_error(cmn::fmt("type %s not resolved when needed",m_name.c_str()));
+}
+
 table::~table()
 {
    for(auto it=m_allTypes.begin();it!=m_allTypes.end();++it)
@@ -26,8 +58,8 @@ iType& table::publish(iType *pType)
    else
    {
       auto pStub = dynamic_cast<stubTypeWrapper*>(pAns);
-      if(pStub)
-         pStub->m_pReal = pType;
+      if(pStub && pStub->pReal == NULL)
+         pStub->pReal = pType;
       else
          delete pType;
    }
@@ -46,7 +78,7 @@ typeBuilder *typeBuilder::createClass(const std::string& name)
 
 typeBuilder::~typeBuilder()
 {
-   delete m_pHead;
+   delete m_pType;
 }
 
 typeBuilder& typeBuilder::array()
@@ -57,15 +89,15 @@ typeBuilder& typeBuilder::array()
 
 typeBuilder& typeBuilder::addMember(const std::string& name, iType& ty)
 {
-   auto& cl = dynamic_cast<userClassType&>(*m_pHead);
+   auto& cl = dynamic_cast<userClassType&>(*m_pType);
    cl.m_members[name] = &ty;
    return *this;
 }
 
 iType& typeBuilder::finish()
 {
-   auto copy = m_pHead;
-   m_pHead = NULL; // I no longer own this
+   auto copy = m_pType;
+   m_pType = NULL; // I no longer own this
    return gTable->publish(copy);
 }
 

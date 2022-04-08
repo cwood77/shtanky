@@ -1,6 +1,7 @@
 #pragma once
 #include "global.hpp"
 #include <map>
+#include <typeinfo>
 
 // example needs
 // - offsets in field access codegen
@@ -24,14 +25,10 @@ public:
    virtual const std::string& getName() const = 0;
    virtual const size_t getSize() = 0;
 
-   template<class T>
-   bool is() const;
-   template<class T>
-   T& as();
-   template<class T>
-   const T& as() const;
+   template<class T> bool is() const { return _is(typeid(T).name()); }
+   template<class T> T& as() { return *reinterpret_cast<T*>(_as(typeid(T).name())); }
+   template<class T> const T& as() const { return const_cast<iType*>(this)->as<T>(); }
 
-protected:
    virtual bool _is(const std::string& name) const = 0;
    virtual void *_as(const std::string& name) = 0;
 };
@@ -42,9 +39,6 @@ public:
    virtual size_t getOffsetOfField(const std::string& name) const = 0;
 };
 
-// does the table need to be public (i.e. not type-i) ?
-// YES: e.g. a class A has a field of class B and I'm type-building A
-//      or could that go through the nodeCache? ...seems like it should?
 class table {
 public:
    ~table();
@@ -72,9 +66,9 @@ public:
    iType& finish();
 
 private:
-   explicit typeBuilder(iType *pT) : m_pHead(pT) {}
+   explicit typeBuilder(iType *pT) : m_pType(pT) {}
 
-   iType *m_pHead;
+   iType *m_pType;
 };
 
 class nodeCache {

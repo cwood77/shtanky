@@ -67,13 +67,23 @@ public:
 
 // ----------------------- misc types -----------------------
 
-class stubTypeWrapper : public typeBase { // careful about inheritance here!
+class stubTypeWrapper : public iType {
 public:
-   explicit stubTypeWrapper(const std::string& name) : typeBase(name) {}
+   explicit stubTypeWrapper(const std::string& name) : m_name(name) {}
+   ~stubTypeWrapper() { delete pReal; }
 
-   virtual const size_t getSize() { throw 3.14; }
+   virtual const std::string& getName() const { return m_name; }
+   virtual const size_t getSize() { return demandReal().getSize(); }
+   virtual bool _is(const std::string& name) const { return demandReal()._is(name); }
+   virtual void *_as(const std::string& name) { return demandReal()._as(name); }
 
-   iType *m_pReal;
+   iType *pReal;
+
+private:
+   iType& demandReal();
+   const iType& demandReal() const;
+
+   const std::string m_name;
 };
 
 } // namespace type
