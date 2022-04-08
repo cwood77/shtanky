@@ -1,7 +1,7 @@
 #include "nameUtil.hpp"
 #include <string.h>
 
-namespace araceli {
+namespace cmn {
 
 bool nameUtil::isAbsolute(const std::string& n)
 {
@@ -34,4 +34,4 @@ std::string nameUtil::stripLast(const std::string& n)
    return ans;
 }
 
-} // namespace araceli
+} // namespace cmn

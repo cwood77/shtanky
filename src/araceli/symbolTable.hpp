@@ -3,7 +3,7 @@
 #include <map>
 #include <set>
 
-namespace araceli {
+namespace cmn {
 
 // the exhaustive list of linkages between AST nodes
 //
@@ -23,21 +23,21 @@ namespace araceli {
 
 class symbolTable {
 public:
-   std::map<std::string,cmn::node*> published;
-   std::set<cmn::linkBase*> unresolved;
+   std::map<std::string,node*> published;
+   std::set<linkBase*> unresolved;
 
-   void markRequired(cmn::linkBase& l) { unresolved.insert(&l); }
-   void publish(const std::string& fqn, cmn::node& n);
-   void tryResolveVarType(const std::string& objName, cmn::node& obj, cmn::linkBase& l);
-   void tryResolveExact(const std::string& refingScope, cmn::linkBase& l);
-   void tryResolveWithParents(const std::string& refingScope, cmn::linkBase& l);
+   void markRequired(linkBase& l) { unresolved.insert(&l); }
+   void publish(const std::string& fqn, node& n);
+   void tryResolveVarType(const std::string& objName, node& obj, linkBase& l);
+   void tryResolveExact(const std::string& refingScope, linkBase& l);
+   void tryResolveWithParents(const std::string& refingScope, linkBase& l);
 
 private:
-   bool tryBind(const std::string& fqn, cmn::linkBase& l);
+   bool tryBind(const std::string& fqn, linkBase& l);
 };
 
 // knows all the scopes of a given node
-class linkResolver : public cmn::araceliVisitor<> {
+class linkResolver : public araceliVisitor<> {
 public:
    enum {
       kContainingScopes = 0x1,
@@ -46,48 +46,62 @@ public:
       kLocalsAndFields  = 0x8,
    };
 
-   linkResolver(symbolTable& st, cmn::linkBase& l, size_t mode)
+   linkResolver(symbolTable& st, linkBase& l, size_t mode)
    : m_sTable(st), m_l(l), m_mode(mode) {}
 
-   virtual void visit(cmn::node& n);
-   virtual void visit(cmn::scopeNode& n);
-   virtual void visit(cmn::classNode& n);
-   virtual void visit(cmn::methodNode& n);
+   virtual void visit(node& n);
+   virtual void visit(scopeNode& n);
+   virtual void visit(classNode& n);
+   virtual void visit(methodNode& n);
 
 private:
    void tryResolve(const std::string& refingScope);
 
    symbolTable& m_sTable;
-   cmn::linkBase& m_l;
+   linkBase& m_l;
    size_t m_mode;
 };
 
 // knows all the links in a given node
-class nodePublisher : public cmn::araceliVisitor<> {
+class nodePublisher : public araceliVisitor<> {
 public:
    explicit nodePublisher(symbolTable& st) : m_sTable(st) {}
 
-   virtual void visit(cmn::classNode& n);
-   virtual void visit(cmn::memberNode& n);
+   virtual void visit(classNode& n);
+   virtual void visit(memberNode& n);
 
 private:
    symbolTable& m_sTable;
 };
 
 // knows all the links in a given node
-class nodeResolver : public cmn::araceliVisitor<> {
+class nodeResolver : public araceliVisitor<> {
 public:
    explicit nodeResolver(symbolTable& st) : m_sTable(st) {}
 
-   virtual void visit(cmn::classNode& n);
-   virtual void visit(cmn::methodNode& n);
-   virtual void visit(cmn::userTypeNode& n);
-   //virtual void visit(cmn::invokeNode& n);
-   virtual void visit(cmn::varRefNode& n);
+   virtual void visit(classNode& n);
+   virtual void visit(methodNode& n);
+   virtual void visit(userTypeNode& n);
+   //virtual void visit(invokeNode& n);
+   virtual void visit(varRefNode& n);
 
 private:
    symbolTable& m_sTable;
 };
+
+class nodeLinker {
+public:
+   void linkGraph(node& root);
+
+protected:
+   virtual bool loadAnotherSymbol(node& root, symbolTable& sTable) { return false; }
+};
+
+void linkGraph(node& root);
+
+} // namespace cmn
+
+namespace araceli {
 
 class unloadedScopeFinder : public cmn::araceliVisitor<> {
 public:
@@ -104,6 +118,9 @@ private:
    std::map<std::string,cmn::scopeNode*> m_candidates;
 };
 
-void linkGraph(cmn::node& root);
+class nodeLinker : public cmn::nodeLinker {
+protected:
+   virtual bool loadAnotherSymbol(cmn::node& root, cmn::symbolTable& sTable);
+};
 
 } // namespace araceli

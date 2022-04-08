@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace araceli {
+namespace cmn {
 
 class nameUtil {
 public:
@@ -15,4 +15,4 @@ private:
    nameUtil& operator=(const nameUtil&);
 };
 
-} // namespace araceli
+} // namespace cmn

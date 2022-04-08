@@ -16,7 +16,7 @@ int main(int,char*[])
    projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
-   linkGraph(*pPrj);
+   araceli::nodeLinker().linkGraph(*pPrj);
    ::printf("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
