@@ -50,7 +50,7 @@ private:
    std::map<std::string,iType*> m_allTypes;
 };
 
-timedGlobal<table> gTable;
+extern timedGlobal<table> gTable;
 
 class typeBuilder {
 public:
@@ -78,7 +78,7 @@ public:
    void publish(const node& n, iType& t);
 };
 
-timedGlobal<nodeCache> gNodeCache;
+extern timedGlobal<nodeCache> gNodeCache;
 
 } // namespace type
 } // namespace cmn

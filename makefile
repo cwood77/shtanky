@@ -62,6 +62,7 @@ CMN_SRC = \
 	src/cmn/textTable.cpp \
 	src/cmn/trace.cpp \
 	src/cmn/type.cpp \
+	src/cmn/typeVisitor.cpp \
 	src/cmn/writer.cpp \
 
 CMN_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(CMN_SRC)))

@@ -2,6 +2,7 @@
 #include "../cmn/global.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/out.hpp"
+#include "../cmn/typeVisitor.hpp"
 #include "asmCodeGen.hpp"
 #include "astCodeGen.hpp"
 #include "instrPrefs.hpp"
@@ -22,6 +23,9 @@ int main(int,const char*[])
    prj.searchPaths.push_back("testdata\\test");
    prj.searchPaths.push_back("testdata\\sht");
    projectBuilder::build(prj);
+   { cmn::diagVisitor v; prj.acceptVisitor(v); }
+
+   { cmn::coarseTypeVisitor v; prj.acceptVisitor(v); }
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
 
    varTable vTbl;
