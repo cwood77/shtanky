@@ -8,6 +8,8 @@ namespace liam {
 
 void fileRefFinder::visit(cmn::fileRefNode& n)
 {
+   cdwVERBOSE("found reference to file %s\n",n.ref.c_str());
+   m_filesToLoad.insert(cmn::pathUtil::absolutize(m_pFile->fullPath,n.ref));
 }
 
 void projectBuilder::build(cmn::liamProjectNode& p)
@@ -56,6 +58,7 @@ void projectBuilder::loadFile(const std::string& fileToLoad)
    auto file = p.parseFile();
    file->fullPath = fileToLoad;
    m_root.appendChild(*file.release());
+   gatherMoreFilesToLoad(*dynamic_cast<cmn::fileNode*>(m_root.lastChild()));
 }
 
 void projectBuilder::gatherMoreFilesToLoad(cmn::fileNode& f)

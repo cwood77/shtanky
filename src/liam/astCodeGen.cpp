@@ -8,6 +8,9 @@ namespace liam {
 
 void astCodeGen::visit(cmn::funcNode& n)
 {
+   if(n.getChildrenOf<cmn::sequenceNode>().size() == 0)
+      return; // ignore forward references
+
    m_currFunc = n.name;
    auto& stream = m_lir.page[m_currFunc];
 
