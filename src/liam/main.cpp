@@ -28,14 +28,15 @@ int main(int,const char*[])
    cdwVERBOSE("graph after loading ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
 
-#if 1
    cmn::nodeLinker().linkGraph(prj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
-#endif
 
+   cmn::type::table                           _t;
+   cmn::type::nodeCache                       _c;
+   cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
+   cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
    { cmn::coarseTypeVisitor v; prj.acceptVisitor(v); }
-   { cmn::diagVisitor v; prj.acceptVisitor(v); }
 
    varTable vTbl;
    lirStreams lir;
@@ -65,4 +66,7 @@ int main(int,const char*[])
 
       asmCodeGen::generate(it->second,vTbl,f,t,out.get<cmn::outStream>("testdata\\test\\test.ara.ls","asm"));
    }
+
+   _t.dump();
+   _c.dump();
 }

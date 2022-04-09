@@ -46,6 +46,8 @@ public:
    iType& fetch(const std::string& name);
    iType& publish(iType *pType);
 
+   void dump();
+
 private:
    std::map<std::string,iType*> m_allTypes;
 };
@@ -58,6 +60,7 @@ public:
    static typeBuilder *createVoid();
    static typeBuilder *createClass(const std::string& name);
    static typeBuilder *createPtr();
+   static typeBuilder *open(iType& t);
 
    ~typeBuilder();
 
@@ -66,9 +69,10 @@ public:
    iType& finish();
 
 private:
-   explicit typeBuilder(iType *pT) : m_pType(pT) {}
+   explicit typeBuilder(iType *pT, bool own = true) : m_pType(pT), m_own(own) {}
 
    iType *m_pType;
+   bool m_own;
 };
 
 class nodeCache {
@@ -76,6 +80,11 @@ public:
    bool hasType(const node& n) const;
    iType& demand(const node& n);
    void publish(const node& n, iType& t);
+
+   void dump();
+
+private:
+   std::map<const node*,iType*> m_cache;
 };
 
 extern timedGlobal<nodeCache> gNodeCache;

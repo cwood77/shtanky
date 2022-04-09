@@ -30,27 +30,31 @@ private:
 
 // ----------------------- primitive types -----------------------
 
-#if 0
-class stringType : public iType {
+class stringType : public staticallySizedType {
+public:
+   stringType() : staticallySizedType("string",0) {}
 };
-#endif
 
 class voidType : public staticallySizedType {
 public:
    voidType() : staticallySizedType("void",0) {}
 };
 
-#if 0
-class ptrType : public iType {
+class ptrType : public staticallySizedType {
+public:
+   ptrType() : staticallySizedType("ptr",0) {}
 };
-#endif
 
 // ----------------------- modifier types -----------------------
 
-#if 0
-class arrayOfType : public iType {
+class arrayOfType : public staticallySizedType {
+public:
+   explicit arrayOfType(iType& inner)
+   : staticallySizedType(inner.getName()+"[]",0), m_inner(inner) {}
+
+private:
+   iType& m_inner;
 };
-#endif
 
 // ----------------------- user types -----------------------
 
@@ -69,7 +73,7 @@ public:
 
 class stubTypeWrapper : public iType {
 public:
-   explicit stubTypeWrapper(const std::string& name) : m_name(name) {}
+   explicit stubTypeWrapper(const std::string& name) : pReal(NULL), m_name(name) {}
    ~stubTypeWrapper() { delete pReal; }
 
    virtual const std::string& getName() const { return m_name; }

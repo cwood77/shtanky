@@ -5,6 +5,8 @@
 
 namespace cmn {
 
+template<class T> class globalPublishTo;
+
 // a global that is only valid during a certain timeframe
 template<class T>
 class timedGlobal {
@@ -25,16 +27,17 @@ public:
 
 private:
    T *m_pPtr;
+
+friend class globalPublishTo<T>;
 };
 
 template<class T>
 class globalPublishTo {
 public:
-   globalPublishTo(T& v, timedGlobal<T>& w);
-   ~globalPublishTo();
+   globalPublishTo(T& v, timedGlobal<T>& w) : m_w(w) { m_w.m_pPtr = &v; }
+   ~globalPublishTo() { m_w.m_pPtr = NULL; }
 
 private:
-   T& m_v;
    timedGlobal<T>& m_w;
 };
 

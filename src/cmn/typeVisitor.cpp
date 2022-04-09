@@ -3,22 +3,69 @@
 
 namespace cmn {
 
+void typeBuilderVisitor::visit(strTypeNode& n)
+{
+   m_pBuilder.reset(type::typeBuilder::createString());
+   hNodeVisitor::visit(n);
+}
+
+void typeBuilderVisitor::visit(arrayTypeNode& n)
+{
+   m_pBuilder->array();
+   hNodeVisitor::visit(n);
+}
+
+void typeBuilderVisitor::visit(voidTypeNode& n)
+{
+   m_pBuilder.reset(type::typeBuilder::createVoid());
+   hNodeVisitor::visit(n);
+}
+
+void typeBuilderVisitor::visit(userTypeNode& n)
+{
+   auto c = n.pDef.getRefee();
+   if(!c)
+      throw std::runtime_error("unlinked userTypeNode in typeVisitor");
+
+   type::iType *pTy = NULL;
+/*   if(type::gNodeCache->hasType(*c))
+      pTy = &type::gNodeCache->demand(*c);
+   else*/
+   {
+      /*
+      std::unique_ptr<type::typeBuilder> b(type::typeBuilder::createClass(c->name));
+      pTy = &b->finish();
+      type::gNodeCache->publish(*c,*pTy);
+      */
+      pTy = &type::gTable->fetch(c->name);
+   }
+
+   m_pBuilder.reset(type::typeBuilder::open(*pTy));
+   hNodeVisitor::visit(n);
+}
+
+void typeBuilderVisitor::visit(ptrTypeNode& n)
+{
+   m_pBuilder.reset(type::typeBuilder::createPtr());
+   hNodeVisitor::visit(n);
+}
+
 void coarseTypeVisitor::visit(classNode& n)
 {
-   /*
    if(type::gNodeCache->hasType(n))
-      return; //hNodeVisitor::visit(n);
+      return;
 
-   std::unique_ptr<type::typeBuilder> pBuilder(type::typeBuilder::createClass(n.name));
-   */
+   m_pBuilder.reset(type::typeBuilder::createClass(n.name));
+   hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset();
 }
 
 void coarseTypeVisitor::visit(fieldNode& n)
 {
-   /*typeBuilderVisitor child;
+   typeBuilderVisitor child;
    n.demandSoleChild<typeNode>().acceptVisitor(child);
-
-   m_pBuilder->addMember(n.name,child.getType());*/
+   m_pBuilder->addMember(n.name,child.getType());
 }
 
 void coarseTypeVisitor::visit(funcNode& n)
