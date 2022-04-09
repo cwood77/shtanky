@@ -1,5 +1,6 @@
 #include "nameUtil.hpp"
 #include "symbolTable.hpp"
+#include "trace.hpp"
 #include <stdio.h>
 
 namespace cmn {
@@ -49,7 +50,7 @@ void symbolTable::tryResolveWithParents(const std::string& refingScope, linkBase
          auto attempt = nameUtil::append(prefix,l.ref);
          if(tryBind(attempt,l))
             break;
-         if(prefix == ".")
+         if(prefix == "." || prefix == "")
             break;
          prefix = nameUtil::stripLast(prefix);
       }
@@ -72,6 +73,15 @@ bool symbolTable::tryBind(const std::string& fqn, linkBase& l)
    }
 
    return false;
+}
+
+linkResolver::linkResolver(symbolTable& st, linkBase& l, size_t mode)
+: m_sTable(st), m_l(l), m_mode(mode)
+{
+   if(m_l._getRefee())
+      return;
+
+   tryResolve(""); // always make at least one attempt
 }
 
 void linkResolver::visit(node& n)
@@ -110,7 +120,7 @@ void linkResolver::visit(classNode& n)
    {
       m_mode &= ~kOwnClass; // don't do this again
 
-      if(m_mode & kLocalsAndFields)
+      if(m_mode & kLocalsAndFields) // TODO do I need a special mode for fields?  They're published?
          n.getChildrenOf<fieldNode>(fields);
       else
       {
@@ -154,6 +164,26 @@ void linkResolver::visit(classNode& n)
 
 void linkResolver::visit(methodNode& n)
 {
+   if(m_l._getRefee())
+      return;
+
+   if(m_mode & kLocalsAndFields)
+   {
+      // check args
+      auto args = n.getChildrenOf<argNode>();
+      for(auto it=args.begin();it!=args.end();++it)
+         if(m_l._getRefee() == NULL)
+            m_sTable.tryResolveVarType((*it)->name,**it,m_l);
+   }
+
+   hNodeVisitor::visit(n);
+}
+
+void linkResolver::visit(funcNode& n)
+{
+   if(m_l._getRefee())
+      return;
+
    if(m_mode & kLocalsAndFields)
    {
       // check args
@@ -272,7 +302,12 @@ void nodeLinker::linkGraph(node& root)
          if(nMissing != missingLastTime)
             missingLastTime = nMissing; // retry
          else
+         {
+            cdwINFO("unresolved symbols I don't know how to find\n");
+            for(auto it=sTable.unresolved.begin();it!=sTable.unresolved.end();++it)
+               cdwVERBOSE("  unresolved '%s' of '%s'\n",(*it)->ref.c_str(),typeid(**it).name());
             throw std::runtime_error("gave up trying to resolve symbols");
+         }
       }
    }
 }

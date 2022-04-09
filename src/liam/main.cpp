@@ -2,7 +2,7 @@
 #include "../cmn/global.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/out.hpp"
-//#include "../cmn/symbolTable.hpp"
+#include "../cmn/symbolTable.hpp"
 #include "../cmn/trace.hpp"
 #include "../cmn/typeVisitor.hpp"
 #include "asmCodeGen.hpp"
@@ -28,7 +28,7 @@ int main(int,const char*[])
    cdwVERBOSE("graph after loading ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
 
-#if 0
+#if 1
    cmn::nodeLinker().linkGraph(prj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }

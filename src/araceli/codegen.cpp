@@ -75,7 +75,7 @@ void liamTypeWriter::visit(cmn::voidTypeNode& n)
 
 void liamTypeWriter::visit(cmn::userTypeNode& n)
 {
-   m_o << n.pDef.ref;
+   m_o << cmn::fullyQualifiedName::build(*n.pDef.getRefee());
    m_refs.onLink(n.pDef);
    hNodeVisitor::visit(n);
 }
@@ -250,7 +250,7 @@ void codeGen::generateClassType(cmn::classNode& n, std::ostream& header, const s
    ;
 
    if(!vname.empty())
-      header << "   vtbl : " << vname << ";" << std::endl;
+      header << "   _vtbl : " << vname << ";" << std::endl;
 
    for(auto it=totalFields.begin();it!=totalFields.end();++it)
    {

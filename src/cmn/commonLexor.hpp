@@ -33,6 +33,7 @@ public:
 
       kStr,
       kVoid,
+      kPtr,
 
       kPublic,
       kProtected,

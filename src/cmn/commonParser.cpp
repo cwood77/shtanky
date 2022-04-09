@@ -435,6 +435,11 @@ void commonParser::parseType(node& owner)
       m_nFac.appendNewChild<voidTypeNode>(owner);
       m_l.advance();
    }
+   else if(m_l.getToken() == commonLexor::kPtr)
+   {
+      m_nFac.appendNewChild<ptrTypeNode>(owner);
+      m_l.advance();
+   }
    else if(m_l.getToken() == commonLexor::kName)
    {
       auto& t = m_nFac.appendNewChild<userTypeNode>(owner);

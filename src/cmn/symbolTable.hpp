@@ -21,6 +21,9 @@ namespace cmn {
 // anything else?
 // fieldAccessNode
 
+// it is ok to dump everything into a single string table?  That would mean names can't conflict.
+// like, a variable can never have the same name as a type (e.g. vtbl in gencode).
+
 class symbolTable {
 public:
    std::map<std::string,node*> published;
@@ -46,13 +49,13 @@ public:
       kLocalsAndFields  = 0x8,
    };
 
-   linkResolver(symbolTable& st, linkBase& l, size_t mode)
-   : m_sTable(st), m_l(l), m_mode(mode) {}
+   linkResolver(symbolTable& st, linkBase& l, size_t mode);
 
    virtual void visit(node& n);
    virtual void visit(scopeNode& n);
    virtual void visit(classNode& n);
    virtual void visit(methodNode& n);
+   virtual void visit(funcNode& n);
 
    virtual void _implementLanguage() {} // all
 

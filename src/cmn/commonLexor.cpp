@@ -30,6 +30,7 @@ static const lexemeInfo scanTable[] = {
 
    { lexemeInfo::kAlphanumeric, commonLexor::kStr,         "str",      "str"             },
    { lexemeInfo::kAlphanumeric, commonLexor::kVoid,        "void",     "void"            },
+   { lexemeInfo::kAlphanumeric, commonLexor::kPtr,         "ptr",      "ptr"             },
 
    { lexemeInfo::kAlphanumeric, commonLexor::kPublic,      "public",   "public"          },
    { lexemeInfo::kAlphanumeric, commonLexor::kProtected,   "protected","protected"       },
