@@ -40,6 +40,7 @@ public:
 
       kBoolLiteral,
 
+#if 0
       // missing
       kBase,
       kSelf,
@@ -74,13 +75,16 @@ public:
       kAmpersand,
       kAsterisk,
       kHyphen,
+#endif
       kPlus,
+#if 0
       kSingleQuote,
       kBackslash,
       kForwardslash,
       kLessThan,
       kGreaterThan,
       kQuestion,
+#endif
    };
 
    enum {

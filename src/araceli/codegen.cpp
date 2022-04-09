@@ -5,6 +5,35 @@
 
 namespace araceli {
 
+void fileRefCollector::onLink(cmn::linkBase& l)
+{
+   return;
+   cmn::node *p = l._getRefee();
+   // self isn't linked in some codegen
+   //if(!p)
+   //   throw std::runtime_error("unlinked ref during collect");
+   if(!p)
+      return;
+
+   auto& f = p->getAncestor<cmn::fileNode>();
+   if(f.fullPath.empty())
+      throw std::runtime_error("missing file path during collect");
+
+   auto adjF = cmn::pathUtil::addExtension(f.fullPath,cmn::pathUtil::kExtLiamHeader);
+   m_paths.insert(adjF);
+}
+
+void fileRefCollector::flush(const std::string& path, std::ostream& stream)
+{
+   return;
+   for(auto it=m_paths.begin();it!=m_paths.end();++it)
+   {
+      // compute rel path from 'path' to 'it'
+
+      cmn::pathUtil::computeRefPath(path,*it);
+   }
+}
+
 void liamTypeWriter::visit(cmn::typeNode& n)
 {
    auto typeQuals = n.getChildrenOf<cmn::typeNode>();
@@ -33,6 +62,7 @@ void liamTypeWriter::visit(cmn::voidTypeNode& n)
 void liamTypeWriter::visit(cmn::userTypeNode& n)
 {
    m_o << n.pDef.ref;
+   m_refs.onLink(n.pDef);
    hNodeVisitor::visit(n);
 }
 
@@ -47,16 +77,24 @@ void codeGen::visit(cmn::fileNode& n)
 void codeGen::visit(cmn::classNode& n)
 {
    auto& header = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader).stream();
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
 
    std::string vname;
    generateClassVTable(n,header,vname);
    generateClassType(n,header,vname);
    generateClassPrototypes(n,header);
+   m_refs.flush(
+      cmn::pathUtil::addExtension(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader),
+      header);
+
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
 
    auto methods = n.getChildrenOf<cmn::methodNode>();
    for(auto it=methods.begin();it!=methods.end();++it)
       generateClassMethod(n,**it,source);
+
+   m_refs.flush(
+      cmn::pathUtil::addExtension(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource),
+      source);
 }
 
 void codeGen::visit(cmn::sequenceNode& n)
@@ -116,6 +154,7 @@ void codeGen::visit(cmn::varRefNode& n)
 {
    auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
    source << n.pDef.ref;
+   m_refs.onLink(n.pDef);
    visitChildren(n);
 }
 
@@ -190,7 +229,7 @@ void codeGen::generateClassType(cmn::classNode& n, std::ostream& header, const s
    {
       header << "   " << (*it)->name << " : ";
 
-      liamTypeWriter tyW(header);
+      liamTypeWriter tyW(header,m_refs);
       (*it)->demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
 
       header << ";" << std::endl;
@@ -250,7 +289,7 @@ void codeGen::generateMethodSignature(cmn::methodNode& m, std::ostream& s)
       s
          << (*jit)->name << " : ";
       ;
-      liamTypeWriter tyW(s);
+      liamTypeWriter tyW(s,m_refs);
       (*jit)->demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
 
       firstParam = false;

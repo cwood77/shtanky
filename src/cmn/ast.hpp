@@ -125,6 +125,18 @@ public:
    // ------ template helpers
 
    template<class T>
+   T& getAncestor()
+   {
+      T *p = dynamic_cast<T*>(m_pParent);
+      if(p)
+         return *p;
+      if(m_pParent)
+         return m_pParent->getAncestor<T>();
+      else
+         throw std::runtime_error("can't find ancestor");
+   }
+
+   template<class T>
    void getChildrenOf(std::vector<T*>& v)
    {
       for(auto it=m_children.begin();it!=m_children.end();++it)

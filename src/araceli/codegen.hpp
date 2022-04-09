@@ -1,13 +1,24 @@
 #pragma once
 #include "../cmn/ast.hpp"
+#include <set>
 
 namespace cmn { class outBundle; }
 
 namespace araceli {
 
+class fileRefCollector {
+public:
+   void onLink(cmn::linkBase& l);
+
+   void flush(const std::string& path, std::ostream& stream);
+
+private:
+   std::set<std::string> m_paths;
+};
+
 class liamTypeWriter : public cmn::araceliVisitor<> {
 public:
-   explicit liamTypeWriter(std::ostream& o) : m_o(o) {}
+   liamTypeWriter(std::ostream& o, fileRefCollector& refs) : m_o(o), m_refs(refs) {}
 
    virtual void visit(cmn::node& n) {}
    virtual void visit(cmn::typeNode& n);
@@ -18,6 +29,7 @@ public:
 
 private:
    std::ostream& m_o;
+   fileRefCollector& m_refs;
 };
 
 class codeGen : public cmn::araceliVisitor<> {
@@ -50,6 +62,7 @@ private:
 
    cmn::fileNode *m_pActiveFile;
    cmn::outBundle& m_out;
+   fileRefCollector m_refs;
 };
 
 } // namespace araceli
