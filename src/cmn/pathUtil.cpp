@@ -60,6 +60,14 @@ std::string pathUtil::computeRefPath(const std::string& refer, const std::string
    return combinePath(ans);
 }
 
+std::string pathUtil::absolutize(const std::string& refer, const std::string& refee)
+{
+   std::string x = refer + "\\..\\" + refee;
+   std::list<std::string> l;
+   splitPath(x,l);
+   return combinePath(l);
+}
+
 void pathUtil::loadFileContents(const std::string& path, std::string& contents)
 {
    std::stringstream stream;

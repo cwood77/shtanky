@@ -14,6 +14,7 @@ public:
    static std::string getLastPart(const std::string& path);
 
    static std::string computeRefPath(const std::string& refer, const std::string& refee);
+   static std::string absolutize(const std::string& refer, const std::string& refee);
 
    static void loadFileContents(const std::string& path, std::string& contents);
 
