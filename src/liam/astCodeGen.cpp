@@ -86,7 +86,7 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
    auto& child = n.demandSoleChild<cmn::node>();
    auto& src = m_vGen.claimAndAddArgOffWire(mov,child);
    src.addrOf = true;
-#if 0
+#if 1
    auto& childType = cmn::type::gNodeCache->demand(child)
       .as<cmn::type::iStructType>();
    src.disp = childType.getOffsetOfField(n.name);

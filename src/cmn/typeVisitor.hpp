@@ -33,4 +33,17 @@ private:
    std::unique_ptr<type::typeBuilder> m_pBuilder;
 };
 
+class fineTypeVisitor : public hNodeVisitor {
+public:
+   virtual void visit(node& n) { visitChildren(n); }
+
+   virtual void visit(fieldAccessNode& n);
+   virtual void visit(varRefNode& n);
+   virtual void visit(stringLiteralNode& n);
+   virtual void visit(boolLiteralNode& n);
+   virtual void visit(intLiteralNode& n);
+
+   virtual void _implementLanguage() {} // all
+};
+
 } // namespace cmn

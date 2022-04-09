@@ -33,10 +33,12 @@ int main(int,const char*[])
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
 
    cmn::type::table                           _t;
-   cmn::type::nodeCache                       _c;
    cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
-   cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
    { cmn::coarseTypeVisitor v; prj.acceptVisitor(v); }
+
+   cmn::type::nodeCache                       _c;
+   cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
+   { cmn::fineTypeVisitor v; prj.acceptVisitor(v); }
 
    varTable vTbl;
    lirStreams lir;

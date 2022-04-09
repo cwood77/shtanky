@@ -63,9 +63,15 @@ public:
    explicit userClassType(const std::string& name) : typeBase(name) {}
 
    virtual const size_t getSize() { throw 3.14; }
-   virtual const iType& getField(const std::string& name) const { throw 3.14; }
-   virtual size_t getOffsetOfField(const std::string& name) const { throw 3.14; }
+   virtual bool _is(const std::string& name) const;
+   virtual void *_as(const std::string& name);
+   virtual const iType& getField(const std::string& name) const;
+   virtual size_t getOffsetOfField(const std::string& name) const;
 
+   void addField(const std::string& name, iType& f);
+
+private:
+   std::list<std::string> m_order;
    std::map<std::string,iType*> m_members;
 };
 

@@ -54,4 +54,48 @@ void coarseTypeVisitor::visit(fieldNode& n)
    m_pBuilder->addMember(n.name,child.getType());
 }
 
+void fineTypeVisitor::visit(fieldAccessNode& n)
+{
+   hNodeVisitor::visit(n);
+
+   type::gNodeCache->publish(n,
+      type::gNodeCache->demand(n.demandSoleChild<cmn::node>()));
+}
+
+void fineTypeVisitor::visit(varRefNode& n)
+{
+   hNodeVisitor::visit(n);
+
+   cmn::typeNode *pTy = n.pDef.getRefee();
+   typeBuilderVisitor child;
+   pTy->acceptVisitor(child);
+   type::gNodeCache->publish(n,child.getType());
+}
+
+void fineTypeVisitor::visit(stringLiteralNode& n)
+{
+   hNodeVisitor::visit(n);
+
+   std::unique_ptr<type::typeBuilder> b(type::typeBuilder::createString());
+   type::gNodeCache->publish(n,b->finish());
+}
+
+void fineTypeVisitor::visit(boolLiteralNode& n)
+{
+   hNodeVisitor::visit(n);
+
+   // TODO bool type
+   std::unique_ptr<type::typeBuilder> b(type::typeBuilder::createString());
+   type::gNodeCache->publish(n,b->finish());
+}
+
+void fineTypeVisitor::visit(intLiteralNode& n)
+{
+   hNodeVisitor::visit(n);
+
+   // TODO int type
+   std::unique_ptr<type::typeBuilder> b(type::typeBuilder::createString());
+   type::gNodeCache->publish(n,b->finish());
+}
+
 } // namespace cmn

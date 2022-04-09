@@ -25,6 +25,42 @@ void *typeBase::_as(const std::string& name)
       throw std::runtime_error(cmn::fmt("can't cast to type %s",name.c_str()));
 }
 
+bool userClassType::_is(const std::string& name) const
+{
+   if(name == typeid(iStructType).name())
+      return true;
+   else
+      return typeBase::_is(name);
+}
+
+void *userClassType::_as(const std::string& name)
+{
+   if(name == typeid(iStructType).name())
+      return static_cast<iStructType*>(this);
+   else
+      return typeBase::_as(name);
+}
+
+const iType& userClassType::getField(const std::string& name) const
+{
+   auto it = m_members.find(name);
+   if(it == m_members.end())
+      throw std::runtime_error(cmn::fmt(
+         "type '%s' does note have field '%s'\n",getName().c_str(),name.c_str()));
+   return *it->second;
+}
+
+size_t userClassType::getOffsetOfField(const std::string& name) const
+{
+   return 26;
+}
+
+void userClassType::addField(const std::string& name, iType& f)
+{
+   m_order.push_back(name);
+   m_members[name] = &f;
+}
+
 iType& stubTypeWrapper::demandReal()
 {
    if(pReal)
@@ -128,7 +164,7 @@ typeBuilder& typeBuilder::array()
 typeBuilder& typeBuilder::addMember(const std::string& name, iType& ty)
 {
    auto& cl = dynamic_cast<userClassType&>(*m_pType);
-   cl.m_members[name] = &ty;
+   cl.addField(name,ty);
    return *this;
 }
 
