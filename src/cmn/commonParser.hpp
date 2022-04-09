@@ -26,6 +26,7 @@ class commonLexor;
 // ------------------------- file
 // <file> ::== <class> <file>
 //           | <func> <file>
+//           | <ref> <strlit>
 //           | e
 //
 // ------------------------- class

@@ -6,14 +6,25 @@ namespace cmn { class outBundle; }
 
 namespace araceli {
 
-class fileRefCollector {
+class fileRefs {
 public:
-   void onLink(cmn::linkBase& l);
+   void addRef(const std::string& path) { m_paths.insert(path); }
 
    void flush(const std::string& path, std::ostream& stream);
 
 private:
    std::set<std::string> m_paths;
+};
+
+class fileRefCollector {
+public:
+   fileRefCollector() : m_pRefs(NULL) {}
+
+   void bind(fileRefs *pR) { m_pRefs = pR; }
+   void onLink(cmn::linkBase& l);
+
+private:
+   fileRefs *m_pRefs;
 };
 
 class liamTypeWriter : public cmn::araceliVisitor<> {
@@ -62,7 +73,11 @@ private:
 
    cmn::fileNode *m_pActiveFile;
    cmn::outBundle& m_out;
-   fileRefCollector m_refs;
+
+   fileRefs m_hRefs;
+   fileRefs m_sRefs;
+
+   fileRefCollector m_refColl;
 };
 
 } // namespace araceli

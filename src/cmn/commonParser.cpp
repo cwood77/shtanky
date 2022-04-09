@@ -31,14 +31,21 @@ void commonParser::parseFile(fileNode& f)
    {
       parseAttributes();
 
-      m_l.demandOneOf(4,
+      m_l.demandOneOf(5,
          commonLexor::kClass,
          commonLexor::kInterface,
          commonLexor::kAbstract,
-         commonLexor::kFunc);
+         commonLexor::kFunc,
+         commonLexor::kRef);
 
       if(m_l.getToken() == commonLexor::kFunc)
          parseGlobalFunc(f);
+      else if(m_l.getToken() == commonLexor::kRef)
+      {
+         m_l.advance();
+         m_l.demandAndEat(commonLexor::kStringLiteral);
+         m_l.demandAndEat(commonLexor::kSemiColon);
+      }
       else
          parseClass(f);
    }
