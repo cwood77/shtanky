@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include <typeinfo>
 
+#error THIS FILE IS OLD
+
 namespace liam {
 
 class projectNode;

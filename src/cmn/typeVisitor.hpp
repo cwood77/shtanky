@@ -26,7 +26,6 @@ public:
    virtual void visit(node& n) { visitChildren(n); }
    virtual void visit(classNode& n);
    virtual void visit(fieldNode& n);
-   virtual void visit(funcNode& n);
 
    virtual void _implementLanguage() {} // all
 

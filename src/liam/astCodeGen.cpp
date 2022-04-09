@@ -1,5 +1,6 @@
 #include "../cmn/fmt.hpp"
 #include "../cmn/target.hpp"
+#include "../cmn/type.hpp"
 #include "astCodeGen.hpp"
 #include "lir.hpp"
 #include "varGen.hpp"
@@ -82,8 +83,14 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
       cmn::fmt("   :%s",n.name.c_str()));
    auto& dest = mov.addArg(*new lirArgVar("",0));
 
-   auto& src = m_vGen.claimAndAddArgOffWire(mov,n.demandSoleChild<cmn::node>());
+   auto& child = n.demandSoleChild<cmn::node>();
+   auto& src = m_vGen.claimAndAddArgOffWire(mov,child);
    src.addrOf = true;
+#if 0
+   auto& childType = cmn::type::gNodeCache->demand(child)
+      .as<cmn::type::iStructType>();
+   src.disp = childType.getOffsetOfField(n.name);
+#endif
 
    m_vGen.createPrivateVar(mov.orderNum,dest,"field:%s",n.name.c_str()).publishOnWire(n);
 }

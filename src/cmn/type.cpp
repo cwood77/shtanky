@@ -149,11 +149,9 @@ bool nodeCache::hasType(const node& n) const
 
 iType& nodeCache::demand(const node& n)
 {
-   iType*& pTy = m_cache[&n];
+   iType *pTy = m_cache[&n];
    if(!pTy)
-   {
-      pTy = new stubTypeWrapper("unknown");
-   }
+      throw std::runtime_error("type not in node cache");
    return *pTy;
 }
 
