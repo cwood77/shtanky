@@ -43,7 +43,12 @@ void commonParser::parseFile(fileNode& f)
       else if(m_l.getToken() == commonLexor::kRef)
       {
          m_l.advance();
-         m_l.demandAndEat(commonLexor::kStringLiteral);
+
+         m_l.demand(commonLexor::kStringLiteral);
+         auto& r = m_nFac.appendNewChild<fileRefNode>(f);
+         r.ref = m_l.getLexeme();
+         m_l.advance();
+
          m_l.demandAndEat(commonLexor::kSemiColon);
       }
       else

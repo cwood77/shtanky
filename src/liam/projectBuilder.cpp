@@ -1,29 +1,67 @@
-#include "../cmn/ast.hpp"
 #include "../cmn/commonParser.hpp"
 #include "../cmn/pathUtil.hpp"
+#include "../cmn/trace.hpp"
 #include "lexor.hpp"
 #include "projectBuilder.hpp"
-#include <stdio.h>
 
 namespace liam {
 
-void projectBuilder::build(cmn::liamProjectNode& p)
+void fileRefFinder::visit(cmn::fileRefNode& n)
 {
-   loadFileIf(p,p.sourceFullPath);
 }
 
-bool projectBuilder::loadFileIf(cmn::liamProjectNode& prj, const std::string& fullPath)
+void projectBuilder::build(cmn::liamProjectNode& p)
 {
-   ::printf("loading file %s\n",fullPath.c_str());
+   projectBuilder self(p);
+   self.m_filesToLoad.insert(p.sourceFullPath);
+   self.load();
+}
+
+void projectBuilder::load()
+{
+   while(true)
+   {
+      std::string fileToLoad = getNextFileToLoad();
+      if(fileToLoad.empty())
+         return;
+
+      loadFile(fileToLoad);
+   }
+}
+
+std::string projectBuilder::getNextFileToLoad()
+{
+   while(m_filesToLoad.size())
+   {
+      auto file = *m_filesToLoad.begin();
+      m_filesToLoad.erase(m_filesToLoad.begin());
+
+      if(m_loadedFiles.find(file)==m_loadedFiles.end())
+      {
+         m_loadedFiles.insert(file);
+         return file;
+      }
+   }
+
+   return ""; // nothing to load
+}
+
+void projectBuilder::loadFile(const std::string& fileToLoad)
+{
+   cdwVERBOSE("loading file %s\n",fileToLoad.c_str());
    std::string contents;
-   cmn::pathUtil::loadFileContents(fullPath,contents);
+   cmn::pathUtil::loadFileContents(fileToLoad,contents);
    lexor l(contents.c_str());
    cmn::commonParser p(l);
    auto file = p.parseFile();
-   file->fullPath = fullPath;
-   prj.appendChild(*file.release());
+   file->fullPath = fileToLoad;
+   m_root.appendChild(*file.release());
+}
 
-   return true;
+void projectBuilder::gatherMoreFilesToLoad(cmn::fileNode& f)
+{
+   fileRefFinder v(m_filesToLoad);
+   f.acceptVisitor(v);
 }
 
 } // namespace liam
