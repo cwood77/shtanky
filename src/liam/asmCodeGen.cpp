@@ -35,14 +35,31 @@ void asmArgWriter::write(size_t orderNum, lirArg& a)
    if(cmn::tgt::isStackStorage(stor))
       m_w[1] << "["
          << m_t.getProc().getRegName(framePtr)
-         << cmn::tgt::getStackDisp(stor)
+         << (cmn::tgt::getStackDisp(stor) + a.disp)
       << "]";
    else if(a.addrOf)
-      m_w[1] << "[" << m_t.getProc().getRegName(stor) << "]";
+   {
+      m_w[1] << "[" << m_t.getProc().getRegName(stor);
+      writeDispIf(a);
+      m_w[1] << "]";
+   }
    else
+   {
       m_w[1] << m_t.getProc().getRegName(stor);
+      writeDispIf(a);
+   }
 
    m_first = false;
+}
+
+void asmArgWriter::writeDispIf(lirArg& a)
+{
+   if(a.disp)
+   {
+      if(a.disp > 0)
+         m_w[1] << "+";
+      m_w[1] << a.disp;
+   }
 }
 
 void asmCodeGen::generate(lirStream& s, varTable& v, varFinder& f, cmn::tgt::iTargetInfo& t, cmn::outStream& o)

@@ -22,7 +22,7 @@ void declasser::visit(cmn::invokeNode& n)
    std::string instName = inst.pDef.ref;
 
    // configure the nodes
-   pVTable->name = "type";
+   pVTable->name = "_vtbl";
    pFuncPtr->name = n.proto.ref;
    pSelf->pDef.ref = instName;
    pSelf->pDef.bind(*inst.pDef.getRefee());

@@ -59,7 +59,9 @@ void fineTypeVisitor::visit(fieldAccessNode& n)
    hNodeVisitor::visit(n);
 
    type::gNodeCache->publish(n,
-      type::gNodeCache->demand(n.demandSoleChild<cmn::node>()));
+      type::gNodeCache->demand(n.demandSoleChild<cmn::node>())
+         .as<type::iStructType>()
+         .getField(n.name));
 }
 
 void fineTypeVisitor::visit(varRefNode& n)

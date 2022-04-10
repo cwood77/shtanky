@@ -15,6 +15,7 @@
 namespace cmn {
 
 class node;
+namespace tgt { class iTargetInfo; }
 
 namespace type {
 
@@ -35,8 +36,8 @@ public:
 
 class iStructType {
 public:
-   virtual const iType& getField(const std::string& name) const = 0;
-   virtual size_t getOffsetOfField(const std::string& name) const = 0;
+   virtual iType& getField(const std::string& name) = 0;
+   virtual size_t getOffsetOfField(const std::string& name, const tgt::iTargetInfo& t) const = 0;
 };
 
 class table {

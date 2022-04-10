@@ -1,4 +1,5 @@
 #include "ast.hpp"
+#include "target.hpp"
 #include "trace.hpp"
 #include "type-i.hpp"
 #include "type.hpp"
@@ -41,7 +42,7 @@ void *userClassType::_as(const std::string& name)
       return typeBase::_as(name);
 }
 
-const iType& userClassType::getField(const std::string& name) const
+iType& userClassType::getField(const std::string& name)
 {
    auto it = m_members.find(name);
    if(it == m_members.end())
@@ -50,9 +51,18 @@ const iType& userClassType::getField(const std::string& name) const
    return *it->second;
 }
 
-size_t userClassType::getOffsetOfField(const std::string& name) const
+size_t userClassType::getOffsetOfField(const std::string& name, const tgt::iTargetInfo& t) const
 {
-   return 26;
+   size_t offset = 0;
+   for(auto it=m_order.begin();it!=m_order.end();++it)
+   {
+      if(*it != name)
+         offset += t.getRealSize(m_members.find(*it)->second->getSize());
+      else
+         return offset;
+   }
+
+   throw std::runtime_error(cmn::fmt("type '%s' doesn't have field '%s'",getName().c_str(),name.c_str()));
 }
 
 void userClassType::addField(const std::string& name, iType& f)

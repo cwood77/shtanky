@@ -82,8 +82,21 @@ Technical ideas and decisions thus far:
 - [ ] immediate ops
 - [ ] patchable ops
 - [x] func labels
-- [ ] instr overload selection
+- [x] instr overload selection
 - [x] call decomposition
 - [ ] impl frame ptrs
+
+--- multi file compile ---
+- [ ] batch build file generation
+- [ ] compiler args
+
+--- other file compile req's ---
+- [ ] hoist strings
+- [ ] too many call arg
+- [ ] segment directives
+- [ ] call nodes (not just invoke)
+- [ ] int literals
+
+- [ ] araceli bootstrap codegen
 
 [^1]: The name "shtanky" was suggested by my son, Ethan (age 11).  I selected the first of his suggestions that didn't include "my dad's butt" somewhere in the title.

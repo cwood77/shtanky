@@ -62,11 +62,11 @@ class userClassType : public typeBase, public iStructType {
 public:
    explicit userClassType(const std::string& name) : typeBase(name) {}
 
-   virtual const size_t getSize() { throw 3.14; }
+   virtual const size_t getSize() { return 0; }
    virtual bool _is(const std::string& name) const;
    virtual void *_as(const std::string& name);
-   virtual const iType& getField(const std::string& name) const;
-   virtual size_t getOffsetOfField(const std::string& name) const;
+   virtual iType& getField(const std::string& name);
+   virtual size_t getOffsetOfField(const std::string& name, const tgt::iTargetInfo& t) const;
 
    void addField(const std::string& name, iType& f);
 

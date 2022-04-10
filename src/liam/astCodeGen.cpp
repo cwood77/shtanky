@@ -86,11 +86,10 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
    auto& child = n.demandSoleChild<cmn::node>();
    auto& src = m_vGen.claimAndAddArgOffWire(mov,child);
    src.addrOf = true;
-#if 1
+
    auto& childType = cmn::type::gNodeCache->demand(child)
       .as<cmn::type::iStructType>();
-   src.disp = childType.getOffsetOfField(n.name);
-#endif
+   src.disp = childType.getOffsetOfField(n.name,m_t);
 
    m_vGen.createPrivateVar(mov.orderNum,dest,"field:%s",n.name.c_str()).publishOnWire(n);
 }
