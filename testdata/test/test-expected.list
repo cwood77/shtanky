@@ -1,25 +1,25 @@
 // 1: .test.test.run: 
-// 2:                 push, rbx          
+// 2:                 push, rbx         
 rex(48)op(ff)modR/M(38)
-// 3:                 push, rdi          
+// 3:                 push, rdi         
 rex(48)op(ff)modR/M(38)
-// 4:                 sub, rsp, 32       
+// 4:                 sub, rsp, 32      
 rex(48)op(83)modR/M(ec)i8(20)
-// 5:                 mov, rbx, [rcx]    ;    :_out
+// 5:                 mov, rbx, [rcx+8] ;    :_out
 op(de)op(ad)
-// 6:                 mov, rdi, [rbx]    ;    :type
+// 6:                 mov, rdi, [rbx]   ;    :_vtbl
 op(de)op(ad)
-// 7:                 mov, rbx, rcx      ;       (preserve) [combiner]
+// 7:                 mov, rbx, rcx     ;       (preserve) [combiner]
 op(de)op(ad)
-// 8:                 mov, rcx, [rdi]    ;    :printLn
+// 8:                 mov, rcx, [rdi]   ;    :printLn
 op(de)op(ad)
-// 9:                 mov, rdx, [rbx]    ;    :_out
+// 9:                 mov, rdx, [rbx+8] ;    :_out
 op(de)op(ad)
-// 10:                 call, rcx, rdx, r8 
+// 10:                 call, rcx, rdx, r8
 op(e8)
-// 11:                 add, rsp, 32       
+// 11:                 add, rsp, 32      
 rex(48)op(83)modR/M(c4)i8(20)
-// 12:                 pop, rdi           
+// 12:                 pop, rdi          
 rex(48)op(8f)modR/M(38)
-// 13:                 pop, rbx           
+// 13:                 pop, rbx          
 rex(48)op(8f)modR/M(18)

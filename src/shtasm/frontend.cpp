@@ -211,11 +211,24 @@ void fineParser::parseMemExpr()
       m_pAi->flags |= cmn::tgt::asmArgInfo::kMem8; // 64?
 
       parseReg();
+      parseScale();
 
       m_l.demandAndEat(fineLexor::kRBracket);
    }
    else
       m_l.demand(fineLexor::kLBracket);
+}
+
+void fineParser::parseScale()
+{
+   if(m_l.getToken() == fineLexor::kPlus)
+   {
+      m_l.advance();
+
+      m_l.demand(fineLexor::kIntLiteral);
+
+      m_l.advance();
+   }
 }
 
 } // namespace shtasm

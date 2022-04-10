@@ -103,6 +103,7 @@ public:
 private:
    void parseReg();
    void parseMemExpr();
+   void parseScale();
 
    fineLexor& m_l;
    cmn::tgt::asmArgInfo *m_pAi;
