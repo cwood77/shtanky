@@ -43,11 +43,16 @@ static const instrFmt movFmts[] = {
 };
 
 static const instrFmt callFmts[] = {
+   /*
    { "CALL(E8 cd)",
-      kR64, // TODO HACK LAME wtf with 3 args?  Should be 1!
+      kR64, // TODO this format is really for "immediate" encoding
       kR64,
       kR64,
       kArgTypeNone },
+      */
+   { "CALL(FF /2)",
+      kR64 | kM64,
+      kArgTypeNone, kArgTypeNone, kArgTypeNone },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
 };
 

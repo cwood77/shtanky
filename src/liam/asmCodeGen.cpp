@@ -8,13 +8,21 @@
 
 namespace liam {
 
-void asmArgWriter::write(lirInstr& i, size_t firstArg)
+void asmArgWriter::write(lirInstr& i, size_t firstArg, size_t nArgs)
 {
    auto& args = i.getArgs();
    size_t j=0;
-   for(auto it=args.begin();it!=args.end();++it,j++)
+   size_t w=0;
+   if(!nArgs)
+      nArgs = args.size();
+   for(auto it=args.begin();it!=args.end()&&w<nArgs;++it,j++)
+   {
       if(j>=firstArg)
+      {
          write(i.orderNum,**it);
+         w++;
+      }
+   }
 }
 
 void asmArgWriter::write(size_t orderNum, lirArg& a)
@@ -147,7 +155,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
       case cmn::tgt::kSyscall:
          {
             m_w[1] << m_t.getProc().getInstr(i.instrId)->name << ",";
-            asmArgWriter(m_v,m_t,m_w).write(i,1);
+            asmArgWriter(m_v,m_t,m_w).write(i,1,1);
             handleComment(i);
             m_w.advanceLine();
          }

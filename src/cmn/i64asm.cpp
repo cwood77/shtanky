@@ -28,6 +28,13 @@ static const genInfo kGenInfo[] = {
    },
    { genInfo::kNa, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
+   { "CALL(FF /2)", (unsigned char[]){
+      genInfo::kOpcode1, 0xFF,
+      genInfo::kArgFmtBytesWithFixedOp, 0x2,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kModRmReg, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+
    { "MOV(HACK)", (unsigned char[]){
       genInfo::kOpcode1, 0xDE,
       genInfo::kOpcode1, 0xAD,

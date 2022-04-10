@@ -9,14 +9,14 @@ rex(48)op(83)modR/M(ec)i8(20)
 op(de)op(ad)
 // 6:                 mov, rdi, [rbx]   ;    :_vtbl
 op(de)op(ad)
-// 7:                 mov, rbx, rcx     ;       (preserve) [combiner]
+// 7:                 mov, rbx, [rdi]   ;    :printLn
 op(de)op(ad)
-// 8:                 mov, rcx, [rdi]   ;    :printLn
+// 8:                 mov, rbx, rcx     ;       (preserve) [combiner]
 op(de)op(ad)
-// 9:                 mov, rdx, [rbx+8] ;    :_out
+// 9:                 mov, rcx, [rbx+8] ;    :_out
 op(de)op(ad)
-// 10:                 call, rcx, rdx, r8
-op(e8)
+// 10:                 call, rbx         
+rex(48)op(ff)modR/M(18)
 // 11:                 add, rsp, 32      
 rex(48)op(83)modR/M(c4)i8(20)
 // 12:                 pop, rdi          

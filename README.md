@@ -92,7 +92,7 @@ Technical ideas and decisions thus far:
 
 --- other file compile req's ---
 - [ ] hoist strings
-- [ ] too many call arg
+- [x] too many call arg
 - [ ] segment directives
 - [ ] call nodes (not just invoke)
 - [ ] int literals
