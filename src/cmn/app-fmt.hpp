@@ -4,9 +4,9 @@
 namespace cmn {
 namespace appfmt {
 
-// TODO pragma pack these chumps or they will create unused garbage in the files
-//      that shouldn't caue a problem, per se, but will inflate things on disk
-//      and introduce an source of randomness in build output
+// because I'm writing these structures directly to disk,
+// set padding to 'none'
+#pragma pack(push,1)
 
 class header {
 public:
@@ -23,6 +23,8 @@ public:
    unsigned long flags;
    unsigned long size;
 };
+
+#pragma pack(pop)
 
 } // namespace appfmt
 } // namespace cmn
