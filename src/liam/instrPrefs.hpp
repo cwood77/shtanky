@@ -22,7 +22,7 @@ private:
 
    void handle(lirStream& s);
    void handle(lirInstr& i);
-   void handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, bool outOrIn);
+   void handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, bool outOrIn, bool isInvoke);
 
    lirStream *m_pCurrStream;
    varTable& m_vTable;

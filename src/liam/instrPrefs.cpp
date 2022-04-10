@@ -34,7 +34,7 @@ void instrPrefs::handle(lirInstr& i)
       case cmn::tgt::kEnterFunc:
          {
             auto& cc = m_target.getCallConvention();
-            handle(i,cc,/*outOrIn*/false);
+            handle(i,cc,/*outOrIn*/false,/*isInvoke*/false);
          }
          break;
       case cmn::tgt::kExitFunc: // no prefs
@@ -47,7 +47,7 @@ void instrPrefs::handle(lirInstr& i)
       case cmn::tgt::kCall:
          {
             auto& cc = m_target.getCallConvention();
-            handle(i,cc,/*outOrIn*/true);
+            handle(i,cc,/*outOrIn*/true,/*isInvoke*/true); // HACK!
          }
          break;
       case cmn::tgt::kRet:
@@ -71,7 +71,7 @@ void instrPrefs::handle(lirInstr& i)
          {
             throw 3.14;
             auto& cc = m_target.getSyscallConvention();
-            handle(i,cc,/*outOrIn*/true);
+            handle(i,cc,/*outOrIn*/true,/*isInvoke*/false);
          }
          break;
       default:
@@ -79,23 +79,34 @@ void instrPrefs::handle(lirInstr& i)
    }
 }
 
-void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, bool outOrIn)
+void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, bool outOrIn, bool isInvoke)
 {
    std::vector<size_t> argStorage;
    cc.getRValAndArgBank(argStorage);
    //size_t shadow = cc.getShadowSpace();
    int stackSpace = 0;
 
-   // decl nodes have no return vallue
-   size_t offset = outOrIn ? 0 : 1;
+   // decl nodes have no return value
+   int offset = outOrIn ? 0 : 1;
+
+   // invoke nodes don't pass their first arg
 
    if(!cc.stackArgsPushRToL())
       throw std::runtime_error("unimpled! 1");
    for(size_t k = i.getArgs().size()-1;;k--)
    {
+      int offset2 = offset; // awful! :(
+
+      // in invoke nodes, the first arg is actually the addr to call
+      // that doesn't particiate in calling convention
+      if(isInvoke && k==1)
+         continue;
+      else if(isInvoke && k>0)
+         offset2--;
+
       var& v = m_vTable.demand(*i.getArgs()[k]);
 
-      if((k+offset) >= argStorage.size())
+      if((k+offset2) >= argStorage.size())
       {
          // use the stack
          if(outOrIn)
@@ -117,8 +128,8 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
       else
       {
          // use a register
-         v.requireStorage(i,argStorage[k+offset]);
-         ::printf("> assigning r%lld to %s\n",argStorage[k+offset],v.name.c_str());
+         v.requireStorage(i,argStorage[k+offset2]);
+         ::printf("> assigning r%lld to %s\n",argStorage[k+offset2],v.name.c_str());
       }
 
       if(k==0)
