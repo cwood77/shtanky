@@ -1,5 +1,6 @@
 #include "../cmn/fmt.hpp"
 #include "../cmn/target.hpp"
+#include "../cmn/throw.hpp"
 #include "../cmn/type.hpp"
 #include "astCodeGen.hpp"
 #include "lir.hpp"
@@ -104,7 +105,7 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
 // TODO this seems wrong... where is the call address passed?
 void astCodeGen::visit(cmn::callNode& n)
 {
-   throw 3.14; // unimpl
+   cdwTHROW("unimpled");
 }
 
 void astCodeGen::visit(cmn::varRefNode& n)
@@ -120,13 +121,13 @@ void astCodeGen::visit(cmn::stringLiteralNode& n)
 
 void astCodeGen::visit(cmn::boolLiteralNode& n)
 {
-   throw 3.14; // unimpl
+   cdwTHROW("unimpled");
    // publish an arg
 }
 
 void astCodeGen::visit(cmn::intLiteralNode& n)
 {
-   throw 3.14; // unimpl
+   cdwTHROW("unimpled");
    // publish an arg
 }
 

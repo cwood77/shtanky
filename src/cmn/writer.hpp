@@ -1,4 +1,5 @@
 #pragma once
+#include "throw.hpp"
 #include <cstddef>
 #include <list>
 #include <memory>
@@ -74,7 +75,7 @@ public:
    explicit retailObjWriter(iObjWriterSink& s) : m_pS(&s) {}
    virtual void write(const std::string& reason, const void *p, size_t n);
    virtual void nextPart() {}
-   virtual unsigned long tell() { throw 3.14; }
+   virtual unsigned long tell() { cdwTHROW("unimpled"); }
 
 private:
    std::unique_ptr<iObjWriterSink> m_pS;
@@ -85,7 +86,7 @@ public:
    explicit listingObjWriter(iObjWriterSink& s) : m_pS(&s) {}
    virtual void write(const std::string& reason, const void *p, size_t n);
    virtual void nextPart();
-   virtual unsigned long tell() { throw 3.14; }
+   virtual unsigned long tell() { cdwTHROW("unimpled"); }
 
 private:
    void fmtData(std::ostream& o, const void *p, size_t n);

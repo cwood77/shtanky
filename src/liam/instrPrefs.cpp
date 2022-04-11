@@ -1,8 +1,8 @@
 #include "../cmn/target.hpp"
+#include "../cmn/throw.hpp"
 #include "instrPrefs.hpp"
 #include "lir.hpp"
 #include "varGen.hpp"
-#include <stdexcept>
 
 namespace liam {
 
@@ -52,7 +52,7 @@ void instrPrefs::handle(lirInstr& i)
          break;
       case cmn::tgt::kRet:
          {
-            throw 3.14;
+            cdwTHROW("unimpled");
             if(i.getArgs().size())
             {
                lirArgVar *pVar = dynamic_cast<lirArgVar*>(i.getArgs()[0]);
@@ -69,7 +69,7 @@ void instrPrefs::handle(lirInstr& i)
          break;
       case cmn::tgt::kSyscall:
          {
-            throw 3.14;
+            cdwTHROW("unimpled");
             auto& cc = m_target.getSyscallConvention();
             handle(i,cc,/*outOrIn*/true,/*isInvoke*/false);
          }

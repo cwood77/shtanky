@@ -1,3 +1,4 @@
+#include "../cmn/throw.hpp"
 #include "lir.hpp"
 #include <sstream>
 
@@ -250,7 +251,7 @@ lirVar& lirStream::getVariableByName(const std::string& name)
 
 std::vector<lirVar*> lirStream::getVariablesInScope(size_t instrOrderNum)
 {
-   throw 3.14;
+   cdwTHROW("unimpled");
 }
 
 void lirStream::lirVarWireStorage::configure(lirInstr& i, lirArg& a)
@@ -259,7 +260,7 @@ void lirStream::lirVarWireStorage::configure(lirInstr& i, lirArg& a)
 
 lirArg& lirStream::lirVarWireStorage::duplicateAndAddArg(lirInstr& i)
 {
-   throw 3.14;
+   cdwTHROW("unimpled");
 }
 
 void lirStream::_donate(cmn::node& n, lirArg& a)

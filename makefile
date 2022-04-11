@@ -63,6 +63,7 @@ CMN_SRC = \
 	src/cmn/symbolTable.cpp \
 	src/cmn/target.cpp \
 	src/cmn/textTable.cpp \
+	src/cmn/throw.cpp \
 	src/cmn/trace.cpp \
 	src/cmn/type.cpp \
 	src/cmn/typeVisitor.cpp \

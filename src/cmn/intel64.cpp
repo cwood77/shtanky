@@ -1,5 +1,5 @@
 #include "intel64.hpp"
-#include <stdexcept>
+#include "throw.hpp"
 
 namespace cmn {
 namespace tgt {
@@ -259,7 +259,7 @@ void w64CallingConvention::createRegisterBankInPreferredOrder(std::vector<size_t
 
 const iSyscallConvention& w64EmuTargetInfo::getSyscallConvention() const
 {
-   throw 3.14;
+   cdwTHROW("unimpled");
 }
 
 } // namespace tgt
