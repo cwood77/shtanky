@@ -57,6 +57,15 @@ public:
    ~outBundle();
 
    template<class T>
+   T& get(const std::string& key)
+   {
+      iOutStream*& pStream = _get(key);
+      if(!pStream)
+         pStream = new T(key);
+      return dynamic_cast<T&>(*pStream);
+   }
+
+   template<class T>
    T& get(const std::string& basePath, const std::string& ext)
    {
       std::string key;
@@ -77,6 +86,7 @@ public:
 
 private:
    iOutStream*& _get(const std::string& basePath, const std::string& ext, std::string& key);
+   iOutStream*& _get(const std::string& key);
 
    std::map<std::string,iOutStream*> m_streams;
    iFileWriter *m_pWriter;

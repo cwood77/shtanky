@@ -10,6 +10,9 @@
 *.ara.ls.asm.o.mclist
 *.ara.ls.asm.o.app
 *.ara.ls.asm.o.app.list
+.build.bat
+.app
+.app.list
 
 # Prerequisites
 *.d

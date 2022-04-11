@@ -50,6 +50,11 @@ void outBundle::updateDisk(iFileWriter& f)
 iOutStream*& outBundle::_get(const std::string& basePath, const std::string& ext, std::string& key)
 {
    key = cmn::pathUtil::addExtension(basePath,ext);
+   return _get(key);
+}
+
+iOutStream*& outBundle::_get(const std::string& key)
+{
    iOutStream*& pStream = m_streams[key];
    return pStream;
 }
