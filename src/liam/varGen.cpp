@@ -1,9 +1,9 @@
+#include "../cmn/throw.cpp"
 #include "../cmn/trace.cpp"
 #include "lir.hpp"
 #include "varGen.hpp"
 #include <sstream>
 #include <stdarg.h>
-#include <stdexcept>
 #include <stdio.h>
 #include <string.h>
 
@@ -167,7 +167,7 @@ var& varTable::demand(lirArg& a)
             if(*kit == &a)
                return *it->second;
 
-   throw std::runtime_error("variable not found!");
+   cdwTHROW("variable not found!");
 }
 
 size_t varTable::getStorageFor(size_t orderNum, lirArg& a)

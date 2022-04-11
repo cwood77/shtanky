@@ -40,44 +40,17 @@ void astCodeGen::visit(cmn::funcNode& n)
 
 void astCodeGen::visit(cmn::invokeFuncPtrNode& n)
 {
-   // generate a pre-call instr
-   // (add meta-args to this later)
-   auto& stream = m_lir.page[m_currFunc];
-   auto& pre = lirInstr::append(
-      stream.pTail,
-      cmn::tgt::kPreCallStackAlloc,
-      "");
-   size_t subcallStackSize = m_t.getCallConvention().getShadowSpace();
-   std::vector<size_t> argSizes;
+   callGenInfo i;
+   genCallPreChild(n,i);
 
-   // gen all the prepping call code
-   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
-      (*it)->acceptVisitor(*this);
-
-   // gen the call and post-call instrs
-   auto& call = lirInstr::append(
-      stream.pTail,
-      cmn::tgt::kCall,
-      "");
-   auto& post = lirInstr::append(
-      stream.pTail,
-      cmn::tgt::kPostCallStackAlloc,
-      "");
-   auto& rval = call.addArg(*new lirArgVar("rval",0));
-
-   // handle all children
+   // bind child args to call instr
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
    {
-      auto& arg = m_vGen.claimAndAddArgOffWire(call,**it);
-      argSizes.push_back(m_t.getRealSize(arg.getSize()));
+      auto& arg = m_vGen.claimAndAddArgOffWire(*i.pCallInstr,**it);
+      i.argRealSizes.push_back(m_t.getRealSize(arg.getSize()));
    }
 
-   // determin stack-size and add args to pre/post call
-   subcallStackSize += m_t.getCallConvention().getArgumentStackSpace(argSizes);
-   pre.addArg<lirArgConst>("",subcallStackSize);
-   post.addArg<lirArgConst>("",subcallStackSize);
-
-   m_vGen.createPrivateVar(call.orderNum,rval,"rval").publishOnWire(n);
+   genCallPostChild(n,i);
 }
 
 void astCodeGen::visit(cmn::fieldAccessNode& n)
@@ -102,10 +75,23 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
    m_vGen.createPrivateVar(mov.orderNum,dest,"field:%s",n.name.c_str()).publishOnWire(n);
 }
 
-// TODO this seems wrong... where is the call address passed?
 void astCodeGen::visit(cmn::callNode& n)
 {
-   cdwTHROW("unimpled");
+   callGenInfo i;
+   genCallPreChild(n,i);
+
+   // call node has a name to call
+   auto& callLbl = i.pCallInstr->addArg(*new lirArgConst(n.name,0));
+   m_vGen.createPrivateVar(i.pCallInstr->orderNum,callLbl,"calladdr(%s)",n.name.c_str());
+
+   // bind child args to call instr
+   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+   {
+      auto& arg = m_vGen.claimAndAddArgOffWire(*i.pCallInstr,**it);
+      i.argRealSizes.push_back(m_t.getRealSize(arg.getSize()));
+   }
+
+   genCallPostChild(n,i);
 }
 
 void astCodeGen::visit(cmn::varRefNode& n)
@@ -127,8 +113,53 @@ void astCodeGen::visit(cmn::boolLiteralNode& n)
 
 void astCodeGen::visit(cmn::intLiteralNode& n)
 {
-   cdwTHROW("unimpled");
-   // publish an arg
+   m_vGen.createPrivateVar(0,*new lirArgConst(n.value,0),"intlit:%s",n.value.c_str())
+      .donateToWire(n);
+}
+
+astCodeGen::callGenInfo::callGenInfo()
+: pPreInstr(NULL), pCallInstr(NULL), pPostInstr(NULL), pRvalArg(NULL)
+{
+}
+
+void astCodeGen::genCallPreChild(cmn::node& n, callGenInfo& i)
+{
+   // generate a pre-call instr
+   // (add meta-args to this later)
+   auto& stream = m_lir.page[m_currFunc];
+   i.pPreInstr = &lirInstr::append(
+      stream.pTail,
+      cmn::tgt::kPreCallStackAlloc,
+      "");
+
+   // gen all the prepping call code (e.g. calculating and placing args)
+   //
+   // do this now so the code can use the storage prefs of the precall
+   // instr, but before the actuall call
+   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+      (*it)->acceptVisitor(*this);
+
+   // gen the call and post-call instrs
+   i.pCallInstr = &lirInstr::append(
+      stream.pTail,
+      cmn::tgt::kCall,
+      "");
+   i.pPostInstr = &lirInstr::append(
+      stream.pTail,
+      cmn::tgt::kPostCallStackAlloc,
+      "");
+   i.pRvalArg = &i.pCallInstr->addArg(*new lirArgVar("rval",0));
+}
+
+void astCodeGen::genCallPostChild(cmn::node& n, callGenInfo& i)
+{
+   // determine stack-size and add args to pre/post call
+   size_t subcallStackSize = m_t.getCallConvention().getShadowSpace();
+   subcallStackSize += m_t.getCallConvention().getArgumentStackSpace(i.argRealSizes);
+   i.pPreInstr->addArg<lirArgConst>("",subcallStackSize);
+   i.pPostInstr->addArg<lirArgConst>("",subcallStackSize);
+
+   m_vGen.createPrivateVar(i.pCallInstr->orderNum,*i.pRvalArg,"rval").publishOnWire(n);
 }
 
 } // namespace liam

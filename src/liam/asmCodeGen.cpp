@@ -53,7 +53,10 @@ void asmArgWriter::write(size_t orderNum, lirArg& a)
    }
    else
    {
-      m_w[1] << m_t.getProc().getRegName(stor);
+      if(stor == cmn::tgt::kStorageImmediate)
+         m_w[1] << dynamic_cast<lirArgConst&>(a).name;
+      else
+         m_w[1] << m_t.getProc().getRegName(stor);
       writeDispIf(a);
    }
 

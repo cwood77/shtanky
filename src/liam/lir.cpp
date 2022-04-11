@@ -245,7 +245,7 @@ lirVar& lirStream::getVariableByName(const std::string& name)
 {
    auto it = m_varTable.find(name);
    if(it == m_varTable.end())
-      throw std::runtime_error("variable not found!");
+      cdwTHROW("variable not found!");
    return it->second;
 }
 

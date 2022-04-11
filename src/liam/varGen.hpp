@@ -5,7 +5,7 @@
 #include <string>
 
 // a variable is something that requires storage (register, stack, memory, immediate).
-// all args have cooresponding variables
+// all args have cooresponding variables (even constants)
 //
 // variables are created during initial codegen; they're useful then for linking args
 // of different instructions together

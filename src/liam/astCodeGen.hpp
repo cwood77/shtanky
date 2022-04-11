@@ -1,18 +1,16 @@
 #pragma once
 #include "../cmn/ast.hpp"
 #include <map>
+#include <vector>
 
 namespace cmn { namespace tgt { class iTargetInfo; } }
 
 namespace liam {
 
 class lirArg;
+class lirInstr;
 class lirStreams;
 class varGenerator;
-
-// requires #include handling
-// requires varRef to user type linking
-// requires user type (i.e. class) size calculation
 
 class astCodeGen : public cmn::liamVisitor<> {
 public:
@@ -30,6 +28,22 @@ public:
    virtual void visit(cmn::intLiteralNode& n);
 
 private:
+   class callGenInfo {
+   public:
+      callGenInfo();
+
+      lirInstr *pPreInstr;
+      lirInstr *pCallInstr;
+      lirInstr *pPostInstr;
+
+      lirArg *pRvalArg;
+
+      std::vector<size_t> argRealSizes;
+   };
+
+   void genCallPreChild(cmn::node& n, callGenInfo& i);
+   void genCallPostChild(cmn::node& n, callGenInfo& i);
+
    lirStreams& m_lir;
    varGenerator& m_vGen;
    cmn::tgt::iTargetInfo& m_t;
