@@ -43,13 +43,9 @@ static const instrFmt movFmts[] = {
 };
 
 static const instrFmt callFmts[] = {
-   /*
    { "CALL(E8 cd)",
-      kR64, // TODO this format is really for "immediate" encoding
-      kR64,
-      kR64,
-      kArgTypeNone },
-      */
+      kI32,
+      kArgTypeNone, kArgTypeNone, kArgTypeNone },
    { "CALL(FF /2)",
       kR64 | kM64,
       kArgTypeNone, kArgTypeNone, kArgTypeNone },

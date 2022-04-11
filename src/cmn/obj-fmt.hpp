@@ -32,6 +32,9 @@ public:
 class importTable {
 public:
    std::map<std::string,std::list<patch> > patches;
+
+   void flatten(iObjWriter& w) const;
+   void unflatten(iObjReader& r);
 };
 
 class obj {

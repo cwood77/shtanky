@@ -176,6 +176,7 @@ void fineParser::parseArg(cmn::tgt::asmArgInfo& i)
    else if(m_l.getToken() == fineLexor::kName)
    {
       m_pAi->flags |= cmn::tgt::asmArgInfo::kLabel;
+      m_pAi->label = m_l.getLexeme();
       m_l.advance();
    }
    else

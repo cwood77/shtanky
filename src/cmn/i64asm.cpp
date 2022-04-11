@@ -24,9 +24,10 @@ static const genInfo kGenInfo[] = {
 
    { "CALL(E8 cd)", (unsigned char[]){
       genInfo::kOpcode1, 0xE8,
+      genInfo::kCodeOffset32,
       genInfo::kEndOfInstr,
    },
-   { genInfo::kNa, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+   { genInfo::kRipRelCO, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
    { "CALL(FF /2)", (unsigned char[]){
       genInfo::kOpcode1, 0xFF,

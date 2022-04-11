@@ -52,6 +52,7 @@ public:
       kNa,
       kModRmReg, // arg is in reg field of ModR/M byte
       kModRmRm,  // arg is in Mod/RM fields of ModR/M byte
+      kRipRelCO, // code offset in RIP-relative (relative to _next_ instr) form
    };
 
    argEncoding ae[4];

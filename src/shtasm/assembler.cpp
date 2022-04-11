@@ -13,6 +13,7 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
       throw std::runtime_error(cmn::fmt("no known instr for '%s'",f.guid));
 
    // build args
+   std::string label;
    cmn::tgt::i64::argFmtBytes argBytes(pInfo->byteStream);
    for(size_t i=0;i<3;i++)
    {
@@ -29,10 +30,16 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
             argBytes.encodeArgModRmReg(ai[i],false);
             break;
 
+         case cmn::tgt::i64::genInfo::kRipRelCO:
+            label = ai[i].label;
+            break;
+
          default:
             throw std::runtime_error("unknown arg type in " __FILE__);
       }
    }
+
+   std::map<unsigned long,std::string> patches;
 
    // implement the byte stream
    unsigned char *pByte = argBytes.computeTotalByteStream();
@@ -41,6 +48,12 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
       if(*pByte == cmn::tgt::i64::genInfo::kOpcode1)
       {
          w.write("op",++pByte,1);
+      }
+      else if(*pByte == cmn::tgt::i64::genInfo::kCodeOffset32)
+      {
+         patches[w.tell()] = label;
+         unsigned long patch = 0;
+         w.write("co32",&patch,sizeof(unsigned long));
       }
       else if(*pByte == cmn::tgt::i64::genInfo::kArg2Imm8)
       {
@@ -59,6 +72,20 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
    }
 
    w.nextPart();
+
+   // schedule patches
+   if(patches.size())
+   {
+      unsigned long nextInstr = w.tell();
+      for(auto it=patches.begin();it!=patches.end();++it)
+      {
+         cmn::objfmt::patch p;
+         p.type = cmn::objfmt::patch::kRelToNextInstr;
+         p.offset = it->first;
+         p.instrSize = nextInstr - it->first;
+         m_tw.importSymbol(it->second,p);
+      }
+   }
 }
 
 void assembler::cacheGenInfos()

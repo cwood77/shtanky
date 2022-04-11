@@ -16,7 +16,7 @@ class iTableWriter {
 public:
    /* tables */
    virtual void exportSymbol(const std::string& name) = 0;
-   virtual void importSymbol(const std::string& name, cmn::objfmt::patch::types t) = 0;
+   virtual void importSymbol(const std::string& name, const cmn::objfmt::patch& p) = 0;
 };
 
 class assembler {

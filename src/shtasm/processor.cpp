@@ -129,4 +129,9 @@ void processor::exportSymbol(const std::string& name)
    m_pCurrObj->xt.toc[name] = m_pBlock->tell();
 }
 
+void processor::importSymbol(const std::string& name, const cmn::objfmt::patch& p)
+{
+   m_pCurrObj->it.patches[name].push_back(p);
+}
+
 } // namespace shtasm

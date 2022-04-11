@@ -30,6 +30,48 @@ void exportTable::unflatten(iObjReader& r)
    }
 }
 
+void importTable::flatten(iObjWriter& w) const
+{
+   w.writeCommentLine("class importTable");
+   w.write<size_t>("numentries",patches.size());
+   w.nextPart();
+
+   for(auto it=patches.begin();it!=patches.end();++it)
+   {
+      w.writeString("name",it->first);
+      w.write<size_t>("numentries",it->second.size());
+      w.nextPart();
+
+      for(auto jit=it->second.begin();jit!=it->second.end();++jit)
+      {
+         w.write<char>("type",static_cast<char>(jit->type));
+         w.write("offset",jit->offset);
+         w.write("instrSize",jit->instrSize);
+         w.nextPart();
+      }
+   }
+}
+
+void importTable::unflatten(iObjReader& r)
+{
+   auto n = r.read<size_t>();
+   for(size_t i=0;i<n;i++)
+   {
+      auto key = r.readString();
+      auto& list = patches[key];
+
+      auto N = r.read<size_t>();
+      for(size_t j=0;j<N;j++)
+      {
+         patch p;
+         p.type = static_cast<patch::types>(r.read<char>());
+         r.read(p.offset);
+         r.read(p.instrSize);
+         list.push_back(p);
+      }
+   }
+}
+
 void obj::flatten(iObjWriter& w) const
 {
    w.writeCommentLine("class obj");
@@ -37,6 +79,7 @@ void obj::flatten(iObjWriter& w) const
    w.nextPart();
 
    xt.flatten(w);
+   it.flatten(w);
 
    w.writeCommentLine("returnedto: class obj");
    w.write("blockSize",blockSize);
@@ -49,6 +92,7 @@ void obj::unflatten(iObjReader& r)
    r.read(flags);
 
    xt.unflatten(r);
+   it.unflatten(r);
 
    r.read(blockSize);
    block.reset(new unsigned char[blockSize]);

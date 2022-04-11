@@ -107,6 +107,7 @@ public:
       kReg64    = 1<< 8,
    };
    size_t flags;
+
    union {
       struct {
          unsigned char v[8];
@@ -121,6 +122,8 @@ public:
          unsigned __int64 v[1];
       } qwords;
    } data;
+
+   std::string label;
 
    argTypes computeArgType();
 };

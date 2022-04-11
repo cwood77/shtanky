@@ -27,6 +27,7 @@ int main(int argc, const char *argv[])
    {
       layoutProgress lProg;
       lProg.seedRequiredObject(".test.test.run");
+      lProg.seedRequiredObject(".sht.cons.stdout.printLn");
 
       while(!lProg.isDone())
       {
