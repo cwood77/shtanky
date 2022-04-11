@@ -55,3 +55,23 @@ solution:
 - at compile time, generate memory frees for eligivle fields in the dtor
 
 Case N: Delete this
+
+## Solutions
+
+1. Auto Araceli + Explicit Liam
+Allocations in Araceli are either heap or stack implicitly by heuristic without user control.  Allocations in Liam are either heap or stack explicitly by direct user statements.
+
+Araceli Examples:
+```
+   var x = myClass.create(1,3,"word up"); // heap
+   var y = 4; // stack
+```
+
+Liam Examples:
+```
+   var x = .sht.mem.alloc(13);
+   myClass.create(x,1,3,"word up");
+   .sht.obj.dec(x);
+
+   var y = 4;
+```

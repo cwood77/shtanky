@@ -1,4 +1,5 @@
 #include "../cmn/ast.hpp"
+#include "../cmn/cmdline.hpp"
 #include "../cmn/global.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/out.hpp"
@@ -18,12 +19,12 @@
 
 using namespace liam;
 
-int main(int,const char*[])
+int main(int argc,const char *argv[])
 {
+   cmn::cmdLine cl(argc,argv);
+
    cmn::liamProjectNode prj;
-   prj.sourceFullPath = "testdata\\test\\test.ara.ls";
-   prj.searchPaths.push_back("testdata\\test");
-   prj.searchPaths.push_back("testdata\\sht");
+   prj.sourceFullPath = cl.getArg("testdata\\test\\test.ara.ls");
    projectBuilder::build(prj);
    cdwVERBOSE("graph after loading ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
@@ -66,7 +67,7 @@ int main(int,const char*[])
 
       { varAllocator p(it->second,vTbl,t,f); p.run(); }
 
-      asmCodeGen::generate(it->second,vTbl,f,t,out.get<cmn::outStream>("testdata\\test\\test.ara.ls","asm"));
+      asmCodeGen::generate(it->second,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
    }
 
    _t.dump();

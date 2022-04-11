@@ -9,6 +9,12 @@ public:
    static const char *kExtLiamHeader;
    static const char *kExtLiamSource;
 
+   static const char *kExtObj;
+   static const char *kExtObj_Then_List;
+   static const char *kExtObj_Then_McList;
+
+   static const char *kExtList;
+
    static std::string addExtension(const std::string& path, const std::string& ext);
    static std::string getExtension(const std::string& path);
    static std::string getLastPart(const std::string& path);

@@ -1,6 +1,8 @@
+#include "../cmn/cmdline.hpp"
 #include "../cmn/i64asm.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/obj-fmt.hpp"
+#include "../cmn/pathUtil.hpp"
 #include "../cmn/trace.hpp"
 #include "../cmn/writer.hpp"
 #include "frontend.hpp"
@@ -10,9 +12,12 @@ int main(int argc, const char *argv[])
 {
    using namespace shtasm;
 
-   cmn::binFileWriter listingFile(".\\testdata\\test\\test.ara.ls.asm.o.mclist");
+   cmn::cmdLine cl(argc,argv);
+   std::string input = cl.getArg(".\\testdata\\test\\test.ara.ls.asm");
 
-   lexor l(".\\testdata\\test\\test.ara.ls.asm");
+   cmn::binFileWriter listingFile(cmn::pathUtil::addExtension(input,cmn::pathUtil::kExtObj_Then_McList));
+
+   lexor l(input);
    parser p(l);
    cmn::tgt::w64EmuTargetInfo t;
    cmn::objfmt::objFile o;
@@ -22,10 +27,10 @@ int main(int argc, const char *argv[])
       cmn::compositeObjWriter w;
       w.sink(
          *new cmn::retailObjWriter(
-            *new cmn::binFileWriter(".\\testdata\\test\\test.ara.ls.asm.o")));
+            *new cmn::binFileWriter(cmn::pathUtil::addExtension(input,cmn::pathUtil::kExtObj))));
       w.sink(
          *new cmn::listingObjWriter(
-            *new cmn::binFileWriter(".\\testdata\\test\\test.ara.ls.asm.o.list")));
+            *new cmn::binFileWriter(cmn::pathUtil::addExtension(input,cmn::pathUtil::kExtObj_Then_List))));
       o.flatten(w);
    }
 

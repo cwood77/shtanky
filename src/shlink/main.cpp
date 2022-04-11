@@ -1,3 +1,5 @@
+#include "../cmn/cmdline.hpp"
+#include "../cmn/pathUtil.hpp"
 #include "../cmn/trace.hpp"
 #include "../cmn/writer.hpp"
 #include "formatter.hpp"
@@ -8,8 +10,18 @@ using namespace shlink;
 
 int main(int argc, const char *argv[])
 {
+   cmn::cmdLine cl(argc,argv);
+   std::string outFile = cl.getArg(".\\testdata\\test\\test.ara.ls.asm.o.app");
+
    objectDirectory oDir;
-   oDir.loadObjectFile(".\\testdata\\test\\test.ara.ls.asm.o");
+   for(size_t i=0;;i++)
+   {
+      auto path = cl.getArg(i==0 ? ".\\testdata\\test\\test.ara.ls.asm.o" : "");
+      if(path.empty())
+         break;
+
+      oDir.loadObjectFile(path);
+   }
 
    layout l;
    {
@@ -35,10 +47,10 @@ int main(int argc, const char *argv[])
       cmn::compositeObjWriter w;
       w.sink(
          *new cmn::retailObjWriter(
-            *new cmn::binFileWriter(".\\testdata\\test\\test.ara.ls.asm.o.app")));
+            *new cmn::binFileWriter(outFile)));
       w.sink(
          *new cmn::listingObjWriter(
-            *new cmn::binFileWriter(".\\testdata\\test\\test.ara.ls.asm.o.app.list")));
+            *new cmn::binFileWriter(cmn::pathUtil::addExtension(outFile,cmn::pathUtil::kExtList))));
 
       formatter(w).write(l);
       cdwVERBOSE("done writing\n");
