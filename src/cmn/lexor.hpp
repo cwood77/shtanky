@@ -94,6 +94,7 @@ public:
    std::string getTokenName(size_t t);
    std::string getTokenName() { return getTokenName(m_state.token); }
    std::string getLexeme() { return m_state.lexeme; }
+   __int64 getLexemeInt() const;
    unsigned long getLineNumber() { return m_state.lineNumber; }
 
    void demand(size_t t);

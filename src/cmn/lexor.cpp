@@ -1,3 +1,4 @@
+#include "inttypes.h"
 #include "lexor.hpp"
 #include <sstream>
 #include <stdarg.h>
@@ -132,6 +133,13 @@ std::string lexorBase::getTokenName(size_t t)
       return "int literal";
    else
       return m_lexemeDict[t];
+}
+
+__int64 lexorBase::getLexemeInt() const
+{
+   __int64 v = 0;
+   ::sscanf(m_state.lexeme.c_str(),"%" PRIi64,&v);
+   return v;
 }
 
 void lexorBase::demand(size_t t)

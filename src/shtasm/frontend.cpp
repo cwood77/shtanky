@@ -80,7 +80,7 @@ bool lineParser::shaveOffPart(const char*& pThumb, char delim, std::string& part
    return false;
 }
 
-static const cmn::lexemeInfo scanTable[] = {
+static const cmn::lexemeInfo argScanTable[] = {
    { cmn::lexemeInfo::kSymbolic,     argLexor::kLBracket,    "[",        "L bracket"       },
    { cmn::lexemeInfo::kSymbolic,     argLexor::kRBracket,    "]",        "R bracket"       },
 
@@ -106,7 +106,7 @@ static const cmn::lexemeInfo scanTable[] = {
    { cmn::lexemeInfo::kEndOfTable,   0,                       NULL,       NULL              }
 };
 
-static const cmn::lexemeClassInfo classTable[] = {
+static const cmn::lexemeClassInfo argClassTable[] = {
 
    { argLexor::kClassReg64, "64-bit register",
       (size_t[]){
@@ -158,8 +158,8 @@ argLexor::argLexor(const char *buffer)
 {
    addPhase(*new cmn::intLiteralReader());
    addPhase(*new cmn::whitespaceEater());
-   addTable(scanTable,NULL);
-   addClasses(classTable);
+   addTable(argScanTable,NULL);
+   addClasses(argClassTable);
 
    advance();
 }
@@ -235,20 +235,79 @@ void argParser::parseScale()
    }
 }
 
+static const cmn::lexemeInfo dataScanTable[] = {
+   { cmn::lexemeInfo::kAlphanumeric, dataLexor::kB,      "<b>",   "byte type (b)"        },
+   { cmn::lexemeInfo::kAlphanumeric, dataLexor::kW,      "<w>",   "short type (w)"       },
+   { cmn::lexemeInfo::kAlphanumeric, dataLexor::kDW,     "<dw>",  "doubleword type (dw)" },
+   { cmn::lexemeInfo::kAlphanumeric, dataLexor::kQW,     "<qw>",  "quadword type (qw)"   },
+
+   { cmn::lexemeInfo::kAlphanumeric, dataLexor::kRep,    "<rep>", "rep"                  },
+   { cmn::lexemeInfo::kSymbolic,     dataLexor::kLParen, "(",     "left paren"           },
+   { cmn::lexemeInfo::kSymbolic,     dataLexor::kRParen, ")",     "right paren"          },
+
+   { cmn::lexemeInfo::kEndOfTable,   0,                  NULL,    NULL                   }
+};
+
+static const cmn::lexemeClassInfo dataClassTable[] = {
+
+   { dataLexor::kIntLitType, "int type",
+      (size_t[]){
+         dataLexor::kB,
+         dataLexor::kW,
+         dataLexor::kDW,
+         dataLexor::kQW,
+         0,
+      } },
+
+   { dataLexor::kNoClass, NULL, NULL },
+};
+
 dataLexor::dataLexor(const char *buffer)
 : lexorBase(buffer)
 {
    addPhase(*new cmn::stringLiteralReader());
    addPhase(*new cmn::intLiteralReader());
    addPhase(*new cmn::whitespaceEater());
+   addTable(dataScanTable,NULL);
+   addClasses(dataClassTable);
 
    advance();
 }
 
+void repObjWriter::write(const std::string& reason, const void *p, size_t n)
+{
+   for(size_t i=0;i<m_rep;i++)
+      m_inner.write(reason,p,n);
+
+   m_rep = 1;
+}
+
 void dataParser::parse(cmn::iObjWriter& w)
 {
-   if(m_l.getToken() == dataLexor::kStringLiteral)
-      w.write("_strdata",m_l.getLexeme().c_str(),m_l.getLexeme().length());
+   parseData(w);
+   m_l.demand(dataLexor::kEOI);
+}
+
+void dataParser::parseData(cmn::iObjWriter& w)
+{
+   if(m_l.getToken() == dataLexor::kRep)
+   {
+      m_l.advance();
+
+      m_l.demandAndEat(dataLexor::kLParen);
+
+      m_l.demand(dataLexor::kIntLiteral);
+      auto r = m_l.getLexemeInt();
+      if(r < 1)
+         m_l.error("value for rep() must be > 0");
+      m_l.advance();
+      repObjWriter rw(w);
+      rw.setRep(r);
+
+      m_l.demandAndEat(dataLexor::kRParen);
+
+      parseRepableData(rw,true);
+   }
    else if(m_l.getToken() == dataLexor::kName)
    {
       cmn::objfmt::patch p;
@@ -260,14 +319,68 @@ void dataParser::parse(cmn::iObjWriter& w)
       w.write("_lbldata",lbl);
 
       m_tw.importSymbol(m_l.getLexeme(),p);
-   }
-   else if(m_l.getToken() == dataLexor::kEOI)
-      return;
-   else
-      m_l.demandOneOf(3,dataLexor::kStringLiteral,dataLexor::kName,dataLexor::kEOI);
+      m_l.advance();
 
-   m_l.advance();
-   parse(w);
+      parseData(w);
+   }
+   else
+      parseRepableData(w,false);
+}
+
+void dataParser::parseRepableData(cmn::iObjWriter& w, bool req)
+{
+   if(m_l.getToken() == dataLexor::kStringLiteral)
+   {
+      w.write("_strdata",m_l.getLexeme().c_str(),m_l.getLexeme().length());
+      m_l.advance();
+      parseData(w);
+   }
+
+   else if(m_l.getTokenClass() & dataLexor::kIntLitType)
+   {
+      auto type = m_l.getToken();
+      m_l.advance();
+      auto value = m_l.getLexemeInt();
+      m_l.advance();
+
+      switch(type)
+      {
+         case dataLexor::kB:
+            writeInt<signed char>(w,value);
+            break;
+         case dataLexor::kW:
+            writeInt<signed short>(w,value);
+            break;
+         case dataLexor::kDW:
+            writeInt<signed long>(w,value);
+            break;
+         case dataLexor::kQW:
+            writeInt<signed __int64>(w,value);
+            break;
+         default:
+            cdwTHROW("unimpled");
+      }
+
+      parseData(w);
+   }
+
+   else if(!req && m_l.getToken() == dataLexor::kEOI)
+      return;
+
+   else
+   {
+      if(req)
+         m_l.demandOneOf(2,
+            dataLexor::kStringLiteral,
+            dataLexor::kIntLitType
+         );
+      else
+         m_l.demandOneOf(3,
+            dataLexor::kStringLiteral,
+            dataLexor::kIntLitType,
+            dataLexor::kEOI
+         );
+   }
 }
 
 } // namespace shtasm

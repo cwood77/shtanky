@@ -1,10 +1,10 @@
 #pragma once
 #include "../cmn/lexor.hpp"
+#include "../cmn/writer.hpp"
 #include <fstream>
 #include <string>
 #include <vector>
 
-namespace cmn { class iObjWriter; }
 namespace cmn { namespace tgt { class asmArgInfo; } };
 
 namespace shtasm {
@@ -114,23 +114,69 @@ private:
 
 class dataLexor : public cmn::lexorBase {
 public:
+   enum {
+      kB = _kFirstDerivedToken,
+      kW,
+      kDW,
+      kQW,
+
+      kRep,
+      kLParen,
+      kRParen,
+   };
+
+   enum {
+      kIntLitType = (1 << 1 | kNoClass),
+   };
+
    explicit dataLexor(const char *buffer);
 };
 
-// <data> ::== <char> <data>
-//             <string> <data>            - impled
-//             <type> <int> <data>
-//             <name> <data>              - impled
-//             'rep(' <int> ')' <data>
+// for data generation, this writer implements the 'rep' keyword
+class repObjWriter : public cmn::iObjWriter {
+public:
+   explicit repObjWriter(cmn::iObjWriter& inner) : m_inner(inner), m_rep(1) {}
+
+   virtual void write(const std::string& reason, const void *p, size_t n);
+   virtual void nextPart() { m_inner.nextPart(); }
+   virtual unsigned long tell() { return m_inner.tell(); }
+
+   void setRep(unsigned long v) { m_rep = v; }
+
+private:
+   cmn::iObjWriter& m_inner;
+   unsigned long m_rep;
+};
+
+// <data> ::== 'rep' '(' <int> ')' <req-repable-data>
+//           | <name> <data>
+//           | <opt-repable-data>
+//
+// <req-repable-data> ::== <string> <data>
+//                       | <type> <int> <data>
+//
+// <opt-repable-data> ::== <req-repable-data>
+//                       | EOI
+//
 class dataParser {
 public:
-   dataParser(dataLexor& l, iTableWriter& tw) : m_l(l), m_tw(tw) {}
+   dataParser(dataLexor& l, iTableWriter& tw) : m_l(l), m_tw(tw), m_rep(1) {}
 
    void parse(cmn::iObjWriter& w);
 
 private:
+   void parseData(cmn::iObjWriter& w);
+   void parseRepableData(cmn::iObjWriter& w, bool req);
+
+   template<class T>
+   void writeInt(cmn::iObjWriter& w, __int64 value)
+   {
+      w.write<T>("_intdata",static_cast<T>(value));
+   }
+
    dataLexor& m_l;
    iTableWriter& m_tw;
+   __int64 m_rep;
 };
 
 } // namespace shtasm
