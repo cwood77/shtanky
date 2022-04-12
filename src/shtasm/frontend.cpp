@@ -1,6 +1,9 @@
 #include "../cmn/fmt.hpp"
 #include "../cmn/i64asm.hpp"
 #include "../cmn/intel64.hpp"
+#include "../cmn/obj-fmt.hpp"
+#include "../cmn/writer.hpp"
+#include "assembler.hpp"
 #include "frontend.hpp"
 #include <string.h>
 
@@ -240,6 +243,31 @@ dataLexor::dataLexor(const char *buffer)
    addPhase(*new cmn::whitespaceEater());
 
    advance();
+}
+
+void dataParser::parse(cmn::iObjWriter& w)
+{
+   if(m_l.getToken() == dataLexor::kStringLiteral)
+      w.write("_strdata",m_l.getLexeme().c_str(),m_l.getLexeme().length());
+   else if(m_l.getToken() == dataLexor::kName)
+   {
+      cmn::objfmt::patch p;
+      p.type = cmn::objfmt::patch::kAbs;
+      p.offset = w.tell();
+      p.instrSize = 0;
+
+      unsigned __int64 lbl = 0;
+      w.write("_lbldata",lbl);
+
+      m_tw.importSymbol(m_l.getLexeme(),p);
+   }
+   else if(m_l.getToken() == dataLexor::kEOI)
+      return;
+   else
+      m_l.demandOneOf(3,dataLexor::kStringLiteral,dataLexor::kName,dataLexor::kEOI);
+
+   m_l.advance();
+   parse(w);
 }
 
 } // namespace shtasm

@@ -76,6 +76,24 @@ void processor::process()
          // prep assembler
          m_pAsm.reset(new assembler(m_t,*this));
       }
+      else if(a.size() > 0 && a[0] == ".data")
+      {
+         // data
+
+         // export symbol
+         if(!l.empty())
+            exportSymbol(l);
+
+         m_pBlock->writeCommentLine(m_parser.getLexor().getLineNumber(),rawLine);
+
+         for(size_t i=1;i<a.size();i++)
+         {
+            dataLexor l(a[i].c_str());
+            dataParser p(l,*this);
+            p.parse(*m_pBlock);
+            m_pCurrObj->blockSize = m_pBlock->tell();
+         }
+      }
       else
       {
          // defer to assembler

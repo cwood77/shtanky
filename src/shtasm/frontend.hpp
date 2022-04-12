@@ -117,18 +117,11 @@ public:
    explicit dataLexor(const char *buffer);
 };
 
-// wtf am I building here?
-// what do I need?
-//   data constants
-//     - strings, poolable
-//   func ptrs
-//   data ptrs?
-// maybe there's no parser at all....
-
 // <data> ::== <char> <data>
-//             <string> <data>
-//             <int> <data>
-//             <name> <data>
+//             <string> <data>            - impled
+//             <type> <int> <data>
+//             <name> <data>              - impled
+//             'rep(' <int> ')' <data>
 class dataParser {
 public:
    dataParser(dataLexor& l, iTableWriter& tw) : m_l(l), m_tw(tw) {}
