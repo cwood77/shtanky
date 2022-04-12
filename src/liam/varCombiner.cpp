@@ -28,7 +28,7 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
    {
       // for each storage
 
-      if(it->second.size() > 1)
+      if(it->second.size() > 1 && it->first != cmn::tgt::kStorageImmediate) // immediate is infinite
       {
          // two or more variables claimed this spot!
          cdwDEBUG("%d variables claimed storage %lld!\n",it->second.size(),it->first);

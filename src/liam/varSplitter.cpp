@@ -61,16 +61,22 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
          .injectBefore(
             cmn::tgt::kMov,
             cmn::fmt("      (%s req for %s) [splitter]",v.name.c_str(),m_t.getProc().getRegName(destStor)));
+
    auto& dest = mov.addArg<lirArgVar>("spltD",v.getSize());
-   auto& src = mov.addArg<lirArgVar>("spltS",v.getSize());
+
+   lirArg *pSrc = NULL;
+   if(srcStor == cmn::tgt::kStorageImmediate)
+      pSrc = &mov.addArg<lirArgConst>(v.getImmediateData(),v.getSize());
+   else
+      pSrc = &mov.addArg<lirArgVar>("spltS",v.getSize());
 
    v.refs[mov.orderNum].push_back(&dest);
-   v.refs[mov.orderNum].push_back(&src);
+   v.refs[mov.orderNum].push_back(pSrc);
 
    m_newInstrs.push_back(std::make_pair<lirInstr*,size_t>(&mov,(size_t)srcStor));
    m_newInstrs.push_back(std::make_pair<lirInstr*,size_t>(&mov,(size_t)destStor));
 
-   v.storageDisambiguators[&src] = srcStor;
+   v.storageDisambiguators[pSrc] = srcStor;
    v.storageDisambiguators[&dest] = destStor;
 }
 

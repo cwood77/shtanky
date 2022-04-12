@@ -25,6 +25,12 @@ void var::requireStorage(lirInstr& i, size_t s)
    storageToInstrMap[s].insert(i.orderNum);
 }
 
+void var::requireStorage(size_t orderNum, size_t s)
+{
+   instrToStorageMap[orderNum].insert(s);
+   storageToInstrMap[s].insert(orderNum);
+}
+
 bool var::isAlive(size_t orderNum)
 {
    return refs.begin()->first <= orderNum && orderNum <= (--(refs.end()))->first;
@@ -60,6 +66,11 @@ bool var::requiresStorageLater(size_t orderNum, size_t storage)
             return true;
 
    return false;
+}
+
+std::string var::getImmediateData()
+{
+   return dynamic_cast<const lirArgConst&>(lastArg()).name;
 }
 
 void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
@@ -248,6 +259,12 @@ lirArg& varGenerator::claimAndAddArgOffWire(lirInstr& i, cmn::node& n)
       pVar->refs[i.orderNum].push_back(pArg);
 
       i.addArg(*pArg);
+
+      // donated constants are literals
+      // TODO HACK is this true/safe/good?
+      if(dynamic_cast<lirArgConst*>(pArg))
+         pVar->requireStorage(i.orderNum-2, cmn::tgt::kStorageImmediate);
+
       return *pArg;
    }
 
