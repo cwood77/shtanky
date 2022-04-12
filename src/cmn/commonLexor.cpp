@@ -23,6 +23,7 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kAlphanumeric, commonLexor::kStatic,      "static",   "static"          },
 
    { lexemeInfo::kAlphanumeric, commonLexor::kRef,         "ref",      "ref"             },
+   { lexemeInfo::kAlphanumeric, commonLexor::kConst,       "const",    "const"           },
    { lexemeInfo::kAlphanumeric, commonLexor::kFunc,        "func",     "func"            },
 
    { lexemeInfo::kAlphanumeric, commonLexor::kClass,       "class",    "class"           },

@@ -38,7 +38,9 @@ void commonParser::parseFile(fileNode& f)
          commonLexor::kFunc,
          commonLexor::kRef);
 
-      if(m_l.getToken() == commonLexor::kFunc)
+      if(m_l.getToken() == commonLexor::kConst)
+         parseGlobalConst(f);
+      else if(m_l.getToken() == commonLexor::kFunc)
          parseGlobalFunc(f);
       else if(m_l.getToken() == commonLexor::kRef)
       {
@@ -164,6 +166,27 @@ void commonParser::parseField(fieldNode& n)
       m_l.advance();
    else
       m_l.demandOneOf(2,commonLexor::kEquals,commonLexor::kSemiColon);
+}
+
+void commonParser::parseGlobalConst(fileNode& f)
+{
+   m_l.demandAndEat(commonLexor::kConst);
+
+   auto& n = m_nFac.appendNewChild<constNode>(f);
+
+   m_l.demand(commonLexor::kName);
+   n.name = m_l.getLexeme();
+   m_l.advance();
+
+   m_l.demandAndEat(commonLexor::kColon);
+
+   parseType(n);
+
+   m_l.demandAndEat(commonLexor::kEquals);
+
+   parseRValue(n);
+
+   m_l.demandAndEat(commonLexor::kSemiColon);
 }
 
 // TODO !!!!! lame; nearly identical to methods

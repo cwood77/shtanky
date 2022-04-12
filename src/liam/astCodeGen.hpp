@@ -18,6 +18,7 @@ public:
    : m_lir(l), m_vGen(v), m_t(t) {}
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
+   virtual void visit(cmn::constNode& n);
    virtual void visit(cmn::funcNode& n);
    virtual void visit(cmn::invokeFuncPtrNode& n);
    virtual void visit(cmn::fieldAccessNode& n);

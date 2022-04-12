@@ -97,6 +97,12 @@ void asmCodeGen::handleInstr(lirInstr& i)
 {
    switch(i.instrId)
    {
+      case cmn::tgt::kSelectSegment:
+         {
+            m_w[0] << ".seg " << dynamic_cast<lirArgConst*>(i.getArgs()[0])->name;
+            m_w.advanceLine();
+         }
+         break;
       case cmn::tgt::kEnterFunc:
          {
             m_w[0] << i.comment << ":";
@@ -141,6 +147,14 @@ void asmCodeGen::handleInstr(lirInstr& i)
                   m_w.advanceLine();
                }
             }
+         }
+         break;
+      case cmn::tgt::kGlobalConstData:
+         {
+            m_w[0] << i.comment << ":";
+            m_w.advanceLine();
+            m_w[0] << ".data, " << dynamic_cast<lirArgConst*>(i.getArgs()[0])->name;
+            m_w.advanceLine();
          }
          break;
       case cmn::tgt::kPush:

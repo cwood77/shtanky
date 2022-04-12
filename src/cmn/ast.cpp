@@ -172,6 +172,16 @@ void diagVisitor::visit(fieldNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(constNode& n)
+{
+   ::printf("%sconst; name=%s\n",
+      getIndent().c_str(),
+      n.name.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 void diagVisitor::visit(funcNode& n)
 {
    ::printf("%sfunc; name=%s\n",

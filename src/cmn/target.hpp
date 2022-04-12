@@ -29,8 +29,11 @@ enum argTypes {
 enum instrIds {
    kFirstInstr,
 
-   kEnterFunc = kFirstInstr,
+   kSelectSegment = kFirstInstr,
+   kEnterFunc,
    kExitFunc,
+
+   kGlobalConstData,
 
    kPush,
    kPop,

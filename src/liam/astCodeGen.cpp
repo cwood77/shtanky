@@ -8,6 +8,17 @@
 
 namespace liam {
 
+void astCodeGen::visit(cmn::constNode& n)
+{
+   m_currFunc = n.name;
+   auto& stream = m_lir.page[m_currFunc];
+
+   auto& i = lirInstr::append(
+      stream.pTail,
+      cmn::tgt::kGlobalConstData,
+      n.name);
+}
+
 void astCodeGen::visit(cmn::funcNode& n)
 {
    if(n.getChildrenOf<cmn::sequenceNode>().size() == 0)

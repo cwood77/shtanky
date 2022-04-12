@@ -53,8 +53,10 @@ static const instrFmt callFmts[] = {
 };
 
 static const instrInfo kInstrs[] = {
+   { "",            NULL     }, // sel segment
    { "<enterFunc>", NULL     },
    { "<exitFunc>",  NULL     },
+   { "",            NULL     }, // global const data
    { "push",        (const instrFmt*)&pushFmts },
    { "pop",         (const instrFmt*)&popFmts },
    { "sub",         (const instrFmt*)&subFmts },

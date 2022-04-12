@@ -26,6 +26,7 @@ public:
       kStatic,
 
       kRef,
+      kConst,
       kFunc,
 
       kClass,

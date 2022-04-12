@@ -21,6 +21,7 @@ class classNode;
 class memberNode;
 class methodNode;
 class fieldNode;
+class constNode;
 class funcNode;
 class argNode;
 class typeNode;
@@ -55,6 +56,7 @@ public:
    virtual void visit(memberNode& n) = 0;
    virtual void visit(methodNode& n) = 0;
    virtual void visit(fieldNode& n) = 0;
+   virtual void visit(constNode& n) = 0;
    virtual void visit(funcNode& n) = 0;
    virtual void visit(argNode& n) = 0;
    virtual void visit(typeNode& n) = 0;
@@ -279,6 +281,13 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class constNode : public node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 class funcNode : public node {
 public:
    std::string name;
@@ -419,6 +428,7 @@ public:
    virtual void visit(memberNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(methodNode& n) { visit(static_cast<memberNode&>(n)); }
    virtual void visit(fieldNode& n) { visit(static_cast<memberNode&>(n)); }
+   virtual void visit(constNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(funcNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(argNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(typeNode& n) { visit(static_cast<node&>(n)); }
@@ -454,9 +464,9 @@ public:
    virtual void visit(memberNode& n);
    virtual void visit(methodNode& n);
    virtual void visit(fieldNode& n);
+   virtual void visit(constNode& n);
    virtual void visit(funcNode& n);
    virtual void visit(argNode& n);
-   // type
    virtual void visit(strTypeNode& n);
    virtual void visit(arrayTypeNode& n);
    virtual void visit(voidTypeNode& n);
@@ -496,6 +506,7 @@ class araceliVisitor : public T {
 public:
    virtual void visit(liamProjectNode& n) { T::unexpected(n); }
    virtual void visit(fileRefNode& n) { T::unexpected(n); }
+   virtual void visit(constNode& n) { T::unexpected(n); }
    virtual void visit(funcNode& n) { T::unexpected(n); }
    virtual void visit(ptrTypeNode& n) { T::unexpected(n); }
    //virtual void visit(invokeFuncPtrNode& n) { T::unexpected(n); }

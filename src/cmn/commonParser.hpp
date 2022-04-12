@@ -25,6 +25,7 @@ class commonLexor;
 //
 // ------------------------- file
 // <file> ::== <class> <file>
+//           | <const> <file>
 //           | <func> <file>
 //           | <ref> <strlit>
 //           | e
@@ -46,6 +47,7 @@ class commonLexor;
 //                 | e
 //
 // ------------------------- global funcs (liam)
+// <const> ::== <name> ':' <type> <field-init> ';'
 // <func> ::== <attributes> 'func' <name> '(' <name> ':' <type> ')' ';'
 //
 // ------------------------- procedural
@@ -136,6 +138,7 @@ private:
    void parseClassMembers(classNode& c);
    void parseMemberKeywords(size_t& flags);
    void parseField(fieldNode& n);
+   void parseGlobalConst(fileNode& f);
    void parseGlobalFunc(fileNode& f);
    void parseMethodOrGlobalFuncFromOpenParen(node& n);
    void parseMethodOrGlobalFuncFromAfterOpenParen(node& n);
