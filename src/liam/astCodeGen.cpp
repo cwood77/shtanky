@@ -128,7 +128,25 @@ void astCodeGen::visit(cmn::callNode& n)
 
 void astCodeGen::visit(cmn::varRefNode& n)
 {
-   m_vGen.createNamedVar(0,*new lirArgVar(n.pDef.ref,0)).donateToWire(n);
+   // this varRef can ref (1) a global, (2) an arg, (3) a local
+   // in all but case 1, there is nothing to do but alloc a variable.
+   // in case 1, you have to emit code to get the global into the variable.
+
+   cmn::node& instSite = *n.pDef.getRefee()->getParent();
+   if(dynamic_cast<cmn::constNode*>(&instSite)) // this is the only global so far
+   {
+      auto& stream = m_lir.page[m_currFunc];
+      auto& mov = lirInstr::append(
+         stream.pTail,
+         cmn::tgt::kMov,
+         cmn::fmt("load const '%s'",n.pDef.ref.c_str()));
+      auto& dest = mov.addArg<lirArgVar>(n.pDef.ref,0);
+      m_vGen.createNamedVar(mov.orderNum,dest).publishOnWire(n);
+      auto& src = mov.addArg<lirArgConst>(n.pDef.ref,0);
+      m_vGen.createPrivateVar(mov.orderNum,src,"constref");
+   }
+   else
+      m_vGen.createNamedVar(0,*new lirArgVar(n.pDef.ref,0)).donateToWire(n);
 }
 
 void astCodeGen::visit(cmn::stringLiteralNode& n)

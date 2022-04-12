@@ -37,7 +37,7 @@ static const instrFmt addFmts[] = {
 static const instrFmt movFmts[] = {
    { "MOV(HACK)",
       kR64,
-      kR64 | kM8,
+      kR64 | kM8 | kI32,
       kArgTypeNone, kArgTypeNone },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
 };

@@ -12,6 +12,7 @@
                 mov, rbx, [rdi]   ;    :printLn
                 mov, rbx, rcx     ;       (preserve) [combiner]
                 mov, rcx, [rbx+8] ;    :_out
+                mov, rdx, .const0 ; load const '.const0'
                 call, rbx         
                 add, rsp, 32      
                 pop, rdi          
