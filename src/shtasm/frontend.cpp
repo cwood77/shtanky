@@ -6,7 +6,7 @@
 
 namespace shtasm {
 
-std::string lexor::getNextLine()
+std::string lineLexor::getNextLine()
 {
    std::string line;
    std::getline(m_file,line);
@@ -14,7 +14,7 @@ std::string lexor::getNextLine()
    return line;
 }
 
-void parser::parseLine(std::string& label, std::vector<std::string>& words, std::string& comment, std::string& rawLine)
+void lineParser::parseLine(std::string& label, std::vector<std::string>& words, std::string& comment, std::string& rawLine)
 {
    rawLine = m_l.getNextLine();
    const char *pThumb = rawLine.c_str();
@@ -48,12 +48,12 @@ void parser::parseLine(std::string& label, std::vector<std::string>& words, std:
    }
 }
 
-void parser::eatWhitespace(const char*& pThumb)
+void lineParser::eatWhitespace(const char*& pThumb)
 {
    for(;*pThumb==' '||*pThumb=='\t';++pThumb);
 }
 
-std::string parser::trimTrailingWhitespace(const std::string& w)
+std::string lineParser::trimTrailingWhitespace(const std::string& w)
 {
    size_t l = w.length();
    for(;l;--l)
@@ -65,7 +65,7 @@ std::string parser::trimTrailingWhitespace(const std::string& w)
    return 1 ? copy : w; // WTH?  Without the ?: op here, GNU link tanks silently?
 }
 
-bool parser::shaveOffPart(const char*& pThumb, char delim, std::string& part)
+bool lineParser::shaveOffPart(const char*& pThumb, char delim, std::string& part)
 {
    const char *pNext = ::strchr(pThumb,delim);
    if(pNext && *pNext == delim)
@@ -78,79 +78,79 @@ bool parser::shaveOffPart(const char*& pThumb, char delim, std::string& part)
 }
 
 static const cmn::lexemeInfo scanTable[] = {
-   { cmn::lexemeInfo::kSymbolic,     fineLexor::kLBracket,    "[",        "L bracket"       },
-   { cmn::lexemeInfo::kSymbolic,     fineLexor::kRBracket,    "]",        "R bracket"       },
+   { cmn::lexemeInfo::kSymbolic,     argLexor::kLBracket,    "[",        "L bracket"       },
+   { cmn::lexemeInfo::kSymbolic,     argLexor::kRBracket,    "]",        "R bracket"       },
 
-   { cmn::lexemeInfo::kSymbolic,     fineLexor::kPlus,        "+",        "plus"            },
+   { cmn::lexemeInfo::kSymbolic,     argLexor::kPlus,        "+",        "plus"            },
 
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegRax,      "rax",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegRbx,      "rbx",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegRcx,      "rcx",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegRdx,      "rdx",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegRbp,      "rbp",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegRsp,      "rsp",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegRsi,      "rsi",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegRdi,      "rdi",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegR8,       "r8",       "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegR9,       "r9",       "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegR10,      "r10",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegR11,      "r11",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegR12,      "r12",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegR13,      "r13",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegR14,      "r14",      "register"        },
-   { cmn::lexemeInfo::kAlphanumeric, fineLexor::kRegR15,      "r15",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegRax,      "rax",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegRbx,      "rbx",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegRcx,      "rcx",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegRdx,      "rdx",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegRbp,      "rbp",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegRsp,      "rsp",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegRsi,      "rsi",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegRdi,      "rdi",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegR8,       "r8",       "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegR9,       "r9",       "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegR10,      "r10",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegR11,      "r11",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegR12,      "r12",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegR13,      "r13",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegR14,      "r14",      "register"        },
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegR15,      "r15",      "register"        },
 
    { cmn::lexemeInfo::kEndOfTable,   0,                       NULL,       NULL              }
 };
 
 static const cmn::lexemeClassInfo classTable[] = {
 
-   { fineLexor::kClassReg64, "64-bit register",
+   { argLexor::kClassReg64, "64-bit register",
       (size_t[]){
-         fineLexor::kRegRax,
-         fineLexor::kRegRbx,
-         fineLexor::kRegRcx,
-         fineLexor::kRegRdx,
-         fineLexor::kRegRbp,
-         fineLexor::kRegRsp,
-         fineLexor::kRegRsi,
-         fineLexor::kRegRdi,
-         fineLexor::kRegR8,
-         fineLexor::kRegR9,
-         fineLexor::kRegR10,
-         fineLexor::kRegR11,
-         fineLexor::kRegR12,
-         fineLexor::kRegR13,
-         fineLexor::kRegR14,
-         fineLexor::kRegR15,
+         argLexor::kRegRax,
+         argLexor::kRegRbx,
+         argLexor::kRegRcx,
+         argLexor::kRegRdx,
+         argLexor::kRegRbp,
+         argLexor::kRegRsp,
+         argLexor::kRegRsi,
+         argLexor::kRegRdi,
+         argLexor::kRegR8,
+         argLexor::kRegR9,
+         argLexor::kRegR10,
+         argLexor::kRegR11,
+         argLexor::kRegR12,
+         argLexor::kRegR13,
+         argLexor::kRegR14,
+         argLexor::kRegR15,
          0,
       } },
 
-   { fineLexor::kClassRegAny, "any register",
+   { argLexor::kClassRegAny, "any register",
       (size_t[]){
-         fineLexor::kRegRax,
-         fineLexor::kRegRbx,
-         fineLexor::kRegRcx,
-         fineLexor::kRegRdx,
-         fineLexor::kRegRbp,
-         fineLexor::kRegRsp,
-         fineLexor::kRegRsi,
-         fineLexor::kRegRdi,
-         fineLexor::kRegR8,
-         fineLexor::kRegR9,
-         fineLexor::kRegR10,
-         fineLexor::kRegR11,
-         fineLexor::kRegR12,
-         fineLexor::kRegR13,
-         fineLexor::kRegR14,
-         fineLexor::kRegR15,
+         argLexor::kRegRax,
+         argLexor::kRegRbx,
+         argLexor::kRegRcx,
+         argLexor::kRegRdx,
+         argLexor::kRegRbp,
+         argLexor::kRegRsp,
+         argLexor::kRegRsi,
+         argLexor::kRegRdi,
+         argLexor::kRegR8,
+         argLexor::kRegR9,
+         argLexor::kRegR10,
+         argLexor::kRegR11,
+         argLexor::kRegR12,
+         argLexor::kRegR13,
+         argLexor::kRegR14,
+         argLexor::kRegR15,
          0,
       } },
 
-   { fineLexor::kNoClass, NULL, NULL },
+   { argLexor::kNoClass, NULL, NULL },
 };
 
-fineLexor::fineLexor(const char *buffer)
+argLexor::argLexor(const char *buffer)
 : lexorBase(buffer)
 {
    addPhase(*new cmn::intLiteralReader());
@@ -161,19 +161,19 @@ fineLexor::fineLexor(const char *buffer)
    advance();
 }
 
-void fineParser::parseArg(cmn::tgt::asmArgInfo& i)
+void argParser::parseArg(cmn::tgt::asmArgInfo& i)
 {
    m_pAi = &i;
 
-   if(m_l.getTokenClass() & fineLexor::kClassRegAny)
+   if(m_l.getTokenClass() & argLexor::kClassRegAny)
       parseReg();
-   else if(m_l.getToken() == fineLexor::kIntLiteral)
+   else if(m_l.getToken() == argLexor::kIntLiteral)
    {
       m_pAi->flags |= cmn::tgt::asmArgInfo::kImm8;
       m_pAi->data.bytes.v[0] = ::atoi(m_l.getLexeme().c_str());
       m_l.advance();
    }
-   else if(m_l.getToken() == fineLexor::kName)
+   else if(m_l.getToken() == argLexor::kName)
    {
       m_pAi->flags |= cmn::tgt::asmArgInfo::kLabel;
       m_pAi->label = m_l.getLexeme();
@@ -182,19 +182,19 @@ void fineParser::parseArg(cmn::tgt::asmArgInfo& i)
    else
       parseMemExpr();
 
-   m_l.demand(fineLexor::kEOI);
+   m_l.demand(argLexor::kEOI);
 }
 
-void fineParser::parseReg()
+void argParser::parseReg()
 {
-   if((m_l.getTokenClass() & fineLexor::kClassRegAny) == 0)
+   if((m_l.getTokenClass() & argLexor::kClassRegAny) == 0)
       m_l.error("expected register");
 
-   if(m_l.getTokenClass() & fineLexor::kClassReg64)
+   if(m_l.getTokenClass() & argLexor::kClassReg64)
    {
       m_pAi->flags |= cmn::tgt::asmArgInfo::kReg64;
       m_pAi->data.qwords.v[0] =
-         m_l.getToken() - fineLexor::kRegRax
+         m_l.getToken() - argLexor::kRegRax
             + cmn::tgt::i64::kRegA;
    }
    else
@@ -203,9 +203,9 @@ void fineParser::parseReg()
    m_l.advance();
 }
 
-void fineParser::parseMemExpr()
+void argParser::parseMemExpr()
 {
-   if(m_l.getToken() == fineLexor::kLBracket)
+   if(m_l.getToken() == argLexor::kLBracket)
    {
       m_l.advance();
       m_pAi->flags |= cmn::tgt::asmArgInfo::kPtr;
@@ -214,22 +214,32 @@ void fineParser::parseMemExpr()
       parseReg();
       parseScale();
 
-      m_l.demandAndEat(fineLexor::kRBracket);
+      m_l.demandAndEat(argLexor::kRBracket);
    }
    else
-      m_l.demand(fineLexor::kLBracket);
+      m_l.demand(argLexor::kLBracket);
 }
 
-void fineParser::parseScale()
+void argParser::parseScale()
 {
-   if(m_l.getToken() == fineLexor::kPlus)
+   if(m_l.getToken() == argLexor::kPlus)
    {
       m_l.advance();
 
-      m_l.demand(fineLexor::kIntLiteral);
+      m_l.demand(argLexor::kIntLiteral);
 
       m_l.advance();
    }
+}
+
+dataLexor::dataLexor(const char *buffer)
+: lexorBase(buffer)
+{
+   addPhase(*new cmn::stringLiteralReader());
+   addPhase(*new cmn::intLiteralReader());
+   addPhase(*new cmn::whitespaceEater());
+
+   advance();
 }
 
 } // namespace shtasm

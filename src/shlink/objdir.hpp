@@ -14,7 +14,7 @@ public:
 
    void loadObjectFile(const std::string& path);
    cmn::objfmt::obj& demand(const std::string& oName);
-   cmn::objfmt::obj *tryFind(const std::string& oName);
+   //cmn::objfmt::obj *tryFind(const std::string& oName);
 
 private:
    std::map<std::string,cmn::objfmt::obj*> m_objDir;

@@ -11,7 +11,7 @@
 
 namespace shtasm {
 
-processor::processor(parser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFile& o)
+processor::processor(lineParser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFile& o)
 : m_parser(p)
 , m_t(t)
 , m_oFile(o)
@@ -103,8 +103,8 @@ void processor::process()
             for(size_t i=1;i<a.size();i++)
             {
                ai.push_back(cmn::tgt::asmArgInfo());
-               fineLexor l(a[i].c_str());
-               fineParser p(l);
+               argLexor l(a[i].c_str());
+               argParser p(l);
                p.parseArg(ai.back());
                aTypes.push_back(ai.back().computeArgType());
             }

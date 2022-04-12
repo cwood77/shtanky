@@ -17,8 +17,8 @@ int main(int argc, const char *argv[])
 
    cmn::binFileWriter listingFile(cmn::pathUtil::addExtension(input,cmn::pathUtil::kExtObj_Then_McList));
 
-   lexor l(input);
-   parser p(l);
+   lineLexor l(input);
+   lineParser p(l);
    cmn::tgt::w64EmuTargetInfo t;
    cmn::objfmt::objFile o;
    processor(p,t,o).setListingFile(listingFile).process();

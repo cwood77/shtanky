@@ -4,13 +4,16 @@
 #include <string>
 #include <vector>
 
+namespace cmn { class iObjWriter; }
 namespace cmn { namespace tgt { class asmArgInfo; } };
 
 namespace shtasm {
 
-class lexor {
+class iTableWriter;
+
+class lineLexor {
 public:
-   explicit lexor(const std::string& file) : m_file(file.c_str()), m_line(0) {}
+   explicit lineLexor(const std::string& file) : m_file(file.c_str()), m_line(0) {}
 
    bool isDone() const { return !m_file.good(); }
    std::string getNextLine();
@@ -21,11 +24,11 @@ private:
    unsigned long m_line;
 };
 
-class parser {
+class lineParser {
 public:
-   explicit parser(lexor& l) : m_l(l) {}
+   explicit lineParser(lineLexor& l) : m_l(l) {}
 
-   const lexor& getLexor() const { return m_l; }
+   const lineLexor& getLexor() const { return m_l; }
    void parseLine(std::string& label, std::vector<std::string>& words, std::string& comment, std::string& rawLine);
 
 private:
@@ -33,10 +36,10 @@ private:
    std::string trimTrailingWhitespace(const std::string& w);
    bool shaveOffPart(const char*& pThumb, char delim, std::string& part);
 
-   lexor& m_l;
+   lineLexor& m_l;
 };
 
-class fineLexor : public cmn::lexorBase {
+class argLexor : public cmn::lexorBase {
 public:
    enum {
       kLBracket = _kFirstDerivedToken,
@@ -75,7 +78,7 @@ public:
       kClassType     = (1 << 6 | kNoClass),
    };
 
-   explicit fineLexor(const char *buffer);
+   explicit argLexor(const char *buffer);
 };
 
 // <arg> ::== <reg>
@@ -94,9 +97,9 @@ public:
 // arguably this class belongs in cmn too, as the class it parses (asmArgInfo) is already
 // there.  I'm leaving it here for now, as I don't expect anybody to need parsing ability
 // except the assembler, and the reasons asmArgInfo is in cmn is already speculative
-class fineParser {
+class argParser {
 public:
-   explicit fineParser(fineLexor& l) : m_l(l), m_pAi(NULL) {}
+   explicit argParser(argLexor& l) : m_l(l), m_pAi(NULL) {}
 
    void parseArg(cmn::tgt::asmArgInfo& i);
 
@@ -105,8 +108,36 @@ private:
    void parseMemExpr();
    void parseScale();
 
-   fineLexor& m_l;
+   argLexor& m_l;
    cmn::tgt::asmArgInfo *m_pAi;
+};
+
+class dataLexor : public cmn::lexorBase {
+public:
+   explicit dataLexor(const char *buffer);
+};
+
+// wtf am I building here?
+// what do I need?
+//   data constants
+//     - strings, poolable
+//   func ptrs
+//   data ptrs?
+// maybe there's no parser at all....
+
+// <data> ::== <char> <data>
+//             <string> <data>
+//             <int> <data>
+//             <name> <data>
+class dataParser {
+public:
+   dataParser(dataLexor& l, iTableWriter& tw) : m_l(l), m_tw(tw) {}
+
+   void parse(cmn::iObjWriter& w);
+
+private:
+   dataLexor& m_l;
+   iTableWriter& m_tw;
 };
 
 } // namespace shtasm

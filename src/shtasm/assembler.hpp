@@ -24,6 +24,10 @@ public:
    assembler(cmn::tgt::iTargetInfo& t, iTableWriter& tw) : m_t(t), m_tw(tw)
    { cacheGenInfos(); }
 
+   void alloc(
+      std::vector<std::string>& a,
+      cmn::iObjWriter& w);
+
    void assemble(
       const cmn::tgt::instrFmt& f,
       std::vector<cmn::tgt::asmArgInfo>& ai,

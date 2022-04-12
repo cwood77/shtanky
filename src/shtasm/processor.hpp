@@ -3,7 +3,7 @@
 #include "assembler.hpp"
 #include <memory>
 
-// the processor reads from the parser and decides what to do.
+// the processor reads from the lineParser and decides what to do.
 // instructions and directives are outsourced to the assembler.
 // segment directives are handled directly.
 
@@ -13,11 +13,11 @@ namespace cmn { namespace tgt { class iTargetInfo; } }
 
 namespace shtasm {
 
-class parser;
+class lineParser;
 
 class processor : private iTableWriter {
 public:
-   processor(parser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFile& o);
+   processor(lineParser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFile& o);
    processor& setListingFile(cmn::iObjWriterSink& s) { m_pListingFile = &s; return *this; }
 
    void process();
@@ -27,7 +27,7 @@ private:
    virtual void exportSymbol(const std::string& name);
    virtual void importSymbol(const std::string& name, const cmn::objfmt::patch& p);
 
-   parser& m_parser;
+   lineParser& m_parser;
    cmn::tgt::iTargetInfo& m_t;
    cmn::objfmt::objFile& m_oFile;
 
