@@ -21,7 +21,7 @@ op(de)op(ad)
 // 15:                 mov, rdx, .const0 ; load const '.const0'
 op(de)op(ad)
 // 16:                 call, rbx         
-rex(48)op(ff)modR/M(18)
+rex(48)op(ff)modR/M(d3)
 // 17:                 add, rsp, 32      
 rex(48)op(83)modR/M(c4)i8(20)
 // 18:                 pop, rdi          
