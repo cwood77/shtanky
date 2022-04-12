@@ -48,14 +48,14 @@ static const genInfo kGenInfo[] = {
       genInfo::kArgFmtBytesWithFixedOp, 0x0,
       genInfo::kEndOfInstr,
    },
-   { genInfo::kModRmReg, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+   { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
    { "PUSH{FF /6}", (unsigned char[]){
       genInfo::kOpcode1, 0xFF,
       genInfo::kArgFmtBytesWithFixedOp, 0x6,
       genInfo::kEndOfInstr,
    },
-   { genInfo::kModRmReg, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+   { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
    { "SUB{REX.W + 83 /5 ib}", (unsigned char[]){
       genInfo::kOpcode1, 0x83,
