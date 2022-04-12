@@ -76,6 +76,16 @@ void layout::link(objectDirectory& d)
       link(d,*it->first);
 
    cdwVERBOSE("done linking\n");
+
+   {
+      cdwVERBOSE("looking for .osCall symbol...\n");
+      auto pObj = d.tryFind(".osCall");
+      if(!pObj)
+         cdwVERBOSE("   ...missing\n");
+      else
+      {
+      }
+   }
 }
 
 void layout::link(objectDirectory& d, cmn::objfmt::obj& o)

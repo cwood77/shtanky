@@ -10,11 +10,12 @@ namespace appfmt {
 
 class header {
 public:
-   header() : version(0), tocEntryCnt(0)
+   header() : version(0), tocEntryCnt(0), osCallOffset(0)
    { ::strcpy(thumbprint,"cdwe appfmt"); }
    char          thumbprint[11];
    unsigned long version;
    char          tocEntryCnt;
+   unsigned long osCallOffset;
 };
 
 class tocEntry {

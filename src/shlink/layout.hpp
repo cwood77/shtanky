@@ -11,6 +11,7 @@ namespace shlink {
 class objectDirectory;
 
 // during the layout operation, keeps track of what is left and what has already been done
+// specifically, layoutProgress asks for only reachable objects (i.e. it prunes)
 class layoutProgress {
 public:
    void seedRequiredObject(const std::string& oName) { m_unplaced.insert(oName); }
@@ -44,13 +45,17 @@ private:
 
 class layout {
 public:
+   // after all reachable objects are placed, segments are tallied and laid into contiguous
+   // space
    void place(cmn::objfmt::obj& o);
-
    void markDonePlacing();
 
+   // fixes-up all patches in the segments to resolve symbols
    void link(objectDirectory& d);
 
+   // for writing
    const std::map<unsigned long,segmentBlock>& getSegments() const { return m_segments; }
+   unsigned long getOsCallOffset() const { return m_osCallOffset; }
 
 private:
    void link(objectDirectory& d, cmn::objfmt::obj& o);
@@ -58,6 +63,7 @@ private:
 
    std::map<cmn::objfmt::obj*,unsigned long> m_objPlacements;
    std::map<unsigned long,segmentBlock> m_segments;
+   unsigned long m_osCallOffset;
 };
 
 } // namespace shlink
