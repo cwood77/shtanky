@@ -37,7 +37,7 @@ echo shtasm FAILED to generate _correct_ listing
 goto fail
 :next6
 
-bin\out\debug\shlink.exe
+rem bin\out\debug\shlink.exe
 echo pass
 
 goto end

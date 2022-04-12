@@ -1,6 +1,7 @@
 #include "../cmn/fmt.hpp"
 #include "../cmn/obj-fmt.hpp"
 #include "../cmn/reader.hpp"
+#include "../cmn/throw.hpp"
 #include "../cmn/trace.hpp"
 #include "objdir.hpp"
 #include <memory>
@@ -21,12 +22,13 @@ void objectDirectory::loadObjectFile(const std::string& path)
    { cmn::binFileReader r(path); pOFile->unflatten(r); }
 
    cdwVERBOSE("  found %lld object(s)\n",pOFile->objects.size());
-   for(auto it=pOFile->objects.begin();it!=pOFile->objects.end();++it)
+   size_t i=0;
+   for(auto it=pOFile->objects.begin();it!=pOFile->objects.end();++it,i++)
    {
       auto& xt = (*it)->xt;
 
       if(xt.toc.size() == 0)
-         throw std::runtime_error("objects with no exports are _always_ pruned?!!");
+         cdwTHROW(cmn::fmt("objects with no exports are _always_ pruned?!! obj #%lld in '%s'",i,path.c_str()));
 
       for(auto jit=xt.toc.begin();jit!=xt.toc.end();++jit)
       {
