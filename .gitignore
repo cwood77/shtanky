@@ -13,6 +13,7 @@
 .build.bat
 .app
 .app.list
+oscall.asm.o*
 
 # Prerequisites
 *.d

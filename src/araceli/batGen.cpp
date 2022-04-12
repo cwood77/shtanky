@@ -32,6 +32,7 @@ void batGen::visit(cmn::araceliProjectNode& n)
       << "echo *******************" << std::endl
       << "echo ***   shtasm    ***" << std::endl
       << "echo *******************" << std::endl
+      << "bin\\out\\debug\\shtasm \"testdata\\sht\\oscall.asm\"" << std::endl
    ;
    for(auto it=m_files.begin();it!=m_files.end();++it)
       m_s.stream()
@@ -56,6 +57,7 @@ void batGen::visit(cmn::araceliProjectNode& n)
          << "\""
       ;
    m_s.stream()
+      << " \"testdata\\sht\\oscall.asm.o\""
       << std::endl
    ;
 }

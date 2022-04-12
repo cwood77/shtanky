@@ -1,4 +1,5 @@
 #include "../cmn/obj-fmt.hpp"
+#include "../cmn/throw.hpp"
 #include "../cmn/trace.hpp"
 #include "layout.hpp"
 #include "objdir.hpp"
@@ -92,19 +93,37 @@ void layout::link(objectDirectory& d)
 
 void layout::link(objectDirectory& d, cmn::objfmt::obj& o)
 {
-   cdwVERBOSE("  object %lld has %lld imports\n",&o,o.it.patches.size());
+   cdwVERBOSE("  object %lld has %lld import(s)\n",&o,o.it.patches.size());
 
+   unsigned char *pSrcPtr
+      = const_cast<unsigned char*>(m_segments[o.flags].getHeadPtr() + m_objPlacements[&o]);
    int i=0;
    for(auto it=o.it.patches.begin();it!=o.it.patches.end();++it,i++)
    {
       auto& target = d.demand(it->first);
       auto targetAddr = calculateTotalOffset(target);
-      cdwVERBOSE("    %d addrOf '%s' = %lu\n",i,it->first,targetAddr);
+      cdwVERBOSE("    %d: addrOf '%s' = %lu\n",i,it->first.c_str(),targetAddr);
 
       auto& sites = it->second;
       for(auto jit=sites.begin();jit!=sites.end();++jit)
       {
-         throw std::runtime_error("unimplemented!");
+         switch(jit->type)
+         {
+               //patchDWord(jit->offset,targetAddr);
+               //break;
+            case cmn::objfmt::patch::kRelToNextInstr:
+               {
+               //patchDWord(jit->offset,(jit->offset + jit->instrSize) - targetAddr);
+               unsigned long ans
+                  = targetAddr - (calculateTotalOffset(o) + jit->offset + jit->instrSize);
+               cdwVERBOSE("      patching site as %lu\n",ans);
+               *reinterpret_cast<unsigned long*>(pSrcPtr + jit->offset) = ans;
+               }
+               break;
+            case cmn::objfmt::patch::kAbs:
+            default:
+               cdwTHROW("unimpled");
+         }
       }
    }
 }
@@ -112,6 +131,15 @@ void layout::link(objectDirectory& d, cmn::objfmt::obj& o)
 unsigned long layout::calculateTotalOffset(cmn::objfmt::obj& o)
 {
    return m_segments[o.flags].offset + m_objPlacements[&o];
+}
+
+void layout::patchDWord(unsigned long addr, unsigned long value)
+{
+   // figure out which segment has addr
+   for(auto it=m_segments.begin();it!=m_segments.end();++it)
+      if(it->second.offset <= addr && addr <= (it->second.offset+it->second.getSize()))
+         *reinterpret_cast<unsigned long*>(
+            it->second.getHeadPtr()[addr - it->second.offset]) = value;
 }
 
 } // namespace shlink

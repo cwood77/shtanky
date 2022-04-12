@@ -60,6 +60,7 @@ public:
 private:
    void link(objectDirectory& d, cmn::objfmt::obj& o);
    unsigned long calculateTotalOffset(cmn::objfmt::obj& o);
+   void patchDWord(unsigned long addr, unsigned long value);
 
    std::map<cmn::objfmt::obj*,unsigned long> m_objPlacements;
    std::map<unsigned long,segmentBlock> m_segments;
