@@ -1,3 +1,8 @@
+.seg 2
+.const0:
+.data, "hello world!" <b> 0
+
+.seg 1          
 .test.test.run: 
                 push, rbx         
                 push, rdi         
@@ -11,3 +16,4 @@
                 add, rsp, 32      
                 pop, rdi          
                 pop, rbx          
+

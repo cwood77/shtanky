@@ -8,15 +8,31 @@
 
 namespace liam {
 
+void dataFormatter::visit(cmn::stringLiteralNode& n)
+{
+   // provide NULL-termination
+   m_o << "\"" << n.value << "\" <b> 0";
+}
+
 void astCodeGen::visit(cmn::constNode& n)
 {
    m_currFunc = n.name;
    auto& stream = m_lir.page[m_currFunc];
+   auto& seg = lirInstr::append(
+      stream.pTail,
+      cmn::tgt::kSelectSegment,
+      "");
+   seg.addArg<lirArgConst>("2",0); // const seg
 
    auto& i = lirInstr::append(
       stream.pTail,
       cmn::tgt::kGlobalConstData,
       n.name);
+
+   std::stringstream expr;
+   { dataFormatter v(expr); n.acceptVisitor(v); }
+
+   i.addArg<lirArgConst>(expr.str(),0);
 }
 
 void astCodeGen::visit(cmn::funcNode& n)
@@ -26,6 +42,11 @@ void astCodeGen::visit(cmn::funcNode& n)
 
    m_currFunc = n.name;
    auto& stream = m_lir.page[m_currFunc];
+   auto& seg = lirInstr::append(
+      stream.pTail,
+      cmn::tgt::kSelectSegment,
+      "");
+   seg.addArg<lirArgConst>("1",0); // code seg
 
    auto args = n.getChildrenOf<cmn::argNode>();
 

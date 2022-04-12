@@ -21,15 +21,7 @@ void node::injectAbove(node& n)
    m_pParent->appendChild(n);
    n.appendChild(*this);
 
-   auto& oldSiblings = n.m_pParent->m_children;
-   for(auto it=oldSiblings.begin();it!=oldSiblings.end();++it)
-   {
-      if(*it == this)
-      {
-         oldSiblings.erase(it);
-         break;
-      }
-   }
+   n.m_pParent->removeChild(*this);
 }
 
 void node::appendChild(node& n)
@@ -57,6 +49,18 @@ node *node::replaceChild(node& old, node& nu)
    }
 
    throw std::runtime_error("can't find child to replace");
+}
+
+void node::removeChild(node& n)
+{
+   for(auto it=m_children.begin();it!=m_children.end();++it)
+   {
+      if(*it == &n)
+      {
+         m_children.erase(it);
+         break;
+      }
+   }
 }
 
 node *node::lastChild()

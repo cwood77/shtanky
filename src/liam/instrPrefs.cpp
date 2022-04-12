@@ -37,7 +37,9 @@ void instrPrefs::handle(lirInstr& i)
             handle(i,cc,/*outOrIn*/false,/*isInvoke*/false);
          }
          break;
-      case cmn::tgt::kExitFunc: // no prefs
+      case cmn::tgt::kSelectSegment: // no prefs
+      case cmn::tgt::kExitFunc:
+      case cmn::tgt::kGlobalConstData:
       case cmn::tgt::kPush:
       case cmn::tgt::kPop:
       case cmn::tgt::kMov:

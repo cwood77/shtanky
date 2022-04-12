@@ -1,25 +1,28 @@
-// 1: .test.test.run: 
-// 2:                 push, rbx         
+// 2: .const0:
+// 3: .data, "hello world!" <b> 0
+_strdata(68-65-6c-6c,6f-20-77-6f,72-6c-64-21)_intdata(00)
+// 6: .test.test.run: 
+// 7:                 push, rbx         
 rex(48)op(ff)modR/M(38)
-// 3:                 push, rdi         
+// 8:                 push, rdi         
 rex(48)op(ff)modR/M(38)
-// 4:                 sub, rsp, 32      
+// 9:                 sub, rsp, 32      
 rex(48)op(83)modR/M(ec)i8(20)
-// 5:                 mov, rbx, [rcx+8] ;    :_out
+// 10:                 mov, rbx, [rcx+8] ;    :_out
 op(de)op(ad)
-// 6:                 mov, rdi, [rbx]   ;    :_vtbl
+// 11:                 mov, rdi, [rbx]   ;    :_vtbl
 op(de)op(ad)
-// 7:                 mov, rbx, [rdi]   ;    :printLn
+// 12:                 mov, rbx, [rdi]   ;    :printLn
 op(de)op(ad)
-// 8:                 mov, rbx, rcx     ;       (preserve) [combiner]
+// 13:                 mov, rbx, rcx     ;       (preserve) [combiner]
 op(de)op(ad)
-// 9:                 mov, rcx, [rbx+8] ;    :_out
+// 14:                 mov, rcx, [rbx+8] ;    :_out
 op(de)op(ad)
-// 10:                 call, rbx         
+// 15:                 call, rbx         
 rex(48)op(ff)modR/M(18)
-// 11:                 add, rsp, 32      
+// 16:                 add, rsp, 32      
 rex(48)op(83)modR/M(c4)i8(20)
-// 12:                 pop, rdi          
+// 17:                 pop, rdi          
 rex(48)op(8f)modR/M(38)
-// 13:                 pop, rbx          
+// 18:                 pop, rbx          
 rex(48)op(8f)modR/M(18)

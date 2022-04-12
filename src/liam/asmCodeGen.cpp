@@ -91,6 +91,7 @@ void asmCodeGen::generate(lirStream& s, varTable& v, varFinder& f, cmn::tgt::iTa
    }
 
    tt.compileAndWrite(o.stream());
+   o.stream() << std::endl << std::endl;
 }
 
 void asmCodeGen::handleInstr(lirInstr& i)

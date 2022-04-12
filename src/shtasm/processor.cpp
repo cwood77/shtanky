@@ -31,20 +31,11 @@ processor::processor(lineParser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFi
 
 void processor::process()
 {
-   bool firstHack = true;
-
    while(!m_parser.getLexor().isDone())
    {
       std::string l,c,rawLine;
       std::vector<std::string> a;
-      if(!firstHack)
-         m_parser.parseLine(l,a,c,rawLine);
-      else
-      {
-         // TODO HACK LAME - liam isn't generating segment directives yet
-         a.push_back(".seg 1");
-         firstHack = false;
-      }
+      m_parser.parseLine(l,a,c,rawLine);
 
       {
          // dbg trace

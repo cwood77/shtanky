@@ -118,6 +118,7 @@ public:
    void appendChild(node& n);
    void insertChild(size_t i, node& n);
    node *replaceChild(node& old, node& nu); // caller responsible for delete
+   void removeChild(node& n);
 
    std::vector<node*>& getChildren() { return m_children; }
    node *lastChild();
@@ -506,7 +507,7 @@ class araceliVisitor : public T {
 public:
    virtual void visit(liamProjectNode& n) { T::unexpected(n); }
    virtual void visit(fileRefNode& n) { T::unexpected(n); }
-   virtual void visit(constNode& n) { T::unexpected(n); }
+   //virtual void visit(constNode& n) { T::unexpected(n); }
    virtual void visit(funcNode& n) { T::unexpected(n); }
    virtual void visit(ptrTypeNode& n) { T::unexpected(n); }
    //virtual void visit(invokeFuncPtrNode& n) { T::unexpected(n); }

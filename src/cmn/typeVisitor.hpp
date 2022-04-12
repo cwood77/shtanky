@@ -2,6 +2,11 @@
 #include "ast.hpp"
 #include "type.hpp"
 
+// these visitors are very minimalistic right now
+// core careabout was being able to calculate displacements
+// for field access nodes; that requires knowing class types
+// and doing basic type prop in the fine AST
+
 namespace cmn {
 
 class typeBuilderVisitor : public hNodeVisitor {

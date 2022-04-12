@@ -2,6 +2,7 @@
 #include "../cmn/out.hpp"
 #include "batGen.hpp"
 #include "codegen.hpp"
+#include "constHoister.hpp"
 #include "declasser.hpp"
 #include "metadata.hpp"
 #include "projectBuilder.hpp"
@@ -23,6 +24,10 @@ int main(int argc, const char *argv[])
 
    araceli::nodeLinker().linkGraph(*pPrj);
    ::printf("graph after linking ----\n");
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+
+   { araceli::constHoister v; pPrj->acceptVisitor(v); }
+   ::printf("graph after const hoist ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // gather metadata

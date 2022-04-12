@@ -1,6 +1,7 @@
 #pragma once
 #include "../cmn/ast.hpp"
 #include <map>
+#include <ostream>
 #include <vector>
 
 namespace cmn { namespace tgt { class iTargetInfo; } }
@@ -11,6 +12,18 @@ class lirArg;
 class lirInstr;
 class lirStreams;
 class varGenerator;
+
+// data uses weirdo syntax like .data, "foo" <b> 0 to it's special
+class dataFormatter : public cmn::liamVisitor<> {
+public:
+   explicit dataFormatter(std::ostream& o) : m_o(o) {}
+
+   virtual void visit(cmn::node& n) { visitChildren(n); }
+   virtual void visit(cmn::stringLiteralNode& n);
+
+private:
+   std::ostream& m_o;
+};
 
 class astCodeGen : public cmn::liamVisitor<> {
 public:

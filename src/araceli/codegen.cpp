@@ -8,7 +8,6 @@ namespace araceli {
 
 void fileRefs::flush(const std::string& path, std::ostream& stream)
 {
-   //return;
    for(auto it=m_paths.begin();it!=m_paths.end();++it)
    {
       // compute rel path from 'path' to 'it'
@@ -30,7 +29,6 @@ void fileRefCollector::onLink(cmn::linkBase& l)
    if(m_pRefs == NULL)
       return;
 
-   //return;
    cmn::node *p = l._getRefee();
    // self isn't linked in some codegen
    //if(!p)
@@ -122,6 +120,18 @@ void codeGen::visit(cmn::classNode& n)
    for(auto it=methods.begin();it!=methods.end();++it)
       if(((*it)->flags & cmn::nodeFlags::kAbstract) == 0)
          generateClassMethod(n,**it,source);
+}
+
+void codeGen::visit(cmn::constNode& n)
+{
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+
+   source << "const " << n.name << " : ";
+   liamTypeWriter tyW(source,m_refColl);
+   n.getChildren()[0]->acceptVisitor(tyW);
+   source << " = ";
+   n.getChildren()[1]->acceptVisitor(*this);
+   source << ";" << std::endl;
 }
 
 void codeGen::visit(cmn::sequenceNode& n)

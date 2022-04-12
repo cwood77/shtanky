@@ -31,10 +31,11 @@ void commonParser::parseFile(fileNode& f)
    {
       parseAttributes();
 
-      m_l.demandOneOf(5,
+      m_l.demandOneOf(6,
          commonLexor::kClass,
          commonLexor::kInterface,
          commonLexor::kAbstract,
+         commonLexor::kConst,
          commonLexor::kFunc,
          commonLexor::kRef);
 

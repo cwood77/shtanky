@@ -286,6 +286,7 @@ void dataParser::parse(cmn::iObjWriter& w)
 {
    parseData(w);
    m_l.demand(dataLexor::kEOI);
+   w.nextPart();
 }
 
 void dataParser::parseData(cmn::iObjWriter& w)
