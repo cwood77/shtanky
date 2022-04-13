@@ -1,9 +1,9 @@
 @echo off
 
-del /S /Q testdata\*.ara.lh >nul 2>&1
-del /S /Q testdata\*.ara.ls >nul 2>&1
-del /S /Q testdata\*.ara.ls.asm >nul 2>&1
-del /S /Q testdata\*.ara.ls.asm.o.mclist >nul 2>&1
+rem del /S /Q testdata\*.ara.lh >nul 2>&1
+rem del /S /Q testdata\*.ara.ls >nul 2>&1
+rem del /S /Q testdata\*.ara.ls.asm >nul 2>&1
+rem del /S /Q testdata\*.ara.ls.asm.o.mclist >nul 2>&1
 
 bin\out\debug\araceli.exe >nul 2>&1
 if exist testdata\test\test.ara.lh goto next1

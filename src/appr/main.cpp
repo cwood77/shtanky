@@ -1,7 +1,9 @@
+#include "../cmn/cmdline.hpp"
+#include "../cmn/throw.hpp"
 #include "instr.hpp"
 #include "scriptWriter.hpp"
 #include "test.hpp"
-#include <iostream>
+#include <fstream>
 
 // appr         - run all tests, hyper concise mode
 // appr bless   - assume all outputs are now the expected standard
@@ -20,33 +22,20 @@
 
 int main(int argc, const char *argv[])
 {
-#if 0
-   instrStream s;
-
-   araceliTest(s,".\\testdata\\test")
-      .wholeApp()
-      .expectLiamOf(".\\testdata\\test\\test.ara")
-      .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
-   ;
-#endif
+   cmn::cmdLine cl(argc,argv);
+   bool skipChecks = (cl.getArg("") == "-skipchecks");
 
    script s;
    instrStream is(s);
 
-   is.appendNew<doInstr>()
-      .usingApp("dummy")
-      .withArg("foo")
-      .withArg("bar")
-      .thenCheckReturnValue("dummy");
-   is.appendNew<doInstr>()
-      .usingApp("dummy")
-      .withArg("foo")
-      .withArg("bar")
-      .thenCheckReturnValue("dummy");
-   is.appendNew<compareInstr>()
-      .withControl("c")
-      .withVariable("v")
-      .because("asm output");
+   araceliTest(is,".\\testdata\\test")
+      //.wholeApp()
+      .expectLiamOf(".\\testdata\\test\\test.ara")
+      .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+   ;
 
-   scriptWriter::run(s,std::cout);
+   std::ofstream wrapper(".\\bin\\.appr.bat");
+   if(!wrapper.good())
+      cdwTHROW("can't open file for writing");
+   scriptWriter::run(s,wrapper,skipChecks);
 }

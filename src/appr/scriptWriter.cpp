@@ -9,7 +9,7 @@ void scriptWriter::populateReservedLabels(scriptState& s)
    s.reserveLabel("unbless");
 }
 
-void scriptWriter::run(script& s, std::ostream& out)
+void scriptWriter::run(script& s, std::ostream& out, bool skipChecks)
 {
    out << "@echo off" << std::endl;
    out << std::endl;
@@ -25,7 +25,9 @@ void scriptWriter::run(script& s, std::ostream& out)
 
    out << ":run" << std::endl;
    s.get(kStreamCmd).playback(out);
-   s.get(kStreamCheck).playback(out);
+   if(!skipChecks)
+      s.get(kStreamCheck).playback(out);
+   out << "echo pass" << std::endl;
    out << "goto end" << std::endl << std::endl;
 
    out << ":bless" << std::endl;

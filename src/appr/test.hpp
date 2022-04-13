@@ -5,7 +5,9 @@
 #include <sstream>
 #include <string>
 
-#if 0
+// tests are like 'template' of instructions for certain operations (like araceli)
+// tests do not emit (or complete emitting) instructions until asked
+
 class instrStream;
 
 class shlinkTest {
@@ -14,16 +16,10 @@ public:
 
    shlinkTest& withObject(const std::string& oFile);
 
+   shlinkTest& test();
+
 private:
    doInstr& m_dI;
-};
-
-class intermediateTest {
-public:
-   virtual void andLink(shlinkTest& s) = 0;
-
-protected:
-   explicit intermediateTest(instrStream& s);
 };
 
 class araceliTest {
@@ -36,6 +32,15 @@ private:
    instrStream& m_stream;
    const std::string m_folder;
    std::unique_ptr<shlinkTest> m_pLTest;
+};
+
+#if 0
+class intermediateTest {
+public:
+   virtual void andLink(shlinkTest& s) = 0;
+
+protected:
+   explicit intermediateTest(instrStream& s);
 };
 
 class liamTest : public intermediateTest {

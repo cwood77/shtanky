@@ -103,13 +103,13 @@ compareInstr& compareInstr::withVariable(const std::string& path)
 {
    {
       auto& ss = s().get(kStreamCheck);
-      ss.stream() << "\"" << path << "\"" << std::endl;
+      ss.stream() << "\"" << path << "\" >nul 2>&1" << std::endl;
    }
 
    {
       auto& ss = s().get(kStreamBless);
       ss.stream()
-         << "copy \"" << path << "\" " << "\"" << m_controlPath << "\"" << std::endl;
+         << "copy /Y \"" << path << "\" " << "\"" << m_controlPath << "\" >nul" << std::endl;
    }
 
    return *this;
@@ -127,6 +127,7 @@ compareInstr& compareInstr::because(const std::string& reason)
 
       ss.stream() << ":" << failLbl << std::endl;
       ss.stream() << "echo FAIL: files are different for " << reason << std::endl;
+      ss.stream() << "echo       aborting run prematurely" << std::endl;
       ss.stream() << "goto end" << std::endl;
       ss.stream() << ":" << passLbl << std::endl;
    }

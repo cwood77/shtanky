@@ -35,6 +35,15 @@ std::string pathUtil::getLastPart(const std::string& path)
    return pSlash+1;
 }
 
+std::string pathUtil::addPrefixToFilePart(const std::string& path, const std::string& prefix)
+{
+   std::list<std::string> l;
+   splitPath(path,l);
+   std::string revised = prefix + l.back();
+   l.back() = revised;
+   return combinePath(l);
+}
+
 // include .\testdata\sht\cons\program.ara.lh
 //    from .\testdata\test\test.ara.ls
 //              translates to -> ..\sht\cons\program.ara.lh

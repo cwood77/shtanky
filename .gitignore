@@ -1,19 +1,14 @@
 # VI
 *.swp
 
-# generated araceli/liam/shtasm files
-*.ara.lh
-*.ara.ls
-*.ara.ls.asm
-*.ara.ls.asm.o
-*.ara.ls.asm.o.list
-*.ara.ls.asm.o.mclist
-*.ara.ls.asm.o.app
-*.ara.ls.asm.o.app.list
-.build.bat
-.app
-.app.list
-oscall.asm.o*
+# generated araceli/liam/shtasm/etc. files
+bin/**
+testdata/**/.build.bat
+testdata/**/*.ara.*
+testdata/**/*.asm.*
+testdata/**/.app
+testdata/**/.app.list
+!testdata/**/expected-*
 
 # Prerequisites
 *.d

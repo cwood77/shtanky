@@ -100,6 +100,7 @@ public:
 
    compareInstr& withControl(const std::string& path);
    compareInstr& withVariable(const std::string& path);
+
    compareInstr& because(const std::string& reason);
 
 private:
