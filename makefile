@@ -16,7 +16,7 @@ debug: \
 	$(OUT_DIR)/debug/liam.exe \
 	$(OUT_DIR)/debug/shtasm.exe \
 	$(OUT_DIR)/debug/shlink.exe
-	@cmd /c _test.bat
+	@cmd /c appr.bat
 
 all: \
 	debug \
