@@ -1,0 +1,30 @@
+// 2: .const0:
+// 3: .data, "hello world!" <b> 0
+_strdata(68-65-6c-6c,6f-20-77-6f,72-6c-64-21)_intdata(00)
+// 6: .test.test.run: 
+// 7:                 push, rbx         
+rex(48)op(ff)modR/M(f3)
+// 8:                 push, rdi         
+rex(48)op(ff)modR/M(f7)
+// 9:                 sub, rsp, 32      
+rex(48)op(83)modR/M(ec)i8(20)
+// 10:                 mov, rbx, [rcx+8] ;    :_out
+op(de)op(ad)
+// 11:                 mov, rdi, [rbx]   ;    :_vtbl
+op(de)op(ad)
+// 12:                 mov, rbx, [rdi]   ;    :printLn
+op(de)op(ad)
+// 13:                 mov, rbx, rcx     ;       (preserve) [combiner]
+op(de)op(ad)
+// 14:                 mov, rcx, [rbx+8] ;    :_out
+op(de)op(ad)
+// 15:                 mov, rdx, .const0 ; load const '.const0'
+op(de)op(ad)
+// 16:                 call, rbx         
+rex(48)op(ff)modR/M(d3)
+// 17:                 add, rsp, 32      
+rex(48)op(83)modR/M(c4)i8(20)
+// 18:                 pop, rdi          
+rex(48)op(8f)modR/M(c7)
+// 19:                 pop, rbx          
+rex(48)op(8f)modR/M(c3)

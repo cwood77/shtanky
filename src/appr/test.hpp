@@ -39,6 +39,11 @@ public:
    liamTest(instrStream& s, const std::string& file);
 };
 
+class shtasmTest {
+public:
+   shtasmTest(instrStream& s, const std::string& file);
+};
+
 #if 0
 class intermediateTest {
 public:

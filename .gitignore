@@ -1,15 +1,6 @@
 # VI
 *.swp
 
-# generated araceli/liam/shtasm/etc. files
-bin/**
-testdata/**/.build.bat
-testdata/**/*.ara.*
-testdata/**/*.asm.*
-testdata/**/.app
-testdata/**/.app.list
-!testdata/**/expected-*
-
 # Prerequisites
 *.d
 
@@ -42,3 +33,12 @@ testdata/**/.app.list
 *.exe
 *.out
 *.app
+
+# generated araceli/liam/shtasm/etc. files
+bin/**
+testdata/**/.build.bat
+testdata/**/*.ara.*
+testdata/**/*.asm.*
+testdata/**/.app
+testdata/**/.app.list
+!testdata/**/expected-*

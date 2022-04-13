@@ -76,3 +76,30 @@ liamTest::liamTest(instrStream& s, const std::string& file)
       .withVariable(asmFile)
       .because("generated assembly");
 }
+
+shtasmTest::shtasmTest(instrStream& s, const std::string& file)
+{
+   s.appendNew<doInstr>()
+      .usingApp("bin\\out\\debug\\shtasm.exe")
+      .withArg(file)
+      .thenCheckReturnValue("shtasm assemble");
+
+   auto oFile = cmn::pathUtil::addExtension(file,"o");
+   auto mcListFile = cmn::pathUtil::addExtension(file,"o.mclist");
+   auto oListFile = cmn::pathUtil::addExtension(file,"o.list");
+
+   s.appendNew<compareInstr>()
+      .withControl(cmn::pathUtil::addPrefixToFilePart(oFile,"expected-"))
+      .withVariable(oFile)
+      .because("object binary");
+
+   s.appendNew<compareInstr>()
+      .withControl(cmn::pathUtil::addPrefixToFilePart(mcListFile,"expected-"))
+      .withVariable(mcListFile)
+      .because("mc listing");
+
+   s.appendNew<compareInstr>()
+      .withControl(cmn::pathUtil::addPrefixToFilePart(oListFile,"expected-"))
+      .withVariable(oListFile)
+      .because("object listing");
+}
