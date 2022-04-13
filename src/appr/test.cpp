@@ -61,3 +61,18 @@ araceliTest& araceliTest::expectLiamOf(const std::string& path)
 
    return *this;
 }
+
+liamTest::liamTest(instrStream& s, const std::string& file)
+{
+   s.appendNew<doInstr>()
+      .usingApp("bin\\out\\debug\\liam.exe")
+      .withArg(file)
+      .thenCheckReturnValue("liam compile");
+
+   auto asmFile = cmn::pathUtil::addExtension(file,"asm");
+
+   s.appendNew<compareInstr>()
+      .withControl(cmn::pathUtil::addPrefixToFilePart(asmFile,"expected-"))
+      .withVariable(asmFile)
+      .because("generated assembly");
+}

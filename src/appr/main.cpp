@@ -23,7 +23,7 @@
 int main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   bool skipChecks = (cl.getArg("") == "-skipchecks");
+   bool skipChecks = (cl.getArg("") == "-skipchecks"); // used for bootstrapping new tests
 
    script s;
    instrStream is(s);
@@ -33,6 +33,9 @@ int main(int argc, const char *argv[])
       .expectLiamOf(".\\testdata\\test\\test.ara")
       .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
    ;
+
+   liamTest(is,".\\testdata\\test\\test.ara.ls");
+   liamTest(is,".\\testdata\\sht\\cons\\program.ara.ls");
 
    std::ofstream wrapper(".\\bin\\.appr.bat");
    if(!wrapper.good())

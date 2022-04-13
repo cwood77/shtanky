@@ -34,6 +34,11 @@ private:
    std::unique_ptr<shlinkTest> m_pLTest;
 };
 
+class liamTest {
+public:
+   liamTest(instrStream& s, const std::string& file);
+};
+
 #if 0
 class intermediateTest {
 public:
