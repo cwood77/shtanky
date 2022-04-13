@@ -11,14 +11,16 @@ SCRIPTLIB = scriptlib/xcopy-deploy.bat
 
 debug: \
 	dirs \
+	$(OUT_DIR)/debug/appr.exe \
 	$(OUT_DIR)/debug/araceli.exe \
 	$(OUT_DIR)/debug/liam.exe \
 	$(OUT_DIR)/debug/shtasm.exe \
 	$(OUT_DIR)/debug/shlink.exe
-	@cmd /c _test.bat
+	@cmd /c appr.bat
 
 all: \
 	debug \
+	$(OUT_DIR)/release/appr.exe \
 	$(OUT_DIR)/release/araceli.exe \
 	$(OUT_DIR)/release/liam.exe \
 	$(OUT_DIR)/release/shtasm.exe \
@@ -29,12 +31,14 @@ clean:
 
 dirs:
 	@mkdir -p $(OUT_DIR)/debug
+	@mkdir -p $(OBJ_DIR)/debug/appr
 	@mkdir -p $(OBJ_DIR)/debug/araceli
 	@mkdir -p $(OBJ_DIR)/debug/liam
 	@mkdir -p $(OBJ_DIR)/debug/shtasm
 	@mkdir -p $(OBJ_DIR)/debug/shlink
 	@mkdir -p $(OBJ_DIR)/debug/cmn
 	@mkdir -p $(OUT_DIR)/release
+	@mkdir -p $(OBJ_DIR)/release/appr
 	@mkdir -p $(OBJ_DIR)/release/araceli
 	@mkdir -p $(OBJ_DIR)/release/liam
 	@mkdir -p $(OBJ_DIR)/release/shtasm
@@ -86,6 +90,35 @@ $(OUT_DIR)/release/cmn.lib: $(CMN_RELEASE_OBJ)
 	@ar crs $@ $^
 
 $(CMN_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# appr
+
+APPR_SRC = \
+	src/appr/instr.cpp \
+	src/appr/main.cpp \
+	src/appr/scriptWriter.cpp \
+	src/appr/test.cpp \
+
+APPR_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(APPR_SRC)))
+
+$(OUT_DIR)/debug/appr.exe: $(APPR_DEBUG_OBJ) $(OUT_DIR)/debug/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(APPR_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lcmn
+
+$(APPR_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+APPR_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(APPR_SRC)))
+
+$(OUT_DIR)/release/appr.exe: $(APPR_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(APPR_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
+
+$(APPR_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 

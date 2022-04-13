@@ -1,0 +1,15 @@
+class .test.test.vtbl {
+   run : ptr;
+}
+
+class .test.test {
+   _vtbl : .test.test.vtbl;
+   _out : .sht.cons.iStream;
+}
+
+func .test.test.ctor() : .test.test;
+
+func .test.test.run(self : .test.test,
+   args : str[]) : void;
+
+ref "..\sht\cons\program.ara.lh";
