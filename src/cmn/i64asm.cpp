@@ -1,4 +1,5 @@
 #include "../cmn/fmt.hpp"
+#include "../cmn/lexor.hpp"
 #include "../cmn/intel64.hpp"
 #include "i64asm.hpp"
 #include "throw.hpp"
@@ -162,105 +163,116 @@ void modRm::encodeOpcodeArg(unsigned char opcode, unsigned char& rex, unsigned c
    modRmByte |= (opcode << 3);
 }
 
-void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte)
+void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize)
 {
    if(ai.flags == (asmArgInfo::kMem64 | asmArgInfo::kPtr | asmArgInfo::kReg64))
+      encodeModRmArg_MemDisp(ai,rex,modRmByte,dispSize);
+   else if(ai.flags == asmArgInfo::kReg64)
    {
-      cdwTHROW("unimpled.... yet");
+      encodeModRmArg_RegOnly(ai,rex,modRmByte);
+      dispSize = 0;
    }
-   else if(ai.flags != asmArgInfo::kReg64)
+   else
       cdwTHROW(cmn::fmt("don't know how to encode argument type %lld",ai.flags));
+}
 
+void modRm::encodeModRmArg_MemDisp(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize)
+{
+   unsigned char mod = 0;
+   unsigned char rm = lookupRegRm(ai,rex);
+
+   // now pick a mod value to show memory access
+   if(!ai.disp)
+      mod = 0;
+   else
+   {
+      dispSize = lexorBase::getLexemeIntSize(ai.disp);
+      if(dispSize == 8)
+         cdwTHROW("can't encode 64-bit displacement in x86-64");
+      else if(dispSize == 1)
+      {
+         mod = 1;
+      }
+      else
+      {
+         // round up 16-bit values to 32-bit
+         dispSize = 4;
+         mod = 2;
+      }
+   }
+
+   modRmByte |= (mod << 6);
+   modRmByte |= rm;
+}
+
+void modRm::encodeModRmArg_RegOnly(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte)
+{
+   unsigned char mod = 3;
+   unsigned char rm = lookupRegRm(ai,rex);
+
+   modRmByte |= (mod << 6);
+   modRmByte |= rm;
+}
+
+unsigned char modRm::lookupRegRm(const asmArgInfo& ai, unsigned char& rex)
+{
    size_t storage = ai.data.qwords.v[0];
 
-   unsigned char mod = 0;
    unsigned char rm = 0;
 
    if(storage == cmn::tgt::i64::kRegA)
-   {
-      mod = 3;
       rm = 0;
-   }
    else if(storage == cmn::tgt::i64::kRegC)
-   {
-      mod = 3;
       rm = 1;
-   }
    else if(storage == cmn::tgt::i64::kRegD)
-   {
-      mod = 3;
       rm = 2;
-   }
    else if(storage == cmn::tgt::i64::kRegB)
-   {
-      mod = 3;
       rm = 3;
-   }
    else if(storage == cmn::tgt::i64::kRegSP)
-   {
-      mod = 3;
       rm = 4;
-   }
    else if(storage == cmn::tgt::i64::kRegBP)
-   {
-      mod = 3;
       rm = 5;
-   }
    else if(storage == cmn::tgt::i64::kRegSI)
-   {
-      mod = 3;
       rm = 6;
-   }
    else if(storage == cmn::tgt::i64::kRegDI)
-   {
-      mod = 3;
       rm = 7;
-   }
    else if(storage == cmn::tgt::i64::kReg8)
    {
-      mod = 3;
       rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
       rm = 0;
    }
    else if(storage == cmn::tgt::i64::kReg9)
    {
-      mod = 3;
       rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
       rm = 1;
    }
    else if(storage == cmn::tgt::i64::kReg10)
    {
-      mod = 3;
       rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
       rm = 2;
    }
    else if(storage == cmn::tgt::i64::kReg11)
    {
-      mod = 3;
       rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
       rm = 3;
    }
    else if(storage == cmn::tgt::i64::kReg12)
    {
-      mod = 3;
       rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
       rm = 4;
    }
    else if(storage == cmn::tgt::i64::kReg13)
    {
-      mod = 3;
       rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
       rm = 5;
    }
    else if(storage == cmn::tgt::i64::kReg14)
    {
-      mod = 3;
       rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
       rm = 6;
    }
    else if(storage == cmn::tgt::i64::kReg15)
    {
-      mod = 3;
       rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
       rm = 7;
    }
@@ -268,8 +280,7 @@ void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned ch
    if(ai.flags & asmArgInfo::kReg64)
       rex |= 0x8; // W bit extends reflects 64-bit operand size (i.e. RAX vs. EAX)
 
-   modRmByte |= (mod << 6);
-   modRmByte |= rm;
+   return rm;
 }
 
 void opcodeReg::encode(const asmArgInfo& ai, unsigned char& rex, unsigned char& opcode)
@@ -349,7 +360,12 @@ void argFmtBytes::encodeArgModRmReg(asmArgInfo& a, bool regOrRm)
    if(regOrRm)
       modRm::encodeRegArg(a,rex,_modRm);
    else
-      modRm::encodeModRmArg(a,rex,_modRm);
+   {
+      char dispSize;
+      modRm::encodeModRmArg(a,rex,_modRm,dispSize);
+      if(dispSize)
+         setDisp(dispSize,a.disp);
+   }
 
    release(rex,_modRm);
 }
@@ -465,6 +481,16 @@ void argFmtBytes::release(const unsigned char& rex, const unsigned char& modRm)
       m_argFmtByteStream[0] = genInfo::kModRmByte;
       m_argFmtByteStream[1] = modRm;
    }
+}
+
+void argFmtBytes::setDisp(char size, __int64 value)
+{
+   size_t arrayIdx = m_argFmtByteStream.size();
+   m_argFmtByteStream.resize(arrayIdx + size);
+   if(size == 4)
+      *reinterpret_cast<long*>(&m_argFmtByteStream[arrayIdx]) = static_cast<long>(value);
+   else
+      m_argFmtByteStream[arrayIdx] = static_cast<signed char>(value);
 }
 
 } // namespace i64
