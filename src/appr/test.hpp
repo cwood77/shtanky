@@ -27,6 +27,8 @@ private:
 class araceliTest {
 public:
    araceliTest(instrStream& s, const std::string& folder);
+   ~araceliTest();
+
    araceliTest& wholeApp();
    araceliTest& expectLiamOf(const std::string& path);
 

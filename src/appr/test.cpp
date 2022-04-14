@@ -21,7 +21,7 @@ shlinkTest& shlinkTest::test()
       .withVariable(m_outFile)
       .because("linked app");
 
-   auto listFile = cmn::pathUtil::addExtension(m_outFile,"o.list");
+   auto listFile = cmn::pathUtil::addExtension(m_outFile,"list");
    m_stream.appendNew<compareInstr>()
       .withControl(cmn::pathUtil::addPrefixToFilePart(listFile,"expected-"))
       .withVariable(listFile)
@@ -44,9 +44,18 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
       .because("generated batch file");
 }
 
+araceliTest::~araceliTest()
+{
+   if(m_pLTest)
+      m_pLTest->test();
+}
+
 araceliTest& araceliTest::wholeApp()
 {
    m_pLTest.reset(new shlinkTest(m_stream,m_folder + "\\.app"));
+
+   shtasmTest(m_stream,".\\testdata\\sht\\oscall.asm").andLink(*m_pLTest.get());
+
    return *this;
 }
 
