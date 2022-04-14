@@ -94,6 +94,7 @@ private:
    std::unique_ptr<iObjWriterSink> m_pS;
 };
 
+// designed for ODA (the online disassembler - onlinedisassembler.com)
 class odaObjWriter : public iObjWriter {
 public:
    explicit odaObjWriter(iObjWriterSink& s) : m_pS(&s) {}
