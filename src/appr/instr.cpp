@@ -59,6 +59,14 @@ doInstr& doInstr::withArg(const std::string& arg)
    return *this;
 }
 
+doInstr& doInstr::withArgs(const std::list<std::string>& args)
+{
+   for(auto it=args.begin();it!=args.end();++it)
+      this->withArg(*it);
+
+   return *this;
+}
+
 doInstr& doInstr::thenCheckReturnValue(const std::string& errorHint)
 {
    auto& cmds = s().get(kStreamCmd);

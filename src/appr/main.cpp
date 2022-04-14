@@ -29,16 +29,10 @@ int main(int argc, const char *argv[])
    instrStream is(s);
 
    araceliTest(is,".\\testdata\\test")
-      //.wholeApp()
+      .wholeApp()
       .expectLiamOf(".\\testdata\\test\\test.ara")
       .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
    ;
-
-   liamTest(is,".\\testdata\\test\\test.ara.ls");
-   liamTest(is,".\\testdata\\sht\\cons\\program.ara.ls");
-
-   shtasmTest(is,".\\testdata\\test\\test.ara.ls.asm");
-   shtasmTest(is,".\\testdata\\sht\\cons\\program.ara.ls.asm");
 
    std::ofstream wrapper(".\\bin\\.appr.bat");
    if(!wrapper.good())

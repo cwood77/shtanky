@@ -2,20 +2,33 @@
 #include "instr.hpp"
 #include "test.hpp"
 
-#if 0
-shlinkTest::shlinkTest(instrStream& s, const std::string& outFile)
-: m_dI(s.appendNew<doInstr>())
-{
-   m_dI.usingApp("bin\\out\\debug\\shlink.exe")
-      .withArg(outFile);
-}
-
 shlinkTest& shlinkTest::withObject(const std::string& oFile)
 {
-   m_dI.withArg(oFile);
+   m_objFiles.push_back(oFile);
    return *this;
 }
-#endif
+
+shlinkTest& shlinkTest::test()
+{
+   m_stream.appendNew<doInstr>()
+      .usingApp("bin\\out\\debug\\shlink.exe")
+      .withArg(m_outFile)
+      .withArgs(m_objFiles)
+      .thenCheckReturnValue("link");
+
+   m_stream.appendNew<compareInstr>()
+      .withControl(cmn::pathUtil::addPrefixToFilePart(m_outFile,"expected-"))
+      .withVariable(m_outFile)
+      .because("linked app");
+
+   auto listFile = cmn::pathUtil::addExtension(m_outFile,"o.list");
+   m_stream.appendNew<compareInstr>()
+      .withControl(cmn::pathUtil::addPrefixToFilePart(listFile,"expected-"))
+      .withVariable(listFile)
+      .because("object listing");
+
+   return *this;
+}
 
 araceliTest::araceliTest(instrStream& s, const std::string& folder)
 : m_stream(s), m_folder(folder)
@@ -31,13 +44,11 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
       .because("generated batch file");
 }
 
-/*
 araceliTest& araceliTest::wholeApp()
 {
-   m_pLTest.reset(new shlinkTest(m_stream,"folder-derived"));
+   m_pLTest.reset(new shlinkTest(m_stream,m_folder + "\\.app"));
    return *this;
 }
-*/
 
 araceliTest& araceliTest::expectLiamOf(const std::string& path)
 {
@@ -54,15 +65,14 @@ araceliTest& araceliTest::expectLiamOf(const std::string& path)
       .withVariable(source)
       .because("generated liam source");
 
-   /*
    if(m_pLTest.get())
-      liamTest(m_stream,path).andLink(*m_pLTest.get());
-      */
+      liamTest(m_stream,source).andLink(*m_pLTest.get());
 
    return *this;
 }
 
 liamTest::liamTest(instrStream& s, const std::string& file)
+: intermediateTest(s)
 {
    s.appendNew<doInstr>()
       .usingApp("bin\\out\\debug\\liam.exe")
@@ -75,9 +85,17 @@ liamTest::liamTest(instrStream& s, const std::string& file)
       .withControl(cmn::pathUtil::addPrefixToFilePart(asmFile,"expected-"))
       .withVariable(asmFile)
       .because("generated assembly");
+
+   recordFileForNextStage(asmFile);
+}
+
+void liamTest::andLink(shlinkTest& t)
+{
+   shtasmTest(m_stream,getFilesForNextStage().front()).andLink(t);
 }
 
 shtasmTest::shtasmTest(instrStream& s, const std::string& file)
+: intermediateTest(s)
 {
    s.appendNew<doInstr>()
       .usingApp("bin\\out\\debug\\shtasm.exe")
@@ -102,4 +120,11 @@ shtasmTest::shtasmTest(instrStream& s, const std::string& file)
       .withControl(cmn::pathUtil::addPrefixToFilePart(oListFile,"expected-"))
       .withVariable(oListFile)
       .because("object listing");
+
+   recordFileForNextStage(oFile);
+}
+
+void shtasmTest::andLink(shlinkTest& t)
+{
+   t.withObject(getFilesForNextStage().front());
 }

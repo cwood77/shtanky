@@ -12,14 +12,16 @@ class instrStream;
 
 class shlinkTest {
 public:
-   shlinkTest(instrStream& s, const std::string& outFile);
+   shlinkTest(instrStream& s, const std::string& outFile) : m_stream(s), m_outFile(outFile) {}
 
    shlinkTest& withObject(const std::string& oFile);
 
    shlinkTest& test();
 
 private:
-   doInstr& m_dI;
+   instrStream& m_stream;
+   std::string m_outFile;
+   std::list<std::string> m_objFiles;
 };
 
 class araceliTest {
@@ -34,36 +36,33 @@ private:
    std::unique_ptr<shlinkTest> m_pLTest;
 };
 
-class liamTest {
-public:
-   liamTest(instrStream& s, const std::string& file);
-};
-
-class shtasmTest {
-public:
-   shtasmTest(instrStream& s, const std::string& file);
-};
-
-#if 0
+// a test that's neither the top (araceli) nor bottom (shlink)
 class intermediateTest {
 public:
-   virtual void andLink(shlinkTest& s) = 0;
+   virtual void andLink(shlinkTest& t) = 0;
 
 protected:
-   explicit intermediateTest(instrStream& s);
+   explicit intermediateTest(instrStream& s) : m_stream(s) {}
+
+   void recordFileForNextStage(const std::string& f) { m_filesForNextStage.push_back(f); }
+   const std::list<std::string>& getFilesForNextStage() const { return m_filesForNextStage; }
+
+   instrStream& m_stream;
+
+private:
+   std::list<std::string> m_filesForNextStage;
 };
 
 class liamTest : public intermediateTest {
 public:
    liamTest(instrStream& s, const std::string& file);
 
-   virtual void andLink(shlinkTest& s);
+   virtual void andLink(shlinkTest& t);
 };
 
 class shtasmTest : public intermediateTest {
 public:
    shtasmTest(instrStream& s, const std::string& file);
 
-   virtual void andLink(shlinkTest& s);
+   virtual void andLink(shlinkTest& t);
 };
-#endif

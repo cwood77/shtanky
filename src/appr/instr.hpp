@@ -91,6 +91,7 @@ public:
 
    doInstr& usingApp(const std::string& path);
    doInstr& withArg(const std::string& arg);
+   doInstr& withArgs(const std::list<std::string>& args);
    doInstr& thenCheckReturnValue(const std::string& errorHint);
 };
 
