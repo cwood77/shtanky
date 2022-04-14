@@ -148,6 +148,8 @@ void asmCodeGen::handleInstr(lirInstr& i)
                   m_w.advanceLine();
                }
             }
+            m_w[1] << "ret";
+            m_w.advanceLine();
          }
          break;
       case cmn::tgt::kGlobalConstData:

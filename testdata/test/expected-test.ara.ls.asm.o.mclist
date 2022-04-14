@@ -28,3 +28,5 @@ rex(48)op(83)modR/M(c4)i8(20)
 rex(48)op(8f)modR/M(c7)
 // 19:                 pop, rbx          
 rex(48)op(8f)modR/M(c3)
+// 20:                 ret               
+op(c3)

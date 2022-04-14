@@ -9,12 +9,6 @@ namespace cmn {
 namespace tgt {
 namespace i64 {
 
-   // some examples from MSVC disassembly
-   // 48 83 ec 28    == sub rsp,28h
-   // e8 10 00 00 00 == call 07FF7F5891020h
-   // 48 83 c4 28    == add rsp,28h
-   // c3             == ret
-
 static const genInfo kGenInfo[] = {
    { "ADD{REX.W + 83 /0 ib}", (unsigned char[]){
       genInfo::kOpcode1, 0x83,
@@ -24,35 +18,35 @@ static const genInfo kGenInfo[] = {
    },
    { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
-   { "CALL(E8 cd)", (unsigned char[]){
+   { "CALL{E8 cd}", (unsigned char[]){
       genInfo::kOpcode1, 0xE8,
       genInfo::kCodeOffset32,
       genInfo::kEndOfInstr,
    },
    { genInfo::kRipRelCO, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
-   { "CALL(FF /2)", (unsigned char[]){
+   { "CALL{FF /2}", (unsigned char[]){
       genInfo::kOpcode1, 0xFF,
       genInfo::kArgFmtBytesWithFixedOp, 0x2,
       genInfo::kEndOfInstr,
    },
    { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
-   { "MOV(REX.W + 89 /r)", (unsigned char[]){
+   { "MOV{REX.W + 89 /r}", (unsigned char[]){
       genInfo::kOpcode1, 0x89,
       genInfo::kArgFmtBytes,
       genInfo::kEndOfInstr,
    },
    { genInfo::kModRmRm, genInfo::kModRmReg, genInfo::kNa, genInfo::kNa } },
 
-   { "MOV(REX.W + 8B /r)", (unsigned char[]){
+   { "MOV{REX.W + 8B /r}", (unsigned char[]){
       genInfo::kOpcode1, 0x8B,
       genInfo::kArgFmtBytes,
       genInfo::kEndOfInstr,
    },
    { genInfo::kModRmReg, genInfo::kModRmRm, genInfo::kNa, genInfo::kNa } },
 
-   { "MOV(REX.W + B8+ rd io)", (unsigned char[]){
+   { "MOV{REX.W + B8+ rd io}", (unsigned char[]){
       genInfo::kOpcode1WithReg, 0xB8,
       genInfo::kArg2Imm64,
       genInfo::kEndOfInstr,
@@ -72,6 +66,12 @@ static const genInfo kGenInfo[] = {
       genInfo::kEndOfInstr,
    },
    { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+
+   { "RET{C3}", (unsigned char[]){
+      genInfo::kOpcode1, 0xC3,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kNa, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
    { "SUB{REX.W + 83 /5 ib}", (unsigned char[]){
       genInfo::kOpcode1, 0x83,

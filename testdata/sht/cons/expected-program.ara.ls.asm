@@ -7,4 +7,5 @@
                           call, ._osCall 
                           add, rsp, 32   
                           pop, rbx       
+                          ret            
 

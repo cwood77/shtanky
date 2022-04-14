@@ -13,3 +13,5 @@ op(e8)co32(00-00-00-00)
 rex(48)op(83)modR/M(c4)i8(20)
 // 9:                           pop, rbx       
 rex(48)op(8f)modR/M(c3)
+// 10:                           ret            
+op(c3)

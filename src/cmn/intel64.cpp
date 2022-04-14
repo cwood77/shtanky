@@ -35,15 +35,15 @@ static const instrFmt addFmts[] = {
 };
 
 static const instrFmt movFmts[] = {
-   { "MOV(REX.W + 89 /r)",
+   { "MOV{REX.W + 89 /r}",
       kR64 | kM64,
       kR64,
       kArgTypeNone, kArgTypeNone },
-   { "MOV(REX.W + 8B /r)",
+   { "MOV{REX.W + 8B /r}",
       kR64,
       kR64 | kM64,
       kArgTypeNone, kArgTypeNone },
-   { "MOV(REX.W + B8+ rd io)",
+   { "MOV{REX.W + B8+ rd io}",
       kR64,
       kI64,
       kArgTypeNone, kArgTypeNone },
@@ -51,12 +51,18 @@ static const instrFmt movFmts[] = {
 };
 
 static const instrFmt callFmts[] = {
-   { "CALL(E8 cd)",
+   { "CALL{E8 cd}",
       kI32,
       kArgTypeNone, kArgTypeNone, kArgTypeNone },
-   { "CALL(FF /2)",
+   { "CALL{FF /2}",
       kR64 | kM64,
       kArgTypeNone, kArgTypeNone, kArgTypeNone },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+};
+
+static const instrFmt retFmts[] = {
+   { "RET{C3}",
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
 };
 
@@ -73,7 +79,7 @@ static const instrInfo kInstrs[] = {
    { "<precall>",   NULL     },
    { "call",        (const instrFmt*)&callFmts },
    { "<postcall>",  NULL     },
-   { "ret",         NULL     },
+   { "ret",         (const instrFmt*)&retFmts },
    { "system",      NULL     },
 };
 
