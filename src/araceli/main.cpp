@@ -15,10 +15,11 @@ using namespace araceli;
 int main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   std::string batchBuild = cl.getArg(".\\testdata\\test\\.build.bat");
+   std::string projectDir = cl.getArg(".\\testdata\\test");
+   std::string batchBuild = projectDir + "\\.build.bat";
 
    std::unique_ptr<cmn::araceliProjectNode> pPrj = projectBuilder::create("ca");
-   projectBuilder::addScope(*pPrj.get(),"testdata\\test",/*inProject*/true);
+   projectBuilder::addScope(*pPrj.get(),projectDir,/*inProject*/true);
    projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 

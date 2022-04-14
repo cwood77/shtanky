@@ -3,6 +3,7 @@
 #include "scriptWriter.hpp"
 
 scriptState::scriptState()
+: m_silenceExes(true)
 {
    scriptWriter::populateReservedLabels(*this);
 }
@@ -23,6 +24,14 @@ std::string scriptState::reserveLabel(const std::string& hint)
       m_labels.insert(cpy);
       return cpy;
    }
+}
+
+void scriptStream::silenceTestExeIf()
+{
+   if(m_pState->shouldSilenceExes())
+      stream() << " >nul 2>&1" << std::endl;
+   else
+      stream() << std::endl;
 }
 
 scriptStream& script::get(size_t i)
@@ -72,7 +81,7 @@ doInstr& doInstr::thenCheckReturnValue(const std::string& errorHint)
    auto& cmds = s().get(kStreamCmd);
    auto& _s = cmds.stream();
 
-   _s << " >nul 2>&1" << std::endl;
+   cmds.silenceTestExeIf();
 
    auto passLbl = cmds.reserveLabel("pass");
    auto failLbl = cmds.reserveLabel("fail");
@@ -109,6 +118,11 @@ compareInstr& compareInstr::withControl(const std::string& path)
 
 compareInstr& compareInstr::withVariable(const std::string& path)
 {
+   {
+      auto& ss = s().get(kStreamClean);
+      ss.stream() << "del \"" << path << "\" >nul 2>&1" << std::endl;
+   }
+
    {
       auto& ss = s().get(kStreamCheck);
       ss.stream() << "\"" << path << "\" >nul 2>&1" << std::endl;

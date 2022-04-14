@@ -18,12 +18,14 @@ void scriptWriter::run(script& s, std::ostream& out, bool skipChecks)
       << "if %1 == run goto %1" << std::endl
       << "if %1 == bless goto %1" << std::endl
       << "if %1 == unbless goto %1" << std::endl
+      << "if %1 == clean goto %1" << std::endl
       << "echo unknown command" << std::endl
       << "goto end" << std::endl
    ;
    out << std::endl;
 
    out << ":run" << std::endl;
+   s.get(kStreamClean).playback(out);
    s.get(kStreamCmd).playback(out);
    if(!skipChecks)
       s.get(kStreamCheck).playback(out);
@@ -36,6 +38,10 @@ void scriptWriter::run(script& s, std::ostream& out, bool skipChecks)
 
    out << ":unbless" << std::endl;
    s.get(kStreamUnbless).playback(out);
+   out << "goto end" << std::endl << std::endl;
+
+   out << ":clean" << std::endl;
+   s.get(kStreamClean).playback(out);
    out << "goto end" << std::endl << std::endl;
 
    out << ":end" << std::endl;

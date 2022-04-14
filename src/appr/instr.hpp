@@ -15,9 +15,12 @@ public:
    scriptState();
 
    std::string reserveLabel(const std::string& hint);
+   void setSilentExes(bool v) { m_silenceExes = v; }
+   bool shouldSilenceExes() const { return m_silenceExes; }
 
 private:
    std::set<std::string> m_labels;
+   bool m_silenceExes;
 };
 
 class scriptStream {
@@ -28,6 +31,7 @@ public:
 
    std::ostream& stream() { return m_stream; }
    std::string reserveLabel(const std::string& hint) { return m_pState->reserveLabel(hint); }
+   void silenceTestExeIf();
 
    void playback(std::ostream& s) { s << m_stream.str(); }
 
@@ -37,6 +41,7 @@ private:
 };
 
 enum {
+   kStreamClean,
    kStreamCmd,
    kStreamCheck,
    kStreamBless,
@@ -45,6 +50,8 @@ enum {
 
 class script {
 public:
+   explicit script(bool silentExes) { m_state.setSilentExes(silentExes); }
+
    scriptStream& get(size_t i);
 
 private:
