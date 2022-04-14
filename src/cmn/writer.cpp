@@ -119,6 +119,26 @@ void listingObjWriter::fmtData(std::ostream& o, const void *p, size_t n)
    }
 }
 
+void odaObjWriter::write(const std::string& reason, const void *p, size_t n)
+{
+   std::stringstream stream;
+   fmtData(stream,p,n);
+
+   std::string copy = stream.str();
+   m_pS->write(copy.c_str(),copy.length());
+}
+
+void odaObjWriter::fmtData(std::ostream& o, const void *p, size_t n)
+{
+   const unsigned char *_p = reinterpret_cast<const unsigned char *>(p);
+   for(size_t i=0;i<n;i++)
+   {
+      o << " "
+         << std::hex << std::setfill('0') << std::setw(2)
+         << (unsigned int)_p[i];
+   }
+}
+
 compositeObjWriter::~compositeObjWriter()
 {
    for(auto it=m_o.begin();it!=m_o.end();++it)

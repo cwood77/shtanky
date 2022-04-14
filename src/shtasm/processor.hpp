@@ -18,7 +18,7 @@ class lineParser;
 class processor : private iTableWriter {
 public:
    processor(lineParser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFile& o);
-   processor& setListingFile(cmn::iObjWriterSink& s) { m_pListingFile = &s; return *this; }
+   processor& setListingFile(cmn::iObjWriterSink& s);
 
    void process();
 
@@ -31,7 +31,8 @@ private:
    cmn::tgt::iTargetInfo& m_t;
    cmn::objfmt::objFile& m_oFile;
 
-   cmn::iObjWriterSink *m_pListingFile;
+   cmn::iObjWriterSink *m_pListingFile1;
+   cmn::iObjWriterSink *m_pListingFile2;
 
    std::map<std::string,cmn::tgt::instrIds> m_instrMap;
 

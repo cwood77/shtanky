@@ -15,7 +15,8 @@ processor::processor(lineParser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFi
 : m_parser(p)
 , m_t(t)
 , m_oFile(o)
-, m_pListingFile(NULL)
+, m_pListingFile1(NULL)
+, m_pListingFile2(NULL)
 , m_pCurrObj(NULL)
 {
    // prepare instrMap
@@ -27,6 +28,16 @@ processor::processor(lineParser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFi
          m_instrMap[pInstr->name] = asId;
       }
    }
+}
+
+processor& processor::setListingFile(cmn::iObjWriterSink& s)
+{
+   if(m_pListingFile1)
+      m_pListingFile2 = &s;
+   else
+      m_pListingFile1 = &s;
+
+   return *this;
 }
 
 void processor::process()
@@ -59,10 +70,14 @@ void processor::process()
          m_pBlock->sink(
             *new cmn::retailObjWriter(
                *new cmn::binMemoryWriter(m_pCurrObj->block)));
-         if(m_pListingFile)
+         if(m_pListingFile1)
             m_pBlock->sink(
                *new cmn::listingObjWriter(
-                  *new cmn::singleUseWriterSink(*m_pListingFile)));
+                  *new cmn::singleUseWriterSink(*m_pListingFile1)));
+         if(m_pListingFile2)
+            m_pBlock->sink(
+               *new cmn::odaObjWriter(
+                  *new cmn::singleUseWriterSink(*m_pListingFile2)));
 
          // prep assembler
          m_pAsm.reset(new assembler(m_t,*this));

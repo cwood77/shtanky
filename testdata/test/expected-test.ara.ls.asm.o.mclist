@@ -9,7 +9,7 @@ rex(48)op(ff)modR/M(f7)
 // 9:                 sub, rsp, 32      
 rex(48)op(83)modR/M(ec)i8(20)
 // 10:                 mov, rbx, [rcx+8] ;    :_out
-rex(48)op(8b)modR/M(19)
+rex(48)op(8b)modR/M(59)d8(08)
 // 11:                 mov, rdi, [rbx]   ;    :_vtbl
 rex(48)op(8b)modR/M(3b)
 // 12:                 mov, rbx, [rdi]   ;    :printLn
@@ -17,7 +17,7 @@ rex(48)op(8b)modR/M(1f)
 // 13:                 mov, rbx, rcx     ;       (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
 // 14:                 mov, rcx, [rbx+8] ;    :_out
-rex(48)op(8b)modR/M(0b)
+rex(48)op(8b)modR/M(4b)d8(08)
 // 15:                 mov, rdx, .const0 ; load const '.const0'
 rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
 // 16:                 call, rbx         

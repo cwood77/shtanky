@@ -12,6 +12,7 @@ public:
    static const char *kExtObj;
    static const char *kExtObj_Then_List;
    static const char *kExtObj_Then_McList;
+   static const char *kExtObj_Then_McOdaList;
 
    static const char *kExtList;
 

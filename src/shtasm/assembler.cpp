@@ -75,6 +75,15 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
       {
          w.write("modR/M",++pByte,1);
       }
+      else if(*pByte == cmn::tgt::i64::genInfo::kDisp8)
+      {
+         w.write("d8",++pByte,1);
+      }
+      else if(*pByte == cmn::tgt::i64::genInfo::kDisp32)
+      {
+         w.write("d32",(pByte+1+4),4);
+         pByte += (1+4-1);
+      }
       else
          throw std::runtime_error(cmn::fmt("don't know how to write byte %d",(int)*pByte));
    }

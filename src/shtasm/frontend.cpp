@@ -250,7 +250,8 @@ void argParser::parseScale()
    {
       m_l.advance();
 
-      m_l.demand(argLexor::kIntLiteral); // TODO hack
+      m_l.demand(argLexor::kIntLiteral);
+      m_pAi->disp = m_l.getLexemeInt();
 
       m_l.advance();
    }

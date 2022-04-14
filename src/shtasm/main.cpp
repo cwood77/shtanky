@@ -15,13 +15,19 @@ int main(int argc, const char *argv[])
    cmn::cmdLine cl(argc,argv);
    std::string input = cl.getArg(".\\testdata\\test\\test.ara.ls.asm");
 
-   cmn::binFileWriter listingFile(cmn::pathUtil::addExtension(input,cmn::pathUtil::kExtObj_Then_McList));
+   cmn::binFileWriter listingFile(
+      cmn::pathUtil::addExtension(input,cmn::pathUtil::kExtObj_Then_McList));
+   cmn::binFileWriter odaListingFile(
+      cmn::pathUtil::addExtension(input,cmn::pathUtil::kExtObj_Then_McOdaList));
 
    lineLexor l(input);
    lineParser p(l);
    cmn::tgt::w64EmuTargetInfo t;
    cmn::objfmt::objFile o;
-   processor(p,t,o).setListingFile(listingFile).process();
+   processor(p,t,o)
+      .setListingFile(listingFile)
+      .setListingFile(odaListingFile)
+      .process();
 
    {
       cmn::compositeObjWriter w;

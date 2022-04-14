@@ -410,7 +410,7 @@ unsigned char *argFmtBytes::computeTotalByteStream()
          m_totalByteStream.push_back(*pThumb | m_opcodeMask);
       }
       else if(*pThumb == genInfo::kCodeOffset32 ||
-              *pThumb == genInfo::kArg1Imm8 ||
+              //*pThumb == genInfo::kArg1Imm8 ||
               *pThumb == genInfo::kArg2Imm8 ||
               *pThumb == genInfo::kArg2Imm64)
       {
@@ -486,11 +486,17 @@ void argFmtBytes::release(const unsigned char& rex, const unsigned char& modRm)
 void argFmtBytes::setDisp(char size, __int64 value)
 {
    size_t arrayIdx = m_argFmtByteStream.size();
-   m_argFmtByteStream.resize(arrayIdx + size);
+   m_argFmtByteStream.resize(arrayIdx + 1 + size);
    if(size == 4)
-      *reinterpret_cast<long*>(&m_argFmtByteStream[arrayIdx]) = static_cast<long>(value);
+   {
+      m_argFmtByteStream[arrayIdx] = genInfo::kDisp32;
+      *reinterpret_cast<long*>(&m_argFmtByteStream[arrayIdx+1]) = static_cast<long>(value);
+   }
    else
-      m_argFmtByteStream[arrayIdx] = static_cast<signed char>(value);
+   {
+      m_argFmtByteStream[arrayIdx] = genInfo::kDisp8;
+      m_argFmtByteStream[arrayIdx+1] = static_cast<signed char>(value);
+   }
 }
 
 } // namespace i64

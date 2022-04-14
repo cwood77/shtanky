@@ -12,6 +12,7 @@ const char *pathUtil::kExtLiamSource      = "ls";
 const char *pathUtil::kExtObj             = "o";
 const char *pathUtil::kExtObj_Then_List   = "o.list";
 const char *pathUtil::kExtObj_Then_McList = "o.mclist";
+const char *pathUtil::kExtObj_Then_McOdaList = "o.mcODAlist";
 const char *pathUtil::kExtList            = "list";
 
 std::string pathUtil::addExtension(const std::string& path, const std::string& ext)

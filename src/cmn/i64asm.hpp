@@ -32,7 +32,7 @@ public:
       //kOpcode3,
       kOpcode1WithReg, // lower 3-bits of opcode are a register
       kCodeOffset32,
-      kArg1Imm8,
+      //kArg1Imm8,
       kArg2Imm8,
       kArg2Imm64,
       kArgFmtBytes, // optional; if omitted arg bytes are suffixed, if any
@@ -42,8 +42,9 @@ public:
       // ---------- generated only; do not use in constants
       kRexByte,
       kModRmByte,
-      // disp 32
       // sib byte
+      kDisp8,
+      kDisp32,
    };
 
    const char *guid;

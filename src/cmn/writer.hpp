@@ -94,6 +94,19 @@ private:
    std::unique_ptr<iObjWriterSink> m_pS;
 };
 
+class odaObjWriter : public iObjWriter {
+public:
+   explicit odaObjWriter(iObjWriterSink& s) : m_pS(&s) {}
+   virtual void write(const std::string& reason, const void *p, size_t n);
+   virtual void nextPart() {}
+   virtual unsigned long tell() { cdwTHROW("unimpled"); }
+
+private:
+   void fmtData(std::ostream& o, const void *p, size_t n);
+
+   std::unique_ptr<iObjWriterSink> m_pS;
+};
+
 class compositeObjWriter : public iObjWriter {
 public:
    compositeObjWriter() : m_offset(0) {}
