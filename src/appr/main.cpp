@@ -38,7 +38,7 @@ int main(int argc, const char *argv[])
    liamTest(is,".\\testdata\\sht\\cons\\program.ara.ls");
 
    shtasmTest(is,".\\testdata\\test\\test.ara.ls.asm");
-   //shtasmTest(is,".\\testdata\\sht\\cons\\program.ara.ls.asm");
+   shtasmTest(is,".\\testdata\\sht\\cons\\program.ara.ls.asm");
 
    std::ofstream wrapper(".\\bin\\.appr.bat");
    if(!wrapper.good())
