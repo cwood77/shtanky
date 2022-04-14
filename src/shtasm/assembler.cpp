@@ -34,6 +34,10 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
             label = ai[i].label;
             break;
 
+         case cmn::tgt::i64::genInfo::kOpcodeReg:
+            argBytes.encodeRegInOpcode(ai[i]);
+            break;
+
          default:
             throw std::runtime_error("unknown arg type in " __FILE__);
       }

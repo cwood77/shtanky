@@ -172,9 +172,29 @@ void argParser::parseArg(cmn::tgt::asmArgInfo& i)
       parseReg();
    else if(m_l.getToken() == argLexor::kIntLiteral)
    {
-      m_pAi->flags |= cmn::tgt::asmArgInfo::kImm8;
-      m_pAi->data.bytes.v[0] = ::atoi(m_l.getLexeme().c_str());
+      __int64 v = m_l.getLexemeInt();
       m_l.advance();
+      switch(m_l.getLexemeIntSize(v))
+      {
+         case 1:
+            m_pAi->flags |= cmn::tgt::asmArgInfo::kImm8;
+            m_pAi->data.bytes.v[0] = v;
+            break;
+         case 2:
+            m_pAi->flags |= cmn::tgt::asmArgInfo::kImm16;
+            m_pAi->data.words.v[0] = v;
+            break;
+         case 4:
+            m_pAi->flags |= cmn::tgt::asmArgInfo::kImm32;
+            m_pAi->data.dwords.v[0] = v;
+            break;
+         case 8:
+            m_pAi->flags |= cmn::tgt::asmArgInfo::kImm64;
+            m_pAi->data.qwords.v[0] = v;
+            break;
+         default:
+            cdwTHROW("unknow int size");
+      }
    }
    else if(m_l.getToken() == argLexor::kName)
    {
@@ -212,7 +232,8 @@ void argParser::parseMemExpr()
    {
       m_l.advance();
       m_pAi->flags |= cmn::tgt::asmArgInfo::kPtr;
-      m_pAi->flags |= cmn::tgt::asmArgInfo::kMem8; // 64?
+      m_pAi->flags |= cmn::tgt::asmArgInfo::kMem64; // TODO until types are supported,
+                                                    // assume all ptrs are 64-bit
 
       parseReg();
       parseScale();
@@ -229,7 +250,7 @@ void argParser::parseScale()
    {
       m_l.advance();
 
-      m_l.demand(argLexor::kIntLiteral);
+      m_l.demand(argLexor::kIntLiteral); // TODO hack
 
       m_l.advance();
    }

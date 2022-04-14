@@ -142,6 +142,17 @@ __int64 lexorBase::getLexemeInt() const
    return v;
 }
 
+char lexorBase::getLexemeIntSize(const __int64& v)
+{
+   if(-128 <= v && v <= 127)
+      return 1;
+   if(-32768 <= v && v <= 32767)
+      return 2;
+   if(-2147483648 <= v && v <= 2147483647)
+      return 4;
+   return 8;
+}
+
 void lexorBase::demand(size_t t)
 {
    if(getToken() != t)

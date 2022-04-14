@@ -87,17 +87,8 @@ const genInfo *getGenInfo() { return kGenInfo; }
 
 void modRm::encodeRegArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte)
 {
-   if(ai.flags & (
-      asmArgInfo::kMem8 |
-      asmArgInfo::kPtr |
-      asmArgInfo::kHasIndex |
-      asmArgInfo::kScale8 |
-      asmArgInfo::kDisp8 |
-      asmArgInfo::kLabel |
-      asmArgInfo::kImm8 |
-      0
-   ))
-      cdwTHROW("don't know how to encode argument type");
+   if(ai.flags != asmArgInfo::kReg64)
+      cdwTHROW(cmn::fmt("don't know how to encode argument type %lld",ai.flags));
 
    size_t storage = ai.data.qwords.v[0];
 
@@ -173,21 +164,12 @@ void modRm::encodeOpcodeArg(unsigned char opcode, unsigned char& rex, unsigned c
 
 void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte)
 {
-   if(ai.flags == (asmArgInfo::kMem8 | asmArgInfo::kPtr | asmArgInfo::kReg64))
+   if(ai.flags == (asmArgInfo::kMem64 | asmArgInfo::kPtr | asmArgInfo::kReg64))
    {
-      cdwTHROW("unimpled");
+      cdwTHROW("unimpled.... yet");
    }
-   else if(ai.flags & (
-      asmArgInfo::kMem8 |
-      asmArgInfo::kPtr |
-      asmArgInfo::kHasIndex |
-      asmArgInfo::kScale8 |
-      asmArgInfo::kDisp8 |
-      asmArgInfo::kLabel |
-      asmArgInfo::kImm8 |
-      0
-   ))
-      cdwTHROW("don't know how to encode argument type");
+   else if(ai.flags != asmArgInfo::kReg64)
+      cdwTHROW(cmn::fmt("don't know how to encode argument type %lld",ai.flags));
 
    size_t storage = ai.data.qwords.v[0];
 

@@ -100,15 +100,18 @@ public:
 class asmArgInfo {
 public:
    enum argFlags {
-      kMem8     = 1<< 1,
-      kPtr      = 1<< 2,
-      kHasIndex = 1<< 3,
-      kScale8   = 1<< 4,
-      kDisp8    = 1<< 5,
-      kLabel    = 1<< 6,
-      kImm8     = 1<< 7,
-      kReg64    = 1<< 8,
+      kPtr      = 1<< 1,
+      kLabel    = 1<< 2,
+      kImm8     = 1<< 3,
+      kImm16    = 1<< 4,
+      kImm32    = 1<< 5,
+      kImm64    = 1<< 6,
+      kReg64    = 1<< 7,
+      kMem64    = 1<< 8,
    };
+
+   asmArgInfo();
+
    size_t flags;
 
    union {
@@ -127,6 +130,9 @@ public:
    } data;
 
    std::string label;
+   __int64 index;
+   __int64 scale;
+   __int64 disp;
 
    argTypes computeArgType();
 };
