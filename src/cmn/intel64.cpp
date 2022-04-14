@@ -35,9 +35,17 @@ static const instrFmt addFmts[] = {
 };
 
 static const instrFmt movFmts[] = {
-   { "MOV(HACK)",
+   { "MOV(REX.W + 89 /r)",
+      kR64 | kM64 | kM8, //  TODO 64-bit really, claiming 8-bit...
       kR64,
-      kR64 | kM8 | kI32,
+      kArgTypeNone, kArgTypeNone },
+   { "MOV(REX.W + 8B /r)",
+      kR64,
+      kR64 | kM64 | kM8, // TODO same
+      kArgTypeNone, kArgTypeNone },
+   { "MOV(REX.W + B8+ rd io)",
+      kR64,
+      kI64 | kI8, // TODO same
       kArgTypeNone, kArgTypeNone },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
 };

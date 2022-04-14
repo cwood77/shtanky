@@ -1,6 +1,7 @@
 #include "../cmn/fmt.hpp"
 #include "../cmn/intel64.hpp"
 #include "i64asm.hpp"
+#include "throw.hpp"
 #include <stdexcept>
 
 namespace cmn {
@@ -36,12 +37,26 @@ static const genInfo kGenInfo[] = {
    },
    { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
-   { "MOV(HACK)", (unsigned char[]){
-      genInfo::kOpcode1, 0xDE,
-      genInfo::kOpcode1, 0xAD,
+   { "MOV(REX.W + 89 /r)", (unsigned char[]){
+      genInfo::kOpcode1, 0x89,
+      genInfo::kArgFmtBytes,
       genInfo::kEndOfInstr,
    },
-   { genInfo::kNa, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+   { genInfo::kModRmRm, genInfo::kModRmReg, genInfo::kNa, genInfo::kNa } },
+
+   { "MOV(REX.W + 8B /r)", (unsigned char[]){
+      genInfo::kOpcode1, 0x8B,
+      genInfo::kArgFmtBytes,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kModRmReg, genInfo::kModRmRm, genInfo::kNa, genInfo::kNa } },
+
+   { "MOV(REX.W + B8+ rd io)", (unsigned char[]){
+      genInfo::kOpcode1WithReg, 0xB8,
+      genInfo::kArg2Imm64,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kOpcodeReg, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
    { "POP{8F /0}", (unsigned char[]){
       genInfo::kOpcode1, 0x8F,
@@ -82,7 +97,7 @@ void modRm::encodeRegArg(const asmArgInfo& ai, unsigned char& rex, unsigned char
       asmArgInfo::kImm8 |
       0
    ))
-      throw std::runtime_error("don't know how to encode argument type in " __FILE__);
+      cdwTHROW("don't know how to encode argument type");
 
    size_t storage = ai.data.qwords.v[0];
 
@@ -158,7 +173,11 @@ void modRm::encodeOpcodeArg(unsigned char opcode, unsigned char& rex, unsigned c
 
 void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte)
 {
-   if(ai.flags & (
+   if(ai.flags == (asmArgInfo::kMem8 | asmArgInfo::kPtr | asmArgInfo::kReg64))
+   {
+      cdwTHROW("unimpled");
+   }
+   else if(ai.flags & (
       asmArgInfo::kMem8 |
       asmArgInfo::kPtr |
       asmArgInfo::kHasIndex |
@@ -168,7 +187,7 @@ void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned ch
       asmArgInfo::kImm8 |
       0
    ))
-      throw std::runtime_error("don't know how to encode argument type in " __FILE__);
+      cdwTHROW("don't know how to encode argument type");
 
    size_t storage = ai.data.qwords.v[0];
 
@@ -271,6 +290,74 @@ void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned ch
    modRmByte |= rm;
 }
 
+void opcodeReg::encode(const asmArgInfo& ai, unsigned char& rex, unsigned char& opcode)
+{
+   if(ai.flags != asmArgInfo::kReg64)
+      cdwTHROW("don't know how to encode argument type");
+
+   size_t storage = ai.data.qwords.v[0];
+
+   if(storage == cmn::tgt::i64::kRegA)
+      opcode = 0;
+   else if(storage == cmn::tgt::i64::kRegC)
+      opcode = 1;
+   else if(storage == cmn::tgt::i64::kRegD)
+      opcode = 2;
+   else if(storage == cmn::tgt::i64::kRegB)
+      opcode = 3;
+   else if(storage == cmn::tgt::i64::kRegSP)
+      opcode = 4;
+   else if(storage == cmn::tgt::i64::kRegBP)
+      opcode = 5;
+   else if(storage == cmn::tgt::i64::kRegSI)
+      opcode = 6;
+   else if(storage == cmn::tgt::i64::kRegDI)
+      opcode = 7;
+   else if(storage == cmn::tgt::i64::kReg8)
+   {
+      rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
+      opcode = 0;
+   }
+   else if(storage == cmn::tgt::i64::kReg9)
+   {
+      rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
+      opcode = 1;
+   }
+   else if(storage == cmn::tgt::i64::kReg10)
+   {
+      rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
+      opcode = 2;
+   }
+   else if(storage == cmn::tgt::i64::kReg11)
+   {
+      rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
+      opcode = 3;
+   }
+   else if(storage == cmn::tgt::i64::kReg12)
+   {
+      rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
+      opcode = 4;
+   }
+   else if(storage == cmn::tgt::i64::kReg13)
+   {
+      rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
+      opcode = 5;
+   }
+   else if(storage == cmn::tgt::i64::kReg14)
+   {
+      rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
+      opcode = 6;
+   }
+   else if(storage == cmn::tgt::i64::kReg15)
+   {
+      rex |= 0x1; // B bit extends ModR/M r/m field to R8-R15
+      opcode = 7;
+   }
+
+   if(ai.flags & asmArgInfo::kReg64)
+      rex |= 0x8; // W bit extends reflects 64-bit operand size (i.e. RAX vs. EAX)
+}
+
 void argFmtBytes::encodeArgModRmReg(asmArgInfo& a, bool regOrRm)
 {
    unsigned char rex = 0;
@@ -296,6 +383,16 @@ void argFmtBytes::encodeFixedOp(unsigned char op)
    release(rex,_modRm);
 }
 
+void argFmtBytes::encodeRegInOpcode(asmArgInfo& a)
+{
+   unsigned char rex = 0;
+   gather(rex);
+
+   opcodeReg::encode(a,rex,m_opcodeMask);
+
+   release(rex);
+}
+
 unsigned char *argFmtBytes::computeTotalByteStream()
 {
    m_totalByteStream = m_prefixByteStream;
@@ -304,19 +401,22 @@ unsigned char *argFmtBytes::computeTotalByteStream()
    {
       if(*pThumb == genInfo::kOpcode1)
       {
+         // pass thru with 1-byte payload
          m_totalByteStream.push_back(*pThumb); pThumb++;
          m_totalByteStream.push_back(*pThumb);
       }
-      else if(*pThumb == genInfo::kCodeOffset32)
+      else if(*pThumb == genInfo::kOpcode1WithReg)
       {
-         m_totalByteStream.push_back(*pThumb);
+         // pass thru with 1-byte payload
+         m_totalByteStream.push_back(genInfo::kOpcode1); pThumb++;
+         m_totalByteStream.push_back(*pThumb | m_opcodeMask);
       }
-      else if(*pThumb == genInfo::kArg1Imm8)
+      else if(*pThumb == genInfo::kCodeOffset32 ||
+              *pThumb == genInfo::kArg1Imm8 ||
+              *pThumb == genInfo::kArg2Imm8 ||
+              *pThumb == genInfo::kArg2Imm64)
       {
-         m_totalByteStream.push_back(*pThumb);
-      }
-      else if(*pThumb == genInfo::kArg2Imm8)
-      {
+         // pass thru with 0-byte payload
          m_totalByteStream.push_back(*pThumb);
       }
       else if(*pThumb == genInfo::kArgFmtBytes)
@@ -347,15 +447,13 @@ unsigned char *argFmtBytes::computeTotalByteStream()
    return &m_totalByteStream[0];
 }
 
-void argFmtBytes::gather(unsigned char& rex, unsigned char& modRm)
+void argFmtBytes::gather(unsigned char& rex)
 {
    if(m_prefixByteStream.size())
       rex = m_prefixByteStream[1];
-   if(m_argFmtByteStream.size())
-      modRm = m_argFmtByteStream[1];
 }
 
-void argFmtBytes::release(const unsigned char& rex, const unsigned char& modRm)
+void argFmtBytes::release(const unsigned char& rex)
 {
    if(m_prefixByteStream.size())
       m_prefixByteStream[1] = rex;
@@ -365,6 +463,18 @@ void argFmtBytes::release(const unsigned char& rex, const unsigned char& modRm)
       m_prefixByteStream[0] = genInfo::kRexByte;
       m_prefixByteStream[1] = (0x40 | rex);
    }
+}
+
+void argFmtBytes::gather(unsigned char& rex, unsigned char& modRm)
+{
+   gather(rex);
+   if(m_argFmtByteStream.size())
+      modRm = m_argFmtByteStream[1];
+}
+
+void argFmtBytes::release(const unsigned char& rex, const unsigned char& modRm)
+{
+   release(rex);
    if(m_argFmtByteStream.size())
       m_argFmtByteStream[1] = modRm;
    else

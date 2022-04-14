@@ -1,4 +1,5 @@
 #include "target.hpp"
+#include "throw.hpp"
 #include <stdexcept>
 
 namespace cmn {
@@ -17,12 +18,12 @@ const instrFmt& instrInfo::demandFmt(const std::vector<argTypes> a) const
    while(true)
    {
       if(!pFmt || pFmt->guid == NULL)
-         throw std::runtime_error("instr format not found");
+         cdwTHROW("instr format not found");
 
-      if((pFmt->a1 & a1) &&
-         (pFmt->a2 & a2) &&
-         (pFmt->a3 & a3) &&
-         (pFmt->a4 & a4))
+      if(((pFmt->a1 & a1) == a1) &&
+         ((pFmt->a2 & a2) == a2) &&
+         ((pFmt->a3 & a3) == a3) &&
+         ((pFmt->a4 & a4) == a4))
          return *pFmt;
 
       pFmt++;

@@ -30,9 +30,11 @@ public:
       kOpcode1,
       //kOpcode2,
       //kOpcode3,
+      kOpcode1WithReg, // lower 3-bits of opcode are a register
       kCodeOffset32,
       kArg1Imm8,
       kArg2Imm8,
+      kArg2Imm64,
       kArgFmtBytes, // optional; if omitted arg bytes are suffixed, if any
       kArgFmtBytesWithFixedOp,
       kEndOfInstr,
@@ -50,9 +52,10 @@ public:
 
    enum argEncoding {
       kNa,
-      kModRmReg, // arg is in reg field of ModR/M byte
-      kModRmRm,  // arg is in Mod/RM fields of ModR/M byte
-      kRipRelCO, // code offset in RIP-relative (relative to _next_ instr) form
+      kModRmReg,  // arg is in reg field of ModR/M byte
+      kModRmRm,   // arg is in Mod/RM fields of ModR/M byte
+      kRipRelCO,  // code offset in RIP-relative (relative to _next_ instr) form
+      kOpcodeReg, // reg encoded in last 3-bits of opcode (and maybe also REX)
    };
 
    argEncoding ae[4];
@@ -74,25 +77,35 @@ private:
    modRm& operator=(const modRm&);
 };
 
+// register encoded in lower 3-bit of opcode
+class opcodeReg {
+public:
+   static void encode(const asmArgInfo& ai, unsigned char& rex, unsigned char& opcode);
+};
+
 // helper class that assembles ModR/M, SIB, etc. bytes depending on arguments and instruction
 // encoding information
 class argFmtBytes {
 public:
    explicit argFmtBytes(unsigned char *pInstrByteStream)
-   : m_pInstrByteStream(pInstrByteStream) {}
+   : m_pInstrByteStream(pInstrByteStream), m_opcodeMask(0) {}
 
    void encodeArgModRmReg(asmArgInfo& a, bool regOrRm);
    void encodeFixedOp(unsigned char op);
+   void encodeRegInOpcode(asmArgInfo& a);
 
    unsigned char *computeTotalByteStream();
 
 private:
+   void gather(unsigned char& rex);
+   void release(const unsigned char& rex);
    void gather(unsigned char& rex, unsigned char& modRm);
    void release(const unsigned char& rex, const unsigned char& modRm);
 
    unsigned char *m_pInstrByteStream;
    std::vector<unsigned char> m_prefixByteStream;
    std::vector<unsigned char> m_argFmtByteStream;
+   unsigned char m_opcodeMask;
    std::vector<unsigned char> m_totalByteStream;
 };
 
