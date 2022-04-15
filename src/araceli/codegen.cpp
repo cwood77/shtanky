@@ -143,7 +143,16 @@ void codeGen::visit(cmn::sequenceNode& n)
 
    source.stream() << cmn::indent(source) << "{" << std::endl;
 
-   { cmn::autoIndent _i(source); source.stream() << cmn::indent(source); visitChildren(n); }
+   {
+      cmn::autoIndent _i(source);
+
+      for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+      {
+         source.stream() << cmn::indent(source);
+         (*it)->acceptVisitor(*this);
+         source.stream() << ";" << std::endl;
+      }
+   }
 
    source.stream() << cmn::indent(source) << "}" << std::endl;
 }
@@ -188,6 +197,21 @@ void codeGen::visit(cmn::callNode& n)
    source << n.name;
 
    generateCallFromOpenParen(n,false);
+}
+
+void codeGen::visit(cmn::localDeclNode& n)
+{
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource);
+
+   source.stream() << "var " << n.name << " : ";
+   liamTypeWriter tyW(source.stream(),m_refColl);
+   n.demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
+
+   if(n.getChildren().size() > 1)
+   {
+      source.stream() << " = ";
+      n.getChildren()[1]->acceptVisitor(*this);
+   }
 }
 
 void codeGen::visit(cmn::varRefNode& n)
@@ -365,7 +389,7 @@ void codeGen::generateCallFromOpenParen(cmn::node& n, bool skipFirst)
       (*it)->acceptVisitor(*this);
       first = false;
    }
-   source << ");" << std::endl;
+   source << ")";
 }
 
 } // namespace araceli

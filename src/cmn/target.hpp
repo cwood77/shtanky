@@ -33,6 +33,9 @@ enum instrIds {
    kEnterFunc,
    kExitFunc,
 
+   kReserveLocal,
+   kUnreserveLocal,
+
    kGlobalConstData,
 
    kPush,
@@ -72,6 +75,7 @@ enum genericStorageClasses {
    kStorageStackFramePtr,
    //kStoragePatch,
    kStorageImmediate,
+   kStorageUndecidedStack,
    _kStorageFirstReg  = 23,
    _kStackFlag        = 0x10000, // this leaves 16-bits for disp
    _kVirtStackFlag    = 0x20000,

@@ -66,21 +66,25 @@ static const instrFmt retFmts[] = {
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
 };
 
+// TODO why don't some of these have names?
+//      to avoid shtasm allowing them as input?
 static const instrInfo kInstrs[] = {
-   { "",            NULL     }, // sel segment
-   { "<enterFunc>", NULL     },
-   { "<exitFunc>",  NULL     },
-   { "",            NULL     }, // global const data
-   { "push",        (const instrFmt*)&pushFmts },
-   { "pop",         (const instrFmt*)&popFmts },
-   { "sub",         (const instrFmt*)&subFmts },
-   { "add",         (const instrFmt*)&addFmts },
-   { "mov",         (const instrFmt*)&movFmts },
-   { "<precall>",   NULL     },
-   { "call",        (const instrFmt*)&callFmts },
-   { "<postcall>",  NULL     },
-   { "ret",         (const instrFmt*)&retFmts },
-   { "system",      NULL     },
+   { "",                  NULL     }, // sel segment
+   { "<enterFunc>",       NULL     },
+   { "<exitFunc>",        NULL     },
+   { "<reserveLocal>",    NULL     },
+   { "<unreserveLocal>",  NULL     },
+   { "",                  NULL     }, // global const data
+   { "push",              (const instrFmt*)&pushFmts },
+   { "pop",               (const instrFmt*)&popFmts },
+   { "sub",               (const instrFmt*)&subFmts },
+   { "add",               (const instrFmt*)&addFmts },
+   { "mov",               (const instrFmt*)&movFmts },
+   { "<precall>",         NULL     },
+   { "call",              (const instrFmt*)&callFmts },
+   { "<postcall>",        NULL     },
+   { "ret",               (const instrFmt*)&retFmts },
+   { "system",            NULL     },
 };
 
 void x8664Processor::createRegisterMap(std::map<size_t,size_t>& m) const
