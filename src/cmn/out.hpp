@@ -22,33 +22,42 @@ public:
 
 class outStream : public iOutStream {
 public:
-   explicit outStream(const std::string& fullPath) : m_fullPath(fullPath) {}
+   explicit outStream(const std::string& fullPath) : m_fullPath(fullPath), m_indent(0) {}
 
    std::ostream& stream() { return m_stream; }
 
    virtual void updateDisk(iFileWriter& f);
 
+   void incIndent() { m_indent += 3; }
+   void decIndent() { m_indent -= 3; }
+   size_t getIndent() const { return m_indent; }
+
 private:
    std::string m_fullPath;
    std::stringstream m_stream;
+   size_t m_indent;
 };
 
-class columnedOutStream : public iOutStream {
+class indent {
 public:
-   explicit columnedOutStream(const std::string& fullPath)
-   : m_fullPath(fullPath), m_width(3) {}
-   ~columnedOutStream() {}
+   explicit indent(const outStream& s) : m_stream(s) {}
 
-   void setWidth(size_t w) { m_width = w; }
-
-   std::vector<std::stringstream*>& appendLine();
-
-   virtual void updateDisk(iFileWriter& f);
+   std::string buildIndent() const { return std::string(m_stream.getIndent(),' '); }
 
 private:
-   std::string m_fullPath;
-   size_t m_width;
-   std::list<std::vector<std::stringstream*> > m_lines;
+   const outStream& m_stream;
+};
+
+inline std::ostream& operator<<(std::ostream& o, const indent& i)
+{ o << i.buildIndent(); return o; }
+
+class autoIndent {
+public:
+   autoIndent(outStream& s) : m_stream(s) { m_stream.incIndent(); }
+   ~autoIndent() { m_stream.decIndent(); }
+
+private:
+   outStream& m_stream;
 };
 
 class outBundle {
