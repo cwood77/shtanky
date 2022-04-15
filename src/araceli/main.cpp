@@ -1,7 +1,9 @@
 #include "../cmn/cmdline.hpp"
 #include "../cmn/out.hpp"
+#include "../cmn/trace.hpp"
 #include "batGen.hpp"
 #include "codegen.hpp"
+#include "consoleAppTarget.hpp"
 #include "constHoister.hpp"
 #include "declasser.hpp"
 #include "metadata.hpp"
@@ -20,15 +22,12 @@ int main(int argc, const char *argv[])
 
    std::unique_ptr<cmn::araceliProjectNode> pPrj = projectBuilder::create("ca");
    projectBuilder::addScope(*pPrj.get(),projectDir,/*inProject*/true);
-   projectBuilder::addScope(*pPrj.get(),"testdata\\sht",/*inProject*/false);
+   projectBuilder::addScope(*pPrj.get(),".\\testdata\\sht",/*inProject*/false);
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
+   // initial link to discover and load everything
    araceli::nodeLinker().linkGraph(*pPrj);
    ::printf("graph after linking ----\n");
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
-
-   { araceli::constHoister v; pPrj->acceptVisitor(v); }
-   ::printf("graph after const hoist ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // gather metadata
@@ -39,28 +38,35 @@ int main(int argc, const char *argv[])
       pPrj->acceptVisitor(outer);
    }
 
-   // transforms
+   // use metadata to generate the target
+   consoleAppTarget().codegen(*pPrj,md);
+
+   // subsequent link to update with new target
+   araceli::nodeLinker().linkGraph(*pPrj);
+   ::printf("graph after linking ----\n");
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+
+   // ---------------- lowering transforms ----------------
+
+   // hoist out constants
+   { araceli::constHoister v; pPrj->acceptVisitor(v); }
+   ::printf("graph after const hoist ----\n");
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+
+   // compile-away classes
    { declasser v; pPrj->acceptVisitor(v); }
    ::printf("graph after transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
-   // TODO file codegen
-   // -> header file
-   // -> source file
-   // -> make file
+   // -----------------------------------------------------
 
-   // target codegen
+   // codegen
    cmn::outBundle out;
-   cmn::fileWriter wr;
-   out.setAutoUpdate(wr);
    codeGen v(out);
    pPrj->acceptVisitor(v);
-
-   // build codegen
-   {
-      batGen v(out.get<cmn::outStream>(batchBuild));
-      pPrj->acceptVisitor(v);
-   }
+   { batGen v(out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
+   cmn::fileWriter wr;
+   out.updateDisk(wr);
 
    return 0;
 }

@@ -10,7 +10,9 @@ class fileRefs {
 public:
    void addRef(const std::string& path) { m_paths.insert(path); }
 
-   void flush(const std::string& path, std::ostream& stream);
+   void flush(std::ostream& stream);
+
+   std::string destPath;
 
 private:
    std::set<std::string> m_paths;

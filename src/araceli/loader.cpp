@@ -2,6 +2,7 @@
 #include "../cmn/ast.hpp"
 #include "../cmn/commonParser.hpp"
 #include "../cmn/pathUtil.hpp"
+#include "../cmn/trace.hpp"
 #include "lexor.hpp"
 #include "loader.hpp"
 #include <stdio.h>
@@ -38,14 +39,10 @@ void loader::loadFolder(cmn::scopeNode& s)
          ;
       else if(cmn::pathUtil::getExtension(fullPath) == "ara")
       {
-         ::printf("loading file %s\n",fullPath.c_str());
-         std::string contents;
-         cmn::pathUtil::loadFileContents(fullPath,contents);
-         lexor l(contents.c_str());
-         cmn::commonParser p(l);
-         auto file = p.parseFile();
-         file->fullPath = fullPath;
-         s.appendChild(*file.release());
+         if(cmn::pathUtil::getLastPart(fullPath) == ".target.ara")
+            cdwVERBOSE("skipping load of %s\n",fullPath.c_str());
+         else
+            loadFile(s,fullPath);
       }
 
    } while(::FindNextFile(hFind,&fData));
@@ -53,6 +50,18 @@ void loader::loadFolder(cmn::scopeNode& s)
 
    // mark loaded
    s.loaded = true;
+}
+
+void loader::loadFile(cmn::scopeNode& s, const std::string& fullPath)
+{
+   cdwVERBOSE("loading file %s\n",fullPath.c_str());
+   std::string contents;
+   cmn::pathUtil::loadFileContents(fullPath,contents);
+   lexor l(contents.c_str());
+   cmn::commonParser p(l);
+   auto file = p.parseFile();
+   file->fullPath = fullPath;
+   s.appendChild(*file.release());
 }
 
 } // namespace araceli

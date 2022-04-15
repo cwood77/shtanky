@@ -5,6 +5,12 @@
 
 namespace cmn {
 
+void symbolTable::markRequired(linkBase& l)
+{
+   if(!l._getRefee())
+      unresolved.insert(&l);
+}
+
 void symbolTable::publish(const std::string& fqn, node& n)
 {
    ::printf("publishing symbol %s for %lld\n",fqn.c_str(),(size_t)&n);
@@ -22,7 +28,10 @@ void symbolTable::tryResolveVarType(const std::string& objName, node& obj, linkB
 
 void symbolTable::tryResolveExact(const std::string& refingScope, linkBase& l)
 {
-   ::printf("resolving ref %s with context %s [exact]\n",l.ref.c_str(),refingScope.c_str());
+   ::printf("resolving ref %s from context %s [exact]\n",l.ref.c_str(),refingScope.c_str());
+   if(l._getRefee())
+      return;
+
    unresolved.insert(&l);
 
    if(nameUtil::isAbsolute(l.ref))
@@ -37,7 +46,10 @@ void symbolTable::tryResolveExact(const std::string& refingScope, linkBase& l)
 
 void symbolTable::tryResolveWithParents(const std::string& refingScope, linkBase& l)
 {
-   ::printf("resolving ref %s with context %s [w/ parents]\n",l.ref.c_str(),refingScope.c_str());
+   ::printf("resolving ref %s from context %s [w/ context walk]\n",l.ref.c_str(),refingScope.c_str());
+   if(l._getRefee())
+      return;
+
    unresolved.insert(&l);
 
    if(nameUtil::isAbsolute(l.ref))
@@ -55,6 +67,19 @@ void symbolTable::tryResolveWithParents(const std::string& refingScope, linkBase
          prefix = nameUtil::stripLast(prefix);
       }
    }
+}
+
+void symbolTable::debugDump()
+{
+   cdwDEBUG("-- beginning complete dump of symbol table --\n");
+
+   for(auto it=published.begin();it!=published.end();++it)
+      cdwDEBUG("  published '%s' of '%s'\n",it->first.c_str(),typeid(*it->second).name());
+
+   for(auto it=unresolved.begin();it!=unresolved.end();++it)
+      cdwDEBUG("  unresolved '%s' of '%s'\n",(*it)->ref.c_str(),typeid(**it).name());
+
+   cdwDEBUG("-- end of symbol table --\n");
 }
 
 bool symbolTable::tryBind(const std::string& fqn, linkBase& l)
@@ -310,9 +335,7 @@ void nodeLinker::linkGraph(node& root)
             missingLastTime = nMissing; // retry
          else
          {
-            cdwINFO("unresolved symbols I don't know how to find\n");
-            for(auto it=sTable.unresolved.begin();it!=sTable.unresolved.end();++it)
-               cdwVERBOSE("  unresolved '%s' of '%s'\n",(*it)->ref.c_str(),typeid(**it).name());
+            sTable.debugDump();
             throw std::runtime_error("gave up trying to resolve symbols");
          }
       }

@@ -29,11 +29,13 @@ public:
    std::map<std::string,node*> published;
    std::set<linkBase*> unresolved;
 
-   void markRequired(linkBase& l) { unresolved.insert(&l); }
+   void markRequired(linkBase& l);
    void publish(const std::string& fqn, node& n);
    void tryResolveVarType(const std::string& objName, node& obj, linkBase& l);
    void tryResolveExact(const std::string& refingScope, linkBase& l);
    void tryResolveWithParents(const std::string& refingScope, linkBase& l);
+
+   void debugDump();
 
 private:
    bool tryBind(const std::string& fqn, linkBase& l);

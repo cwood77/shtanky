@@ -6,16 +6,16 @@
 
 namespace araceli {
 
-void fileRefs::flush(const std::string& path, std::ostream& stream)
+void fileRefs::flush(std::ostream& stream)
 {
    for(auto it=m_paths.begin();it!=m_paths.end();++it)
    {
-      // compute rel path from 'path' to 'it'
+      // compute rel path from 'destPath' to 'it'
 
-      if(*it == path)
+      if(*it == destPath)
          continue; // don't depend on yourself... duh.
 
-      auto resolvedPath = cmn::pathUtil::computeRefPath(path,*it);
+      auto resolvedPath = cmn::pathUtil::computeRefPath(destPath,*it);
 
       stream << std::endl;
       stream << "ref \"" << resolvedPath << "\";" << std::endl;
@@ -43,7 +43,11 @@ void fileRefCollector::onLink(cmn::linkBase& l)
    auto adjF = cmn::pathUtil::addExtension(f.fullPath,cmn::pathUtil::kExtLiamHeader);
    m_pRefs->addRef(adjF);
 
-   cdwDEBUG("adding ref to '%s' b/c of link w/ ref '%s'\n",adjF.c_str(),l.ref.c_str());
+   cdwDEBUG("adding ref from %s to '%s' b/c of link w/ ref '%s' to node '%s'\n",
+      m_pRefs->destPath.c_str(),
+      adjF.c_str(),
+      l.ref.c_str(),
+      typeid(*l._getRefee()).name());
 }
 
 void liamTypeWriter::visit(cmn::typeNode& n)
@@ -82,23 +86,23 @@ void codeGen::visit(cmn::fileNode& n)
 {
    cmn::fileNode *pPrev = m_pActiveFile;
    m_pActiveFile = &n;
+   m_hRefs.destPath
+      = cmn::pathUtil::addExtension(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader);
+   m_sRefs.destPath
+      = cmn::pathUtil::addExtension(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource);
 
    hNodeVisitor::visit(n);
 
    {
       auto& header = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader).stream();
-      m_hRefs.flush(
-         cmn::pathUtil::addExtension(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader),
-         header);
+      m_hRefs.flush(header);
    }
    {
       auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-      m_sRefs.addRef(
-         cmn::pathUtil::addExtension(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader));
-      m_sRefs.flush(
-         cmn::pathUtil::addExtension(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource),
-         source);
+      m_sRefs.addRef(m_hRefs.destPath); // always include your own header :)
+      m_sRefs.flush(source);
    }
+
    m_refColl.bind(NULL);
    m_pActiveFile = pPrev;
 }

@@ -34,6 +34,7 @@ void unloadedScopeFinder::visit(cmn::scopeNode& n)
          ::strncmp(fqn.c_str()+1,m_missingRef.c_str(),fqn.length()-1)==0
         )
       {
+         // begin with the same things
          m_candidates[fqn] = &n;
       }
       else
@@ -58,7 +59,7 @@ bool nodeLinker::loadAnotherSymbol(cmn::node& root, cmn::symbolTable& sTable)
       root.acceptVisitor(f);
       if(f.any())
       {
-         ::printf("trying to find symbol %s\n",refToFind.c_str());
+         ::printf("I think (hope) I can find symbol %s by loading more stuff\n",refToFind.c_str());
          pToLoad = &f.mostLikely();
          break;
       }
