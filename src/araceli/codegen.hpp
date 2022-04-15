@@ -65,12 +65,12 @@ public:
    virtual void visit(cmn::intLiteralNode& n);
 
 private:
-   void generateClassVTable(cmn::classNode& n, std::ostream& header, std::string& vname);
-   void generateClassType(cmn::classNode& n, std::ostream& header, const std::string& vname);
-   void generateClassPrototypes(cmn::classNode& n, std::ostream& header);
-   void generateClassMethod(cmn::classNode& n, cmn::methodNode& m, std::ostream& source);
+   void generateClassVTable(cmn::classNode& n, cmn::outStream& header, std::string& vname);
+   void generateClassType(cmn::classNode& n, cmn::outStream& header, const std::string& vname);
+   void generateClassPrototypes(cmn::classNode& n, cmn::outStream& s);
+   void generateClassMethod(cmn::classNode& n, cmn::methodNode& m, cmn::outStream& s);
 
-   void generateMethodSignature(cmn::methodNode& m, std::ostream& s);
+   void generateMethodSignature(cmn::methodNode& m, cmn::outStream& s);
 
    void generateCallFromOpenParen(cmn::node& n, bool skipFirst);
 

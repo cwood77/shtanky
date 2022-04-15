@@ -7,6 +7,7 @@ class .sht.cons.iStream {
 }
 
 func .sht.cons.iStream.ctor() : .sht.cons.iStream;
+
 class .sht.cons.stdout.vtbl {
    printLn : ptr;
 }
@@ -17,8 +18,10 @@ class .sht.cons.stdout {
 
 func .sht.cons.stdout.ctor() : .sht.cons.stdout;
 
-func .sht.cons.stdout.printLn(self : .sht.cons.stdout,
+func .sht.cons.stdout.printLn(
+   self : .sht.cons.stdout,
    msg : str) : void;
+
 class .sht.cons.program.vtbl {
    run : ptr;
 }
@@ -29,3 +32,4 @@ class .sht.cons.program {
 }
 
 func .sht.cons.program.ctor() : .sht.cons.program;
+

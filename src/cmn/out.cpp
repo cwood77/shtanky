@@ -9,29 +9,6 @@ void outStream::updateDisk(iFileWriter& f)
    f.skipWriteOrDelete(m_fullPath,m_stream.str());
 }
 
-std::vector<std::stringstream*>& columnedOutStream::appendLine()
-{
-   std::vector<std::stringstream*> newLine;
-   for(size_t i=0;i<m_width;i++)
-      newLine.push_back(new std::stringstream());
-   m_lines.push_back(newLine);
-   return *(--(m_lines.end()));
-}
-
-void columnedOutStream::updateDisk(iFileWriter& f)
-{
-   std::stringstream s;
-   for(auto it=m_lines.begin();it!=m_lines.end();++it)
-   {
-      for(auto jit=it->begin();jit!=it->end();++jit)
-      {
-         s << (*jit)->str() << " ";
-      }
-      s << std::endl;
-   }
-   f.skipWriteOrDelete(m_fullPath,s.str());
-}
-
 outBundle::~outBundle()
 {
    if(m_pWriter)

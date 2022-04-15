@@ -9,7 +9,8 @@ class .test.test {
 
 func .test.test.ctor() : .test.test;
 
-func .test.test.run(self : .test.test,
+func .test.test.run(
+   self : .test.test,
    args : str[]) : void;
 
 ref "..\sht\cons\program.ara.lh";
