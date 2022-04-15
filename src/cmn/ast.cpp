@@ -297,6 +297,16 @@ void diagVisitor::visit(callNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(localDeclNode& n)
+{
+   ::printf("%slocalDeclNode; name=%s\n",
+      getIndent().c_str(),
+      n.name.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 void diagVisitor::visit(varRefNode& n)
 {
    ::printf("%svarRef; name=%s; linked?=%d\n",

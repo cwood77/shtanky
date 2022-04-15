@@ -41,6 +41,20 @@ private:
    bool tryBind(const std::string& fqn, linkBase& l);
 };
 
+class localFinder : public hNodeVisitor {
+public:
+   explicit localFinder(std::map<std::string,node*>& table) : m_table(table) {}
+
+   virtual void visit(node& n);
+   virtual void visit(methodNode& n);
+   virtual void visit(sequenceNode& n);
+
+   virtual void _implementLanguage() {} // all
+
+private:
+   std::map<std::string,node*>& m_table;
+};
+
 // knows all the scopes of a given node
 class linkResolver : public hNodeVisitor {
 public:
