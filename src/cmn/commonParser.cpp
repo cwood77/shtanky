@@ -101,6 +101,8 @@ void commonParser::parseClassBases(classNode& c)
 
 void commonParser::parseClassMembers(classNode& c)
 {
+   parseAttributes();
+
    size_t flags = 0;
    parseMemberKeywords(flags);
 
