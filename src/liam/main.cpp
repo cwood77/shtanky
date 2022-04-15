@@ -23,24 +23,29 @@ int main(int argc,const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
 
+   // load
    cmn::liamProjectNode prj;
    prj.sourceFullPath = cl.getArg("testdata\\test\\test.ara.ls");
    projectBuilder::build(prj);
    cdwVERBOSE("graph after loading ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
 
+   // link
    cmn::nodeLinker().linkGraph(prj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
 
+   // seed type terminals
    cmn::type::table                           _t;
    cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
    { cmn::coarseTypeVisitor v; prj.acceptVisitor(v); }
 
+   // type propagation
    cmn::type::nodeCache                       _c;
    cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
    { cmn::fineTypeVisitor v; prj.acceptVisitor(v); }
 
+   // generate LIR and variables
    varTable vTbl;
    lirStreams lir;
    cmn::tgt::w64EmuTargetInfo t;
@@ -50,19 +55,19 @@ int main(int argc,const char *argv[])
    }
    lir.dump();
 
+   // ---------------- register allocation ----------------
+
+   // establish variable requirements
    instrPrefs::publishRequirements(lir,vTbl,t);
 
-   cmn::outBundle out;
-   cmn::fileWriter wr;
-   out.setAutoUpdate(wr);
-
    // TODO all these operations should be per stream
+   cmn::outBundle out;
    for(auto it=lir.page.begin();it!=lir.page.end();++it)
    {
       varFinder f(t);
 
       varSplitter::split(it->second,vTbl,t);
-      //varCombiner::combine(it->second,vTbl,t);
+
       { varCombiner p(it->second,vTbl,t,f); p.run(); }
 
       { varAllocator p(it->second,vTbl,t,f); p.run(); }
@@ -72,4 +77,7 @@ int main(int argc,const char *argv[])
 
    _t.dump();
    _c.dump();
+
+   cmn::fileWriter wr;
+   out.updateDisk(wr);
 }

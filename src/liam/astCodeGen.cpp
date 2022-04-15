@@ -70,6 +70,54 @@ void astCodeGen::visit(cmn::funcNode& n)
       n.name);
 }
 
+void astCodeGen::visit(cmn::sequenceNode& n)
+{
+   std::vector<cmn::localDeclNode*>     locals;
+   std::vector<cmn::node*>              statements;
+   std::map<cmn::localDeclNode*,size_t> sizes;
+
+   // allocate all locals
+   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+   {
+      auto pLocal = dynamic_cast<cmn::localDeclNode*>(*it);
+      if(!pLocal)
+      {
+         statements.push_back(*it);
+         continue;
+      }
+      locals.push_back(pLocal);
+
+      auto& stream = m_lir.page[m_currFunc];
+      auto& res = lirInstr::append(
+         stream.pTail,
+         cmn::tgt::kReserveLocal,
+         cmn::fmt("   :%s",pLocal->name.c_str()));
+
+      auto lSize =
+         m_t.getRealSize(
+            cmn::type::gNodeCache->demand(
+               pLocal->demandSoleChild<cmn::typeNode>()).getSize());
+      res.addArg(*new lirArgVar(pLocal->name,lSize));
+
+      sizes[pLocal] = lSize; // use this later in the free
+   }
+
+   // handle all non-local children
+   for(auto it=statements.begin();it!=statements.end();++it)
+      (*it)->acceptVisitor(*this);
+
+   // free all locals
+   for(auto it=locals.begin();it!=locals.end();++it)
+   {
+      auto& stream = m_lir.page[m_currFunc];
+      auto& res = lirInstr::append(
+         stream.pTail,
+         cmn::tgt::kUnreserveLocal,
+         cmn::fmt("   :%s",(*it)->name.c_str()));
+      res.addArg(*new lirArgVar((*it)->name,sizes[*it]));
+   }
+}
+
 void astCodeGen::visit(cmn::invokeFuncPtrNode& n)
 {
    callGenInfo i;

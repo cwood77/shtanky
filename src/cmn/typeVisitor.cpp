@@ -54,6 +54,20 @@ void coarseTypeVisitor::visit(fieldNode& n)
    m_pBuilder->addMember(n.name,child.getType());
 }
 
+// this is a stupid special case
+//
+// really, the type prop alg should probably be 3-phase
+// - create built-in types
+// - create using types
+// - pass the types around on the AST (fine prop)
+void fineTypeVisitor::visit(strTypeNode& n)
+{
+   hNodeVisitor::visit(n);
+
+   std::unique_ptr<type::typeBuilder> b(type::typeBuilder::createString());
+   type::gNodeCache->publish(n,b->finish());
+}
+
 void fineTypeVisitor::visit(fieldAccessNode& n)
 {
    hNodeVisitor::visit(n);

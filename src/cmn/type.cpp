@@ -1,5 +1,6 @@
 #include "ast.hpp"
 #include "target.hpp"
+#include "throw.hpp"
 #include "trace.hpp"
 #include "type-i.hpp"
 #include "type.hpp"
@@ -105,19 +106,18 @@ iType& table::publish(iType *pType)
 {
    iType*& pAns = m_allTypes[pType->getName()];
    if(!pAns)
-      // table empty
+      // table is empty; add it
       pAns = pType;
    else
    {
       // table already has entry!
-
       auto pStub = dynamic_cast<stubTypeWrapper*>(pAns);
       if(pStub && pStub->pReal == NULL && !dynamic_cast<stubTypeWrapper*>(pType))
          // existing stub needs a real value
          pStub->pReal = pType;
 
       else if(pType == pAns)
-         ; // just no nothing if addin myself
+         ; // just do nothing if addin myself
 
       else
          // otherwise, if not assuming ownership of pType, kill it
@@ -195,16 +195,23 @@ bool nodeCache::hasType(const node& n) const
 
 iType& nodeCache::demand(const node& n)
 {
-   iType *pTy = m_cache[&n];
-   if(!pTy)
-      throw std::runtime_error("type not in node cache");
-   return *pTy;
+   if(!hasType(n))
+   {
+      gTable->dump();
+      dump();
+      cdwTHROW("type not in node cache");
+   }
+
+   return *m_cache[&n];
 }
 
 void nodeCache::publish(const node& n, iType& t)
 {
    if(hasType(n))
-      throw std::runtime_error("double publish!");
+   {
+      dump();
+      cdwTHROW("double publish!");
+   }
 
    m_cache[&n] = &t;
 }
