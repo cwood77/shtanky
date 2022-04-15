@@ -269,28 +269,69 @@ bool commonParser::tryParseStatement(node& owner)
    if(m_l.getToken() == commonLexor::kLBrace) return false;
    if(m_l.getToken() == commonLexor::kRBrace) return false;
 
-   std::unique_ptr<node> pInst(&parseLValue());
-   if(m_l.getToken() == commonLexor::kArrow)
-      parseInvoke(pInst,owner);
-   else if(m_l.getToken() == commonLexor::kArrowParen)
-   {
-      m_l.advance();
-
-      auto& i = m_nFac.appendNewChild<cmn::invokeFuncPtrNode>(owner);
-      i.appendChild(*pInst.release());
-
-      parsePassedArgList(i);
-      m_l.demandAndEat(commonLexor::kRParen);
-      m_l.demandAndEat(commonLexor::kSemiColon);
-   }
-   else if(m_l.getToken() == commonLexor::kLParen)
-      parseCall(pInst,owner);
-   else if(m_l.getToken() == commonLexor::kEquals)
-      parseAssignment(pInst,owner);
+   if(m_l.getToken() == commonLexor::kVar)
+      parseVar(owner);
    else
-      m_l.demandOneOf(4,commonLexor::kArrow,commonLexor::kArrowParen,commonLexor::kLParen,commonLexor::kEquals);
+   {
+      std::unique_ptr<node> pInst(&parseLValue());
+      if(m_l.getToken() == commonLexor::kArrow)
+         parseInvoke(pInst,owner);
+      else if(m_l.getToken() == commonLexor::kArrowParen)
+      {
+         m_l.advance();
+
+         auto& i = m_nFac.appendNewChild<cmn::invokeFuncPtrNode>(owner);
+         i.appendChild(*pInst.release());
+
+         parsePassedArgList(i);
+         m_l.demandAndEat(commonLexor::kRParen);
+         m_l.demandAndEat(commonLexor::kSemiColon);
+      }
+      else if(m_l.getToken() == commonLexor::kLParen)
+         parseCall(pInst,owner);
+      else if(m_l.getToken() == commonLexor::kEquals)
+         parseAssignment(pInst,owner);
+      else
+         m_l.demandOneOf(5,
+            commonLexor::kVar,
+            commonLexor::kArrow,
+            commonLexor::kArrowParen,
+            commonLexor::kLParen,
+            commonLexor::kEquals);
+   }
 
    return true;
+}
+
+void commonParser::parseVar(node& owner)
+{
+   m_l.demandAndEat(commonLexor::kVar);
+
+   m_l.demand(commonLexor::kName);
+   auto& l = m_nFac.appendNewChild<localDeclNode>(owner);
+   l.name = m_l.getLexeme();
+   m_l.advance();
+
+   if(m_l.getToken() == commonLexor::kColon)
+   {
+      m_l.advance();
+      parseType(l);
+
+      if(m_l.getToken() == commonLexor::kEquals)
+      {
+         m_l.advance();
+         parseRValue(l);
+      }
+   }
+   else if(m_l.getToken() == commonLexor::kEquals)
+   {
+      m_l.advance();
+      parseRValue(l);
+   }
+   else
+      m_l.demandOneOf(2,commonLexor::kColon,commonLexor::kEquals);
+
+   m_l.demandAndEat(commonLexor::kSemiColon);
 }
 
 void commonParser::parseInvoke(std::unique_ptr<node>& inst, node& owner)

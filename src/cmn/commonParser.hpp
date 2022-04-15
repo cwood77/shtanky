@@ -55,9 +55,13 @@ class commonLexor;
 // <statements> ::== <statement>
 //                 | <body>
 //                 | e
-// <statement> ::== <invoke> ';' - are these just rvalues?; no.  branches are not rvalues
+// <statement> ::== 'var' <var> ';'
+//                | <invoke> ';'
 //                | <call> ';'
 //                | <assignment> ';'
+// <var>       ::== <name> ':' <type>
+//                | <name> ':' <type> '=' <rvalue>
+//                | <name> '=' <rvalue>
 // <invoke>     ::== <lvalue> '->' <name> '(' <passedArgList> ')'
 // <call>       ::== <lvalue> '(' <passedArgList> ')'
 // <assignment> ::== <lvalue> '=' <rvalue>
@@ -147,6 +151,7 @@ private:
    void parseSequence(node& owner);
    void parseStatements(node& owner);
    bool tryParseStatement(node& owner);
+   void parseVar(node& owner);
    void parseInvoke(std::unique_ptr<node>& inst, node& owner);
    void parseCall(std::unique_ptr<node>& inst, node& owner);
    void parseAssignment(std::unique_ptr<node>& inst, node& owner);

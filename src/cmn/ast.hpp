@@ -35,6 +35,7 @@ class invokeNode;
 class invokeFuncPtrNode;
 class fieldAccessNode;
 class callNode;
+class localDeclNode;
 class varRefNode;
 class assignmentNode;
 class bopNode;
@@ -70,6 +71,7 @@ public:
    virtual void visit(invokeFuncPtrNode& n) = 0;
    virtual void visit(fieldAccessNode& n) = 0;
    virtual void visit(callNode& n) = 0;
+   virtual void visit(localDeclNode& n) = 0;
    virtual void visit(varRefNode& n) = 0;
    virtual void visit(assignmentNode& n) = 0;
    virtual void visit(bopNode& n) = 0;
@@ -370,6 +372,13 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class localDeclNode : public node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 class varRefNode : public node {
 public:
    link<typeNode> pDef;
@@ -443,6 +452,7 @@ public:
    virtual void visit(invokeFuncPtrNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(fieldAccessNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(callNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(localDeclNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(varRefNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(assignmentNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(bopNode& n) { visit(static_cast<node&>(n)); }
@@ -478,6 +488,7 @@ public:
    virtual void visit(invokeFuncPtrNode& n);
    virtual void visit(fieldAccessNode& n);
    virtual void visit(callNode& n);
+   virtual void visit(localDeclNode& n);
    virtual void visit(varRefNode& n);
    virtual void visit(assignmentNode& n);
    virtual void visit(bopNode& n);

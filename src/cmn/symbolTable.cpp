@@ -100,6 +100,30 @@ bool symbolTable::tryBind(const std::string& fqn, linkBase& l)
    return false;
 }
 
+void localFinder::visit(node& n)
+{
+   if(n.getParent())
+      n.getParent()->acceptVisitor(*this);
+}
+
+void localFinder::visit(methodNode& n)
+{
+   // no-op; slight optimization to stop chaining early
+}
+
+void localFinder::visit(sequenceNode& n)
+{
+   auto locals = n.getChildrenOf<localDeclNode>();
+   for(auto it=locals.begin();it!=locals.end();++it)
+   {
+      node*& pPtr = m_table[(*it)->name];
+      if(pPtr)
+         continue; // things in a closer scope win
+
+      pPtr = *it;
+   }
+}
+
 linkResolver::linkResolver(symbolTable& st, linkBase& l, size_t mode)
 : m_sTable(st), m_l(l), m_mode(mode)
 {
@@ -304,6 +328,16 @@ void nodeResolver::visit(invokeNode& n)
 void nodeResolver::visit(varRefNode& n)
 {
    m_sTable.markRequired(n.pDef);
+
+   if(!n.pDef._getRefee())
+   {
+      // check locals first
+      std::map<std::string,node*> locals;
+      { localFinder v(locals); n.acceptVisitor(v); }
+      for(auto it=locals.begin();it!=locals.end();++it)
+         m_sTable.tryResolveVarType(it->first,*it->second,n.pDef);
+   }
+
    linkResolver v(m_sTable,n.pDef,
       linkResolver::kBaseClasses | linkResolver::kLocalsAndFields);
    n.acceptVisitor(v);
