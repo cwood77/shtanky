@@ -1,4 +1,5 @@
 #include "../cmn/fmt.hpp"
+#include "../cmn/trace.hpp"
 #include "lir.hpp"
 #include "varGen.hpp"
 #include "varSplitter.hpp"
@@ -6,7 +7,7 @@
 
 namespace liam {
 
-void varSplitter::split(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
+void varSplitter::split(lirStreams& s, varTable& v, cmn::tgt::iTargetInfo& t)
 {
    varSplitter self(s,v,t);
 
@@ -18,10 +19,9 @@ void varSplitter::checkVar(var& v)
 {
    if(v.storageToInstrMap.size() > 1)
    {
-      // this var as at least two different storage demands
+      // this var has at least two different storage demands
 
       auto it=v.instrToStorageMap.begin();
-      //size_t prevI = it->first;
       auto pPrevSs = &it->second;
       for(++it;it!=v.instrToStorageMap.end();++it)
       {
@@ -42,7 +42,6 @@ void varSplitter::checkVar(var& v)
             }
          }
 
-         //prevI = currI;
          pPrevSs = pCurrSs;
       }
    }
@@ -54,10 +53,10 @@ void varSplitter::checkVar(var& v)
 
 void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t destStor)
 {
-   ::printf("emitting move for split!\n");
+   cdwDEBUG("emitting move for split before %lld (%lld -> %lld)\n",orderNum,srcStor,destStor);
 
-   auto& mov = m_s.pTail->head()
-      .search(orderNum)
+   auto& mov = m_s.
+      search(orderNum)
          .injectBefore(
             cmn::tgt::kMov,
             cmn::fmt("      (%s req for %s) [splitter]",v.name.c_str(),m_t.getProc().getRegName(destStor)));

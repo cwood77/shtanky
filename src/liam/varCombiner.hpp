@@ -17,6 +17,8 @@ class varTable;
 
 class varCombiner : public availVarPass {
 public:
+   static bool isInfiniteStorage(size_t s);
+
    varCombiner(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t, varFinder& f)
    : availVarPass(s,v,t,f) {}
 

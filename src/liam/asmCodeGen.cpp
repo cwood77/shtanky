@@ -152,6 +152,24 @@ void asmCodeGen::handleInstr(lirInstr& i)
             m_w.advanceLine();
          }
          break;
+      case cmn::tgt::kReserveLocal:
+         {
+            m_w[1]
+               << "sub, "
+               << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
+               << m_t.getRealSize(i.getArgs()[0]->getSize());
+            m_w.advanceLine();
+         }
+         break;
+      case cmn::tgt::kUnreserveLocal:
+         {
+            m_w[1]
+               << "add, "
+               << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
+               << m_t.getRealSize(i.getArgs()[0]->getSize());
+            m_w.advanceLine();
+         }
+         break;
       case cmn::tgt::kGlobalConstData:
          {
             m_w[0] << i.comment << ":";

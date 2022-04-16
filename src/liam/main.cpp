@@ -60,14 +60,15 @@ int main(int argc,const char *argv[])
    // establish variable requirements
    instrPrefs::publishRequirements(lir,vTbl,t);
 
+   varSplitter::split(lir,vTbl,t);
+
    // TODO all these operations should be per stream
+   //      really?  the splitter is effectively handling the
+   //      whole thing now anyway
    cmn::outBundle out;
    for(auto it=lir.page.begin();it!=lir.page.end();++it)
    {
       varFinder f(t);
-
-      varSplitter::split(it->second,vTbl,t);
-
       { varCombiner p(it->second,vTbl,t,f); p.run(); }
 
       { varAllocator p(it->second,vTbl,t,f); p.run(); }

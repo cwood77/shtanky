@@ -10,6 +10,18 @@
 
 namespace liam {
 
+bool varCombiner::isInfiniteStorage(size_t s)
+{
+   return
+
+      // immediate args can't collide with one another
+      s == cmn::tgt::kStorageImmediate ||
+
+      // the stack is virtually infinite, especially when slots
+      // haven't even been picked
+      s == cmn::tgt::kStorageUndecidedStack;
+}
+
 void varCombiner::onInstr(lirInstr& i)
 {
    m_clients.clear();
@@ -28,7 +40,7 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
    {
       // for each storage
 
-      if(it->second.size() > 1 && it->first != cmn::tgt::kStorageImmediate) // immediate is infinite
+      if(it->second.size() > 1 && !isInfiniteStorage(it->first))
       {
          // two or more variables claimed this spot!
          cdwDEBUG("%d variables claimed storage %lld!\n",it->second.size(),it->first);

@@ -11,9 +11,10 @@ class varFinder {
 public:
    explicit varFinder(cmn::tgt::iTargetInfo& t) : m_t(t), m_stackLocalSpace(0) {}
 
-   void reset();
+   void onNewInstr();
    void recordStorageUsed(size_t s);
    size_t chooseFreeStorage(size_t pseudoSize);
+   size_t decideStackStorage(size_t pseudoSize);
 
    const std::set<size_t>& getUsedRegs() const { return m_regsUsed; }
    size_t getUsedStackSpace() const { return m_stackLocalSpace; }

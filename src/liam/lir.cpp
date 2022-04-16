@@ -1,4 +1,5 @@
 #include "../cmn/throw.hpp"
+#include "../cmn/trace.hpp"
 #include "lir.hpp"
 #include <sstream>
 
@@ -281,6 +282,45 @@ void lirStreams::dump()
       ::printf("----- %s\n",it->first.c_str());
       it->second.dump();
    }
+}
+
+void lirStreams::onNewPageStarted(const std::string& key)
+{
+   lirStream& noob = page[key];
+   noob.pTop = this;
+
+   if(page.size() == 1) return;
+
+   size_t last = 0;
+   for(auto it=page.begin();it!=page.end();++it)
+   {
+      if(key == it->first)
+         continue;
+
+      if(last < it->second.pTail->orderNum)
+         last = it->second.pTail->orderNum;
+   }
+
+   last += 20;
+   cdwDEBUG("reassigning new page to order %lld\n",last);
+   noob.pTail->orderNum = last;
+}
+
+lirInstr& lirStreams::search(size_t orderNum)
+{
+   for(auto it=page.begin();it!=page.end();++it)
+   {
+      if(orderNum <= it->second.pTail->orderNum)
+      {
+         auto& h = it->second.pTail->head();
+         if(orderNum >= h.orderNum)
+         {
+            return h.search(orderNum);
+         }
+      }
+   }
+
+   cdwTHROW("can't find orderNum on any page..?");
 }
 
 } // namespace liam

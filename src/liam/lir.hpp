@@ -18,6 +18,8 @@ namespace cmn { class node; }
 
 namespace liam {
 
+class lirStreams;
+
 class lirArg {
 public:
    lirArg() : disp(0), addrOf(false) {}
@@ -124,12 +126,13 @@ public:
 
 class lirStream {
 public:
-   lirStream() : pTail(NULL), m_nTemp(0) {}
+   lirStream() : pTail(NULL), pTop(NULL), m_nTemp(0) {}
    ~lirStream();
 
    void dump();
 
    lirInstr *pTail;
+   lirStreams *pTop;
 
    // -------------------------- new APIs
 
@@ -195,6 +198,14 @@ private:
 class lirStreams {
 public:
    void dump();
+
+   // after the first instr on a page is added,
+   // pick a good initial order num that doesn't
+   // overlap
+   // ... so don't write to multiple pages at once!
+   void onNewPageStarted(const std::string& key);
+
+   lirInstr& search(size_t orderNum);
 
    std::map<std::string,lirStream> page;
 };
