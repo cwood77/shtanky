@@ -520,7 +520,7 @@ public:
    virtual void visit(fileRefNode& n) { T::unexpected(n); }
    //virtual void visit(constNode& n) { T::unexpected(n); }
    virtual void visit(funcNode& n) { T::unexpected(n); }
-   virtual void visit(ptrTypeNode& n) { T::unexpected(n); }
+   //virtual void visit(ptrTypeNode& n) { T::unexpected(n); }
    //virtual void visit(invokeFuncPtrNode& n) { T::unexpected(n); }
 
    virtual void _implementLanguage() {} // araceli

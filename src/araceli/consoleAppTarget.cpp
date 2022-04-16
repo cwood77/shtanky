@@ -26,10 +26,11 @@ void consoleAppTarget::codegen(cmn::araceliProjectNode& root, metadata& md)
       << "   [entrypoint]" << std::endl
       << "   static main(args : str[]) : void" << std::endl
       << "   {" << std::endl
-      << "      var cout = .sht.cons.stdout;" << std::endl
+      << "      var cout : .sht.cons.iStream;" << std::endl
       << std::endl
    ;
 
+if (0) {
    size_t i=0;
    for(auto it=topLevels.begin();it!=topLevels.end();++it,i++)
    {
@@ -38,8 +39,8 @@ void consoleAppTarget::codegen(cmn::araceliProjectNode& root, metadata& md)
          cdwTHROW("everything marked with [program] must be a class");
 
       stream.stream()
-         << "      var obj" << i << " = "
-            << cmn::fullyQualifiedName::build(*pClass) << ";" << std::endl
+         << "      var obj" << i << " : ptr;"// = "
+//            << cmn::fullyQualifiedName::build(*pClass) << "();" << std::endl
       ;
       if(wantsStream(*pClass))
          stream.stream()
@@ -52,6 +53,7 @@ void consoleAppTarget::codegen(cmn::araceliProjectNode& root, metadata& md)
    i=0;
    for(auto it=topLevels.begin();it!=topLevels.end();++it,i++)
       stream.stream() << "      obj" << i << "->run(args);" << std::endl;
+}
 
    stream.stream()
       << "   }" << std::endl
@@ -62,7 +64,7 @@ void consoleAppTarget::codegen(cmn::araceliProjectNode& root, metadata& md)
    cmn::fileWriter wr;
    out.updateDisk(wr);
 
-   //loader::loadFile(scope,fullPath);
+   loader::loadFile(scope,fullPath);
 }
 
 cmn::scopeNode& consoleAppTarget::findProjectScope(cmn::araceliProjectNode& root)
