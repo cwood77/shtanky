@@ -1,0 +1,8 @@
+class .test.consoleTarget {
+}
+
+func .test.consoleTarget.ctor() : .test.consoleTarget;
+
+func .test.consoleTarget.main(
+args : str[]) : void;
+

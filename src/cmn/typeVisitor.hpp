@@ -42,7 +42,7 @@ class fineTypeVisitor : public hNodeVisitor {
 public:
    virtual void visit(node& n) { visitChildren(n); }
 
-   virtual void visit(strTypeNode& n);
+   virtual void visit(typeNode& n);
    virtual void visit(fieldAccessNode& n);
    virtual void visit(varRefNode& n);
    virtual void visit(stringLiteralNode& n);

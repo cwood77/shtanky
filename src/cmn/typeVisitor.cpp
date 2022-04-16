@@ -58,14 +58,15 @@ void coarseTypeVisitor::visit(fieldNode& n)
 //
 // really, the type prop alg should probably be 3-phase
 // - create built-in types
-// - create using types
+// - create user types
 // - pass the types around on the AST (fine prop)
-void fineTypeVisitor::visit(strTypeNode& n)
+void fineTypeVisitor::visit(typeNode& n)
 {
-   hNodeVisitor::visit(n);
+   typeBuilderVisitor typePicker;
+   n.acceptVisitor(typePicker);
+   auto& ty = typePicker.getType();
 
-   std::unique_ptr<type::typeBuilder> b(type::typeBuilder::createString());
-   type::gNodeCache->publish(n,b->finish());
+   type::gNodeCache->publish(n,ty);
 }
 
 void fineTypeVisitor::visit(fieldAccessNode& n)

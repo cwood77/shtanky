@@ -84,7 +84,8 @@ void commonParser::parseClass(fileNode& f)
 
    m_l.demandAndEat(cdwLoc,commonLexor::kLBrace);
 
-   parseClassMembers(c);
+   if(m_l.getToken() != commonLexor::kRBrace)
+      parseClassMembers(c);
 
    m_l.demandAndEat(cdwLoc,commonLexor::kRBrace);
 }
