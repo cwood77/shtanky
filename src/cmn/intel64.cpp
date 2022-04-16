@@ -125,6 +125,9 @@ const char *x8664Processor::getRegName(size_t r) const
       case kStorageImmediate:
          return "<immediate>";
          break;
+      case kStorageUndecidedStack:
+         return "<undecided-stack>";
+         break;
       case i64::kRegA:
          return "rax";
          break;
@@ -176,7 +179,7 @@ const char *x8664Processor::getRegName(size_t r) const
          return "r15";
          break;
       default:
-         throw std::runtime_error("unknown reg:" __FILE__);
+         cdwTHROW("unknown reg");
    }
 }
 

@@ -3,7 +3,7 @@
 
 namespace liam {
 
-void varFinder::reset()
+void varFinder::onNewInstr()
 {
    m_inUse.clear();
    m_t.getProc().createRegisterMap(m_inUse);
@@ -30,6 +30,11 @@ size_t varFinder::chooseFreeStorage(size_t pseudoSize)
    }
 
    // use a stack slot
+   return decideStackStorage(pseudoSize);
+}
+
+size_t varFinder::decideStackStorage(size_t pseudoSize)
+{
    size_t actualSize = m_t.getRealSize(pseudoSize);
    size_t s =  cmn::tgt::makeStackStorage(m_stackLocalSpace-actualSize);
    m_stackLocalSpace += actualSize;

@@ -22,6 +22,7 @@ void astCodeGen::visit(cmn::constNode& n)
       stream.pTail,
       cmn::tgt::kSelectSegment,
       "");
+   m_lir.onNewPageStarted(m_currFunc);
    seg.addArg<lirArgConst>("2",0); // const seg
 
    auto& i = lirInstr::append(
@@ -46,6 +47,7 @@ void astCodeGen::visit(cmn::funcNode& n)
       stream.pTail,
       cmn::tgt::kSelectSegment,
       "");
+   m_lir.onNewPageStarted(m_currFunc);
    seg.addArg<lirArgConst>("1",0); // code seg
 
    auto args = n.getChildrenOf<cmn::argNode>();
@@ -94,10 +96,10 @@ void astCodeGen::visit(cmn::sequenceNode& n)
          cmn::fmt("   :%s",pLocal->name.c_str()));
 
       auto lSize =
-         m_t.getRealSize(
-            cmn::type::gNodeCache->demand(
-               pLocal->demandSoleChild<cmn::typeNode>()).getSize());
-      res.addArg(*new lirArgVar(pLocal->name,lSize));
+         cmn::type::gNodeCache->demand(
+            pLocal->demandSoleChild<cmn::typeNode>()).getSize();
+      auto& arg = res.addArg<lirArgVar>(pLocal->name,lSize);
+      m_vGen.createNamedVar(res.orderNum,arg);
 
       sizes[pLocal] = lSize; // use this later in the free
    }
@@ -114,7 +116,7 @@ void astCodeGen::visit(cmn::sequenceNode& n)
          stream.pTail,
          cmn::tgt::kUnreserveLocal,
          cmn::fmt("   :%s",(*it)->name.c_str()));
-      res.addArg(*new lirArgVar((*it)->name,sizes[*it]));
+      res.addArg<lirArgVar>((*it)->name,sizes[*it]);
    }
 }
 

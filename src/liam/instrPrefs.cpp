@@ -1,5 +1,6 @@
 #include "../cmn/target.hpp"
 #include "../cmn/throw.hpp"
+#include "../cmn/trace.hpp"
 #include "instrPrefs.hpp"
 #include "lir.hpp"
 #include "varGen.hpp"
@@ -31,14 +32,9 @@ void instrPrefs::handle(lirInstr& i)
 {
    switch(i.instrId)
    {
-      case cmn::tgt::kEnterFunc:
-         {
-            auto& cc = m_target.getCallConvention();
-            handle(i,cc,/*outOrIn*/false,/*isInvoke*/false);
-         }
-         break;
       case cmn::tgt::kSelectSegment: // no prefs
       case cmn::tgt::kExitFunc:
+      case cmn::tgt::kUnreserveLocal:
       case cmn::tgt::kGlobalConstData:
       case cmn::tgt::kPush:
       case cmn::tgt::kPop:
@@ -46,6 +42,23 @@ void instrPrefs::handle(lirInstr& i)
       case cmn::tgt::kPreCallStackAlloc:
       case cmn::tgt::kPostCallStackAlloc:
          break;
+
+      case cmn::tgt::kEnterFunc:
+         {
+            auto& cc = m_target.getCallConvention();
+            handle(i,cc,/*outOrIn*/false,/*isInvoke*/false);
+         }
+         break;
+
+      case cmn::tgt::kReserveLocal:
+         {
+            var& v = m_vTable.demand(*i.getArgs()[0]);
+            v.requireStorage(i,cmn::tgt::kStorageUndecidedStack);
+            cdwDEBUG("> local %s needs stack, any stack\n",
+               dynamic_cast<lirArgVar*>(i.getArgs()[0])->name.c_str());
+         }
+         break;
+
       case cmn::tgt::kCall:
          {
             auto& cc = m_target.getCallConvention();

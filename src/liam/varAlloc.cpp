@@ -35,6 +35,13 @@ void varAllocator::onInstrWithAvailVar(lirInstr& i)
 
             vr.requireStorage(i,stor);
          }
+         else if(storage.size() == 1
+               && *storage.begin() == cmn::tgt::kStorageUndecidedStack)
+         {
+            // this guy asked for a stack slot, but didn't care where
+            auto stor = m_f.decideStackStorage(vr.getSize());
+            vr.changeStorage(i,cmn::tgt::kStorageUndecidedStack,stor);
+         }
       }
    }
 }

@@ -31,6 +31,16 @@ void var::requireStorage(size_t orderNum, size_t s)
    storageToInstrMap[s].insert(orderNum);
 }
 
+void var::changeStorage(lirInstr& i, size_t old, size_t nu)
+{
+   instrToStorageMap[i.orderNum].erase(old);
+   instrToStorageMap[i.orderNum].erase(nu);
+   storageToInstrMap[old].erase(i.orderNum);
+   if(storageToInstrMap[old].size())
+      storageToInstrMap.erase(old);
+   storageToInstrMap[nu].insert(i.orderNum);
+}
+
 bool var::isAlive(size_t orderNum)
 {
    return refs.begin()->first <= orderNum && orderNum <= (--(refs.end()))->first;

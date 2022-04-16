@@ -33,6 +33,8 @@ public:
    void requireStorage(lirInstr& i, size_t s);
    void requireStorage(size_t orderNum, size_t s);
 
+   void changeStorage(lirInstr& i, size_t old, size_t nu);
+
    bool isAlive(size_t orderNum);
    std::set<size_t> getStorageAt(size_t orderNum);
    bool requiresStorageLater(size_t orderNum, size_t storage);
