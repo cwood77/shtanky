@@ -12,9 +12,12 @@ void trace::write(const std::string& fmt, ...)
    ::vsnprintf(buffer,1023,fmt.c_str(),ap);
    va_end(ap);
 
-   const char *kStrings[] = { "info", "verbose", "debug" };
+   const char *kStrings[] = { "i", "v", "D" };
 
-   ::printf("[%s-%s-%lu] %s",kStrings[m_le],m_fi,m_li,buffer);
+   if(m_context)
+      ::printf("[%s:%s-%lu] (%s) %s",kStrings[m_le],m_fi,m_li,m_context,buffer);
+   else
+      ::printf("[%s:%s-%lu] %s",     kStrings[m_le],m_fi,m_li,          buffer);
 }
 
 } // namespace cmn

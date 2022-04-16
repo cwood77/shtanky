@@ -2,6 +2,7 @@
 #include "../cmn/i64asm.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/obj-fmt.hpp"
+#include "../cmn/trace.hpp"
 #include "../cmn/writer.hpp"
 #include "assembler.hpp"
 #include "frontend.hpp"
@@ -205,13 +206,13 @@ void argParser::parseArg(cmn::tgt::asmArgInfo& i)
    else
       parseMemExpr();
 
-   m_l.demand(argLexor::kEOI);
+   m_l.demand(cdwLoc,argLexor::kEOI);
 }
 
 void argParser::parseReg()
 {
    if((m_l.getTokenClass() & argLexor::kClassRegAny) == 0)
-      m_l.error("expected register");
+      m_l.error(cdwLoc,"expected register");
 
    if(m_l.getTokenClass() & argLexor::kClassReg64)
    {
@@ -221,7 +222,7 @@ void argParser::parseReg()
             + cmn::tgt::i64::kRegA;
    }
    else
-      m_l.error(cmn::fmt("unknown register '%s'",m_l.getLexeme().c_str()));
+      m_l.error(cdwLoc,cmn::fmt("unknown register '%s'",m_l.getLexeme().c_str()));
 
    m_l.advance();
 }
@@ -238,10 +239,10 @@ void argParser::parseMemExpr()
       parseReg();
       parseScale();
 
-      m_l.demandAndEat(argLexor::kRBracket);
+      m_l.demandAndEat(cdwLoc,argLexor::kRBracket);
    }
    else
-      m_l.demand(argLexor::kLBracket);
+      m_l.demand(cdwLoc,argLexor::kLBracket);
 }
 
 void argParser::parseScale()
@@ -250,7 +251,7 @@ void argParser::parseScale()
    {
       m_l.advance();
 
-      m_l.demand(argLexor::kIntLiteral);
+      m_l.demand(cdwLoc,argLexor::kIntLiteral);
       m_pAi->disp = m_l.getLexemeInt();
 
       m_l.advance();
@@ -307,7 +308,7 @@ void repObjWriter::write(const std::string& reason, const void *p, size_t n)
 void dataParser::parse(cmn::iObjWriter& w)
 {
    parseData(w);
-   m_l.demand(dataLexor::kEOI);
+   m_l.demand(cdwLoc,dataLexor::kEOI);
    w.nextPart();
 }
 
@@ -317,17 +318,17 @@ void dataParser::parseData(cmn::iObjWriter& w)
    {
       m_l.advance();
 
-      m_l.demandAndEat(dataLexor::kLParen);
+      m_l.demandAndEat(cdwLoc,dataLexor::kLParen);
 
-      m_l.demand(dataLexor::kIntLiteral);
+      m_l.demand(cdwLoc,dataLexor::kIntLiteral);
       auto r = m_l.getLexemeInt();
       if(r < 1)
-         m_l.error("value for rep() must be > 0");
+         m_l.error(cdwLoc,"value for rep() must be > 0");
       m_l.advance();
       repObjWriter rw(w);
       rw.setRep(r);
 
-      m_l.demandAndEat(dataLexor::kRParen);
+      m_l.demandAndEat(cdwLoc,dataLexor::kRParen);
 
       parseRepableData(rw,true);
    }
@@ -393,12 +394,12 @@ void dataParser::parseRepableData(cmn::iObjWriter& w, bool req)
    else
    {
       if(req)
-         m_l.demandOneOf(2,
+         m_l.demandOneOf(cdwLoc,2,
             dataLexor::kStringLiteral,
             dataLexor::kIntLitType
          );
       else
-         m_l.demandOneOf(3,
+         m_l.demandOneOf(cdwLoc,3,
             dataLexor::kStringLiteral,
             dataLexor::kIntLitType,
             dataLexor::kEOI

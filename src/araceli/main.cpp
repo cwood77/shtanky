@@ -1,3 +1,8 @@
+#ifdef  cdwTraceContext
+#undef  cdwTraceContext
+#define cdwTraceContext "main()"
+#endif
+
 #include "../cmn/cmdline.hpp"
 #include "../cmn/out.hpp"
 #include "../cmn/trace.hpp"

@@ -153,17 +153,17 @@ char lexorBase::getLexemeIntSize(const __int64& v)
    return 8;
 }
 
-void lexorBase::demand(size_t t)
+void lexorBase::demand(const char *f, unsigned long l, size_t t)
 {
    if(getToken() != t)
    {
       std::stringstream msg;
       msg << "expected " << getTokenName(t) << " but got " << getTokenName();
-      error(msg.str());
+      error(f,l,msg.str());
    }
 }
 
-void lexorBase::demandOneOf(size_t n, ...)
+void lexorBase::demandOneOf(const char *f, unsigned long l, size_t n, ...)
 {
    std::stringstream msg;
    msg << "expected ";
@@ -191,13 +191,14 @@ void lexorBase::demandOneOf(size_t n, ...)
       return;
 
    msg << " but got " << getTokenName();
-   error(msg.str());
+   error(f,l,msg.str());
 }
 
-void lexorBase::error(const std::string& msg)
+void lexorBase::error(const char *f, unsigned long l, const std::string& msg)
 {
    std::stringstream fullMsg;
-   fullMsg << msg << " near line " << m_state.lineNumber;
+   fullMsg << msg << " near line " << m_state.lineNumber
+      << " {in parser " << f << ", " << l << "}";
 
    throw std::runtime_error(fullMsg.str());
 }
