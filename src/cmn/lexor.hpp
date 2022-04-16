@@ -99,10 +99,11 @@ public:
    char getLexemeIntSize() const { return getLexemeIntSize(getLexemeInt()); }
    unsigned long getLineNumber() { return m_state.lineNumber; }
 
-   void demand(size_t t);
-   void demandOneOf(size_t n, ...);
-   void demandAndEat(size_t t) { demand(t); advance(); }
-   void error(const std::string& msg);
+   void demand(const char *f, unsigned long l, size_t t);
+   void demandOneOf(const char *f, unsigned long l, size_t n, ...);
+   void demandAndEat(const char *f, unsigned long l, size_t t)
+   { demand(f,l,t); advance(); }
+   void error(const char *f, unsigned long l, const std::string& msg);
 
 protected:
    void addPhase(iLexorPhase& p);

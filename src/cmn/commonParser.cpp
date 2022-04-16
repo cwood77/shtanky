@@ -1,5 +1,6 @@
 #include "commonLexor.hpp"
 #include "commonParser.hpp"
+#include "trace.hpp"
 
 namespace cmn {
 
@@ -31,7 +32,7 @@ void commonParser::parseFile(fileNode& f)
    {
       parseAttributes();
 
-      m_l.demandOneOf(6,
+      m_l.demandOneOf(cdwLoc,6,
          commonLexor::kClass,
          commonLexor::kInterface,
          commonLexor::kAbstract,
@@ -47,12 +48,12 @@ void commonParser::parseFile(fileNode& f)
       {
          m_l.advance();
 
-         m_l.demand(commonLexor::kStringLiteral);
+         m_l.demand(cdwLoc,commonLexor::kStringLiteral);
          auto& r = m_nFac.appendNewChild<fileRefNode>(f);
          r.ref = m_l.getLexeme();
          m_l.advance();
 
-         m_l.demandAndEat(commonLexor::kSemiColon);
+         m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
       }
       else
          parseClass(f);
@@ -69,20 +70,23 @@ void commonParser::parseClass(fileNode& f)
    else if(m_l.getToken() == commonLexor::kAbstract)
       c.flags |= nodeFlags::kAbstract;
    else
-      m_l.demandOneOf(3,commonLexor::kClass,commonLexor::kInterface,commonLexor::kAbstract);
+      m_l.demandOneOf(cdwLoc,3,
+         commonLexor::kClass,
+         commonLexor::kInterface,
+         commonLexor::kAbstract);
    m_l.advance();
 
-   m_l.demand(commonLexor::kName);
+   m_l.demand(cdwLoc,commonLexor::kName);
    c.name = m_l.getLexeme();
    m_l.advance();
 
    parseClassBases(c);
 
-   m_l.demandAndEat(commonLexor::kLBrace);
+   m_l.demandAndEat(cdwLoc,commonLexor::kLBrace);
 
    parseClassMembers(c);
 
-   m_l.demandAndEat(commonLexor::kRBrace);
+   m_l.demandAndEat(cdwLoc,commonLexor::kRBrace);
 }
 
 void commonParser::parseClassBases(classNode& c)
@@ -90,9 +94,9 @@ void commonParser::parseClassBases(classNode& c)
    // at most 1 for now
    if(m_l.getToken() != commonLexor::kLBrace)
    {
-      m_l.demandAndEat(commonLexor::kColon);
+      m_l.demandAndEat(cdwLoc,commonLexor::kColon);
 
-      m_l.demand(commonLexor::kName);
+      m_l.demand(cdwLoc,commonLexor::kName);
       c.baseClasses.push_back(link<classNode>());
       c.baseClasses.back().ref = m_l.getLexeme();
       m_l.advance();
@@ -106,7 +110,7 @@ void commonParser::parseClassMembers(classNode& c)
    size_t flags = 0;
    parseMemberKeywords(flags);
 
-   m_l.demand(commonLexor::kName);
+   m_l.demand(cdwLoc,commonLexor::kName);
    auto name = m_l.getLexeme();
    m_l.advance();
 
@@ -126,7 +130,7 @@ void commonParser::parseClassMembers(classNode& c)
       parseField(m);
    }
    else
-      m_l.demandOneOf(2,commonLexor::kLParen,commonLexor::kColon);
+      m_l.demandOneOf(cdwLoc,2,commonLexor::kLParen,commonLexor::kColon);
 
    if(m_l.getToken() != commonLexor::kRBrace)
       parseClassMembers(c);
@@ -155,7 +159,7 @@ void commonParser::parseMemberKeywords(size_t& flags)
 
 void commonParser::parseField(fieldNode& n)
 {
-   m_l.demandAndEat(commonLexor::kColon);
+   m_l.demandAndEat(cdwLoc,commonLexor::kColon);
 
    parseType(n);
 
@@ -163,43 +167,43 @@ void commonParser::parseField(fieldNode& n)
    {
       m_l.advance();
       parseRValue(n);
-      m_l.demandAndEat(commonLexor::kSemiColon);
+      m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
    }
    else if(m_l.getToken() == commonLexor::kSemiColon)
       m_l.advance();
    else
-      m_l.demandOneOf(2,commonLexor::kEquals,commonLexor::kSemiColon);
+      m_l.demandOneOf(cdwLoc,2,commonLexor::kEquals,commonLexor::kSemiColon);
 }
 
 void commonParser::parseGlobalConst(fileNode& f)
 {
-   m_l.demandAndEat(commonLexor::kConst);
+   m_l.demandAndEat(cdwLoc,commonLexor::kConst);
 
    auto& n = m_nFac.appendNewChild<constNode>(f);
 
-   m_l.demand(commonLexor::kName);
+   m_l.demand(cdwLoc,commonLexor::kName);
    n.name = m_l.getLexeme();
    m_l.advance();
 
-   m_l.demandAndEat(commonLexor::kColon);
+   m_l.demandAndEat(cdwLoc,commonLexor::kColon);
 
    parseType(n);
 
-   m_l.demandAndEat(commonLexor::kEquals);
+   m_l.demandAndEat(cdwLoc,commonLexor::kEquals);
 
    parseRValue(n);
 
-   m_l.demandAndEat(commonLexor::kSemiColon);
+   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
 // TODO !!!!! lame; nearly identical to methods
 void commonParser::parseGlobalFunc(fileNode& f)
 {
-   m_l.demandAndEat(commonLexor::kFunc);
+   m_l.demandAndEat(cdwLoc,commonLexor::kFunc);
 
    auto& n = m_nFac.appendNewChild<funcNode>(f);
 
-   m_l.demand(commonLexor::kName);
+   m_l.demand(cdwLoc,commonLexor::kName);
    n.name = m_l.getLexeme();
    m_l.advance();
 
@@ -208,7 +212,7 @@ void commonParser::parseGlobalFunc(fileNode& f)
 
 void commonParser::parseMethodOrGlobalFuncFromOpenParen(node& n)
 {
-   m_l.demandAndEat(commonLexor::kLParen);
+   m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
 
    parseMethodOrGlobalFuncFromAfterOpenParen(n);
 }
@@ -217,8 +221,8 @@ void commonParser::parseMethodOrGlobalFuncFromAfterOpenParen(node& n)
 {
    parseDecledArgList(n);
 
-   m_l.demandAndEat(commonLexor::kRParen);
-   m_l.demandAndEat(commonLexor::kColon);
+   m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+   m_l.demandAndEat(cdwLoc,commonLexor::kColon);
 
    parseType(n);
 
@@ -233,11 +237,11 @@ void commonParser::parseDecledArgList(node& owner)
    while(m_l.getToken() != commonLexor::kRParen)
    {
       auto& a = m_nFac.appendNewChild<argNode>(owner);
-      m_l.demand(commonLexor::kName);
+      m_l.demand(cdwLoc,commonLexor::kName);
       a.name = m_l.getLexeme();
       m_l.advance();
 
-      m_l.demandAndEat(commonLexor::kColon);
+      m_l.demandAndEat(cdwLoc,commonLexor::kColon);
 
       parseType(a);
 
@@ -248,7 +252,7 @@ void commonParser::parseDecledArgList(node& owner)
 
 void commonParser::parseSequence(node& owner)
 {
-   m_l.demandAndEat(commonLexor::kLBrace);
+   m_l.demandAndEat(cdwLoc,commonLexor::kLBrace);
 
    auto& s = m_nFac.appendNewChild<sequenceNode>(owner);
    parseStatements(s);
@@ -256,7 +260,7 @@ void commonParser::parseSequence(node& owner)
    if(m_l.getToken() == commonLexor::kLBrace)
       parseSequence(owner);
 
-   m_l.demandAndEat(commonLexor::kRBrace);
+   m_l.demandAndEat(cdwLoc,commonLexor::kRBrace);
 }
 
 void commonParser::parseStatements(node& owner)
@@ -284,15 +288,15 @@ bool commonParser::tryParseStatement(node& owner)
          i.appendChild(*pInst.release());
 
          parsePassedArgList(i);
-         m_l.demandAndEat(commonLexor::kRParen);
-         m_l.demandAndEat(commonLexor::kSemiColon);
+         m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+         m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
       }
       else if(m_l.getToken() == commonLexor::kLParen)
          parseCall(pInst,owner);
       else if(m_l.getToken() == commonLexor::kEquals)
          parseAssignment(pInst,owner);
       else
-         m_l.demandOneOf(5,
+         m_l.demandOneOf(cdwLoc,5,
             commonLexor::kVar,
             commonLexor::kArrow,
             commonLexor::kArrowParen,
@@ -305,9 +309,9 @@ bool commonParser::tryParseStatement(node& owner)
 
 void commonParser::parseVar(node& owner)
 {
-   m_l.demandAndEat(commonLexor::kVar);
+   m_l.demandAndEat(cdwLoc,commonLexor::kVar);
 
-   m_l.demand(commonLexor::kName);
+   m_l.demand(cdwLoc,commonLexor::kName);
    auto& l = m_nFac.appendNewChild<localDeclNode>(owner);
    l.name = m_l.getLexeme();
    m_l.advance();
@@ -329,20 +333,20 @@ void commonParser::parseVar(node& owner)
       parseRValue(l);
    }
    else
-      m_l.demandOneOf(2,commonLexor::kColon,commonLexor::kEquals);
+      m_l.demandOneOf(cdwLoc,2,commonLexor::kColon,commonLexor::kEquals);
 
-   m_l.demandAndEat(commonLexor::kSemiColon);
+   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
 void commonParser::parseInvoke(std::unique_ptr<node>& inst, node& owner)
 {
-   m_l.demandAndEat(commonLexor::kArrow);
+   m_l.demandAndEat(cdwLoc,commonLexor::kArrow);
 
-   m_l.demand(commonLexor::kName);
+   m_l.demand(cdwLoc,commonLexor::kName);
    auto name = m_l.getLexeme();
    m_l.advance();
 
-   m_l.demandAndEat(commonLexor::kLParen);
+   m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
 
    auto& i = m_nFac.appendNewChild<invokeNode>(owner);
    i.proto.ref = name;
@@ -350,14 +354,14 @@ void commonParser::parseInvoke(std::unique_ptr<node>& inst, node& owner)
 
    parsePassedArgList(i);
 
-   m_l.demandAndEat(commonLexor::kRParen);
+   m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
 
-   m_l.demandAndEat(commonLexor::kSemiColon);
+   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
 void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
 {
-   m_l.demandAndEat(commonLexor::kLParen);
+   m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
 
    varRefNode& func = dynamic_cast<varRefNode&>(*inst.get());
 
@@ -366,21 +370,21 @@ void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
 
    parsePassedArgList(c);
 
-   m_l.demandAndEat(commonLexor::kRParen);
+   m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
 
-   m_l.demandAndEat(commonLexor::kSemiColon);
+   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
 void commonParser::parseAssignment(std::unique_ptr<node>& inst, node& owner)
 {
-   m_l.demandAndEat(commonLexor::kEquals);
+   m_l.demandAndEat(cdwLoc,commonLexor::kEquals);
 
    auto& a = m_nFac.appendNewChild<assignmentNode>(owner);
    a.appendChild(*inst.release());
 
    parseRValue(a);
 
-   m_l.demandAndEat(commonLexor::kSemiColon);
+   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
 void commonParser::parsePassedArgList(node& owner)
@@ -396,7 +400,7 @@ void commonParser::parsePassedArgList(node& owner)
 
 node& commonParser::parseLValue()
 {
-   m_l.demand(commonLexor::kName);
+   m_l.demand(cdwLoc,commonLexor::kName);
    auto name = m_l.getLexeme();
    m_l.advance();
 
@@ -415,7 +419,7 @@ node& commonParser::parseLValuePrime(node& n)
       auto i = m_nFac.create<fieldAccessNode>();
       i->appendChild(n);
 
-      m_l.demand(commonLexor::kName);
+      m_l.demand(cdwLoc,commonLexor::kName);
       i->name = m_l.getLexeme();
       m_l.advance();
 
@@ -430,8 +434,8 @@ node& commonParser::parseLValuePrime(node& n)
       c->appendChild(n);
 
       parsePassedArgList(*c);
-      m_l.demandAndEat(commonLexor::kRParen);
-      m_l.demandAndEat(commonLexor::kSemiColon);
+      m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+      m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
       //parseMethodOrGlobalFuncFromAfterOpenParen(*c);
       return *c;
    }
@@ -493,7 +497,7 @@ void commonParser::parseType(node& owner)
       if(m_l.getToken() == commonLexor::kLBracket)
       {
          m_l.advance();
-         m_l.demandAndEat(commonLexor::kRBracket);
+         m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
          m_nFac.appendNewChild<arrayTypeNode>(t);
       }
    }
@@ -514,7 +518,7 @@ void commonParser::parseType(node& owner)
       m_l.advance();
    }
    else
-      m_l.demandOneOf(3,commonLexor::kStr,commonLexor::kVoid,commonLexor::kName);
+      m_l.demandOneOf(cdwLoc,3,commonLexor::kStr,commonLexor::kVoid,commonLexor::kName);
 }
 
 void commonParser::parseAttributes()
@@ -523,11 +527,11 @@ void commonParser::parseAttributes()
    {
       m_l.advance();
 
-      m_l.demand(commonLexor::kName);
+      m_l.demand(cdwLoc,commonLexor::kName);
       m_nFac.deferAttribute(m_l.getLexeme());
       m_l.advance();
 
-      m_l.demandAndEat(commonLexor::kRBracket);
+      m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
    }
 }
 
