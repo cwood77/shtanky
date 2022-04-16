@@ -33,6 +33,7 @@ int main(int argc, const char *argv[])
       .wholeApp()
       .expectLiamOf(".\\testdata\\test\\test.ara")
       .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+      .expectLiamOf(".\\testdata\\test\\.target.ara")
    ;
 
    std::ofstream wrapper(".\\bin\\.appr.bat");
