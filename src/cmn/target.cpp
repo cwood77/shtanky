@@ -70,7 +70,7 @@ const instrFmt& instrInfo::demandFmt(const std::vector<argTypes> a) const
 }
 
 asmArgInfo::asmArgInfo()
-: flags(0), index(0), scale(0), disp(0)
+: flags(0), disp(0)
 {
    data.qwords.v[0] = 0;
 }
@@ -78,7 +78,7 @@ asmArgInfo::asmArgInfo()
 argTypes asmArgInfo::computeArgType()
 {
    if(flags & kLabel)
-      return kI32;
+      return kI32; // assume a rip-rel offset
 
    else if(flags & kImm8)
       return kI8;

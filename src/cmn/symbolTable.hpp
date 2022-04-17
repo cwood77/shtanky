@@ -3,6 +3,8 @@
 #include <map>
 #include <set>
 
+// TODO HACK - this whole component needs to be reworked
+
 namespace cmn {
 
 // the exhaustive list of linkages between AST nodes
@@ -16,13 +18,13 @@ namespace cmn {
 // -   varRefNode -> type     via:: ?? fields and globals  for:: ara codegen       *
 //
 // type prop
-// -   invokeNode -> method   via:: ?? type prop + name                       NO, and unimpled
+// -   invokeNode -> method   via:: ?? type prop + name                     NO, and unimpled
 //
 // anything else?
 // fieldAccessNode
 
-// it is ok to dump everything into a single string table?  That would mean names can't conflict.
-// like, a variable can never have the same name as a type (e.g. vtbl in gencode).
+// it is ok to dump everything into a single string table?  That would mean names can't
+// conflict.  like, a variable can never have the same name as a type (e.g. vtbl in gencode).
 
 class symbolTable {
 public:

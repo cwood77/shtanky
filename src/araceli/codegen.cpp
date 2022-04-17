@@ -39,7 +39,7 @@ void fileRefCollector::onLink(cmn::linkBase& l)
    if(f.fullPath.empty())
       throw std::runtime_error("missing file path during collect");
 
-   auto adjF = cmn::pathUtil::addExtension(f.fullPath,cmn::pathUtil::kExtLiamHeader);
+   auto adjF = cmn::pathUtil::addExt(f.fullPath,cmn::pathUtil::kExtLiamHeader);
    m_pRefs->addRef(adjF);
 
    cdwDEBUG("adding ref from %s to '%s' b/c of link w/ ref '%s' to node '%s'\n",
@@ -86,9 +86,9 @@ void codeGen::visit(cmn::fileNode& n)
    cmn::fileNode *pPrev = m_pActiveFile;
    m_pActiveFile = &n;
    m_hRefs.destPath
-      = cmn::pathUtil::addExtension(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader);
+      = cmn::pathUtil::addExt(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader);
    m_sRefs.destPath
-      = cmn::pathUtil::addExtension(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource);
+      = cmn::pathUtil::addExt(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource);
 
    hNodeVisitor::visit(n);
 

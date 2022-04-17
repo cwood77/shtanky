@@ -13,13 +13,16 @@ class iTableWriter;
 
 class lineLexor {
 public:
-   explicit lineLexor(const std::string& file) : m_file(file.c_str()), m_line(0) {}
+   explicit lineLexor(const std::string& file)
+   : m_fileName(file), m_file(file.c_str()), m_line(0) {}
 
    bool isDone() const { return !m_file.good(); }
    std::string getNextLine();
    size_t getLineNumber() const { return m_line; }
+   const std::string& getFileName() const { return m_fileName; }
 
 private:
+   const std::string m_fileName;
    std::ifstream m_file;
    unsigned long m_line;
 };

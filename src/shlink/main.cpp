@@ -51,7 +51,7 @@ int main(int argc, const char *argv[])
             *new cmn::binFileWriter(outFile)));
       w.sink(
          *new cmn::listingObjWriter(
-            *new cmn::binFileWriter(cmn::pathUtil::addExtension(outFile,cmn::pathUtil::kExtList))));
+            *new cmn::binFileWriter(cmn::pathUtil::addExt(outFile,cmn::pathUtil::kExtList))));
 
       formatter(w).write(l);
       cdwVERBOSE("done writing\n");

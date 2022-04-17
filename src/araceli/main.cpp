@@ -69,7 +69,7 @@ int main(int argc, const char *argv[])
    codeGen v(out);
    pPrj->acceptVisitor(v);
    { batGen v(out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
-   cmn::fileWriter wr;
+   cmn::unconditionalWriter wr;
    out.updateDisk(wr);
 
    return 0;

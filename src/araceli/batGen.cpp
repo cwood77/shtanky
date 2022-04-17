@@ -22,7 +22,7 @@ void batGen::visit(cmn::araceliProjectNode& n)
       m_s.stream()
          << "bin\\out\\debug\\liam"
             << " \""
-            << cmn::pathUtil::addExtension(*it,cmn::pathUtil::kExtLiamSource)
+            << cmn::pathUtil::addExt(*it,cmn::pathUtil::kExtLiamSource)
             << "\""
          << std::endl
       ;
@@ -38,7 +38,7 @@ void batGen::visit(cmn::araceliProjectNode& n)
       m_s.stream()
          << "bin\\out\\debug\\shtasm"
             << " \""
-            << cmn::pathUtil::addExtension(*it,"ls.asm")
+            << cmn::pathUtil::addExt(*it,"ls.asm")
             << "\""
          << std::endl
       ;
@@ -53,7 +53,7 @@ void batGen::visit(cmn::araceliProjectNode& n)
    for(auto it=m_files.begin();it!=m_files.end();++it)
       m_s.stream()
          << " \""
-         << cmn::pathUtil::addExtension(*it,"ls.asm.o")
+         << cmn::pathUtil::addExt(*it,"ls.asm.o")
          << "\""
       ;
    m_s.stream()

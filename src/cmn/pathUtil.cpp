@@ -1,4 +1,5 @@
 #include "pathUtil.hpp"
+#include "throw.hpp"
 #include "trace.hpp"
 #include <fstream>
 #include <sstream>
@@ -9,22 +10,23 @@ namespace cmn {
 
 const char *pathUtil::kExtLiamHeader      = "lh";
 const char *pathUtil::kExtLiamSource      = "ls";
-const char *pathUtil::kExtObj             = "o";
-const char *pathUtil::kExtObj_Then_List   = "o.list";
-const char *pathUtil::kExtObj_Then_McList = "o.mclist";
-const char *pathUtil::kExtObj_Then_McOdaList = "o.mcODAlist";
-const char *pathUtil::kExtList            = "list";
 
-std::string pathUtil::addExtension(const std::string& path, const std::string& ext)
+const char *pathUtil::kExtAsm             = "asm";
+const char *pathUtil::kExtObj             = "o";
+const char *pathUtil::kExtList            = "list";
+const char *pathUtil::kExtMcList          = "mclist";
+const char *pathUtil::kExtMcOdaList       = "mcODAlist";
+
+std::string pathUtil::addExt(const std::string& path, const std::string& ext)
 {
    return path + "." + ext;
 }
 
-std::string pathUtil::getExtension(const std::string& path)
+std::string pathUtil::getExt(const std::string& path)
 {
    const char *pDot = ::strrchr(path.c_str(),'.');
    if(!pDot)
-      throw std::runtime_error("bad path format");
+      cdwTHROW("bad path format");
    return pDot+1;
 }
 
@@ -32,7 +34,7 @@ std::string pathUtil::getLastPart(const std::string& path)
 {
    const char *pSlash = ::strrchr(path.c_str(),'\\');
    if(!pSlash)
-      throw std::runtime_error("bad path format");
+      cdwTHROW("bad path format");
    return pSlash+1;
 }
 

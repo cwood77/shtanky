@@ -1,6 +1,6 @@
+#include "../cmn/binReader.hpp"
 #include "../cmn/fmt.hpp"
 #include "../cmn/obj-fmt.hpp"
-#include "../cmn/reader.hpp"
 #include "../cmn/throw.hpp"
 #include "../cmn/trace.hpp"
 #include "objdir.hpp"

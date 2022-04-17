@@ -103,7 +103,7 @@ public:
 class asmArgInfo {
 public:
    enum argFlags {
-      kPtr      = 1<< 1,
+      kPtr      = 1<< 1, // TODO HACK is this useful?
       kLabel    = 1<< 2,
       kImm8     = 1<< 3,
       kImm16    = 1<< 4,
@@ -133,8 +133,8 @@ public:
    } data;
 
    std::string label;
-   __int64 index;
-   __int64 scale;
+   //__int64 index;
+   //__int64 scale;
    __int64 disp;
 
    argTypes computeArgType();

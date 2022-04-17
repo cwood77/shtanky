@@ -1,5 +1,13 @@
 #pragma once
 
+// the base lexor allows several extension points
+//  - you choose which phases you want to use (e.g. string literals)
+//  - you plug in your own tokens and token classes
+//  - you can mark 'unsupported' a known token
+//    unsupported tokens are still 'known' by the lexor (e.g. getTokenName works), but
+//    they will never be returned by an 'advance()', so a parser can still parse them
+//    but know those parse routines are effectively deadcode.
+
 #include "ast.hpp"
 #include <list>
 #include <map>
@@ -38,6 +46,7 @@ public:
    size_t token;
    std::string lexeme;
    size_t lineNumber;
+   std::string fileName;
 };
 
 // generally, order matters with phases (e.g. put string literals before whitespace)
@@ -56,7 +65,7 @@ public:
 
 class intLiteralReader : public iLexorPhase {
 public:
-   virtual void collectTerminators(std::string& t) const;
+   virtual void collectTerminators(std::string& t) const {}
    virtual void advance(lexorState& s) const;
 };
 
@@ -81,11 +90,14 @@ public:
    explicit lexorBase(const char *buffer);
    virtual ~lexorBase();
 
+   // used in error reported; treated as optional
+   void setFileName(const std::string& fileName) { m_state.fileName = fileName; }
+
    void advance();
    size_t getToken() { return m_state.token; }
    size_t getTokenClass(size_t t);
    size_t getTokenClass() { return getTokenClass(getToken()); }
-   std::string getTokenName(size_t t);
+   std::string getTokenName(size_t t); // this works for classes too
    std::string getTokenName() { return getTokenName(m_state.token); }
    std::string getLexeme() { return m_state.lexeme; }
    __int64 getLexemeInt() const;
@@ -119,6 +131,7 @@ private:
    std::map<size_t,size_t> m_tokenToClassMap;
 };
 
+// besides convenience, this class handles attaching metadata to nodes
 class nodeFactory {
 public:
    explicit nodeFactory(lexorBase& l) : m_l(l) {}

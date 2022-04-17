@@ -337,7 +337,7 @@ void dataParser::parseData(cmn::iObjWriter& w)
       cmn::objfmt::patch p;
       p.type = cmn::objfmt::patch::kAbs;
       p.offset = w.tell();
-      p.instrSize = 0;
+      p.fromOffsetToEndOfInstr = 0;
 
       unsigned __int64 lbl = 0;
       w.write("_lbldata",lbl);

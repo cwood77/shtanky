@@ -79,6 +79,6 @@ int main(int argc,const char *argv[])
    _t.dump();
    _c.dump();
 
-   cmn::fileWriter wr;
+   cmn::unconditionalWriter wr;
    out.updateDisk(wr);
 }

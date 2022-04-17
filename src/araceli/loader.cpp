@@ -37,7 +37,7 @@ void loader::loadFolder(cmn::scopeNode& s)
 
       if(fData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
          ;
-      else if(cmn::pathUtil::getExtension(fullPath) == "ara")
+      else if(cmn::pathUtil::getExt(fullPath) == "ara")
       {
          if(cmn::pathUtil::getLastPart(fullPath) == ".target.ara")
             cdwVERBOSE("skipping load of %s\n",fullPath.c_str());
@@ -58,6 +58,7 @@ void loader::loadFile(cmn::scopeNode& s, const std::string& fullPath)
    std::string contents;
    cmn::pathUtil::loadFileContents(fullPath,contents);
    lexor l(contents.c_str());
+   l.setFileName(fullPath);
    cmn::commonParser p(l);
    auto file = p.parseFile();
    file->fullPath = fullPath;

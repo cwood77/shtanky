@@ -1,5 +1,5 @@
+#include "binReader.hpp"
 #include "obj-fmt.hpp"
-#include "reader.hpp"
 #include "writer.hpp"
 #include <stdexcept>
 
@@ -46,7 +46,7 @@ void importTable::flatten(iObjWriter& w) const
       {
          w.write<char>("type",static_cast<char>(jit->type));
          w.write("offset",jit->offset);
-         w.write("instrSize",jit->instrSize);
+         w.write("fromOffsetToEndOfInstr",jit->fromOffsetToEndOfInstr);
          w.nextPart();
       }
    }
@@ -66,7 +66,7 @@ void importTable::unflatten(iObjReader& r)
          patch p;
          p.type = static_cast<patch::types>(r.read<char>());
          r.read(p.offset);
-         r.read(p.instrSize);
+         r.read(p.fromOffsetToEndOfInstr);
          list.push_back(p);
       }
    }

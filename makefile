@@ -52,6 +52,7 @@ dirs:
 
 CMN_SRC = \
 	src/cmn/ast.cpp \
+	src/cmn/binReader.cpp \
 	src/cmn/cmdline.cpp \
 	src/cmn/commonLexor.cpp \
 	src/cmn/commonParser.cpp \
@@ -63,7 +64,6 @@ CMN_SRC = \
 	src/cmn/obj-fmt.cpp \
 	src/cmn/out.cpp \
 	src/cmn/pathUtil.cpp \
-	src/cmn/reader.cpp \
 	src/cmn/symbolTable.cpp \
 	src/cmn/target.cpp \
 	src/cmn/textTable.cpp \

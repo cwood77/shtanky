@@ -113,9 +113,9 @@ void layout::link(objectDirectory& d, cmn::objfmt::obj& o)
                //break;
             case cmn::objfmt::patch::kRelToNextInstr:
                {
-               //patchDWord(jit->offset,(jit->offset + jit->instrSize) - targetAddr);
+               //patchDWord(jit->offset,(jit->offset + jit->fromOffsetToEndOfInstr) - targetAddr);
                unsigned long ans
-                  = targetAddr - (calculateTotalOffset(o) + jit->offset + jit->instrSize);
+                  = targetAddr - (calculateTotalOffset(o) + jit->offset + jit->fromOffsetToEndOfInstr);
                cdwVERBOSE("      patching site as %lu\n",ans);
                *reinterpret_cast<unsigned long*>(pSrcPtr + jit->offset) = ans;
                }

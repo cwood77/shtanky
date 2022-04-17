@@ -8,11 +8,14 @@
 
 namespace cmn {
 
+// the idea is that files only write to disk if they are different, which enables
+// orchestration systems likes make
 class iFileWriter {
 public:
    virtual void skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const = 0;
 };
 
+// currently there's only one type of iOutStream
 class iOutStream {
 public:
    virtual ~iOutStream() {}
@@ -84,13 +87,7 @@ public:
       return dynamic_cast<T&>(*pStream);
    }
 
-#if 0
-   // ephemeral files are always newly-created; if one already exists, a new one
-   // with a decorated name is created
-   outStream& getEphemeral(const std::string& basePath, const std::string& ext);
-#endif
-
-   void setAutoUpdate(iFileWriter& f) { m_pWriter = &f; }
+   void scheduleAutoUpdate(iFileWriter& f) { m_pWriter = &f; }
    void updateDisk(iFileWriter& f);
 
 private:
@@ -101,12 +98,12 @@ private:
    iFileWriter *m_pWriter;
 };
 
-class fileWriter : public iFileWriter {
+class unconditionalWriter : public iFileWriter {
 public:
    virtual void skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const;
 };
 
-class testFileWriter : public iFileWriter {
+class stdoutFileWriter : public iFileWriter {
 public:
    virtual void skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const;
 };

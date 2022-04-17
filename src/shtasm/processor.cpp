@@ -97,6 +97,7 @@ void processor::process()
          for(size_t i=1;i<a.size();i++)
          {
             dataLexor l(a[i].c_str());
+            l.setFileName(m_parser.getLexor().getFileName());
             dataParser p(l,*this);
             p.parse(*m_pBlock);
             m_pCurrObj->blockSize = m_pBlock->tell();
@@ -130,6 +131,7 @@ void processor::process()
             {
                ai.push_back(cmn::tgt::asmArgInfo());
                argLexor l(a[i].c_str());
+               l.setFileName(m_parser.getLexor().getFileName());
                argParser p(l);
                p.parseArg(ai.back());
                aTypes.push_back(ai.back().computeArgType());

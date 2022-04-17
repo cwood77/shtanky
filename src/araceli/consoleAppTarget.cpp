@@ -61,7 +61,7 @@ if (0) {
       << "}" << std::endl
    ;
 
-   cmn::fileWriter wr;
+   cmn::unconditionalWriter wr;
    out.updateDisk(wr);
 
    loader::loadFile(scope,fullPath);
