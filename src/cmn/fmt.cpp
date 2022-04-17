@@ -8,7 +8,7 @@ std::string fmt(const std::string& f, ...)
 {
    va_list ap;
    va_start(ap,f);
-   auto rval = vnfmt(1024,f,ap);
+   auto rval = vfmt(f,ap);
    va_end(ap);
    return rval;
 }

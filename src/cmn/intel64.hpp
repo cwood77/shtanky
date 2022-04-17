@@ -5,8 +5,6 @@ namespace cmn {
 namespace tgt {
 namespace i64 {
 
-   // these are flags to support trash, reqs
-
 // all regs support 64, 32, 16, 8 bits
 enum {
    // supports TWO 8 bit (high byte unsupported by shtanky currently)
@@ -31,8 +29,6 @@ enum {
    kReg14,
    kReg15,
 };
-
-                  //RSP+8 = RCX
 
 } // namespace i64
 

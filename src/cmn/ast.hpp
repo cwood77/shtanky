@@ -1,5 +1,6 @@
 #pragma once
 
+#include "throw.hpp"
 #include <list>
 #include <memory>
 #include <set>
@@ -89,7 +90,7 @@ protected:
    {
       std::stringstream stream;
       stream << "node type " << typeid(T).name() << " was unexpected";
-      throw std::runtime_error(stream.str());
+      cdwTHROW(stream.str());
    }
 };
 
@@ -138,7 +139,7 @@ public:
       if(m_pParent)
          return m_pParent->getAncestor<T>();
       else
-         throw std::runtime_error("can't find ancestor");
+         cdwTHROW("can't find ancestor");
    }
 
    template<class T>
@@ -165,7 +166,7 @@ public:
    {
       std::vector<T*> candidates = getChildrenOf<T>();
       if(candidates.size() != 1)
-         throw std::runtime_error("expected single child");
+         cdwTHROW("expected single child");
       return **candidates.begin();
    }
 
@@ -198,7 +199,7 @@ public:
    {
       m_pRefee = dynamic_cast<T*>(&dest);
       if(!m_pRefee)
-         throw std::runtime_error(
+         cdwTHROW(
             std::string("link expected node type ") + typeid(T).name());
    }
 
@@ -217,7 +218,7 @@ public:
 class liamProjectNode : public node {
 public:
    std::string sourceFullPath;
-   std::list<std::string> searchPaths;
+   //std::list<std::string> searchPaths;
    std::set<std::string> loadedPaths;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
@@ -419,7 +420,7 @@ public:
 
 class intLiteralNode : public node {
 public:
-   std::string value;
+   std::string lexeme;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
@@ -518,10 +519,9 @@ class araceliVisitor : public T {
 public:
    virtual void visit(liamProjectNode& n) { T::unexpected(n); }
    virtual void visit(fileRefNode& n) { T::unexpected(n); }
-   //virtual void visit(constNode& n) { T::unexpected(n); }
    virtual void visit(funcNode& n) { T::unexpected(n); }
-   //virtual void visit(ptrTypeNode& n) { T::unexpected(n); }
-   //virtual void visit(invokeFuncPtrNode& n) { T::unexpected(n); }
+   virtual void visit(ptrTypeNode& n) { T::unexpected(n); }
+   virtual void visit(invokeFuncPtrNode& n) { T::unexpected(n); }
 
    virtual void _implementLanguage() {} // araceli
 };

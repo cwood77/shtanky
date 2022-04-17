@@ -239,7 +239,7 @@ void codeGen::visit(cmn::boolLiteralNode& n)
 void codeGen::visit(cmn::intLiteralNode& n)
 {
    auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-   source << n.value;
+   source << n.lexeme;
    visitChildren(n);
 }
 

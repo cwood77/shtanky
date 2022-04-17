@@ -3,7 +3,6 @@
 #include "../cmn/intel64.hpp"
 #include "i64asm.hpp"
 #include "throw.hpp"
-#include <stdexcept>
 
 namespace cmn {
 namespace tgt {
@@ -410,7 +409,6 @@ unsigned char *argFmtBytes::computeTotalByteStream()
          m_totalByteStream.push_back(*pThumb | m_opcodeMask);
       }
       else if(*pThumb == genInfo::kCodeOffset32 ||
-              //*pThumb == genInfo::kArg1Imm8 ||
               *pThumb == genInfo::kArg2Imm8 ||
               *pThumb == genInfo::kArg2Imm64)
       {
@@ -433,7 +431,7 @@ unsigned char *argFmtBytes::computeTotalByteStream()
          argsInserted = true;
       }
       else
-         throw std::runtime_error(cmn::fmt("don't know byte %d",(int)*pThumb));
+         cdwTHROW(cmn::fmt("don't know byte %d",(int)*pThumb));
    }
 
    if(!argsInserted)

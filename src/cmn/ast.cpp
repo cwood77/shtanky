@@ -95,10 +95,9 @@ void diagVisitor::visit(araceliProjectNode& n)
 
 void diagVisitor::visit(liamProjectNode& n)
 {
-   cdwDEBUG("%sproject; path=%s; #search=%lld; #included=%lld\n",
+   cdwDEBUG("%sproject; path=%s; #included=%lld\n",
       getIndent().c_str(),
       n.sourceFullPath.c_str(),
-      n.searchPaths.size(),
       n.loadedPaths.size());
 
    autoIndent _a(*this);
@@ -361,7 +360,7 @@ void diagVisitor::visit(intLiteralNode& n)
 {
    cdwDEBUG("%sintLit; value=%s\n",
       getIndent().c_str(),
-      n.value.c_str());
+      n.lexeme.c_str());
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);

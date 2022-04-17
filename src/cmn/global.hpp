@@ -1,6 +1,6 @@
 #pragma once
 #include "fmt.hpp"
-#include <stdexcept>
+#include "throw.hpp"
 #include <typeinfo>
 
 namespace cmn {

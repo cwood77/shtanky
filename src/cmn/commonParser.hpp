@@ -6,20 +6,8 @@
 
 namespace cmn {
 
-class lexorBase;
-
-class parserBase {
-protected:
-   explicit parserBase(lexorBase& l);
-
-   nodeFactory m_nFac;
-};
-
-} // namespace cmn
-
-namespace cmn {
-
 class commonLexor;
+class lexorBase;
 
 // eBNF
 //
@@ -129,7 +117,7 @@ class commonLexor;
 // long term DEFERRED:
 //  floating point
 
-class commonParser : public parserBase {
+class commonParser {
 public:
    explicit commonParser(commonLexor& l);
 
@@ -167,6 +155,7 @@ private:
 
    void parseAttributes();
 
+   nodeFactory m_nFac;
    commonLexor& m_l;
 };
 

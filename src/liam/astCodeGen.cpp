@@ -213,7 +213,7 @@ void astCodeGen::visit(cmn::boolLiteralNode& n)
 
 void astCodeGen::visit(cmn::intLiteralNode& n)
 {
-   m_vGen.createPrivateVar(0,*new lirArgConst(n.value,0),"intlit:%s",n.value.c_str())
+   m_vGen.createPrivateVar(0,*new lirArgConst(n.lexeme,0),"intlit:%s",n.lexeme.c_str())
       .donateToWire(n);
 }
 
