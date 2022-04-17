@@ -25,6 +25,8 @@ processor::processor(lineParser& p, cmn::tgt::iTargetInfo& t, cmn::objfmt::objFi
       {
          auto asId = static_cast<cmn::tgt::instrIds>(i);
          auto pInstr = t.getProc().getInstr(asId);
+         if(pInstr->name[0] == '<')
+            continue; // exclude pseudo-instructions like <enterFunc>
          m_instrMap[pInstr->name] = asId;
       }
    }

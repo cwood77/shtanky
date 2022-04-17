@@ -35,7 +35,7 @@ size_t getMatchPattern(argTypes a)
       case argTypes::kM16:
       case argTypes::kM32:
       case argTypes::kM64:
-         rVal = a; // no casting
+         rVal = a; // no widening
          break;
 
       default:
@@ -96,7 +96,25 @@ argTypes asmArgInfo::computeArgType()
       return kR64;
 
    else
-      throw std::runtime_error("can't compute arg type in " __FILE__);
+      cdwTHROW("can't compute arg type");
+}
+
+const char *iProcessorInfo::getRegName(size_t r) const
+{
+   switch(r)
+   {
+      case kStorageUnassigned:
+         return "<unassigned>";
+         break;
+      case kStorageImmediate:
+         return "<immediate>";
+         break;
+      case kStorageUndecidedStack:
+         return "<undecided-stack>";
+         break;
+      default:
+         cdwTHROW("unknown reg");
+   }
 }
 
 } // namespace tgt

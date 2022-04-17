@@ -20,9 +20,6 @@ public:
    size_t token;
    const char *lexeme;
    const char *name;
-
-   lexemeInfo(kind k, size_t t, const char *l, const char *n)
-   : k(k), token(t), lexeme(l), name(n) {}
 };
 
 class lexemeClassInfo {
@@ -31,9 +28,6 @@ public:
    const char *name;
 
    size_t *pTokens;
-
-   lexemeClassInfo(size_t Class, const char *name, size_t pTokens[])
-   : Class(Class), name(name), pTokens(pTokens) {}
 };
 
 class lexorState {
