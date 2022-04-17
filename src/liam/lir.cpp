@@ -23,12 +23,12 @@ namespace liam {
 
 void lirArgVar::dump() const
 {
-   ::printf("v/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
+   cdwDEBUG("v/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
 }
 
 void lirArgConst::dump() const
 {
-   ::printf("c/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
+   cdwDEBUG("c/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
 }
 
 lirInstr::~lirInstr()
@@ -88,10 +88,10 @@ lirInstr& lirInstr::search(size_t orderNum)
 
 void lirInstr::dump()
 {
-   ::printf("%lld INSTR %d   ",orderNum,instrId);
+   cdwDEBUG("%lld INSTR %d   ",orderNum,instrId);
    for(auto it=m_args.begin();it!=m_args.end();++it)
       (*it)->dump();
-   ::printf("\n");
+   cdwDEBUG("\n");
 
    if(m_pNext)
       m_pNext->dump();
@@ -279,7 +279,7 @@ void lirStreams::dump()
 {
    for(auto it=page.begin();it!=page.end();++it)
    {
-      ::printf("----- %s\n",it->first.c_str());
+      cdwDEBUG("----- %s\n",it->first.c_str());
       it->second.dump();
    }
 }

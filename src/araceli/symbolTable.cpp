@@ -1,3 +1,4 @@
+#include "../cmn/trace.hpp"
 #include "loader.hpp"
 #include "symbolTable.hpp"
 #include <string.h>
@@ -39,12 +40,12 @@ void unloadedScopeFinder::visit(cmn::scopeNode& n)
       }
       else
       {
-         ::printf("   scope %s not a candidate\n",n.path.c_str());
-         ::printf("      %s vs %s\n",fqn.c_str(),m_missingRef.c_str());
+         cdwVERBOSE("   scope %s not a candidate\n",n.path.c_str());
+         cdwVERBOSE("      %s vs %s\n",fqn.c_str(),m_missingRef.c_str());
       }
    }
    else
-      ::printf("   scope %s already loaded\n",n.path.c_str());
+      cdwVERBOSE("   scope %s already loaded\n",n.path.c_str());
 
    cmn::hNodeVisitor::visit(n);
 }
@@ -59,7 +60,7 @@ bool nodeLinker::loadAnotherSymbol(cmn::node& root, cmn::symbolTable& sTable)
       root.acceptVisitor(f);
       if(f.any())
       {
-         ::printf("I think (hope) I can find symbol %s by loading more stuff\n",refToFind.c_str());
+         cdwVERBOSE("I think (hope) I can find symbol %s by loading more stuff\n",refToFind.c_str());
          pToLoad = &f.mostLikely();
          break;
       }
@@ -67,7 +68,7 @@ bool nodeLinker::loadAnotherSymbol(cmn::node& root, cmn::symbolTable& sTable)
 
    if(pToLoad)
    {
-      ::printf("loading %s and trying again\n",pToLoad->path.c_str());
+      cdwVERBOSE("loading %s and trying again\n",pToLoad->path.c_str());
       loader::loadFolder(*pToLoad);
       { cmn::diagVisitor v; root.acceptVisitor(v); }
    }

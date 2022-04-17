@@ -15,7 +15,7 @@ void trace::write(const std::string& fmt, ...)
    const char *kStrings[] = { "i", "v", "D" };
 
    if(m_context)
-      ::printf("[%s:%s-%lu] (%s) %s",kStrings[m_le],m_fi,m_li,m_context,buffer);
+      ::printf("[%s:%s-%lu] [%s] %s",kStrings[m_le],m_fi,m_li,m_context,buffer);
    else
       ::printf("[%s:%s-%lu] %s",     kStrings[m_le],m_fi,m_li,          buffer);
 }

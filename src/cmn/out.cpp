@@ -1,5 +1,6 @@
 #include "out.hpp"
 #include "pathUtil.hpp"
+#include "trace.hpp"
 #include <fstream>
 
 namespace cmn {
@@ -38,16 +39,16 @@ iOutStream*& outBundle::_get(const std::string& key)
 
 void fileWriter::skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const
 {
-   ::printf("writing %s\n",fullPath.c_str());
+   cdwVERBOSE("writing %s\n",fullPath.c_str());
    std::ofstream file(fullPath.c_str());
    file << newContents;
 }
 
 void testFileWriter::skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const
 {
-   ::printf("testFileWriter -----------------\n");
-   ::printf("would have written to file %s\n",fullPath.c_str());
-   ::printf("%s",newContents.c_str());
+   cdwVERBOSE("testFileWriter -----------------\n");
+   cdwVERBOSE("would have written to file %s\n",fullPath.c_str());
+   cdwVERBOSE("%s",newContents.c_str());
 }
 
 } // namespace cmn

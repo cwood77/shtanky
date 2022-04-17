@@ -1,7 +1,6 @@
 #include "nameUtil.hpp"
 #include "symbolTable.hpp"
 #include "trace.hpp"
-#include <stdio.h>
 
 namespace cmn {
 
@@ -13,7 +12,7 @@ void symbolTable::markRequired(linkBase& l)
 
 void symbolTable::publish(const std::string& fqn, node& n)
 {
-   ::printf("publishing symbol %s for %lld\n",fqn.c_str(),(size_t)&n);
+   cdwVERBOSE("publishing symbol %s for %lld\n",fqn.c_str(),(size_t)&n);
    published[fqn] = &n;
 }
 
@@ -28,7 +27,7 @@ void symbolTable::tryResolveVarType(const std::string& objName, node& obj, linkB
 
 void symbolTable::tryResolveExact(const std::string& refingScope, linkBase& l)
 {
-   ::printf("resolving ref %s from context %s [exact]\n",l.ref.c_str(),refingScope.c_str());
+   cdwVERBOSE("resolving ref %s from context %s [exact]\n",l.ref.c_str(),refingScope.c_str());
    if(l._getRefee())
       return;
 
@@ -46,7 +45,7 @@ void symbolTable::tryResolveExact(const std::string& refingScope, linkBase& l)
 
 void symbolTable::tryResolveWithParents(const std::string& refingScope, linkBase& l)
 {
-   ::printf("resolving ref %s from context %s [w/ context walk]\n",l.ref.c_str(),refingScope.c_str());
+   cdwVERBOSE("resolving ref %s from context %s [w/ context walk]\n",l.ref.c_str(),refingScope.c_str());
    if(l._getRefee())
       return;
 
@@ -84,14 +83,14 @@ void symbolTable::debugDump()
 
 bool symbolTable::tryBind(const std::string& fqn, linkBase& l)
 {
-   ::printf("  checking %s...",fqn.c_str());
+   cdwVERBOSE("  checking %s...",fqn.c_str());
 
    auto it = published.find(fqn);
    if(it == published.end())
-      ::printf("nope\n");
+      cdwVERBOSE("nope\n");
    else
    {
-      ::printf("ok!\n");
+      cdwVERBOSE("ok!\n");
       l.bind(*it->second);
       unresolved.erase(&l);
       return true;
@@ -347,14 +346,14 @@ void nodeResolver::visit(varRefNode& n)
 
 void nodeLinker::linkGraph(node& root)
 {
-   ::printf("entering link/load loop ----\n");
+   cdwVERBOSE("entering link/load loop ----\n");
    symbolTable sTable;
    size_t missingLastTime = 0;
    while(true)
    {
       { nodePublisher p(sTable); treeVisitor t(p); root.acceptVisitor(t); }
       { nodeResolver r(sTable); treeVisitor t(r); root.acceptVisitor(t); }
-      ::printf("%lld published; %lld unresolved\n",
+      cdwVERBOSE("%lld published; %lld unresolved\n",
          sTable.published.size(),
          sTable.unresolved.size());
 
@@ -364,7 +363,7 @@ void nodeLinker::linkGraph(node& root)
 
       if(!loadAnotherSymbol(root,sTable))
       {
-         ::printf("no guesses on what to load to find missing symbols; try settling\n");
+         cdwVERBOSE("no guesses on what to load to find missing symbols; try settling\n");
          if(nMissing != missingLastTime)
             missingLastTime = nMissing; // retry
          else

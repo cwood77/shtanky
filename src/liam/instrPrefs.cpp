@@ -1,3 +1,8 @@
+#ifdef  cdwTraceContext
+#undef  cdwTraceContext
+#endif
+#define cdwTraceContext "instrPrefs"
+
 #include "../cmn/target.hpp"
 #include "../cmn/throw.hpp"
 #include "../cmn/trace.hpp"
@@ -137,14 +142,14 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
             // coming in
             throw std::runtime_error("unimpled 3");
             //v.requireStorage(i,cmn::tgt::kStorageStackArg);
-            //::printf("> assigning RSP+%lld to %s\n",shadow + v.getSize(),v.name.c_str());
+            //cdwDEBUG("assigning RSP+%lld to %s\n",shadow + v.getSize(),v.name.c_str());
          }
       }
       else
       {
          // use a register
          v.requireStorage(i,argStorage[k+offset2]);
-         ::printf("> assigning r%lld to %s\n",argStorage[k+offset2],v.name.c_str());
+         cdwDEBUG("assigning r%lld to %s\n",argStorage[k+offset2],v.name.c_str());
       }
 
       if(k==0)

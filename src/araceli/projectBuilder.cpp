@@ -1,8 +1,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include "../cmn/pathUtil.hpp"
+#include "../cmn/trace.hpp"
 #include "loader.hpp"
 #include "projectBuilder.hpp"
-#include <stdio.h>
 #include <windows.h>
 
 namespace araceli {
@@ -16,7 +16,7 @@ std::unique_ptr<cmn::araceliProjectNode> projectBuilder::create(const std::strin
 
 void projectBuilder::addScope(cmn::node& p, const std::string& path, bool inProject)
 {
-   ::printf("adding scope %s\n",path.c_str());
+   cdwVERBOSE("adding scope %s\n",path.c_str());
 
    // add a scope node for this folder
    std::unique_ptr<cmn::scopeNode> pNode(new cmn::scopeNode());
