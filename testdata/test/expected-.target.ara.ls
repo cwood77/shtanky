@@ -1,5 +1,6 @@
+[entrypoint]
 func .test.consoleTarget.main(
-args : str[]) : void
+   args : str[]) : void
 {
    var cout : .sht.cons.iStream;
 }

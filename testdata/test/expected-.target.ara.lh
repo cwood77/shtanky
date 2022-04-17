@@ -3,6 +3,7 @@ class .test.consoleTarget {
 
 func .test.consoleTarget.ctor() : .test.consoleTarget;
 
+[entrypoint]
 func .test.consoleTarget.main(
-args : str[]) : void;
+   args : str[]) : void;
 

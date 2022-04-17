@@ -41,6 +41,7 @@ void astCodeGen::visit(cmn::funcNode& n)
    if(n.getChildrenOf<cmn::sequenceNode>().size() == 0)
       return; // ignore forward references
 
+   // start page and emit segment
    m_currFunc = n.name;
    auto& stream = m_lir.page[m_currFunc];
    auto& seg = lirInstr::append(
@@ -50,13 +51,17 @@ void astCodeGen::visit(cmn::funcNode& n)
    m_lir.onNewPageStarted(m_currFunc);
    seg.addArg<lirArgConst>("1",0); // code seg
 
-   auto args = n.getChildrenOf<cmn::argNode>();
+   // determine real func name (different if entrypoint)
+   std::string funcNameInAsm = n.name;
+   if(n.attributes.find("entrypoint") != n.attributes.end())
+      funcNameInAsm = ".entrypoint";
 
    auto& i = lirInstr::append(
       stream.pTail,
       cmn::tgt::kEnterFunc,
-      n.name);
+      funcNameInAsm);
 
+   auto args = n.getChildrenOf<cmn::argNode>();
    for(auto it=args.begin();it!=args.end();++it)
    {
       auto& astArg = **it;
@@ -69,7 +74,7 @@ void astCodeGen::visit(cmn::funcNode& n)
    lirInstr::append(
       stream.pTail,
       cmn::tgt::kExitFunc,
-      n.name);
+      funcNameInAsm);
 }
 
 void astCodeGen::visit(cmn::sequenceNode& n)

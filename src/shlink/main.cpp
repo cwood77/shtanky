@@ -13,6 +13,7 @@ int main(int argc, const char *argv[])
    cmn::cmdLine cl(argc,argv);
    std::string outFile = cl.getArg(".\\testdata\\test\\test.ara.ls.asm.o.app");
 
+   // load all object files indicated on command-line
    objectDirectory oDir;
    for(size_t i=0;;i++)
    {
@@ -23,11 +24,12 @@ int main(int argc, const char *argv[])
       oDir.loadObjectFile(path);
    }
 
+   // layout objects by segment, only including referenced objects
    layout l;
    {
       layoutProgress lProg;
-      lProg.seedRequiredObject(".test.test.run");
-      lProg.seedRequiredObject(".sht.cons.stdout.printLn");
+      lProg.seedRequiredObject(".test.test.run"); // TODO HACK should be entrypoint
+      lProg.seedRequiredObject(".sht.cons.stdout.printLn"); // eh?
 
       while(!lProg.isDone())
       {
@@ -41,8 +43,10 @@ int main(int argc, const char *argv[])
       l.markDonePlacing();
    }
 
+   // link objects together
    l.link(oDir);
 
+   // write
    {
       cdwVERBOSE("writing...\n");
       cmn::compositeObjWriter w;

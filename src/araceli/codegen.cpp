@@ -341,6 +341,10 @@ void codeGen::generateClassMethod(cmn::classNode& n, cmn::methodNode& m, cmn::ou
 
 void codeGen::generateMethodSignature(cmn::methodNode& m, cmn::outStream& s)
 {
+   if(m.attributes.size())
+      for(auto it=m.attributes.begin();it!=m.attributes.end();++it)
+         s.stream() << cmn::indent(s) << "[" << *it << "]" << std::endl;
+
    s.stream()
       << cmn::indent(s) << "func " << cmn::fullyQualifiedName::build(m,m.baseImpl.ref) << "("
       << std::endl
@@ -359,10 +363,10 @@ void codeGen::generateMethodSignature(cmn::methodNode& m, cmn::outStream& s)
    for(auto jit=args.begin();jit!=args.end();++jit)
    {
       if(!firstParam)
-         s.stream() << "," << std::endl << cmn::indent(s);
+         s.stream() << "," << std::endl;
 
       s.stream()
-         << (*jit)->name << " : ";
+         << cmn::indent(s) << (*jit)->name << " : ";
       ;
       liamTypeWriter tyW(s.stream(),m_refColl);
       (*jit)->demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
