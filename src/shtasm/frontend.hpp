@@ -1,6 +1,6 @@
 #pragma once
+#include "../cmn/binWriter.hpp"
 #include "../cmn/lexor.hpp"
-#include "../cmn/writer.hpp"
 #include <fstream>
 #include <string>
 #include <vector>

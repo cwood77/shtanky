@@ -2,7 +2,7 @@ template<class T>
 inline T& timedGlobal<T>::demand()
 {
    if(!m_pPtr)
-      cdwTHROW(cmn::fmt("timedGlobal is '%s' not active when needed",typeid(T).name()));
+      cdwTHROW("timedGlobal is '%s' not active when needed",typeid(T).name());
    return *m_pPtr;
 }
 

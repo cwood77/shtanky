@@ -1,5 +1,4 @@
 #pragma once
-#include "fmt.hpp"
 #include "throw.hpp"
 #include <typeinfo>
 

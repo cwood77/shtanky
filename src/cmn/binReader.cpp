@@ -1,4 +1,3 @@
-#include "../cmn/fmt.hpp"
 #include "binReader.hpp"
 #include "throw.hpp"
 #include <cstring>
@@ -11,7 +10,7 @@ binFileReader::binFileReader(const std::string& filePath)
 {
    m_pFile = ::fopen(filePath.c_str(),"rb");
    if(!m_pFile)
-      cdwTHROW(cmn::fmt("can't open file '%s' for reading",filePath.c_str()));
+      cdwTHROW("can't open file '%s' for reading",filePath.c_str());
 }
 
 binFileReader::~binFileReader()

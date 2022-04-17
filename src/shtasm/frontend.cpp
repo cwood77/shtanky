@@ -1,9 +1,9 @@
+#include "../cmn/binWriter.hpp"
 #include "../cmn/fmt.hpp"
 #include "../cmn/i64asm.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/obj-fmt.hpp"
 #include "../cmn/trace.hpp"
-#include "../cmn/writer.hpp"
 #include "assembler.hpp"
 #include "frontend.hpp"
 #include <string.h>
@@ -232,7 +232,6 @@ void argParser::parseMemExpr()
    if(m_l.getToken() == argLexor::kLBracket)
    {
       m_l.advance();
-      m_pAi->flags |= cmn::tgt::asmArgInfo::kPtr;
       m_pAi->flags |= cmn::tgt::asmArgInfo::kMem64; // TODO until types are supported,
                                                     // assume all ptrs are 64-bit
 

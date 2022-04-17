@@ -1,5 +1,6 @@
-#include "../cmn/fmt.hpp"
-#include "writer.hpp"
+#include "binWriter.hpp"
+#include "fmt.hpp"
+#include "pathUtil.hpp"
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
@@ -22,11 +23,6 @@ binFileWriter::~binFileWriter()
 void binFileWriter::write(const void *p, size_t n)
 {
    ::fwrite(p,1,n,m_pFile);
-}
-
-int binFileWriter::tell()
-{
-   return ::ftell(m_pFile);
 }
 
 binMemoryWriter::binMemoryWriter(std::unique_ptr<unsigned char[]>& block)
@@ -157,6 +153,13 @@ void compositeObjWriter::nextPart()
 {
    for(auto it=m_o.begin();it!=m_o.end();++it)
       (*it)->nextPart();
+}
+
+// a frequent setup used in shtasm and shlink
+void compositeObjWriter::sinkNewFileWithListing(const std::string& path)
+{
+   sinkNewFile<retailObjWriter>(path);
+   sinkNewFile<listingObjWriter>(pathUtil::addExt(path,pathUtil::kExtList));
 }
 
 } // namespace cmn

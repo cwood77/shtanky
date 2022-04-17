@@ -1,5 +1,5 @@
 #pragma once
-#include "../cmn/writer.hpp"
+#include "../cmn/binWriter.hpp"
 #include "assembler.hpp"
 #include <memory>
 

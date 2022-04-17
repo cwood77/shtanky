@@ -1,5 +1,5 @@
 #include "../cmn/app-fmt.hpp"
-#include "../cmn/writer.hpp"
+#include "../cmn/binWriter.hpp"
 #include "formatter.hpp"
 #include "layout.hpp"
 

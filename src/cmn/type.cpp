@@ -24,7 +24,7 @@ void *typeBase::_as(const std::string& name)
    if(name == typeid(iType).name())
       return static_cast<iType*>(this);
    else
-      throw std::runtime_error(cmn::fmt("can't cast to type %s",name.c_str()));
+      cdwTHROW("can't cast to type %s",name.c_str());
 }
 
 bool userClassType::_is(const std::string& name) const
@@ -47,8 +47,7 @@ iType& userClassType::getField(const std::string& name)
 {
    auto it = m_members.find(name);
    if(it == m_members.end())
-      throw std::runtime_error(cmn::fmt(
-         "type '%s' does note have field '%s'\n",getName().c_str(),name.c_str()));
+      cdwTHROW("type '%s' does note have field '%s'\n",getName().c_str(),name.c_str());
    return *it->second;
 }
 
@@ -63,7 +62,7 @@ size_t userClassType::getOffsetOfField(const std::string& name, const tgt::iTarg
          return offset;
    }
 
-   throw std::runtime_error(cmn::fmt("type '%s' doesn't have field '%s'",getName().c_str(),name.c_str()));
+   cdwTHROW("type '%s' doesn't have field '%s'",getName().c_str(),name.c_str());
 }
 
 void userClassType::addField(const std::string& name, iType& f)
@@ -77,7 +76,7 @@ iType& stubTypeWrapper::demandReal()
    if(pReal)
       return *pReal;
    else
-      throw std::runtime_error(cmn::fmt("type %s not resolved when needed",m_name.c_str()));
+      cdwTHROW("type %s not resolved when needed",m_name.c_str());
 }
 
 const iType& stubTypeWrapper::demandReal() const
@@ -85,7 +84,7 @@ const iType& stubTypeWrapper::demandReal() const
    if(pReal)
       return *pReal;
    else
-      throw std::runtime_error(cmn::fmt("type %s not resolved when needed",m_name.c_str()));
+      cdwTHROW("type %s not resolved when needed",m_name.c_str());
 }
 
 table::~table()
@@ -181,7 +180,7 @@ typeBuilder& typeBuilder::addMember(const std::string& name, iType& ty)
 iType& typeBuilder::finish()
 {
    if(!m_pType)
-      throw std::runtime_error("wtf?");
+      cdwTHROW("wtf?");
 
    auto copy = m_pType;
    m_pType = NULL; // I no longer own this

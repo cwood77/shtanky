@@ -10,6 +10,7 @@ size_t getMatchPattern(argTypes a)
    size_t rVal = 0;
    switch(a)
    {
+      // widen R8 --> ... --> R64
       case argTypes::kR8:
          rVal |= argTypes::kR8;
       case argTypes::kR16:
@@ -20,6 +21,7 @@ size_t getMatchPattern(argTypes a)
          rVal |= argTypes::kR64;
          break;
 
+      // widen I8 --> ... --> I64
       case argTypes::kI8:
          rVal |= argTypes::kI8;
       case argTypes::kI16:
@@ -30,12 +32,13 @@ size_t getMatchPattern(argTypes a)
          rVal |= argTypes::kI64;
          break;
 
+      // no widening
       case argTypes::kArgTypeNone:
       case argTypes::kM8:
       case argTypes::kM16:
       case argTypes::kM32:
       case argTypes::kM64:
-         rVal = a; // no widening
+         rVal = a;
          break;
 
       default:

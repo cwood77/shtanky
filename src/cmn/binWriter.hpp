@@ -13,7 +13,6 @@ class iObjWriterSink {
 public:
    virtual ~iObjWriterSink() {}
    virtual void write(const void *p, size_t n) = 0;
-   virtual int tell() = 0; // anybody use this?
 };
 
 class binFileWriter : public iObjWriterSink {
@@ -21,7 +20,6 @@ public:
    explicit binFileWriter(const std::string& filePath);
    ~binFileWriter();
    virtual void write(const void *p, size_t n);
-   virtual int tell();
 
 private:
    FILE *m_pFile;
@@ -32,7 +30,6 @@ public:
    explicit binMemoryWriter(std::unique_ptr<unsigned char[]>& block);
    ~binMemoryWriter();
    virtual void write(const void *p, size_t n);
-   virtual int tell() { return m_s; }
 
 private:
    std::unique_ptr<unsigned char[]>& m_block;
@@ -47,7 +44,6 @@ public:
    explicit singleUseWriterSink(iObjWriterSink& inner) : m_inner(inner) {}
 
    virtual void write(const void *p, size_t n) { m_inner.write(p,n); }
-   virtual int tell() { return m_inner.tell(); }
 
 private:
    iObjWriterSink& m_inner;
@@ -113,10 +109,21 @@ public:
    compositeObjWriter() : m_offset(0) {}
    ~compositeObjWriter();
 
-   void sink(iObjWriter& o) { m_o.push_back(&o); }
    virtual void write(const std::string& reason, const void *p, size_t n);
    virtual void nextPart();
    virtual unsigned long tell() { return m_offset; }
+
+   void sink(iObjWriter& o) { m_o.push_back(&o); }
+
+   template<class T>
+   void sinkNewFile(const std::string& path) { sink(*new T(*new binFileWriter(path))); }
+   template<class T>
+   void sinkExisting(iObjWriterSink& s) { sink(*new T(*new singleUseWriterSink(s))); }
+   template<class T>
+   void sinkMemory(std::unique_ptr<unsigned char[]>& block)
+   { sink(*new T(*new binMemoryWriter(block))); }
+
+   void sinkNewFileWithListing(const std::string& path);
 
 private:
    std::list<iObjWriter*> m_o;

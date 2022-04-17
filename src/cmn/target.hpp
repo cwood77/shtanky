@@ -103,14 +103,13 @@ public:
 class asmArgInfo {
 public:
    enum argFlags {
-      kPtr      = 1<< 1, // TODO HACK is this useful?
-      kLabel    = 1<< 2,
-      kImm8     = 1<< 3,
-      kImm16    = 1<< 4,
-      kImm32    = 1<< 5,
-      kImm64    = 1<< 6,
-      kReg64    = 1<< 7,
-      kMem64    = 1<< 8,
+      kLabel    = 1<< 1,
+      kImm8     = 1<< 2,
+      kImm16    = 1<< 3,
+      kImm32    = 1<< 4,
+      kImm64    = 1<< 5,
+      kReg64    = 1<< 6,
+      kMem64    = 1<< 7,
    };
 
    asmArgInfo();

@@ -1,5 +1,5 @@
+#include "../cmn/binWriter.hpp"
 #include "../cmn/fmt.hpp"
-#include "../cmn/writer.hpp"
 #include "assembler.hpp"
 #include <stdexcept>
 

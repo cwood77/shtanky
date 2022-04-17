@@ -1,8 +1,8 @@
+#include "../cmn/binWriter.hpp"
 #include "../cmn/fmt.hpp"
 #include "../cmn/obj-fmt.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/trace.hpp"
-#include "../cmn/writer.hpp"
 #include "assembler.hpp"
 #include "frontend.hpp"
 #include "processor.hpp"
@@ -69,17 +69,11 @@ void processor::process()
 
          // setup stream for new object
          m_pBlock.reset(new cmn::compositeObjWriter());
-         m_pBlock->sink(
-            *new cmn::retailObjWriter(
-               *new cmn::binMemoryWriter(m_pCurrObj->block)));
+         m_pBlock->sinkMemory<cmn::retailObjWriter>(m_pCurrObj->block);
          if(m_pListingFile1)
-            m_pBlock->sink(
-               *new cmn::listingObjWriter(
-                  *new cmn::singleUseWriterSink(*m_pListingFile1)));
+            m_pBlock->sinkExisting<cmn::listingObjWriter>(*m_pListingFile1);
          if(m_pListingFile2)
-            m_pBlock->sink(
-               *new cmn::odaObjWriter(
-                  *new cmn::singleUseWriterSink(*m_pListingFile2)));
+            m_pBlock->sinkExisting<cmn::odaObjWriter>(*m_pListingFile2);
 
          // prep assembler
          m_pAsm.reset(new assembler(m_t,*this));

@@ -1,6 +1,6 @@
 #include "binReader.hpp"
+#include "binWriter.hpp"
 #include "obj-fmt.hpp"
-#include "writer.hpp"
 #include <stdexcept>
 
 namespace cmn {

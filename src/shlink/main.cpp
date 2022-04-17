@@ -1,7 +1,7 @@
+#include "../cmn/binWriter.hpp"
 #include "../cmn/cmdline.hpp"
 #include "../cmn/pathUtil.hpp"
 #include "../cmn/trace.hpp"
-#include "../cmn/writer.hpp"
 #include "formatter.hpp"
 #include "layout.hpp"
 #include "objdir.hpp"
@@ -46,13 +46,7 @@ int main(int argc, const char *argv[])
    {
       cdwVERBOSE("writing...\n");
       cmn::compositeObjWriter w;
-      w.sink(
-         *new cmn::retailObjWriter(
-            *new cmn::binFileWriter(outFile)));
-      w.sink(
-         *new cmn::listingObjWriter(
-            *new cmn::binFileWriter(cmn::pathUtil::addExt(outFile,cmn::pathUtil::kExtList))));
-
+      w.sinkNewFileWithListing(outFile);
       formatter(w).write(l);
       cdwVERBOSE("done writing\n");
    }
