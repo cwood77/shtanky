@@ -50,4 +50,11 @@ cmn::objfmt::obj& objectDirectory::demand(const std::string& oName)
    return *it->second;
 }
 
+void objectDirectory::determinePruneList(const std::set<std::string>& demanded)
+{
+   for(auto it=m_objDir.begin();it!=m_objDir.end();++it)
+      if(demanded.find(it->first)==demanded.end())
+         cdwVERBOSE("pruned object %s (i.e. nobody asked for it)\n",it->first.c_str());
+}
+
 } // namespace shlink

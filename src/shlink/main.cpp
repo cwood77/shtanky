@@ -27,20 +27,23 @@ int main(int argc, const char *argv[])
    // layout objects by segment, only including referenced objects
    layout l;
    {
+      objectProviderRecorder oDirWrapper(oDir);
       layoutProgress lProg;
       lProg.seedRequiredObject(".test.test.run"); // TODO HACK should be entrypoint
-      lProg.seedRequiredObject(".sht.cons.stdout.printLn"); // eh?
+      lProg.seedRequiredObject(".sht.cons.stdout.printLn"); // TODO HACK keep this lame-o hacks until linker is totally working (i.e. no symbols are pruned inadvertently)
 
       while(!lProg.isDone())
       {
          auto name = lProg.getUnplacedObjectName();
-         auto& o = oDir.demand(name);
+         auto& o = oDirWrapper.demand(name);
 
          l.place(o);
          lProg.markObjectPlaced(o);
       }
 
       l.markDonePlacing();
+
+      oDir.determinePruneList(oDirWrapper.demanded);
    }
 
    // link objects together

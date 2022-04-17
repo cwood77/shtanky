@@ -4,6 +4,10 @@
 namespace cmn {
 namespace appfmt {
 
+// TODO - eventually I'll want to support laying out / linking objects with a certain block
+// granularity for paging i.e. flags like "const" are implemented in HW that can only operate
+// on page boundaries
+
 // because I'm writing these structures directly to disk,
 // set padding to 'none'
 #pragma pack(push,1)

@@ -69,7 +69,7 @@ void layout::markDonePlacing()
    }
 }
 
-void layout::link(objectDirectory& d)
+void layout::link(iObjectProvider& d)
 {
    cdwVERBOSE("start linking %lld objects...\n",m_objPlacements.size());
 
@@ -91,55 +91,80 @@ void layout::link(objectDirectory& d)
 #endif
 }
 
-void layout::link(objectDirectory& d, cmn::objfmt::obj& o)
+void layout::link(iObjectProvider& d, cmn::objfmt::obj& refer)
 {
-   cdwVERBOSE("  object %lld has %lld import(s)\n",&o,o.it.patches.size());
+   cdwVERBOSE("  object %lld has %lld import(s)\n",
+      &refer,
+      refer.it.patches.size());
 
-   unsigned char *pSrcPtr
-      = const_cast<unsigned char*>(m_segments[o.flags].getHeadPtr() + m_objPlacements[&o]);
    int i=0;
-   for(auto it=o.it.patches.begin();it!=o.it.patches.end();++it,i++)
+   for(auto patch=refer.it.patches.begin();
+       patch!=refer.it.patches.end();
+       ++patch,i++)
    {
-      auto& target = d.demand(it->first);
-      auto targetAddr = calculateTotalOffset(target);
-      cdwVERBOSE("    %d: addrOf '%s' = %lu\n",i,it->first.c_str(),targetAddr);
+      auto& refee = lookupObject(d,patch->first);
+      auto refeeOffset = totalOffsetOfObj(refee);
+      cdwVERBOSE("    %d: addrOf '%s' = %lu\n",
+         i,
+         patch->first.c_str(),
+         refeeOffset);
 
-      auto& sites = it->second;
-      for(auto jit=sites.begin();jit!=sites.end();++jit)
+      auto& sites = patch->second;
+      for(auto site=sites.begin();site!=sites.end();++site)
       {
-         switch(jit->type)
+         switch(site->type)
          {
-               //patchDWord(jit->offset,targetAddr);
-               //break;
             case cmn::objfmt::patch::kRelToNextInstr:
-               {
-               //patchDWord(jit->offset,(jit->offset + jit->fromOffsetToEndOfInstr) - targetAddr);
-               unsigned long ans
-                  = targetAddr - (calculateTotalOffset(o) + jit->offset + jit->fromOffsetToEndOfInstr);
-               cdwVERBOSE("      patching site as %lu\n",ans);
-               *reinterpret_cast<unsigned long*>(pSrcPtr + jit->offset) = ans;
-               }
+               patchRipRelDWord(refer,refee,*site);
                break;
-            case cmn::objfmt::patch::kAbs:
             default:
+            case cmn::objfmt::patch::kAbs:
                cdwTHROW("unimpled");
          }
       }
    }
 }
 
-unsigned long layout::calculateTotalOffset(cmn::objfmt::obj& o)
+unsigned long layout::totalOffsetOfObj(cmn::objfmt::obj& o)
 {
    return m_segments[o.flags].offset + m_objPlacements[&o];
 }
 
-void layout::patchDWord(unsigned long addr, unsigned long value)
+unsigned long layout::totalOffsetOfRIP(cmn::objfmt::obj& o, cmn::objfmt::patch& p)
 {
-   // figure out which segment has addr
-   for(auto it=m_segments.begin();it!=m_segments.end();++it)
-      if(it->second.offset <= addr && addr <= (it->second.offset+it->second.getSize()))
-         *reinterpret_cast<unsigned long*>(
-            it->second.getHeadPtr()[addr - it->second.offset]) = value;
+   // RIP is measured from _next_ instruction
+   return totalOffsetOfObj(o)
+      + p.offset
+      + p.fromOffsetToEndOfInstr;
+}
+
+long *layout::laidOutSitePtr(cmn::objfmt::obj& o, cmn::objfmt::patch& p)
+{
+   return reinterpret_cast<long*>(
+      m_segments[o.flags].getHeadPtr()
+      + m_objPlacements[&o]
+      + p.offset
+   );
+}
+
+cmn::objfmt::obj& layout::lookupObject(iObjectProvider& d, const std::string& name)
+{
+   cmn::objfmt::obj& o = d.demand(name);
+   if(name == "._osCall_impl")
+      m_osCallOffset = totalOffsetOfObj(o);
+   return o;
+}
+
+void layout::patchRipRelDWord(cmn::objfmt::obj& refer, cmn::objfmt::obj& refee, cmn::objfmt::patch& referPatch)
+{
+   // RIP-rep means the disp is + if the refee is > refer, etc. thus refee - refer
+   long resolvedDisp
+      = (long)totalOffsetOfObj(refee)
+      - (long)totalOffsetOfRIP(refer,referPatch);
+
+   cdwVERBOSE("      patching site as %ld\n",resolvedDisp);
+
+   *laidOutSitePtr(refer,referPatch) = resolvedDisp;
 }
 
 } // namespace shlink
