@@ -63,6 +63,7 @@ public:
    var& create(const std::string& name);
    var& demand(const std::string& name);
    var& demand(lirArg& a);
+   var *fetch(lirArg& a);
 
    std::map<std::string,var*>& all() { return m_vars; }
 

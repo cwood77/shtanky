@@ -15,6 +15,26 @@ void varSplitter::split(lirStreams& s, varTable& v, cmn::tgt::iTargetInfo& t)
       self.checkVar(*it->second);
 }
 
+void varSplitter::split2(lirStreams& s, lirStream& s2, varTable& v, cmn::tgt::iTargetInfo& t)
+{
+   varSplitter self(s,v,t);
+
+   lirInstr *pInstr = &s2.pTail->head();
+   while(true)
+   {
+      for(auto it=pInstr->getArgs().begin();it!=pInstr->getArgs().end();++it)
+      {
+         var *pVar = v.fetch(**it);
+         if(pVar)
+            self.checkVar(*pVar);
+      }
+
+      if(pInstr->isLast())
+         break;
+      pInstr = &pInstr->next();
+   }
+}
+
 void varSplitter::checkVar(var& v)
 {
    if(v.storageToInstrMap.size() > 1)

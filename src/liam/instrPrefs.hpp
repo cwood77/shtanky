@@ -16,6 +16,8 @@ class instrPrefs {
 public:
    static size_t publishRequirements(lirStreams& s, varTable& v, const cmn::tgt::iTargetInfo& target);
 
+   static size_t publishRequirements2(lirStream& s2, varTable& v, const cmn::tgt::iTargetInfo& target);
+
 private:
    instrPrefs(varTable& v, const cmn::tgt::iTargetInfo& target)
    : m_pCurrStream(NULL), m_vTable(v), m_target(target), m_stackSpace(0) {}

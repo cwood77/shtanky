@@ -22,6 +22,15 @@ size_t instrPrefs::publishRequirements(lirStreams& s, varTable& v, const cmn::tg
    return self.m_stackSpace;
 }
 
+size_t instrPrefs::publishRequirements2(lirStream& s2, varTable& v, const cmn::tgt::iTargetInfo& target)
+{
+   instrPrefs self(v,target);
+
+   self.handle(s2);
+
+   return self.m_stackSpace;
+}
+
 void instrPrefs::handle(lirStream& s)
 {
    m_pCurrStream = &s;

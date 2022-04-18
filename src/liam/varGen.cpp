@@ -182,13 +182,23 @@ var& varTable::demand(const std::string& name)
 
 var& varTable::demand(lirArg& a)
 {
+   var *pAns = fetch(a);
+
+   if(!pAns)
+      cdwTHROW("variable not found!");
+
+   return *pAns;
+}
+
+var *varTable::fetch(lirArg& a)
+{
    for(auto it=m_vars.begin();it!=m_vars.end();++it)
       for(auto jit=it->second->refs.begin();jit!=it->second->refs.end();++jit)
          for(auto kit=jit->second.begin();kit!=jit->second.end();++kit)
             if(*kit == &a)
-               return *it->second;
+               return it->second;
 
-   cdwTHROW("variable not found!");
+   return NULL;
 }
 
 size_t varTable::getStorageFor(size_t orderNum, lirArg& a)

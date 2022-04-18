@@ -8,6 +8,7 @@ namespace cmn { namespace tgt { class iTargetInfo; } }
 namespace liam {
 
 class lirStream;
+class lirStreams;
 class var;
 class varTable;
 
@@ -17,6 +18,7 @@ class varTable;
 class varSplitter {
 public:
    static void split(lirStreams& s, varTable& v, cmn::tgt::iTargetInfo& t);
+   static void split2(lirStreams& s, lirStream& s2, varTable& v, cmn::tgt::iTargetInfo& t);
 
 private:
    varSplitter(lirStreams& s, varTable& v, cmn::tgt::iTargetInfo& t)
