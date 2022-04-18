@@ -155,23 +155,4 @@ void lirStreams::onNewPageStarted(const std::string& key)
    noob.pTail->orderNum = last;
 }
 
-#if 0
-lirInstr& lirStreams::search(size_t orderNum)
-{
-   for(auto it=page.begin();it!=page.end();++it)
-   {
-      if(orderNum <= it->second.pTail->orderNum)
-      {
-         auto& h = it->second.pTail->head();
-         if(orderNum >= h.orderNum)
-         {
-            return h.search(orderNum);
-         }
-      }
-   }
-
-   cdwTHROW("can't find orderNum on any page..?");
-}
-#endif
-
 } // namespace liam

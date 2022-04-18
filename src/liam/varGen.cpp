@@ -231,19 +231,11 @@ varWriter varGenerator::createPrivateVar(size_t instrNum, lirArg& a, const std::
    if(::strlen(buffer)==0)
       throw std::runtime_error("nameHint must be provied");
 
-   //auto finalName = m_vTable.pickUniqueName(buffer);
-
-   //var& v = m_vTable.create(finalName);
-   //v.refs[instrNum].push_back(&a);
-
    return varWriter(this,buffer,instrNum,&a);
 }
 
 varWriter varGenerator::createNamedVar(size_t instrNum, lirArgVar& a)
 {
-   //var& v = m_vTable.create(a.name);
-   //v.refs[instrNum].push_back(&a);
-
    return varWriter(this,"",instrNum,&a);
 }
 

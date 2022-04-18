@@ -32,7 +32,7 @@ public:
    bool addrOf;
 };
 
-class lirArgVar : public lirArg {
+class lirArgVar : public lirArg { // named var
 public:
    lirArgVar(const std::string& name, size_t size) : name(name), m_size(size) {}
 
@@ -48,6 +48,19 @@ private:
 class lirArgConst : public lirArg {
 public:
    lirArgConst(const std::string& name, size_t size) : name(name), m_size(size) {}
+
+   std::string name;
+
+   virtual size_t getSize() const { return m_size; }
+   virtual void dump() const;
+
+private:
+   const size_t m_size;
+};
+
+class lirArgTemp : public lirArg {
+public:
+   lirArgTemp(const std::string& name, size_t size) : name(name), m_size(size) {}
 
    std::string name;
 
@@ -123,10 +136,6 @@ public:
    // overlap
    // ... so don't write to multiple pages at once!
    void onNewPageStarted(const std::string& key);
-
-#if 0
-   lirInstr& search(size_t orderNum);
-#endif
 
    std::map<std::string,lirStream> page;
 };

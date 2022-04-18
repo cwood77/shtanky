@@ -10,6 +10,44 @@
 // variables are created during initial codegen; they're useful then for linking args
 // of different instructions together
 
+// cases
+// arg vs. const - only meaningful difference is const donations
+//                                             (assigned immediate storage)
+// publish, donate, or normal
+//      - publish are 'returned' to the node's parent
+//      - donate are nodes that produce args but not instrs
+// named or private
+//      - named are shared/linked by name
+// surely not all these combinations are needed
+//
+// missing things
+// subVars like array indicies or struc fields
+//
+// if args and vars are so intertwined, why have two concepts?
+//
+// [ ] named vars is just wrong; the symbol table should handle name resolution
+//     this will fall apart with name shadowing
+//
+// what's the minimum set of things I need to know
+// - what to publish
+// - creation helpers for named, using linkages
+// - instruction-less arg (donations)
+// - immediate
+// 
+// what if I could seprate args and vars?  defer var gen?  keep LIR simple to allow
+// transforms?
+//
+// <enterfunc> a, b, c
+// mov a, 6
+// mov _1, a
+// <ret>
+//
+// - which vars are "on the wire" is compiled away
+// - you can infer which args are related
+// - instrs have no orderNum (yet)
+// - you can easily move around instrs
+//
+
 namespace cmn { class node; }
 
 namespace liam {
