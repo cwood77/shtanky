@@ -24,7 +24,9 @@ public:
    virtual ~iType() {}
 
    virtual const std::string& getName() const = 0;
-   virtual const size_t getSize() = 0;
+
+   virtual const size_t getRealAllocSize(const tgt::iTargetInfo& t) const = 0;
+   virtual const size_t getPseudoRefSize() const = 0;
 
    template<class T> bool is() const { return _is(typeid(T).name()); }
    template<class T> T& as() { return *reinterpret_cast<T*>(_as(typeid(T).name())); }
@@ -44,7 +46,10 @@ class table {
 public:
    ~table();
 
+   // always brings back something: a stub if the type doesn't exist yet
    iType& fetch(const std::string& name);
+
+   // makes sure only one instance of any given type is maintained
    iType& publish(iType *pType);
 
    void dump();
@@ -58,6 +63,7 @@ extern timedGlobal<table> gTable;
 class typeBuilder {
 public:
    static typeBuilder *createString();
+   static typeBuilder *createInt();
    static typeBuilder *createVoid();
    static typeBuilder *createClass(const std::string& name);
    static typeBuilder *createPtr();

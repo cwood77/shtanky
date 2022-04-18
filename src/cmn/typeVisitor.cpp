@@ -3,43 +3,73 @@
 
 namespace cmn {
 
-void typeBuilderVisitor::visit(strTypeNode& n)
+void builtInTypeVisitor::visit(strTypeNode& n)
 {
    m_pBuilder.reset(type::typeBuilder::createString());
    hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
 }
 
-void typeBuilderVisitor::visit(arrayTypeNode& n)
+void builtInTypeVisitor::visit(arrayTypeNode& n)
 {
    m_pBuilder->array();
    hNodeVisitor::visit(n);
 }
 
-void typeBuilderVisitor::visit(voidTypeNode& n)
+void builtInTypeVisitor::visit(voidTypeNode& n)
 {
    m_pBuilder.reset(type::typeBuilder::createVoid());
    hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
 }
 
-void typeBuilderVisitor::visit(userTypeNode& n)
+// a word on user types:
+// here, you are guaranteed to get a stub (userTypeVisitor hasn't run yet)
+// but that's ok (and required) b/c otherwise nobody creates types for
+// userTypeNodes
+void builtInTypeVisitor::visit(userTypeNode& n)
 {
-   auto c = n.pDef.getRefee();
-   if(!c)
-      throw std::runtime_error("unlinked userTypeNode in typeVisitor");
-
-   type::iType *pTy = &type::gTable->fetch(c->name);
-
-   m_pBuilder.reset(type::typeBuilder::open(*pTy));
+   m_pBuilder.reset(
+      type::typeBuilder::open(
+         type::gTable->fetch(
+            fullyQualifiedName::build(*n.pDef.getRefee()))));
    hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
 }
 
-void typeBuilderVisitor::visit(ptrTypeNode& n)
+void builtInTypeVisitor::visit(ptrTypeNode& n)
 {
    m_pBuilder.reset(type::typeBuilder::createPtr());
    hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
 }
 
-void coarseTypeVisitor::visit(classNode& n)
+void builtInTypeVisitor::visit(stringLiteralNode& n)
+{
+   m_pBuilder.reset(type::typeBuilder::createString());
+   hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
+}
+
+void builtInTypeVisitor::visit(boolLiteralNode& n)
+{
+   cdwTHROW("unimpled");
+}
+
+void builtInTypeVisitor::visit(intLiteralNode& n)
+{
+   m_pBuilder.reset(type::typeBuilder::createInt());
+   hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
+}
+
+void userTypeVisitor::visit(classNode& n)
 {
    m_pBuilder.reset(type::typeBuilder::createClass(n.name));
    hNodeVisitor::visit(n);
@@ -47,29 +77,25 @@ void coarseTypeVisitor::visit(classNode& n)
    m_pBuilder.reset();
 }
 
-void coarseTypeVisitor::visit(fieldNode& n)
+void userTypeVisitor::visit(fieldNode& n)
 {
-   typeBuilderVisitor child;
-   n.demandSoleChild<typeNode>().acceptVisitor(child);
-   m_pBuilder->addMember(n.name,child.getType());
+   auto& fieldType = type::gNodeCache->demand(n.demandSoleChild<typeNode>());
+   m_pBuilder->addMember(n.name,fieldType);
 }
 
-// this is a stupid special case
-//
-// really, the type prop alg should probably be 3-phase
-// - create built-in types
-// - create user types
-// - pass the types around on the AST (fine prop)
-void fineTypeVisitor::visit(typeNode& n)
+void typePropagator::visit(invokeNode& n)
 {
-   typeBuilderVisitor typePicker;
-   n.acceptVisitor(typePicker);
-   auto& ty = typePicker.getType();
-
-   type::gNodeCache->publish(n,ty);
+   // TODO need function types for this... do I need this?   YES! at least, eventually
+   hNodeVisitor::visit(n);
 }
 
-void fineTypeVisitor::visit(fieldAccessNode& n)
+void typePropagator::visit(invokeFuncPtrNode& n)
+{
+   // TODO need function types for this... do I need this?
+   hNodeVisitor::visit(n);
+}
+
+void typePropagator::visit(fieldAccessNode& n)
 {
    hNodeVisitor::visit(n);
 
@@ -79,40 +105,30 @@ void fineTypeVisitor::visit(fieldAccessNode& n)
          .getField(n.name));
 }
 
-void fineTypeVisitor::visit(varRefNode& n)
+void typePropagator::visit(callNode& n)
 {
+   // TODO need function types for this... do I need this?
    hNodeVisitor::visit(n);
-
-   cmn::typeNode *pTy = n.pDef.getRefee();
-   typeBuilderVisitor child;
-   pTy->acceptVisitor(child);
-   type::gNodeCache->publish(n,child.getType());
 }
 
-void fineTypeVisitor::visit(stringLiteralNode& n)
+void typePropagator::visit(varRefNode& n)
 {
    hNodeVisitor::visit(n);
 
-   std::unique_ptr<type::typeBuilder> b(type::typeBuilder::createString());
-   type::gNodeCache->publish(n,b->finish());
+   typeNode *pTy = n.pDef.getRefee();
+   type::gNodeCache->publish(n,type::gNodeCache->demand(*pTy));
 }
 
-void fineTypeVisitor::visit(boolLiteralNode& n)
+void typePropagator::visit(bopNode& n)
 {
-   hNodeVisitor::visit(n);
-
-   // TODO bool type
-   std::unique_ptr<type::typeBuilder> b(type::typeBuilder::createString());
-   type::gNodeCache->publish(n,b->finish());
+   cdwTHROW("unimpled");
 }
 
-void fineTypeVisitor::visit(intLiteralNode& n)
+void propagateTypes(cmn::node& root)
 {
-   hNodeVisitor::visit(n);
-
-   // TODO int type
-   std::unique_ptr<type::typeBuilder> b(type::typeBuilder::createString());
-   type::gNodeCache->publish(n,b->finish());
+   { builtInTypeVisitor v; root.acceptVisitor(v); }
+   { userTypeVisitor v; root.acceptVisitor(v); }
+   { typePropagator v; root.acceptVisitor(v); }
 }
 
 } // namespace cmn

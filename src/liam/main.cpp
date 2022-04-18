@@ -35,15 +35,12 @@ int main(int argc,const char *argv[])
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
 
-   // seed type terminals
+   // type propagation
    cmn::type::table                           _t;
    cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
-   { cmn::coarseTypeVisitor v; prj.acceptVisitor(v); }
-
-   // type propagation
    cmn::type::nodeCache                       _c;
    cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
-   { cmn::fineTypeVisitor v; prj.acceptVisitor(v); }
+   cmn::propagateTypes(prj);
 
    // generate LIR and variables
    varTable vTbl;

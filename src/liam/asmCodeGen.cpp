@@ -157,7 +157,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
             m_w[1]
                << "sub, "
                << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
-               << m_t.getRealSize(i.getArgs()[0]->getSize());
+               << i.getArgs()[0]->getSize(); // this size is already real
             m_w.advanceLine();
          }
          break;
@@ -166,7 +166,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
             m_w[1]
                << "add, "
                << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
-               << m_t.getRealSize(i.getArgs()[0]->getSize());
+               << i.getArgs()[0]->getSize(); // this size is already real
             m_w.advanceLine();
          }
          break;

@@ -19,7 +19,8 @@ private:
 
 class staticallySizedType : public typeBase {
 public:
-   virtual const size_t getSize() { return m_size; }
+   virtual const size_t getRealAllocSize(const tgt::iTargetInfo& t) const;
+   virtual const size_t getPseudoRefSize() const { return m_size; }
 
 protected:
    staticallySizedType(const std::string& name, size_t s) : typeBase(name), m_size(s) {}
@@ -33,6 +34,11 @@ private:
 class stringType : public staticallySizedType {
 public:
    stringType() : staticallySizedType("string",0) {}
+};
+
+class intType : public staticallySizedType {
+public:
+   intType() : staticallySizedType("int",0) {}
 };
 
 class voidType : public staticallySizedType {
@@ -62,7 +68,8 @@ class userClassType : public typeBase, public iStructType {
 public:
    explicit userClassType(const std::string& name) : typeBase(name) {}
 
-   virtual const size_t getSize() { return 0; }
+   virtual const size_t getRealAllocSize(const tgt::iTargetInfo& t) const;
+   virtual const size_t getPseudoRefSize() const { return 0; }
    virtual bool _is(const std::string& name) const;
    virtual void *_as(const std::string& name);
    virtual iType& getField(const std::string& name);
@@ -83,7 +90,10 @@ public:
    ~stubTypeWrapper() { delete pReal; }
 
    virtual const std::string& getName() const { return m_name; }
-   virtual const size_t getSize() { return demandReal().getSize(); }
+   virtual const size_t getRealAllocSize(const tgt::iTargetInfo& t) const
+   { return demandReal().getRealAllocSize(t); }
+   virtual const size_t getPseudoRefSize() const
+   { return demandReal().getPseudoRefSize(); }
    virtual bool _is(const std::string& name) const { return demandReal()._is(name); }
    virtual void *_as(const std::string& name) { return demandReal()._as(name); }
 

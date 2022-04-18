@@ -103,7 +103,7 @@ void astCodeGen::visit(cmn::sequenceNode& n)
 
       auto lSize =
          cmn::type::gNodeCache->demand(
-            pLocal->demandSoleChild<cmn::typeNode>()).getSize();
+            pLocal->demandSoleChild<cmn::typeNode>()).getRealAllocSize(m_t);
       auto& arg = res.addArg<lirArgVar>(pLocal->name,lSize);
       m_vGen.createNamedVar(res.orderNum,arg);
 

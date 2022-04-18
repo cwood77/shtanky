@@ -27,6 +27,11 @@ void *typeBase::_as(const std::string& name)
       cdwTHROW("can't cast to type %s",name.c_str());
 }
 
+const size_t staticallySizedType::getRealAllocSize(const tgt::iTargetInfo& t) const
+{
+   return t.getRealSize(m_size);
+}
+
 bool userClassType::_is(const std::string& name) const
 {
    if(name == typeid(iStructType).name())
@@ -43,6 +48,14 @@ void *userClassType::_as(const std::string& name)
       return typeBase::_as(name);
 }
 
+const size_t userClassType::getRealAllocSize(const tgt::iTargetInfo& t) const
+{
+   size_t totalSize = 0;
+   for(auto it=m_order.begin();it!=m_order.end();++it)
+      totalSize += m_members.find(*it)->second->getRealAllocSize(t);
+   return totalSize;
+}
+
 iType& userClassType::getField(const std::string& name)
 {
    auto it = m_members.find(name);
@@ -57,7 +70,7 @@ size_t userClassType::getOffsetOfField(const std::string& name, const tgt::iTarg
    for(auto it=m_order.begin();it!=m_order.end();++it)
    {
       if(*it != name)
-         offset += t.getRealSize(m_members.find(*it)->second->getSize());
+         offset += m_members.find(*it)->second->getRealAllocSize(t);
       else
          return offset;
    }
@@ -137,6 +150,11 @@ typeBuilder *typeBuilder::createString()
    return new typeBuilder(new stringType());
 }
 
+typeBuilder *typeBuilder::createInt()
+{
+   return new typeBuilder(new intType());
+}
+
 typeBuilder *typeBuilder::createVoid()
 {
    return new typeBuilder(new voidType());
@@ -154,7 +172,7 @@ typeBuilder *typeBuilder::createPtr()
 
 typeBuilder *typeBuilder::open(iType& t)
 {
-   return new typeBuilder(&t,false);
+   return new typeBuilder(&t,/*own*/false);
 }
 
 typeBuilder::~typeBuilder()
