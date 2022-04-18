@@ -125,13 +125,21 @@ void functionVisitor::visit(argNode& n)
 void typePropagator::visit(invokeNode& n)
 {
    // TODO need function types for this... do I need this?   YES! at least, eventually
+   // defer this until method linking is done in the symbol table
    hNodeVisitor::visit(n);
 }
 
 void typePropagator::visit(invokeFuncPtrNode& n)
 {
-   // TODO need function types for this... do I need this?
    hNodeVisitor::visit(n);
+
+   // TODO HACK unimplementable until the AST has a way to declare custom func ptr types
+   //           i.e. stops using 'ptr'
+   if(0) {
+   auto& instType = type::gNodeCache->demand(*n.getChildren()[0]);
+   auto& rVal = instType.as<type::iFunctionType>().getReturnType();
+   type::gNodeCache->publish(n,rVal);
+   }
 }
 
 void typePropagator::visit(fieldAccessNode& n)
@@ -146,8 +154,11 @@ void typePropagator::visit(fieldAccessNode& n)
 
 void typePropagator::visit(callNode& n)
 {
-   // TODO need function types for this... do I need this?
    hNodeVisitor::visit(n);
+
+   auto fqn = fullyQualifiedName::build(n,n.name);
+   auto& rVal = type::gTable->fetch(fqn).as<type::iFunctionType>().getReturnType();
+   type::gNodeCache->publish(n,rVal);
 }
 
 void typePropagator::visit(varRefNode& n)

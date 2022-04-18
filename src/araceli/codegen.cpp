@@ -98,6 +98,12 @@ void codeGen::visit(cmn::fileNode& n)
    }
    {
       auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+
+      // TODO should this be stuffed into the target?
+      // emit a prototype for .osCall into every ls file
+      source << "func ._osCall(code : str, payload : str) : void;" << std::endl;
+      source << std::endl;
+
       m_sRefs.addRef(m_hRefs.destPath); // always include your own header :)
       m_sRefs.flush(source);
    }

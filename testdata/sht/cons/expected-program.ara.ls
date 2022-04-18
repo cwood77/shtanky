@@ -5,4 +5,6 @@ func .sht.cons.stdout.printLn(
    ._osCall(1,msg);
 }
 
+func ._osCall(code : str, payload : str) : void;
+
 ref "program.ara.lh";
