@@ -9,14 +9,11 @@ namespace liam {
 class lirArg;
 class lirInstr;
 class lirStream;
-class lirStreams;
 class varTable;
 
 class instrPrefs {
 public:
-   static size_t publishRequirements(lirStreams& s, varTable& v, const cmn::tgt::iTargetInfo& target);
-
-   static size_t publishRequirements2(lirStream& s2, varTable& v, const cmn::tgt::iTargetInfo& target);
+   static size_t publishRequirements(lirStream& s, varTable& v, const cmn::tgt::iTargetInfo& target);
 
 private:
    instrPrefs(varTable& v, const cmn::tgt::iTargetInfo& target)

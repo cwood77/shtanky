@@ -7,19 +7,11 @@
 
 namespace liam {
 
-void varSplitter::split(lirStreams& s, varTable& v, cmn::tgt::iTargetInfo& t)
+void varSplitter::split(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
 {
    varSplitter self(s,v,t);
 
-   for(auto it=v.all().begin();it!=v.all().end();++it)
-      self.checkVar(*it->second);
-}
-
-void varSplitter::split2(lirStreams& s, lirStream& s2, varTable& v, cmn::tgt::iTargetInfo& t)
-{
-   varSplitter self(s,v,t);
-
-   lirInstr *pInstr = &s2.pTail->head();
+   lirInstr *pInstr = &s.pTail->head();
    while(true)
    {
       for(auto it=pInstr->getArgs().begin();it!=pInstr->getArgs().end();++it)
@@ -75,8 +67,8 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
 {
    cdwDEBUG("emitting move for split before %lld (%lld -> %lld)\n",orderNum,srcStor,destStor);
 
-   auto& mov = m_s.
-      search(orderNum)
+   auto& mov = m_s.pTail->head()
+      .search(orderNum)
          .injectBefore(
             cmn::tgt::kMov,
             cmn::fmt("      (%s req for %s) [splitter]",v.name.c_str(),m_t.getProc().getRegName(destStor)));

@@ -54,20 +54,13 @@ int main(int argc,const char *argv[])
 
    // ---------------- register allocation ----------------
 
-   // establish variable requirements
-   //instrPrefs::publishRequirements(lir,vTbl,t); // easy to per-page
-
-   // varSplitter::split(lir,vTbl,t); // hard to per-page: needs to walk vars specific to a page
-
-   // TODO all these operations should be per stream
-   //      really?  the splitter is effectively handling the
-   //      whole thing now anyway
    cmn::outBundle out;
    for(auto it=lir.page.begin();it!=lir.page.end();++it)
    {
-   instrPrefs::publishRequirements2(it->second,vTbl,t); // easy to per-page
+      // establish variable requirements
+      instrPrefs::publishRequirements(it->second,vTbl,t);
 
-      varSplitter::split2(lir,it->second,vTbl,t);
+      varSplitter::split(it->second,vTbl,t);
 
       varFinder f(t);
       { varCombiner p(it->second,vTbl,t,f); p.run(); }

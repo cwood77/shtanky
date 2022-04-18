@@ -100,33 +100,9 @@ private:
    std::vector<lirArg*> m_args;
 };
 
-class lirVarStorage {
-public:
-   static lirVarStorage reg(size_t s);
-   static lirVarStorage stack(int offset);
-
-   int stackOffset;
-   size_t targetStorage;
-};
-
-class lirVar {
-public:
-   lirVar();
-
-   std::string id;
-   size_t firstAccess;
-   size_t lastAccess;
-   size_t numAccesses;
-   size_t size;
-
-   size_t global;
-
-   std::map<size_t,lirVarStorage> storage;
-};
-
 class lirStream {
 public:
-   lirStream() : pTail(NULL), pTop(NULL), m_nTemp(0) {}
+   lirStream() : pTail(NULL), pTop(NULL) {}
    ~lirStream();
 
    void dump();
@@ -134,65 +110,8 @@ public:
    lirInstr *pTail;
    lirStreams *pTop;
 
-   // -------------------------- new APIs
-
-#if 0
-   lirArg& publishArgOnWire(cmn::node& n, lirInstr& i, lirArg& a);
-   lirArg& takeArgOffWire(cmn::node& n, lirInstr& i);
-
-   lirArg& publishArgByName(cmn::node& n, lirInstr& i, lirArg& a);
-   lirArg& takeArgByName(cmn::node& n, lirInstr& i);
-#endif
-
-   // -------------------------- old APIs
-
-   // append a new arg to i
-   // add to variable table under name with i's #
-   lirArg& createNamedArg(/*cmn::node& n,*/ lirInstr& i, const std::string& name, size_t size);
-   //lirArg& findNamedArg(cmn::node& n, const std::string& name);
-
-   // put a on wire; a belongs to caller
-   //
-   // donations are inlined into callers, and are never variables
-   template<class T>
-   void donate(cmn::node& n, const std::string& value, size_t size)
-   { _donate(n,*new T(value,size)); }
-
-   // put a on wire; a belongs to caller (or is destroyed)
-   template<class T>
-   void createTemporary(cmn::node& n, lirInstr& i, const std::string& value, size_t size)
-   { _createTemporary(n,i,*new T(value,size)); }
-
-   // take arg off wire, attach to i
-   // if a is a temp, create a variable for it
-   // update variable for usage
-   lirArg& claimArg(cmn::node& n, lirInstr& i);
-
-   lirVar& getVariableByName(const std::string& name);
-   std::vector<lirVar*> getVariablesInScope(size_t instrOrderNum); // unused
-
 private:
-   class lirVarWireStorage {
-   public:
-      lirVarWireStorage() : pInstr(NULL), pArg(NULL) {}
-
-      void configure(lirInstr& i, lirArg& a);
-
-      lirArg& duplicateAndAddArg(lirInstr& i);
-
-      lirInstr *pInstr;
-      lirArg *pArg;
-   };
-
-   void _donate(cmn::node& n, lirArg& a);
-   void _createTemporary(cmn::node& n, lirInstr& i, lirArg& a);
-
-   std::map<cmn::node*,lirVarWireStorage> m_wire;
-
-   size_t m_nTemp;
    std::map<lirArg*,lirInstr*> m_temps;
-   std::map<cmn::node*,lirArg*> m_nodeOutputs;
-   std::map<std::string,lirVar> m_varTable;
 };
 
 class lirStreams {
@@ -205,7 +124,9 @@ public:
    // ... so don't write to multiple pages at once!
    void onNewPageStarted(const std::string& key);
 
+#if 0
    lirInstr& search(size_t orderNum);
+#endif
 
    std::map<std::string,lirStream> page;
 };

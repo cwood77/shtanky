@@ -12,21 +12,11 @@
 
 namespace liam {
 
-size_t instrPrefs::publishRequirements(lirStreams& s, varTable& v, const cmn::tgt::iTargetInfo& target)
+size_t instrPrefs::publishRequirements(lirStream& s, varTable& v, const cmn::tgt::iTargetInfo& target)
 {
    instrPrefs self(v,target);
 
-   for(auto it=s.page.begin();it!=s.page.end();++it)
-      self.handle(it->second);
-
-   return self.m_stackSpace;
-}
-
-size_t instrPrefs::publishRequirements2(lirStream& s2, varTable& v, const cmn::tgt::iTargetInfo& target)
-{
-   instrPrefs self(v,target);
-
-   self.handle(s2);
+   self.handle(s);
 
    return self.m_stackSpace;
 }
