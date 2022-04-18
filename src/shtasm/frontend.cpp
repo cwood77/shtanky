@@ -24,7 +24,7 @@ void lineParser::parseLine(std::string& label, std::vector<std::string>& words, 
    const char *pThumb = rawLine.c_str();
    eatWhitespace(pThumb);
 
-   // first, split on ;
+   // first, split on semicolon
    std::string code;
    bool found = shaveOffPart(pThumb,';',code);
    if(found)
@@ -34,9 +34,11 @@ void lineParser::parseLine(std::string& label, std::vector<std::string>& words, 
       pThumb = code.c_str();
    }
 
+   // second, split on colon
    shaveOffPart(pThumb,':',label);
    eatWhitespace(pThumb);
 
+   // split on comma for args
    while(true)
    {
       std::string word;
@@ -69,12 +71,12 @@ std::string lineParser::trimTrailingWhitespace(const std::string& w)
    return 1 ? copy : w; // WTH?  Without the ?: op here, GNU link tanks silently?
 }
 
-bool lineParser::shaveOffPart(const char*& pThumb, char delim, std::string& part)
+bool lineParser::shaveOffPart(const char*& pThumb, char delim, std::string& leftpart)
 {
    const char *pNext = ::strchr(pThumb,delim);
    if(pNext && *pNext == delim)
    {
-      part = std::string(pThumb,pNext-pThumb);
+      leftpart = std::string(pThumb,pNext-pThumb);
       pThumb = pNext+1;
       return true;
    }
@@ -85,6 +87,8 @@ static const cmn::lexemeInfo argScanTable[] = {
    { cmn::lexemeInfo::kSymbolic,     argLexor::kLBracket,    "[",        "L bracket"       },
    { cmn::lexemeInfo::kSymbolic,     argLexor::kRBracket,    "]",        "R bracket"       },
 
+   { cmn::lexemeInfo::kSymbolic,     argLexor::kAsterisk,    "*",        "times"           },
+   { cmn::lexemeInfo::kSymbolic,     argLexor::kHyphen,      "-",        "minus"           },
    { cmn::lexemeInfo::kSymbolic,     argLexor::kPlus,        "+",        "plus"            },
 
    { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegRax,      "rax",      "register"        },
@@ -229,29 +233,29 @@ void argParser::parseReg()
 
 void argParser::parseMemExpr()
 {
-   if(m_l.getToken() == argLexor::kLBracket)
-   {
-      m_l.advance();
-      m_pAi->flags |= cmn::tgt::asmArgInfo::kMem64; // TODO until types are supported,
-                                                    // assume all ptrs are 64-bit
+   m_l.demandAndEat(cdwLoc,argLexor::kLBracket);
 
-      parseReg();
-      parseScale();
+   parseReg();
+   parseScale();
+   m_pAi->flags |= cmn::tgt::asmArgInfo::kMem64; // TODO until types are supported,
+                                                 // assume all ptrs are 64-bit
 
-      m_l.demandAndEat(cdwLoc,argLexor::kRBracket);
-   }
-   else
-      m_l.demand(cdwLoc,argLexor::kLBracket);
+   m_l.demandAndEat(cdwLoc,argLexor::kRBracket);
 }
 
 void argParser::parseScale()
 {
-   if(m_l.getToken() == argLexor::kPlus)
+   const bool negative = (m_l.getToken() == argLexor::kHyphen);
+
+   if(negative || m_l.getToken() == argLexor::kPlus)
    {
       m_l.advance();
 
       m_l.demand(cdwLoc,argLexor::kIntLiteral);
-      m_pAi->disp = m_l.getLexemeInt();
+      if(negative)
+         m_pAi->disp = 0 - m_l.getLexemeInt();
+      else
+         m_pAi->disp = m_l.getLexemeInt();
 
       m_l.advance();
    }
@@ -272,7 +276,7 @@ static const cmn::lexemeInfo dataScanTable[] = {
 
 static const cmn::lexemeClassInfo dataClassTable[] = {
 
-   { dataLexor::kIntLitType, "int type",
+   { dataLexor::kIntLitType, "int lit type",
       (size_t[]){
          dataLexor::kB,
          dataLexor::kW,
@@ -333,6 +337,7 @@ void dataParser::parseData(cmn::iObjWriter& w)
    }
    else if(m_l.getToken() == dataLexor::kName)
    {
+      // TODO I hate absolute!  How do function pointers work in C++?
       cmn::objfmt::patch p;
       p.type = cmn::objfmt::patch::kAbs;
       p.offset = w.tell();

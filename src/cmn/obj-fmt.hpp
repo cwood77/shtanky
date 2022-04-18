@@ -40,14 +40,21 @@ public:
 
 class obj {
 public:
-   /*
-    * should implement this at some point...
+   static const char *kLexConst;
+   static const char *kLexData;
+   static const char *kLexCode;
+
    enum {
       kFlagUninit = 1 << 4, // lower short is for user numbering of blocks
       kFlagZero   = 1 << 5,
       kFlagConst  = 1 << 6,
    };
-   */
+
+   enum {
+      kSegConst = kFlagConst | 1,
+      kSegData  =              2,
+      kSegCode  =              3,
+   };
 
    obj() : flags(0), blockSize(0) {}
 

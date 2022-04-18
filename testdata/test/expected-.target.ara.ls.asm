@@ -1,4 +1,4 @@
-.seg 1       
+.seg code    
 .entrypoint: 
              sub, rsp, 8
              sub, rsp, 8

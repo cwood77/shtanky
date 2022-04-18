@@ -27,6 +27,8 @@ private:
    unsigned long m_line;
 };
 
+// simple parser for lines of the form
+// [<label>:] <word0>, <word1>, <word2...> [; <comment>]
 class lineParser {
 public:
    explicit lineParser(lineLexor& l) : m_l(l) {}
@@ -37,7 +39,7 @@ public:
 private:
    void eatWhitespace(const char*& pThumb);
    std::string trimTrailingWhitespace(const std::string& w);
-   bool shaveOffPart(const char*& pThumb, char delim, std::string& part);
+   bool shaveOffPart(const char*& pThumb, char delim, std::string& leftpart);
 
    lineLexor& m_l;
 };
@@ -91,7 +93,7 @@ public:
 // <memExpr> ::== <typeExpr> '[' <reg> <scale> ']'
 // <typeExpr> ::== '(' <typeDesig> ')'
 //               | e
-// <scale> ::== '+' <number> '*' <reg> <disp>
+// <scale> ::== '+' <number> '*' <reg> <disp>     currently no index or scale is supported
 //            | '+' <reg> <disp>
 //            | e
 // <disp> ::== '+' <number>
@@ -163,7 +165,7 @@ private:
 //
 class dataParser {
 public:
-   dataParser(dataLexor& l, iTableWriter& tw) : m_l(l), m_tw(tw), m_rep(1) {}
+   dataParser(dataLexor& l, iTableWriter& tw) : m_l(l), m_tw(tw) {}
 
    void parse(cmn::iObjWriter& w);
 
@@ -179,7 +181,6 @@ private:
 
    dataLexor& m_l;
    iTableWriter& m_tw;
-   __int64 m_rep;
 };
 
 } // namespace shtasm

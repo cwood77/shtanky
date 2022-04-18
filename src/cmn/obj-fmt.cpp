@@ -72,6 +72,10 @@ void importTable::unflatten(iObjReader& r)
    }
 }
 
+const char *obj::kLexConst = "const";
+const char *obj::kLexData  = "data";
+const char *obj::kLexCode  = "code";
+
 void obj::flatten(iObjWriter& w) const
 {
    w.writeCommentLine("class obj");

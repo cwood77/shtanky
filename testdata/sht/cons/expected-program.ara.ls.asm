@@ -1,4 +1,4 @@
-.seg 1                    
+.seg code                 
 .sht.cons.stdout.printLn: 
                           push, rbx      
                           sub, rsp, 32   

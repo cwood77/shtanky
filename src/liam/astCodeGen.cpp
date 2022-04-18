@@ -1,4 +1,5 @@
 #include "../cmn/fmt.hpp"
+#include "../cmn/obj-fmt.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/throw.hpp"
 #include "../cmn/type.hpp"
@@ -23,7 +24,7 @@ void astCodeGen::visit(cmn::constNode& n)
       cmn::tgt::kSelectSegment,
       "");
    m_lir.onNewPageStarted(m_currFunc);
-   seg.addArg<lirArgConst>("2",0); // const seg
+   seg.addArg<lirArgConst>(cmn::objfmt::obj::kLexConst,0);
 
    auto& i = lirInstr::append(
       stream.pTail,
@@ -49,7 +50,7 @@ void astCodeGen::visit(cmn::funcNode& n)
       cmn::tgt::kSelectSegment,
       "");
    m_lir.onNewPageStarted(m_currFunc);
-   seg.addArg<lirArgConst>("1",0); // code seg
+   seg.addArg<lirArgConst>(cmn::objfmt::obj::kLexCode,0);
 
    // determine real func name (different if entrypoint)
    std::string funcNameInAsm = n.name;
