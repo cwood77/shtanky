@@ -30,7 +30,7 @@ private:
    std::unique_ptr<type::typeBuilder> m_pBuilder;
 };
 
-// built-up classes from built-in types (and other classes)
+// build-up classes from built-in types (and other classes)
 class userTypeVisitor : public hNodeVisitor {
 public:
    virtual void visit(node& n) { visitChildren(n); }
@@ -40,6 +40,24 @@ public:
    virtual void _implementLanguage() {} // all
 
 private:
+   std::unique_ptr<type::typeBuilder> m_pBuilder;
+};
+
+// build-up functions
+class functionVisitor : public hNodeVisitor {
+public:
+   functionVisitor() : m_pClass(NULL) {}
+
+   virtual void visit(node& n) { visitChildren(n); }
+   virtual void visit(classNode& n);
+   virtual void visit(methodNode& n);
+   virtual void visit(funcNode& n);
+   virtual void visit(argNode& n);
+
+   virtual void _implementLanguage() {} // all
+
+private:
+   classNode *m_pClass;
    std::unique_ptr<type::typeBuilder> m_pBuilder;
 };
 

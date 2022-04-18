@@ -84,6 +84,28 @@ void userClassType::addField(const std::string& name, iType& f)
    m_members[name] = &f;
 }
 
+bool functionType::_is(const std::string& name) const
+{
+   if(name == typeid(iFunctionType).name())
+      return true;
+   else
+      return typeBase::_is(name);
+}
+
+void *functionType::_as(const std::string& name)
+{
+   if(name == typeid(iFunctionType).name())
+      return static_cast<iFunctionType*>(this);
+   else
+      return typeBase::_as(name);
+}
+
+void functionType::appendArgType(const std::string& name, iType& ty)
+{
+   m_argNames.push_back(name);
+   m_argTypes.push_back(&ty);
+}
+
 iType& stubTypeWrapper::demandReal()
 {
    if(pReal)
@@ -142,7 +164,7 @@ void table::dump()
 {
    cdwDEBUG("::global type table has %lld entries\n",m_allTypes.size());
    for(auto it=m_allTypes.begin();it!=m_allTypes.end();++it)
-      cdwDEBUG("   %s\n",it->first.c_str());
+      cdwDEBUG("   %s - %s\n",it->first.c_str(),typeid(*it->second).name());
 }
 
 typeBuilder *typeBuilder::createString()
@@ -175,6 +197,11 @@ typeBuilder *typeBuilder::open(iType& t)
    return new typeBuilder(&t,/*own*/false);
 }
 
+typeBuilder *typeBuilder::createFunction(const std::string& fqn)
+{
+   return new typeBuilder(new functionType(fqn));
+}
+
 typeBuilder::~typeBuilder()
 {
    if(m_own)
@@ -192,6 +219,34 @@ typeBuilder& typeBuilder::addMember(const std::string& name, iType& ty)
 {
    auto& cl = dynamic_cast<userClassType&>(*m_pType);
    cl.addField(name,ty);
+   return *this;
+}
+
+typeBuilder& typeBuilder::setClassType(iType& ty)
+{
+   auto& ft = dynamic_cast<functionType&>(*m_pType);
+   ft.setClassType(ty);
+   return *this;
+}
+
+typeBuilder& typeBuilder::setStatic(bool v)
+{
+   auto& ft = dynamic_cast<functionType&>(*m_pType);
+   ft.setStatic(v);
+   return *this;
+}
+
+typeBuilder& typeBuilder::setReturnType(iType& ty)
+{
+   auto& ft = dynamic_cast<functionType&>(*m_pType);
+   ft.setReturnType(ty);
+   return *this;
+}
+
+typeBuilder& typeBuilder::appendArgType(const std::string& name, iType& ty)
+{
+   auto& ft = dynamic_cast<functionType&>(*m_pType);
+   ft.appendArgType(name,ty);
    return *this;
 }
 

@@ -73,7 +73,8 @@ void userTypeVisitor::visit(classNode& n)
 {
    m_pBuilder.reset(type::typeBuilder::createClass(n.name));
    hNodeVisitor::visit(n);
-   m_pBuilder->finish();
+   auto& t = m_pBuilder->finish();
+   type::gNodeCache->publish(n,t);
    m_pBuilder.reset();
 }
 
@@ -81,6 +82,44 @@ void userTypeVisitor::visit(fieldNode& n)
 {
    auto& fieldType = type::gNodeCache->demand(n.demandSoleChild<typeNode>());
    m_pBuilder->addMember(n.name,fieldType);
+}
+
+void functionVisitor::visit(classNode& n)
+{
+   m_pClass = &n;
+   hNodeVisitor::visit(n);
+   m_pClass = NULL;
+}
+
+void functionVisitor::visit(methodNode& n)
+{
+   m_pBuilder.reset(type::typeBuilder::createFunction(fullyQualifiedName::build(n,n.name)));
+   m_pBuilder->setClassType(type::gNodeCache->demand(*m_pClass));
+   m_pBuilder->setStatic(n.flags & nodeFlags::kStatic);
+
+   m_pBuilder->setReturnType(type::gNodeCache->demand(n.demandSoleChild<typeNode>()));
+   hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
+}
+
+void functionVisitor::visit(funcNode& n)
+{
+   m_pBuilder.reset(type::typeBuilder::createFunction(fullyQualifiedName::build(n,n.name)));
+   m_pBuilder->setStatic(true);
+   m_pBuilder->setReturnType(type::gNodeCache->demand(n.demandSoleChild<typeNode>()));
+
+   m_pBuilder->setReturnType(type::gNodeCache->demand(n.demandSoleChild<typeNode>()));
+   hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
+}
+
+void functionVisitor::visit(argNode& n)
+{
+   m_pBuilder->appendArgType(
+      n.name,
+      type::gNodeCache->demand(n.demandSoleChild<typeNode>()));
 }
 
 void typePropagator::visit(invokeNode& n)
@@ -128,6 +167,7 @@ void propagateTypes(cmn::node& root)
 {
    { builtInTypeVisitor v; root.acceptVisitor(v); }
    { userTypeVisitor v; root.acceptVisitor(v); }
+   { functionVisitor v; root.acceptVisitor(v); }
    { typePropagator v; root.acceptVisitor(v); }
 }
 

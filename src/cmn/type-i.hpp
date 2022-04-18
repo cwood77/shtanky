@@ -82,6 +82,33 @@ private:
    std::map<std::string,iType*> m_members;
 };
 
+// ----------------------- function type -----------------------
+
+class functionType : public staticallySizedType, public iFunctionType {
+public:
+   explicit functionType(const std::string& name)
+   : staticallySizedType(name,0), m_pClass(NULL), m_static(false), m_pRType(NULL) {}
+
+   virtual bool _is(const std::string& name) const;
+   virtual void *_as(const std::string& name);
+   virtual iType& getReturnType() { return *m_pRType; }
+   virtual std::vector<iType*> getArgTypes() { return m_argTypes; }
+   virtual bool isStatic() const { return m_static; }
+   virtual iType *getClassType() { return m_pClass; }
+
+   void setClassType(iType& ty) { m_pClass = &ty; }
+   void setStatic(bool v = true) { m_static = v; }
+   void setReturnType(iType& ty) { m_pRType = &ty; }
+   void appendArgType(const std::string& name, iType& ty);
+
+private:
+   iType *m_pClass;
+   bool m_static;
+   iType *m_pRType;
+   std::vector<std::string> m_argNames;
+   std::vector<iType*> m_argTypes;
+};
+
 // ----------------------- misc types -----------------------
 
 class stubTypeWrapper : public iType {
