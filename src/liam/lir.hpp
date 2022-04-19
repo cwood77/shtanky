@@ -227,6 +227,12 @@ public:
    instrBuilder(lirGenerator& g, cmn::tgt::iTargetInfo& t, lirInstr& i, cmn::node& n)
    : m_g(g), m_t(t), m_i(i), m_n(n) {}
 
+   instrBuilder& withArg(lirArg& a)
+   {
+      m_i.addArg(a);
+      return *this;
+   }
+
    template<class T>
    instrBuilder& withArg(const std::string& name, size_t s)
    {
@@ -237,7 +243,7 @@ public:
    template<class T>
    instrBuilder& withArg(const std::string& name, cmn::node& n)
    {
-      auto nSize = cmn::type::gNodeCache->demand(n).getRealAllocSize(m_t);
+      auto nSize = cmn::type::gNodeCache->demand(n).getPseudoRefSize();
       m_i.addArg<T>(name,nSize);
       return *this;
    }

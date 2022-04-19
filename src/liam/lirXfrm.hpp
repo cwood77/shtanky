@@ -17,7 +17,7 @@ protected:
    lirTransform() : m_pCurrStream(NULL) {}
    virtual void runStream(lirStream& s);
    virtual void runInstr(lirInstr& i);
-   virtual void runArg(lirArg& a);
+   virtual void runArg(lirInstr& i, lirArg& a) {}
 
    void scheduleInjectBefore(lirInstr& noob, lirInstr& before);
    void scheduleInjectAfter(lirInstr& noob, lirInstr& after);
@@ -64,6 +64,20 @@ private:
    lirStream *m_pCurrStream;
 };
 
+class lirCallVirtualStackCalculation : public lirTransform {
+public:
+   explicit lirCallVirtualStackCalculation(cmn::tgt::iTargetInfo& t)
+   : m_t(t), m_pPreCall(NULL) {}
+
+   virtual void runInstr(lirInstr& i);
+   virtual void runArg(lirInstr& i, lirArg& a);
+
+private:
+   cmn::tgt::iTargetInfo& m_t;
+   lirInstr *m_pPreCall;
+   std::vector<size_t> m_argRealSizes;
+};
+
 // inject the following instrs:
 //    kSelectSegment
 //    kExitFunc
@@ -76,6 +90,6 @@ protected:
    virtual void runInstr(lirInstr& i);
 };
 
-void runLirTransforms(lirStreams& lir);
+void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t);
 
 } // namespace liam

@@ -331,9 +331,12 @@ void lirGenVisitor::visit(cmn::localDeclNode& n)
    hNodeVisitor::visit(n);
 
    m_lGen.append(n,cmn::tgt::kReserveLocal)
-      .withArg<lirArgConst>("size",n.demandSoleChild<cmn::typeNode>())
-      //.inheritArgFromChild(n)
+      .withArg<lirArgConst>("size",
+         cmn::type::gNodeCache->demand(n.demandSoleChild<cmn::typeNode>())
+            .getRealAllocSize(m_t))
       .withComment(n.name);
+
+   // TODO not handling initializers here
 }
 
 void lirGenVisitor::visit(cmn::fieldAccessNode& n)
@@ -347,14 +350,26 @@ void lirGenVisitor::visit(cmn::fieldAccessNode& n)
    auto i = m_lGen.noInstr(n);
    auto& a = i.borrowArgFromChild(child);
 
-   // shove into instructionless?  would anyone else ever do this?
    auto pA = new lirArgTemp(
       a.getName(),
       cmn::type::gNodeCache->demand(n).getPseudoRefSize());
-   pA->addrOf = true;
-   pA->disp = childType.getOffsetOfField(n.name,m_t);
 
-   i.returnToParent(*pA);
+   if(!a.addrOf)
+   {
+      // I can just deref the existing arg, no need for a mov
+      pA->addrOf = true;
+      pA->disp = childType.getOffsetOfField(n.name,m_t);
+      i.returnToParent(*pA);
+   }
+   else
+   {
+      // my child is already dereffed, so to do it again I must mov
+      m_lGen.append(n,cmn::tgt::kMov)
+         .withArg<lirArgTemp>("",n)
+         .withArg(a.clone())
+         .withComment("field")
+         .returnToParent(0);
+   }
 }
 
 void lirGenVisitor::visit(cmn::callNode& n)

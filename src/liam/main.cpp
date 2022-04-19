@@ -81,7 +81,7 @@ int main(int argc,const char *argv[])
       auto& s = out.get<cmn::outStream>(prj.sourceFullPath,"lir2");
       lirFormatter(s,t).format(lir2);
 
-      runLirTransforms(lir2);
+      runLirTransforms(lir2,t);
       auto& sp = out.get<cmn::outStream>(prj.sourceFullPath,"lir2-post");
       lirFormatter(sp,t).format(lir2);
    }
