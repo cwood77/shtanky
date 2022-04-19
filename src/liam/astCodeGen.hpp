@@ -9,6 +9,7 @@ namespace cmn { namespace tgt { class iTargetInfo; } }
 namespace liam {
 
 class lirArg;
+class lirGenerator;
 class lirInstr;
 class lirStreams;
 class varGenerator;
@@ -63,6 +64,35 @@ private:
    varGenerator& m_vGen;
    cmn::tgt::iTargetInfo& m_t;
    std::string m_currFunc;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+// NEW LIR API
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+// transforms I'll need
+// segment instr generation
+// local gatherer
+// exit function generation
+// call instr arg ellision?
+
+class lirGenVisitor : public cmn::liamVisitor<> {
+public:
+   lirGenVisitor(lirGenerator& l, cmn::tgt::iTargetInfo& t) : m_lGen(l), m_t(t) {}
+
+   virtual void visit(cmn::node& n) { visitChildren(n); }
+   virtual void visit(cmn::constNode& n);
+   virtual void visit(cmn::funcNode& n);
+   virtual void visit(cmn::invokeFuncPtrNode& n);
+   virtual void visit(cmn::localDeclNode& n);
+
+private:
+   lirGenerator& m_lGen;
+   cmn::tgt::iTargetInfo& m_t;
 };
 
 } // namespace liam

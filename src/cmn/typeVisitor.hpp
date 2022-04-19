@@ -65,6 +65,7 @@ private:
 class typePropagator : public hNodeVisitor {
 public:
    virtual void visit(node& n) { visitChildren(n); }
+   virtual void visit(argNode& n);
    virtual void visit(invokeNode& n);
    virtual void visit(invokeFuncPtrNode& n);
    virtual void visit(fieldAccessNode& n);

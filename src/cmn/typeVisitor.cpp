@@ -129,6 +129,12 @@ void typePropagator::visit(invokeNode& n)
    hNodeVisitor::visit(n);
 }
 
+void typePropagator::visit(argNode& n)
+{
+   hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,type::gNodeCache->demand(*n.getChildren()[0]));
+}
+
 void typePropagator::visit(invokeFuncPtrNode& n)
 {
    hNodeVisitor::visit(n);

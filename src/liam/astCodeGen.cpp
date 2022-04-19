@@ -268,4 +268,71 @@ void astCodeGen::genCallPostChild(cmn::node& n, callGenInfo& i)
    m_vGen.createPrivateVar(i.pCallInstr->orderNum,*i.pRvalArg,"rval").publishOnWire(n);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+// NEW LIR API
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+void lirGenVisitor::visit(cmn::constNode& n)
+{
+   std::stringstream expr;
+   { dataFormatter v(expr); n.acceptVisitor(v); }
+
+   m_lGen.createNewStream(cmn::objfmt::obj::kSegCode,n.name);
+   m_lGen.append(n,cmn::tgt::kGlobalConstData)
+      .withArg<lirArgConst>(expr.str(),0)
+      .withComment(n.name);
+}
+
+void lirGenVisitor::visit(cmn::funcNode& n)
+{
+   if(n.getChildrenOf<cmn::sequenceNode>().size() == 0)
+      return; // ignore forward references
+
+   m_lGen.createNewStream(cmn::objfmt::obj::kSegCode,n.name);
+
+   // determine real func name (different if entrypoint)
+   std::string funcNameInAsm = n.name;
+   if(n.attributes.find("entrypoint") != n.attributes.end())
+      funcNameInAsm = ".entrypoint";
+
+   auto& i = m_lGen.append(n,cmn::tgt::kEnterFunc)
+      .withArg<lirArgTemp>("rval",n)
+      .returnToParent(0)
+      .withComment(funcNameInAsm);
+
+   auto args = n.getChildrenOf<cmn::argNode>();
+   for(auto it=args.begin();it!=args.end();++it)
+      i.withArg<lirArgVar>((*it)->name,**it);
+
+   n.demandSoleChild<cmn::sequenceNode>().acceptVisitor(*this);
+}
+
+void lirGenVisitor::visit(cmn::invokeFuncPtrNode& n)
+{
+   m_lGen.append(n,cmn::tgt::kPreCallStackAlloc);
+
+   hNodeVisitor::visit(n);
+
+   auto iCall = m_lGen.append(n,cmn::tgt::kCall)
+      .withArg<lirArgTemp>("rval",/*n*/ 0) // TODO 0 until typeprop for node is done
+      .returnToParent(0)
+      .withComment("(funcPtr)");
+
+   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+      iCall.inheritArgFromChild(**it);
+}
+
+void lirGenVisitor::visit(cmn::localDeclNode& n)
+{
+   hNodeVisitor::visit(n);
+
+   m_lGen.append(n,cmn::tgt::kReserveLocal)
+      .inheritArgFromChild(n)
+      .withComment(n.name);
+}
+
 } // namespace liam

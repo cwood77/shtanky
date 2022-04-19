@@ -1,6 +1,8 @@
 #pragma once
 #include "../cmn/target.hpp"
+#include "../cmn/type.hpp"
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -58,7 +60,7 @@ private:
    const size_t m_size;
 };
 
-class lirArgTemp : public lirArg {
+class lirArgTemp : public lirArg { // private var
 public:
    lirArgTemp(const std::string& name, size_t size) : name(name), m_size(size) {}
 
@@ -137,7 +139,75 @@ public:
    // ... so don't write to multiple pages at once!
    void onNewPageStarted(const std::string& key);
 
-   std::map<std::string,lirStream> page;
+   std::map<std::string,lirStream> page; // keep string, but make a list
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+// NEW LIR API
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+class instrBuilder;
+
+class lirGenerator { // lirBuilder?
+public:
+   lirGenerator(lirStreams& lir, cmn::tgt::iTargetInfo& t);
+
+   void createNewStream(size_t flags, const std::string& comment);
+
+   instrBuilder append(cmn::node& n, cmn::tgt::instrIds id);
+
+private:
+   void bindArg(cmn::node& n, lirArg& a);
+   lirArg& demandArg(cmn::node& n);
+#pragma need to duplicate the arg here, otherwise double-delete
+
+   lirStreams& m_lir;
+   cmn::tgt::iTargetInfo& m_t;
+   lirStream *m_pCurrStream;
+   std::set<std::string> m_nameTable;
+   std::map<cmn::node*,lirArg*> m_nodeTable;
+
+friend class instrBuilder;
+};
+
+class instrBuilder {
+public:
+   instrBuilder(lirGenerator& g, cmn::tgt::iTargetInfo& t, lirInstr& i, cmn::node& n)
+   : m_g(g), m_t(t), m_i(i), m_n(n) {}
+
+   template<class T>
+   instrBuilder& withArg(const std::string& name, size_t s)
+   {
+      m_i.addArg<T>(name,s);
+      return *this;
+   }
+
+   template<class T>
+   instrBuilder& withArg(const std::string& name, cmn::node& n)
+   {
+      auto nSize = cmn::type::gNodeCache->demand(n).getRealAllocSize(m_t);
+      m_i.addArg<T>(name,nSize);
+      return *this;
+   }
+
+   instrBuilder& inheritArgFromChild(cmn::node& n) // name is different?
+   { m_i.addArg(m_g.demandArg(n)); return *this; }
+
+   instrBuilder& withComment(const std::string& c)
+   { m_i.comment = c; return *this; }
+
+   instrBuilder& returnToParent(size_t nArg)
+   { m_g.bindArg(m_n,*m_i.getArgs()[nArg]); return *this; }
+
+private:
+   lirGenerator& m_g;
+   cmn::tgt::iTargetInfo& m_t;
+   lirInstr& m_i;
+   cmn::node& m_n;
 };
 
 } // namespace liam

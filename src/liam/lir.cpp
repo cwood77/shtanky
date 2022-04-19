@@ -1,3 +1,4 @@
+#include "../cmn/obj-fmt.hpp"
 #include "../cmn/throw.hpp"
 #include "../cmn/trace.hpp"
 #include "lir.hpp"
@@ -29,6 +30,11 @@ void lirArgVar::dump() const
 void lirArgConst::dump() const
 {
    cdwDEBUG("c/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
+}
+
+void lirArgTemp::dump() const
+{
+   cdwDEBUG("t/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
 }
 
 lirInstr::~lirInstr()
@@ -153,6 +159,45 @@ void lirStreams::onNewPageStarted(const std::string& key)
    last += 20;
    cdwDEBUG("reassigning new page to order %lld\n",last);
    noob.pTail->orderNum = last;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+// NEW LIR API
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+lirGenerator::lirGenerator(lirStreams& lir, cmn::tgt::iTargetInfo& t)
+: m_lir(lir), m_t(t), m_pCurrStream(NULL)
+{
+}
+
+void lirGenerator::createNewStream(size_t flags, const std::string& comment)
+{
+   // build this into the stream itself
+   m_pCurrStream = &m_lir.page[comment + "_NOOB!"];
+   /*
+   append(cmn::tgt::kSelectSegment)
+      .withArg<lirArgConst>(cmn::objfmt::obj::kLexConst,0);
+      */
+}
+
+instrBuilder lirGenerator::append(cmn::node& n, cmn::tgt::instrIds id)
+{
+   lirInstr& i = lirInstr::append(m_pCurrStream->pTail,id,"");
+   return instrBuilder(*this,m_t,i,n);
+}
+
+void lirGenerator::bindArg(cmn::node& n, lirArg& a)
+{
+   m_nodeTable[&n] = &a;
+}
+
+lirArg& lirGenerator::demandArg(cmn::node& n)
+{
+   return *m_nodeTable[&n];
 }
 
 } // namespace liam

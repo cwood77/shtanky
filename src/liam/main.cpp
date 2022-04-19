@@ -70,6 +70,15 @@ int main(int argc,const char *argv[])
       asmCodeGen::generate(it->second,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
    }
 
+   {
+      lirStreams lir2;
+      lirGenerator lGen(lir2,t);
+      lirGenVisitor v(lGen,t);
+      prj.acceptVisitor(v);
+      cdwDEBUG("**** LIR REWRITE ***\n");
+      lir2.dump();
+   }
+
    _t.dump();
    _c.dump();
 

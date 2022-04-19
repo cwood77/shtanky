@@ -44,9 +44,13 @@
 //
 // - which vars are "on the wire" is compiled away
 // - you can infer which args are related
-// - instrs have no orderNum (yet)
+// - instrs have no orderNum (yet) - these are the real problem
 // - you can easily move around instrs
 //
+// - in practical terms this means
+//   - "on the wire" is done in terms of args during AST codegen
+//   - var creation name/private is done during a separate pass
+//   - there's enough args types that the type of var to create is unambiguous
 
 namespace cmn { class node; }
 
