@@ -17,6 +17,8 @@
 // - write
 
 namespace cmn { class node; }
+namespace cmn { class outStream; }
+namespace cmn { class textTableLineWriter; }
 
 namespace liam {
 
@@ -34,6 +36,9 @@ public:
 
    int disp;
    bool addrOf;
+
+protected:
+   virtual lirArg& copyFieldsInto(lirArg& noob) const;
 };
 
 class lirArgVar : public lirArg { // named var
@@ -45,7 +50,7 @@ public:
    virtual const std::string& getName() const { return name; }
    virtual size_t getSize() const { return m_size; }
    virtual void dump() const;
-   virtual lirArg& clone() const { return *new lirArgVar(name,m_size); }
+   virtual lirArg& clone() const { return copyFieldsInto(*new lirArgVar(name,m_size)); }
 
 private:
    const size_t m_size;
@@ -60,7 +65,7 @@ public:
    virtual const std::string& getName() const { return name; }
    virtual size_t getSize() const { return m_size; }
    virtual void dump() const;
-   virtual lirArg& clone() const { return *new lirArgConst(name,m_size); }
+   virtual lirArg& clone() const { return copyFieldsInto(*new lirArgConst(name,m_size)); }
 
 private:
    const size_t m_size;
@@ -75,7 +80,7 @@ public:
    virtual const std::string& getName() const { return name; }
    virtual size_t getSize() const { return m_size; }
    virtual void dump() const;
-   virtual lirArg& clone() const { return *new lirArgTemp(name,m_size); }
+   virtual lirArg& clone() const { return copyFieldsInto(*new lirArgTemp(name,m_size)); }
 
 private:
    const size_t m_size;
@@ -148,6 +153,21 @@ public:
    void onNewPageStarted(const std::string& key);
 
    std::map<std::string,lirStream> page; // keep string, but make a list
+};
+
+class lirFormatter {
+public:
+   lirFormatter(cmn::outStream& s, cmn::tgt::iTargetInfo& t) : m_s(s), m_t(t) {}
+
+   void format(lirStreams& s);
+
+private:
+   void format(lirStream& s);
+   void format(lirInstr& i, cmn::textTableLineWriter& t);
+   void format(lirArg& a, cmn::textTableLineWriter& t);
+
+   cmn::outStream& m_s;
+   cmn::tgt::iTargetInfo& m_t;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////

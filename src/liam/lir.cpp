@@ -1,4 +1,6 @@
 #include "../cmn/obj-fmt.hpp"
+#include "../cmn/out.hpp"
+#include "../cmn/textTable.hpp"
 #include "../cmn/throw.hpp"
 #include "../cmn/trace.hpp"
 #include "lir.hpp"
@@ -21,6 +23,13 @@ namespace liam {
 // storage. (this example is a little contrived b/c + is actually an accumulation into b)
 //
 // can you know from any instruction whether it's a temporary or not?
+
+lirArg& lirArg::copyFieldsInto(lirArg& noob) const
+{
+   noob.disp = disp;
+   noob.addrOf = addrOf;
+   return noob;
+}
 
 void lirArgVar::dump() const
 {
@@ -159,6 +168,76 @@ void lirStreams::onNewPageStarted(const std::string& key)
    last += 20;
    cdwDEBUG("reassigning new page to order %lld\n",last);
    noob.pTail->orderNum = last;
+}
+
+void lirFormatter::format(lirStreams& s)
+{
+   m_s.stream() << "=== LIR bundle has " << s.page.size() << " stream(s) ===" << std::endl;
+   for(auto it=s.page.begin();it!=s.page.end();++it)
+   {
+      m_s.stream() << "----- start stream " << it->first << std::endl;
+      format(it->second);
+   }
+   m_s.stream() << "=== end of LIR bundle dump ===" << std::endl;
+}
+
+void lirFormatter::format(lirStream& s)
+{
+   cmn::textTable t;
+   cmn::textTableLineWriter w(t);
+
+   lirInstr *pInstr = &s.pTail->head();
+   while(true)
+   {
+      format(*pInstr,w);
+      w.advanceLine();
+      if(pInstr->isLast())
+         break;
+      pInstr = &pInstr->next();
+   }
+
+   t.compileAndWrite(m_s.stream());
+   m_s.stream() << std::endl;
+}
+
+void lirFormatter::format(lirInstr& i, cmn::textTableLineWriter& t)
+{
+   t[0] << i.orderNum;
+   t[1] << m_t.getProc().getInstr(i.instrId)->name;
+
+   for(auto it=i.getArgs().begin();it!=i.getArgs().end();++it)
+   {
+      if(it != i.getArgs().begin())
+         t[2] << ", ";
+      format(**it,t);
+   }
+
+   if(!i.comment.empty())
+   t[3] << ";;; " << i.comment;
+}
+
+void lirFormatter::format(lirArg& a, cmn::textTableLineWriter& t)
+{
+   const char *pType = "@";
+   if(dynamic_cast<lirArgConst*>(&a))
+      pType = "$";
+   else if(dynamic_cast<lirArgTemp*>(&a))
+      pType = "_";
+
+   if(a.addrOf)
+      t[2] << "[";
+
+   t[2] << pType << a.getName();
+
+   if(a.disp && 0 < a.disp)
+      t[2] << "+" << a.disp;
+   if(a.disp && 0 > a.disp)
+      t[2] << a.disp;
+
+   if(a.addrOf)
+      t[2] << "]";
+
+   t[2] << "/" << a.getSize();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

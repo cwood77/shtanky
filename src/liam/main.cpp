@@ -77,6 +77,11 @@ int main(int argc,const char *argv[])
       prj.acceptVisitor(v);
       cdwDEBUG("**** LIR REWRITE ***\n");
       lir2.dump();
+      //cmn::outBundle out2;
+      auto& s = out.get<cmn::outStream>(prj.sourceFullPath,"lir2");
+      lirFormatter(s,t).format(lir2);
+      //cmn::stdoutFileWriter testWriter;
+      //out2.updateDisk(testWriter);
    }
 
    _t.dump();
