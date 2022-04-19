@@ -56,6 +56,8 @@ public:
       kSegCode  =              3,
    };
 
+   static size_t convertLexFlag(const std::string& l);
+
    obj() : flags(0), blockSize(0) {}
 
    unsigned long flags;

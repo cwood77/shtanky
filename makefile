@@ -168,6 +168,7 @@ LIAM_SRC = \
 	src/liam/instrPrefs.cpp \
 	src/liam/lexor.cpp \
 	src/liam/lir.cpp \
+	src/liam/lirXfrm.cpp \
 	src/liam/main.cpp \
 	src/liam/projectBuilder.cpp \
 	src/liam/varAlloc.cpp \

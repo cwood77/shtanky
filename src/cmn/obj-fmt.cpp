@@ -1,6 +1,7 @@
 #include "binReader.hpp"
 #include "binWriter.hpp"
 #include "obj-fmt.hpp"
+#include "throw.hpp"
 #include <stdexcept>
 
 namespace cmn {
@@ -75,6 +76,18 @@ void importTable::unflatten(iObjReader& r)
 const char *obj::kLexConst = "const";
 const char *obj::kLexData  = "data";
 const char *obj::kLexCode  = "code";
+
+size_t obj::convertLexFlag(const std::string& l)
+{
+   if(l == kLexConst)
+      return kSegConst;
+   else if(l == kLexData)
+      return kSegData;
+   else if(l == kLexCode)
+      return kSegCode;
+   else
+      cdwTHROW("unknown segment '%s'",l.c_str());
+}
 
 void obj::flatten(iObjWriter& w) const
 {

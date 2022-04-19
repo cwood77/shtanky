@@ -281,7 +281,7 @@ void lirGenVisitor::visit(cmn::constNode& n)
    std::stringstream expr;
    { dataFormatter v(expr); n.acceptVisitor(v); }
 
-   m_lGen.createNewStream(cmn::objfmt::obj::kSegCode,n.name);
+   m_lGen.createNewStream(cmn::objfmt::obj::kLexConst,n.name);
    m_lGen.append(n,cmn::tgt::kGlobalConstData)
       .withArg<lirArgConst>(expr.str(),0)
       .withComment(n.name);
@@ -292,7 +292,7 @@ void lirGenVisitor::visit(cmn::funcNode& n)
    if(n.getChildrenOf<cmn::sequenceNode>().size() == 0)
       return; // ignore forward references
 
-   m_lGen.createNewStream(cmn::objfmt::obj::kSegCode,n.name);
+   m_lGen.createNewStream(cmn::objfmt::obj::kLexCode,n.name);
 
    // determine real func name (different if entrypoint)
    std::string funcNameInAsm = n.name;

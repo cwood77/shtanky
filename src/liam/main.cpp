@@ -10,6 +10,7 @@
 #include "astCodeGen.hpp"
 #include "instrPrefs.hpp"
 #include "lir.hpp"
+#include "lirXfrm.hpp"
 #include "projectBuilder.hpp"
 #include "varAlloc.hpp"
 #include "varCombiner.hpp"
@@ -77,11 +78,12 @@ int main(int argc,const char *argv[])
       prj.acceptVisitor(v);
       cdwDEBUG("**** LIR REWRITE ***\n");
       lir2.dump();
-      //cmn::outBundle out2;
       auto& s = out.get<cmn::outStream>(prj.sourceFullPath,"lir2");
       lirFormatter(s,t).format(lir2);
-      //cmn::stdoutFileWriter testWriter;
-      //out2.updateDisk(testWriter);
+
+      runLirTransforms(lir2);
+      auto& sp = out.get<cmn::outStream>(prj.sourceFullPath,"lir2-post");
+      lirFormatter(sp,t).format(lir2);
    }
 
    _t.dump();

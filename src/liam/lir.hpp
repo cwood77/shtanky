@@ -103,6 +103,9 @@ public:
    lirArg& addArg(lirArg& a) { m_args.push_back(&a); return a; }
 
    lirInstr& injectBefore(const cmn::tgt::instrIds id, const std::string& comment);
+   lirInstr& injectBefore(lirInstr& noob);
+   lirInstr& injectAfter(lirInstr& noob);
+   lirInstr& append(lirInstr& noob);
 
    void dump();
 
@@ -116,12 +119,15 @@ public:
    bool isLast() const { return m_pNext == NULL; }
    lirInstr& next() { return *m_pNext; }
    lirInstr& head();
-   lirInstr& search(size_t orderNum);
+   lirInstr& tail();
+   lirInstr& search(size_t orderNum); // rename search down
+   lirInstr& searchUp(cmn::tgt::instrIds id);
 
    std::vector<lirArg*>& getArgs() { return m_args; }
 
-private:
+//private:
    explicit lirInstr(const cmn::tgt::instrIds id);
+private:
 
    lirInstr *m_pPrev;
    lirInstr *m_pNext;
@@ -137,6 +143,7 @@ public:
 
    lirInstr *pTail;
    lirStreams *pTop;
+   std::string segment;
 
 private:
    std::map<lirArg*,lirInstr*> m_temps;
@@ -194,7 +201,7 @@ class lirGenerator { // lirBuilder?
 public:
    lirGenerator(lirStreams& lir, cmn::tgt::iTargetInfo& t);
 
-   void createNewStream(size_t flags, const std::string& comment);
+   void createNewStream(const std::string& segment, const std::string& comment);
 
    instrBuilder append(cmn::node& n, cmn::tgt::instrIds id);
 

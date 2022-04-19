@@ -75,17 +75,36 @@ lirInstr& lirInstr::injectBefore(const cmn::tgt::instrIds id, const std::string&
 {
    auto *pNoob = new lirInstr(id);
    pNoob->orderNum = orderNum - 1;
-
-   pNoob->m_pPrev = m_pPrev;
-   if(m_pPrev)
-      m_pPrev->m_pNext = pNoob;
-
-   pNoob->m_pNext = this;
-   m_pPrev = pNoob;
-
    pNoob->comment = comment;
+   return injectBefore(*pNoob);
+}
 
-   return *pNoob;
+lirInstr& lirInstr::injectBefore(lirInstr& noob)
+{
+   noob.m_pPrev = m_pPrev;
+   if(m_pPrev)
+      m_pPrev->m_pNext = &noob;
+
+   noob.m_pNext = this;
+   m_pPrev = &noob;
+
+   return noob;
+}
+
+lirInstr& lirInstr::injectAfter(lirInstr& noob)
+{
+   if(m_pNext)
+      return m_pNext->injectBefore(noob);
+   else
+      return append(noob);
+}
+
+lirInstr& lirInstr::append(lirInstr& noob)
+{
+   lirInstr& _tail = tail();
+   _tail.m_pNext = &noob;
+   noob.m_pPrev = &_tail;
+   return noob;
 }
 
 lirInstr& lirInstr::search(size_t orderNum)
@@ -118,6 +137,26 @@ lirInstr& lirInstr::head()
    while(pPtr->m_pPrev)
       pPtr = pPtr->m_pPrev;
    return *pPtr;
+}
+
+lirInstr& lirInstr::tail()
+{
+   lirInstr *pPtr = this;
+   while(pPtr->m_pNext)
+      pPtr = pPtr->m_pNext;
+   return *pPtr;
+}
+
+lirInstr& lirInstr::searchUp(cmn::tgt::instrIds id)
+{
+   lirInstr *pPtr = this;
+   while(pPtr)
+   {
+      if(pPtr->instrId == id)
+         return *pPtr;
+      pPtr = pPtr->m_pPrev;
+   }
+   cdwTHROW("searchUp failed for instr %d",id);
 }
 
 lirInstr::lirInstr(const cmn::tgt::instrIds id)
@@ -172,7 +211,7 @@ void lirStreams::onNewPageStarted(const std::string& key)
 
 void lirFormatter::format(lirStreams& s)
 {
-   m_s.stream() << "=== LIR bundle has " << s.page.size() << " stream(s) ===" << std::endl;
+   m_s.stream() << "=== LIR bundle has " << s.page.size() << " stream(s) ===   (hint: $=var, ~=temp, @=immediate)" << std::endl;
    for(auto it=s.page.begin();it!=s.page.end();++it)
    {
       m_s.stream() << "----- start stream " << it->first << std::endl;
@@ -218,11 +257,11 @@ void lirFormatter::format(lirInstr& i, cmn::textTableLineWriter& t)
 
 void lirFormatter::format(lirArg& a, cmn::textTableLineWriter& t)
 {
-   const char *pType = "@";
+   const char *pType = "$";
    if(dynamic_cast<lirArgConst*>(&a))
-      pType = "$";
+      pType = "@";
    else if(dynamic_cast<lirArgTemp*>(&a))
-      pType = "_";
+      pType = "~";
 
    if(a.addrOf)
       t[2] << "[";
@@ -253,14 +292,11 @@ lirGenerator::lirGenerator(lirStreams& lir, cmn::tgt::iTargetInfo& t)
 {
 }
 
-void lirGenerator::createNewStream(size_t flags, const std::string& comment)
+void lirGenerator::createNewStream(const std::string& segment, const std::string& comment)
 {
    // build this into the stream itself
-   m_pCurrStream = &m_lir.page[comment + "_NOOB!"];
-   /*
-   append(cmn::tgt::kSelectSegment)
-      .withArg<lirArgConst>(cmn::objfmt::obj::kLexConst,0);
-      */
+   m_pCurrStream = &m_lir.page[comment]; // uniquify
+   m_pCurrStream->segment = segment;
 }
 
 instrBuilder lirGenerator::append(cmn::node& n, cmn::tgt::instrIds id)
