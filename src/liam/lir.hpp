@@ -27,8 +27,10 @@ public:
    lirArg() : disp(0), addrOf(false) {}
    virtual ~lirArg() {}
 
+   virtual const std::string& getName() const = 0;
    virtual size_t getSize() const = 0;
    virtual void dump() const = 0;
+   virtual lirArg& clone() const = 0;
 
    int disp;
    bool addrOf;
@@ -40,8 +42,10 @@ public:
 
    std::string name;
 
+   virtual const std::string& getName() const { return name; }
    virtual size_t getSize() const { return m_size; }
    virtual void dump() const;
+   virtual lirArg& clone() const { return *new lirArgVar(name,m_size); }
 
 private:
    const size_t m_size;
@@ -53,8 +57,10 @@ public:
 
    std::string name;
 
+   virtual const std::string& getName() const { return name; }
    virtual size_t getSize() const { return m_size; }
    virtual void dump() const;
+   virtual lirArg& clone() const { return *new lirArgConst(name,m_size); }
 
 private:
    const size_t m_size;
@@ -66,8 +72,10 @@ public:
 
    std::string name;
 
+   virtual const std::string& getName() const { return name; }
    virtual size_t getSize() const { return m_size; }
    virtual void dump() const;
+   virtual lirArg& clone() const { return *new lirArgTemp(name,m_size); }
 
 private:
    const size_t m_size;
@@ -151,6 +159,16 @@ public:
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 class instrBuilder;
+class instructionless;
+
+// maybe instead it's
+//
+// m_lGen
+//    .forNode(n)              // returns 'instructionless' API
+//    .append(cmn::tgt::kCall) // returns instr API
+//    .addArg()                // returns arg
+//
+// you can re-run forNode() to add more
 
 class lirGenerator { // lirBuilder?
 public:
@@ -160,18 +178,21 @@ public:
 
    instrBuilder append(cmn::node& n, cmn::tgt::instrIds id);
 
+   instructionless noInstr(cmn::node& n);
+
 private:
    void bindArg(cmn::node& n, lirArg& a);
-   lirArg& demandArg(cmn::node& n);
-#pragma need to duplicate the arg here, otherwise double-delete
+   void addArgFromNode(cmn::node& n, lirInstr& i);
 
    lirStreams& m_lir;
    cmn::tgt::iTargetInfo& m_t;
    lirStream *m_pCurrStream;
    std::set<std::string> m_nameTable;
    std::map<cmn::node*,lirArg*> m_nodeTable;
+   std::set<lirArg*> m_adoptedOrphans; // TODO delete these
 
 friend class instrBuilder;
+friend class instructionless;
 };
 
 class instrBuilder {
@@ -194,8 +215,8 @@ public:
       return *this;
    }
 
-   instrBuilder& inheritArgFromChild(cmn::node& n) // name is different?
-   { m_i.addArg(m_g.demandArg(n)); return *this; }
+   instrBuilder& inheritArgFromChild(cmn::node& n) //?method name follows a different pattern
+   { m_g.addArgFromNode(n,m_i); return *this; }
 
    instrBuilder& withComment(const std::string& c)
    { m_i.comment = c; return *this; }
@@ -207,6 +228,19 @@ private:
    lirGenerator& m_g;
    cmn::tgt::iTargetInfo& m_t;
    lirInstr& m_i;
+   cmn::node& m_n;
+};
+
+class instructionless {
+public:
+   instructionless(lirGenerator& g, cmn::node& n) : m_g(g), m_n(n) {}
+
+   const lirArg& borrowArgFromChild(cmn::node& n);
+
+   instructionless& returnToParent(lirArg& a);
+
+private:
+   lirGenerator& m_g;
    cmn::node& m_n;
 };
 

@@ -190,14 +190,33 @@ instrBuilder lirGenerator::append(cmn::node& n, cmn::tgt::instrIds id)
    return instrBuilder(*this,m_t,i,n);
 }
 
+instructionless lirGenerator::noInstr(cmn::node& n)
+{
+   return instructionless(*this,n);
+}
+
 void lirGenerator::bindArg(cmn::node& n, lirArg& a)
 {
+   // I'm borrowing from an instr, so don't delete these
    m_nodeTable[&n] = &a;
 }
 
-lirArg& lirGenerator::demandArg(cmn::node& n)
+void lirGenerator::addArgFromNode(cmn::node& n, lirInstr& i)
 {
-   return *m_nodeTable[&n];
+   // because instrs own their args, make a copy
+   i.addArg(m_nodeTable[&n]->clone());
+}
+
+const lirArg& instructionless::borrowArgFromChild(cmn::node& n)
+{
+   return *m_g.m_nodeTable[&n]; // TODO HACK- method?
+}
+
+instructionless& instructionless::returnToParent(lirArg& a)
+{
+   m_g.bindArg(m_n,a);
+   m_g.m_adoptedOrphans.insert(&a); // TODO HACK- method?
+   return *this;
 }
 
 } // namespace liam

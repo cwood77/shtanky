@@ -89,6 +89,12 @@ public:
    virtual void visit(cmn::funcNode& n);
    virtual void visit(cmn::invokeFuncPtrNode& n);
    virtual void visit(cmn::localDeclNode& n);
+   virtual void visit(cmn::fieldAccessNode& n);
+   virtual void visit(cmn::callNode& n);
+   virtual void visit(cmn::varRefNode& n);
+   virtual void visit(cmn::stringLiteralNode& n);
+   virtual void visit(cmn::boolLiteralNode& n);
+   virtual void visit(cmn::intLiteralNode& n);
 
 private:
    lirGenerator& m_lGen;
