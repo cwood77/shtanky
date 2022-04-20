@@ -46,6 +46,12 @@ bool var::isAlive(size_t orderNum)
    return refs.begin()->first <= orderNum && orderNum <= (--(refs.end()))->first;
 }
 
+bool var::isAlive(size_t start, size_t end)
+{
+   return isAlive(start) || isAlive(end) ||
+      (start < refs.begin()->first && (--(refs.end()))->first < end);
+}
+
 // ans    req
 //  b  0
 //  b  1  BX

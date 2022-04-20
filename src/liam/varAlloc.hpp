@@ -19,4 +19,14 @@ protected:
    virtual void onInstrWithAvailVar(lirInstr& i);
 };
 
+class varAllocator2 {
+public:
+   varAllocator2(cmn::tgt::iTargetInfo& t) : m_t(t) {}
+
+   void run(varTable& v, varFinder& f);
+
+private:
+   cmn::tgt::iTargetInfo& m_t;
+};
+
 } // namespace liam

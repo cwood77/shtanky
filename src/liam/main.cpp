@@ -95,7 +95,11 @@ int main(int argc,const char *argv[])
       varFinder f(t);
       { varCombiner p(it->second,vTbl,t,f); p.run(); }
 
-      { varAllocator p(it->second,vTbl,t,f); p.run(); }
+      cdwDEBUG("=-=-=-=-=-=-= new allocator start\n");
+  varAllocator2(t).run(vTbl,f);
+      cdwDEBUG("=-=-=-=-=-=-= new allocator stop\n");
+
+      //{ varAllocator p(it->second,vTbl,t,f); p.run(); }
 
       asmCodeGen::generate(it->second,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
    }
