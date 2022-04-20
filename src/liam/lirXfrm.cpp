@@ -1,3 +1,4 @@
+#include "../cmn/unique.hpp"
 #include "lir.hpp"
 #include "lirXfrm.hpp"
 #include "varGen.hpp"
@@ -80,6 +81,11 @@ void lirTransform::applyChanges()
 {
    for(auto it=m_changes.begin();it!=m_changes.end();++it)
       (*it)->apply();
+}
+
+void lirNameCollector::runArg(lirInstr& i, lirArg& a)
+{
+   m_u.seed(a.getName());
 }
 
 void lirCallVirtualStackCalculation::runInstr(lirInstr& i)
@@ -166,10 +172,50 @@ void lirNumberingTransform::runInstr(lirInstr& i)
    lirTransform::runInstr(i);
 }
 
+void lirCodeShapeDecomposition::runInstr(lirInstr& i)
+{
+   // eventually, genericize this to notice when any instr fmt is unimplementable
+   // and tweak until it's ok
+   //
+   // for now, only handle special cases
+
+   // call can't handle immediate passed args
+   if(i.instrId == cmn::tgt::kCall)
+   {
+      auto& args = i.getArgs();
+      for(size_t j=2;j<args.size();j++)
+      {
+         lirArg *pArg = args[j];
+         lirArgConst *pImm = dynamic_cast<lirArgConst*>(pArg);
+         if(pImm)
+         {
+            cmn::uniquifier u;
+            lirNameCollector(u).runStream(getCurrentStream());
+
+            auto pTmp = new lirArgTemp(u.makeUnique(""),pImm->getSize());
+
+            auto pMov = new lirInstr(cmn::tgt::kMov);
+            pMov->addArg(*pTmp);
+            pMov->addArg(*pImm);
+            pMov->comment = "shape:hoist imm from call";
+
+            scheduleInjectBefore(*pMov,i);
+
+            // go ahead and swap out the arg directly; this is safe b/c I haven't
+            // traversed it yet
+            args[j] = &pTmp->clone();
+         }
+      }
+   }
+
+   lirTransform::runInstr(i);
+}
+
 void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
 {
    { lirCallVirtualStackCalculation xfrm(t); xfrm.runStreams(lir); }
    { lirPairedInstrDecomposition xfrm; xfrm.runStreams(lir); }
+   { lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); }
    { lirNumberingTransform xfrm; xfrm.runStreams(lir); }
 }
 

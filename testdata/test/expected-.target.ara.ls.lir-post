@@ -1,0 +1,8 @@
+=== LIR bundle has 1 stream(s) ===   (hint: $=var, ~=temp, @=immediate)
+----- start stream .test.consoleTarget.main
+10 <selectSegment> @code/0          
+20 <enterFunc>     ~rval/0, $args/0 ;;; .entrypoint
+30 <reserveLocal>  @size/8          ;;; cout
+40 <unreserveLocal>@size/8          
+50 <exitFunc>      
+=== end of LIR bundle dump ===

@@ -1,6 +1,8 @@
 #pragma once
 #include <list>
 
+namespace cmn { class uniquifier; }
+
 namespace liam {
 
 class lirArg;
@@ -13,10 +15,10 @@ class lirTransform {
 public:
    virtual ~lirTransform();
    virtual void runStreams(lirStreams& lir);
+   virtual void runStream(lirStream& s);
 
 protected:
    lirTransform() : m_pCurrStream(NULL) {}
-   virtual void runStream(lirStream& s);
    virtual void runInstr(lirInstr& i);
    virtual void runArg(lirInstr& i, lirArg& a) {}
 
@@ -65,6 +67,18 @@ private:
    lirStream *m_pCurrStream;
 };
 
+// not so much a transform as a helper for populating the name table
+class lirNameCollector : public lirTransform {
+public:
+   explicit lirNameCollector(cmn::uniquifier& u) : m_u(u) {}
+
+protected:
+   virtual void runArg(lirInstr& i, lirArg& a);
+
+private:
+   cmn::uniquifier& m_u;
+};
+
 class lirCallVirtualStackCalculation : public lirTransform {
 public:
    explicit lirCallVirtualStackCalculation(cmn::tgt::iTargetInfo& t)
@@ -89,6 +103,11 @@ private:
 class lirPairedInstrDecomposition : public lirTransform {
 protected:
    virtual void runStream(lirStream& s);
+   virtual void runInstr(lirInstr& i);
+};
+
+class lirCodeShapeDecomposition : public lirTransform {
+protected:
    virtual void runInstr(lirInstr& i);
 };
 

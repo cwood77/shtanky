@@ -1,17 +1,11 @@
 // 2: .sht.cons.stdout.printLn: 
-// 3:                           push, rbx      
-rex(48)op(ff)modR/M(f3)
-// 4:                           sub, rsp, 32   
+// 3:                           sub, rsp, 32   
 rex(48)op(83)modR/M(ec)i8(20)
-// 5:                           mov, rbx, rcx  ;       (preserve) [combiner]
-rex(48)op(89)modR/M(cb)
-// 6:                           mov, rcx, 1    ;       (:intlit:10 req for rcx) [splitter]
+// 4:                           mov, rcx, 1    ; shape:hoist imm from call
 rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
-// 7:                           call, ._osCall 
+// 5:                           call, ._osCall ; (call label)
 op(e8)co32(00-00-00-00)
-// 8:                           add, rsp, 32   
+// 6:                           add, rsp, 32   
 rex(48)op(83)modR/M(c4)i8(20)
-// 9:                           pop, rbx       
-rex(48)op(8f)modR/M(c3)
-// 10:                           ret            
+// 7:                           ret            
 op(c3)

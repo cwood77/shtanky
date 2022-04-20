@@ -367,6 +367,7 @@ void lirGenVisitor::visit(cmn::fieldAccessNode& n)
       m_lGen.append(n,cmn::tgt::kMov)
          .withArg<lirArgTemp>(m_u.makeUnique(n.name),n)
          .withArg(a.clone())
+         .withComment(std::string("fieldaccess: ") + n.name)
          .returnToParent(0);
    }
 }
@@ -389,12 +390,28 @@ void lirGenVisitor::visit(cmn::callNode& n)
 
 void lirGenVisitor::visit(cmn::varRefNode& n)
 {
-   auto pA = new lirArgVar(
-      n.pDef.ref,
-      cmn::type::gNodeCache->demand(*n.pDef.getRefee()).getPseudoRefSize());
+   cmn::node& declSite = *n.pDef.getRefee()->getParent();
+   if(dynamic_cast<cmn::constNode*>(&declSite))
+   {
+      // references to another stream, like a global, are patched
+      // patches are immediate data
 
-   m_lGen.noInstr(n)
-      .returnToParent(*pA);
+      auto pA = new lirArgConst(
+         n.pDef.ref,
+         cmn::type::gNodeCache->demand(*n.pDef.getRefee()).getPseudoRefSize());
+
+      m_lGen.noInstr(n)
+         .returnToParent(*pA);
+   }
+   else
+   {
+      auto pA = new lirArgVar(
+         n.pDef.ref,
+         cmn::type::gNodeCache->demand(*n.pDef.getRefee()).getPseudoRefSize());
+
+      m_lGen.noInstr(n)
+         .returnToParent(*pA);
+   }
 }
 
 // all literals are nearly identical (just 'value' different) - share this?
