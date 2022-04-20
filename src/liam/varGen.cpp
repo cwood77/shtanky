@@ -211,7 +211,7 @@ size_t varTable::getStorageFor(size_t orderNum, lirArg& a)
 
    auto stors = v.getStorageAt(orderNum);
    if(stors.size() != 1)
-      throw std::runtime_error("insanity!");
+      cdwTHROW("insanity!");
    return *(stors.begin());
 }
 

@@ -11,6 +11,8 @@ namespace cmn {
 const char *pathUtil::kExtLiamHeader      = "lh";
 const char *pathUtil::kExtLiamSource      = "ls";
 
+const char *pathUtil::kExtLir             = "lir";
+const char *pathUtil::kExtLirPost         = "lir-post";
 const char *pathUtil::kExtAsm             = "asm";
 const char *pathUtil::kExtObj             = "o";
 const char *pathUtil::kExtList            = "list";

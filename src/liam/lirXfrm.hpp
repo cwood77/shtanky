@@ -7,6 +7,7 @@ class lirArg;
 class lirInstr;
 class lirStream;
 class lirStreams;
+class varTable;
 
 class lirTransform {
 public:
@@ -69,6 +70,7 @@ public:
    explicit lirCallVirtualStackCalculation(cmn::tgt::iTargetInfo& t)
    : m_t(t), m_pPreCall(NULL) {}
 
+protected:
    virtual void runInstr(lirInstr& i);
    virtual void runArg(lirInstr& i, lirArg& a);
 
@@ -90,6 +92,29 @@ protected:
    virtual void runInstr(lirInstr& i);
 };
 
+class lirNumberingTransform : public lirTransform {
+public:
+   lirNumberingTransform() : m_next(10) {}
+
+protected:
+   virtual void runStream(lirStream& s);
+   virtual void runInstr(lirInstr& i);
+
+private:
+   unsigned long m_next;
+};
+
 void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t);
+
+class lirVarGen : public lirTransform {
+public:
+   explicit lirVarGen(varTable& v) : m_v(v) {}
+
+protected:
+   virtual void runArg(lirInstr& i, lirArg& a);
+
+private:
+   varTable& m_v;
+};
 
 } // namespace liam

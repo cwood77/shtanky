@@ -1,5 +1,6 @@
 #pragma once
 #include "../cmn/ast.hpp"
+#include "../cmn/unique.hpp"
 #include <map>
 #include <ostream>
 #include <vector>
@@ -99,6 +100,7 @@ public:
 private:
    lirGenerator& m_lGen;
    cmn::tgt::iTargetInfo& m_t;
+   cmn::uniquifier m_u;
 };
 
 } // namespace liam

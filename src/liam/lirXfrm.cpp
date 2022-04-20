@@ -1,5 +1,6 @@
 #include "lir.hpp"
 #include "lirXfrm.hpp"
+#include "varGen.hpp"
 
 namespace liam {
 
@@ -133,6 +134,7 @@ void lirPairedInstrDecomposition::runInstr(lirInstr& i)
    if(i.instrId == cmn::tgt::kReserveLocal)
    {
       auto noob = new lirInstr(cmn::tgt::kUnreserveLocal);
+      noob->addArg(i.getArgs()[0]->clone());
       // I know there's an kExitFunc instr; I want just ahead of that
       scheduleInjectAfter(*noob,i.tail());
    }
@@ -149,10 +151,35 @@ void lirPairedInstrDecomposition::runInstr(lirInstr& i)
    lirTransform::runInstr(i);
 }
 
+void lirNumberingTransform::runStream(lirStream& s)
+{
+   //m_next = 10;
+   //actually need unique numbers across all streams
+   //this is because varAlloc can't tell the difference when it asks for 'live' variables
+   lirTransform::runStream(s);
+}
+
+void lirNumberingTransform::runInstr(lirInstr& i)
+{
+   i.orderNum = m_next;
+   m_next += 10;
+   lirTransform::runInstr(i);
+}
+
 void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
 {
    { lirCallVirtualStackCalculation xfrm(t); xfrm.runStreams(lir); }
    { lirPairedInstrDecomposition xfrm; xfrm.runStreams(lir); }
+   { lirNumberingTransform xfrm; xfrm.runStreams(lir); }
+}
+
+void lirVarGen::runArg(lirInstr& i, lirArg& a)
+{
+   var& v = m_v.create(a.getName());
+   v.refs[i.orderNum].push_back(&a);
+
+   if(dynamic_cast<lirArgConst*>(&a))
+      v.requireStorage(i.orderNum,cmn::tgt::kStorageImmediate);
 }
 
 } // namespace liam

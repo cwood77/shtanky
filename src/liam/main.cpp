@@ -47,17 +47,41 @@ int main(int argc,const char *argv[])
    varTable vTbl;
    lirStreams lir;
    cmn::tgt::w64EmuTargetInfo t;
+   cmn::outBundle out;
+   if(0)
    {
-      varGenerator vGen(vTbl);
-      { astCodeGen v(lir,vGen,t); prj.acceptVisitor(v); }
+      // old LIR
+      {
+         varGenerator vGen(vTbl);
+         { astCodeGen v(lir,vGen,t); prj.acceptVisitor(v); }
+      }
+      lir.dump();
    }
-   lir.dump();
+   else
+   {
+      // new LIR
+      cdwDEBUG("**** LIR REWRITE ***\n");
+      //lirStreams lir;
+      lirGenerator lGen(lir,t);
+      { lirGenVisitor v(lGen,t); prj.acceptVisitor(v); }
+
+      { auto& s = out.get<cmn::outStream>(prj.sourceFullPath,"lir");
+        lirFormatter(s,t).format(lir); }
+
+      runLirTransforms(lir,t);
+
+      { auto& sp = out.get<cmn::outStream>(prj.sourceFullPath,"lir-post");
+        lirFormatter(sp,t).format(lir); }
+
+      lirVarGen(vTbl).runStreams(lir);
+   }
 
    // ---------------- register allocation ----------------
 
-   cmn::outBundle out;
    for(auto it=lir.page.begin();it!=lir.page.end();++it)
    {
+      cdwVERBOSE("backend passes on %s\n",it->first.c_str());
+
       // establish variable requirements
       instrPrefs::publishRequirements(it->second,vTbl,t);
 
@@ -71,6 +95,7 @@ int main(int argc,const char *argv[])
       asmCodeGen::generate(it->second,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
    }
 
+   if(0)
    {
       lirStreams lir2;
       lirGenerator lGen(lir2,t);

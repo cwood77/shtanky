@@ -72,6 +72,7 @@ CMN_SRC = \
 	src/cmn/trace.cpp \
 	src/cmn/type.cpp \
 	src/cmn/typeVisitor.cpp \
+	src/cmn/unique.cpp \
 
 CMN_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(CMN_SRC)))
 

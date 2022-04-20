@@ -9,6 +9,8 @@ public:
    static const char *kExtLiamHeader;
    static const char *kExtLiamSource;
 
+   static const char *kExtLir;
+   static const char *kExtLirPost;
    static const char *kExtAsm;
    static const char *kExtObj;
    static const char *kExtList;

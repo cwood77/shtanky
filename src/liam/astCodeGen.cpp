@@ -300,13 +300,13 @@ void lirGenVisitor::visit(cmn::funcNode& n)
       funcNameInAsm = ".entrypoint";
 
    auto& i = m_lGen.append(n,cmn::tgt::kEnterFunc)
-      .withArg<lirArgTemp>("rval",n)
+      .withArg<lirArgTemp>(m_u.makeUnique("rval"),n)
       .returnToParent(0)
       .withComment(funcNameInAsm);
 
    auto args = n.getChildrenOf<cmn::argNode>();
    for(auto it=args.begin();it!=args.end();++it)
-      i.withArg<lirArgVar>((*it)->name,**it);
+      i.withArg<lirArgVar>(m_u.makeUnique((*it)->name),**it);
 
    n.demandSoleChild<cmn::sequenceNode>().acceptVisitor(*this);
 }
@@ -318,9 +318,9 @@ void lirGenVisitor::visit(cmn::invokeFuncPtrNode& n)
    hNodeVisitor::visit(n);
 
    auto iCall = m_lGen.append(n,cmn::tgt::kCall)
-      .withArg<lirArgTemp>("rval",/*n*/ 0) // TODO 0 until typeprop for node is done
+      .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
       .returnToParent(0)
-      .withComment("(funcPtr)");
+      .withComment("(call ptr)");
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       iCall.inheritArgFromChild(**it);
@@ -365,9 +365,8 @@ void lirGenVisitor::visit(cmn::fieldAccessNode& n)
    {
       // my child is already dereffed, so to do it again I must mov
       m_lGen.append(n,cmn::tgt::kMov)
-         .withArg<lirArgTemp>("",n)
+         .withArg<lirArgTemp>(m_u.makeUnique(n.name),n)
          .withArg(a.clone())
-         .withComment("field")
          .returnToParent(0);
    }
 }
@@ -379,10 +378,10 @@ void lirGenVisitor::visit(cmn::callNode& n)
    hNodeVisitor::visit(n);
 
    auto iCall = m_lGen.append(n,cmn::tgt::kCall)
-      .withArg<lirArgTemp>("rval",/*n*/ 0) // TODO 0 until typeprop for node is done
+      .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
       .returnToParent(0)
       .withArg<lirArgConst>(n.name,/*n*/ 0) // label
-      .withComment("(funcPtr)");
+      .withComment("(call label)");
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       iCall.inheritArgFromChild(**it);
