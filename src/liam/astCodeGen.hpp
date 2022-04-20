@@ -27,9 +27,9 @@ private:
    std::ostream& m_o;
 };
 
-class lirGenVisitor : public cmn::liamVisitor<> {
+class astCodeGen : public cmn::liamVisitor<> {
 public:
-   lirGenVisitor(lirGenerator& l, cmn::tgt::iTargetInfo& t) : m_lGen(l), m_t(t) {}
+   astCodeGen(lirGenerator& l, cmn::tgt::iTargetInfo& t) : m_lGen(l), m_t(t) {}
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
    virtual void visit(cmn::constNode& n);

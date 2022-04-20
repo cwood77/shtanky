@@ -47,7 +47,7 @@ int main(int argc,const char *argv[])
    lirStreams lir;
    cmn::tgt::w64EmuTargetInfo t;
    cmn::outBundle out;
-   { lirGenerator lGen(lir,t); lirGenVisitor v(lGen,t); prj.acceptVisitor(v); }
+   { lirGenerator lGen(lir,t); astCodeGen v(lGen,t); prj.acceptVisitor(v); }
    { auto& s = out.get<cmn::outStream>(prj.sourceFullPath,"lir");
      lirFormatter(s,t).format(lir); }
 

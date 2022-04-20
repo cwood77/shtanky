@@ -15,7 +15,7 @@ void dataFormatter::visit(cmn::stringLiteralNode& n)
    m_o << "\"" << n.value << "\" <b> 0";
 }
 
-void lirGenVisitor::visit(cmn::constNode& n)
+void astCodeGen::visit(cmn::constNode& n)
 {
    std::stringstream expr;
    { dataFormatter v(expr); n.acceptVisitor(v); }
@@ -26,7 +26,7 @@ void lirGenVisitor::visit(cmn::constNode& n)
       .withComment(n.name);
 }
 
-void lirGenVisitor::visit(cmn::funcNode& n)
+void astCodeGen::visit(cmn::funcNode& n)
 {
    if(n.getChildrenOf<cmn::sequenceNode>().size() == 0)
       return; // ignore forward references
@@ -50,7 +50,7 @@ void lirGenVisitor::visit(cmn::funcNode& n)
    n.demandSoleChild<cmn::sequenceNode>().acceptVisitor(*this);
 }
 
-void lirGenVisitor::visit(cmn::invokeFuncPtrNode& n)
+void astCodeGen::visit(cmn::invokeFuncPtrNode& n)
 {
    m_lGen.append(n,cmn::tgt::kPreCallStackAlloc);
 
@@ -65,7 +65,7 @@ void lirGenVisitor::visit(cmn::invokeFuncPtrNode& n)
       iCall.inheritArgFromChild(**it);
 }
 
-void lirGenVisitor::visit(cmn::localDeclNode& n)
+void astCodeGen::visit(cmn::localDeclNode& n)
 {
    hNodeVisitor::visit(n);
 
@@ -79,7 +79,7 @@ void lirGenVisitor::visit(cmn::localDeclNode& n)
    // initial value)
 }
 
-void lirGenVisitor::visit(cmn::fieldAccessNode& n)
+void astCodeGen::visit(cmn::fieldAccessNode& n)
 {
    hNodeVisitor::visit(n);
 
@@ -112,7 +112,7 @@ void lirGenVisitor::visit(cmn::fieldAccessNode& n)
    }
 }
 
-void lirGenVisitor::visit(cmn::callNode& n)
+void astCodeGen::visit(cmn::callNode& n)
 {
    m_lGen.append(n,cmn::tgt::kPreCallStackAlloc);
 
@@ -128,7 +128,7 @@ void lirGenVisitor::visit(cmn::callNode& n)
       iCall.inheritArgFromChild(**it);
 }
 
-void lirGenVisitor::visit(cmn::varRefNode& n)
+void astCodeGen::visit(cmn::varRefNode& n)
 {
    cmn::node& declSite = *n.pDef.getRefee()->getParent();
    if(dynamic_cast<cmn::constNode*>(&declSite))
@@ -156,7 +156,7 @@ void lirGenVisitor::visit(cmn::varRefNode& n)
 
 // all literals are nearly identical (just 'value' different) - share this?
 
-void lirGenVisitor::visit(cmn::stringLiteralNode& n)
+void astCodeGen::visit(cmn::stringLiteralNode& n)
 {
    auto pA = new lirArgConst(
       n.value,
@@ -166,7 +166,7 @@ void lirGenVisitor::visit(cmn::stringLiteralNode& n)
       .returnToParent(*pA);
 }
 
-void lirGenVisitor::visit(cmn::boolLiteralNode& n)
+void astCodeGen::visit(cmn::boolLiteralNode& n)
 {
    auto pA = new lirArgConst(
       n.value ? "T" : "F",
@@ -176,7 +176,7 @@ void lirGenVisitor::visit(cmn::boolLiteralNode& n)
       .returnToParent(*pA);
 }
 
-void lirGenVisitor::visit(cmn::intLiteralNode& n)
+void astCodeGen::visit(cmn::intLiteralNode& n)
 {
    auto pA = new lirArgConst(
       n.lexeme,
