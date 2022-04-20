@@ -3,13 +3,13 @@
 10 <selectSegment>   @const/0                
 20 <globalConstData> @"hello world!" <b> 0/0 ;;; .const0
 ----- start stream .test.test.run
-30 <selectSegment> @code/0                         
-40 <enterFunc>     ~rval/0, $self/0, $args/0       ;;; .test.test.run
-50 <precall>       @totalStackSize/32              
-60 mov             ~_vtbl/0, [~self+8]/0           ;;; fieldaccess: _vtbl
-70 mov             ~/0, @.const0/0                 ;;; shape:hoist imm from call
-80 mov             ~0/0, [~self+8]/0               ;;; shape:hoist addrOf from call
-90 call            ~rval0/0, [~_vtbl]/0, ~0/0, ~/0 ;;; (call ptr)
-100<postcall>      @totalStackSize/32              
-110<exitFunc>      
+10 <selectSegment> @code/0                         
+20 <enterFunc>     ~rval/0, $self/0, $args/0       ;;; .test.test.run
+30 <precall>       @totalStackSize/32              
+40 mov             ~_vtbl/0, [~self+8]/0           ;;; fieldaccess: _vtbl
+50 mov             ~/0, @.const0/0                 ;;; shape:hoist imm from call
+60 mov             ~0/0, [~self+8]/0               ;;; shape:hoist addrOf from call
+70 call            ~rval0/0, [~_vtbl]/0, ~0/0, ~/0 ;;; (call ptr)
+80 <postcall>      @totalStackSize/32              
+90 <exitFunc>      
 === end of LIR bundle dump ===

@@ -159,9 +159,7 @@ void lirPairedInstrDecomposition::runInstr(lirInstr& i)
 
 void lirNumberingTransform::runStream(lirStream& s)
 {
-   //m_next = 10;
-   //actually need unique numbers across all streams
-   //this is because varAlloc can't tell the difference when it asks for 'live' variables
+   m_next = 10;
    lirTransform::runStream(s);
 }
 

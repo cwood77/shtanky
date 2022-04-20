@@ -44,18 +44,20 @@ int main(int argc,const char *argv[])
    cmn::propagateTypes(prj);
 
    // generate LIR and variables
-   varTable vTbl;
+   //varTable vTbl;
    lirStreams lir;
    cmn::tgt::w64EmuTargetInfo t;
    cmn::outBundle out;
    if(0)
    {
+#if 0
       // old LIR
       {
          varGenerator vGen(vTbl);
          { astCodeGen v(lir,vGen,t); prj.acceptVisitor(v); }
       }
       lir.dump();
+#endif
    }
    else
    {
@@ -73,13 +75,16 @@ int main(int argc,const char *argv[])
       { auto& sp = out.get<cmn::outStream>(prj.sourceFullPath,"lir-post");
         lirFormatter(sp,t).format(lir); }
 
-      lirVarGen(vTbl).runStreams(lir);
+      //lirVarGen(vTbl).runStreams(lir);
    }
 
    // ---------------- register allocation ----------------
 
    for(auto it=lir.page.begin();it!=lir.page.end();++it)
    {
+   varTable vTbl;
+      lirVarGen(vTbl).runStream(it->second);
+
       cdwVERBOSE("backend passes on %s\n",it->first.c_str());
 
       // establish variable requirements
