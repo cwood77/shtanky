@@ -43,51 +43,28 @@ int main(int argc,const char *argv[])
    cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
    cmn::propagateTypes(prj);
 
-   // generate LIR and variables
-   //varTable vTbl;
+   // generate LIR
    lirStreams lir;
    cmn::tgt::w64EmuTargetInfo t;
    cmn::outBundle out;
-   if(0)
-   {
-#if 0
-      // old LIR
-      {
-         varGenerator vGen(vTbl);
-         { astCodeGen v(lir,vGen,t); prj.acceptVisitor(v); }
-      }
-      lir.dump();
-#endif
-   }
-   else
-   {
-      // new LIR
-      cdwDEBUG("**** LIR REWRITE ***\n");
-      //lirStreams lir;
-      lirGenerator lGen(lir,t);
-      { lirGenVisitor v(lGen,t); prj.acceptVisitor(v); }
+   { lirGenerator lGen(lir,t); lirGenVisitor v(lGen,t); prj.acceptVisitor(v); }
+   { auto& s = out.get<cmn::outStream>(prj.sourceFullPath,"lir");
+     lirFormatter(s,t).format(lir); }
 
-      { auto& s = out.get<cmn::outStream>(prj.sourceFullPath,"lir");
-        lirFormatter(s,t).format(lir); }
-
-      runLirTransforms(lir,t);
-
-      { auto& sp = out.get<cmn::outStream>(prj.sourceFullPath,"lir-post");
-        lirFormatter(sp,t).format(lir); }
-
-      //lirVarGen(vTbl).runStreams(lir);
-   }
+   // LIR transforms
+   runLirTransforms(lir,t);
+   { auto& sp = out.get<cmn::outStream>(prj.sourceFullPath,"lir-post");
+     lirFormatter(sp,t).format(lir); }
 
    // ---------------- register allocation ----------------
 
    for(auto it=lir.page.begin();it!=lir.page.end();++it)
    {
-   varTable vTbl;
-      lirVarGen(vTbl).runStream(it->second);
-
       cdwVERBOSE("backend passes on %s\n",it->first.c_str());
 
-      // establish variable requirements
+      varTable vTbl;
+      lirVarGen(vTbl).runStream(it->second);
+
       instrPrefs::publishRequirements(it->second,vTbl,t);
 
       varSplitter::split(it->second,vTbl,t);
@@ -95,29 +72,9 @@ int main(int argc,const char *argv[])
       varFinder f(t);
       { varCombiner p(it->second,vTbl,t,f); p.run(); }
 
-      cdwDEBUG("=-=-=-=-=-=-= new allocator start\n");
-  varAllocator2(t).run(vTbl,f);
-      cdwDEBUG("=-=-=-=-=-=-= new allocator stop\n");
-
-      //{ varAllocator p(it->second,vTbl,t,f); p.run(); }
+      varAllocator2(t).run(vTbl,f);
 
       asmCodeGen::generate(it->second,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
-   }
-
-   if(0)
-   {
-      lirStreams lir2;
-      lirGenerator lGen(lir2,t);
-      lirGenVisitor v(lGen,t);
-      prj.acceptVisitor(v);
-      cdwDEBUG("**** LIR REWRITE ***\n");
-      lir2.dump();
-      auto& s = out.get<cmn::outStream>(prj.sourceFullPath,"lir2");
-      lirFormatter(s,t).format(lir2);
-
-      runLirTransforms(lir2,t);
-      auto& sp = out.get<cmn::outStream>(prj.sourceFullPath,"lir2-post");
-      lirFormatter(sp,t).format(lir2);
    }
 
    _t.dump();
