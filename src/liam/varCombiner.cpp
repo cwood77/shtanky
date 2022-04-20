@@ -30,8 +30,8 @@ void varCombiner::onInstr(lirInstr& i)
 
 void varCombiner::onInstrStorage(lirInstr& i, var& v, size_t storage)
 {
-   availVarPass::onInstrStorage(i,v,storage);
    m_clients[storage].insert(&v);
+   availVarPass::onInstrStorage(i,v,storage);
 }
 
 void varCombiner::onInstrWithAvailVar(lirInstr& i)

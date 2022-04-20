@@ -187,24 +187,52 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
       {
          lirArg *pArg = args[j];
          lirArgConst *pImm = dynamic_cast<lirArgConst*>(pArg);
-         if(pImm)
-         {
-            cmn::uniquifier u;
-            lirNameCollector(u).runStream(getCurrentStream());
+         if(!pImm)
+            continue;
 
-            auto pTmp = new lirArgTemp(u.makeUnique(""),pImm->getSize());
+         cmn::uniquifier u;
+         lirNameCollector(u).runStream(getCurrentStream());
 
-            auto pMov = new lirInstr(cmn::tgt::kMov);
-            pMov->addArg(*pTmp);
-            pMov->addArg(*pImm);
-            pMov->comment = "shape:hoist imm from call";
+         auto pTmp = new lirArgTemp(u.makeUnique(""),pImm->getSize());
 
-            scheduleInjectBefore(*pMov,i);
+         auto pMov = new lirInstr(cmn::tgt::kMov);
+         pMov->addArg(*pTmp);
+         pMov->addArg(*pImm);
+         pMov->comment = "shape:hoist imm from call";
 
-            // go ahead and swap out the arg directly; this is safe b/c I haven't
-            // traversed it yet
-            args[j] = &pTmp->clone();
-         }
+         scheduleInjectBefore(*pMov,i);
+
+         // go ahead and swap out the arg directly; this is safe b/c I haven't
+         // traversed it yet
+         args[j] = &pTmp->clone();
+      }
+   }
+
+   // call can't handle any addr modifications (i.e. displacemnets or derefs)
+   if(i.instrId == cmn::tgt::kCall)
+   {
+      auto& args = i.getArgs();
+      for(size_t j=2;j<args.size();j++)
+      {
+         lirArg *pArg = args[j];
+         if(!pArg->disp && !pArg->addrOf)
+            continue;
+
+         cmn::uniquifier u;
+         lirNameCollector(u).runStream(getCurrentStream());
+
+         auto pTmp = new lirArgTemp(u.makeUnique(""),pArg->getSize());
+
+         auto pMov = new lirInstr(cmn::tgt::kMov);
+         pMov->addArg(*pTmp);
+         pMov->addArg(*pArg);
+         pMov->comment = "shape:hoist addrOf from call";
+
+         scheduleInjectBefore(*pMov,i);
+
+         // go ahead and swap out the arg directly; this is safe b/c I haven't
+         // traversed it yet
+         args[j] = &pTmp->clone();
       }
    }
 

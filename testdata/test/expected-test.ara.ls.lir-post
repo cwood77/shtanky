@@ -1,0 +1,15 @@
+=== LIR bundle has 2 stream(s) ===   (hint: $=var, ~=temp, @=immediate)
+----- start stream .const0
+10 <selectSegment>   @const/0                
+20 <globalConstData> @"hello world!" <b> 0/0 ;;; .const0
+----- start stream .test.test.run
+30 <selectSegment> @code/0                         
+40 <enterFunc>     ~rval/0, $self/0, $args/0       ;;; .test.test.run
+50 <precall>       @totalStackSize/32              
+60 mov             ~_vtbl/0, [~self+8]/0           ;;; fieldaccess: _vtbl
+70 mov             ~/0, @.const0/0                 ;;; shape:hoist imm from call
+80 mov             ~0/0, [~self+8]/0               ;;; shape:hoist addrOf from call
+90 call            ~rval0/0, [~_vtbl]/0, ~0/0, ~/0 ;;; (call ptr)
+100<postcall>      @totalStackSize/32              
+110<exitFunc>      
+=== end of LIR bundle dump ===

@@ -13,7 +13,7 @@ class varFinder;
 class varTable;
 
 // sweeps over every instruction, keeping track of what storage is in use
-// it programs the finder with this information
+// programs the finder with this information
 //
 // sequence:
 //   onInstr()
