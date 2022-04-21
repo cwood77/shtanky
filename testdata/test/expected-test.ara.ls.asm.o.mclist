@@ -1,28 +1,28 @@
-// 2: .const0:
-// 3: .data, "hello world!" <b> 0
-_strdata(68-65-6c-6c,6f-20-77-6f,72-6c-64-21)_intdata(00)
-// 6: .test.test.run: 
-// 7:                 push, rbx         
+// 2: .test.test.run: 
+// 3:                 push, rbx         
 rex(48)op(ff)modR/M(f3)
-// 8:                 push, rdi         
+// 4:                 push, rdi         
 rex(48)op(ff)modR/M(f7)
-// 9:                 sub, rsp, 32      
+// 5:                 sub, rsp, 32      
 rex(48)op(83)modR/M(ec)i8(20)
-// 10:                 mov, rdi, [rcx+8] ; fieldaccess: _vtbl
+// 6:                 mov, rdi, [rcx+8] ; fieldaccess: _vtbl
 rex(48)op(8b)modR/M(79)d8(08)
-// 11:                 mov, rdx, .const0 ; shape:hoist imm from call
+// 7:                 mov, rdx, .const0 ; shape:hoist imm from call
 rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
-// 12:                 mov, rbx, rcx     ;       (preserve) [combiner]
+// 8:                 mov, rbx, rcx     ;       (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
-// 13:                 mov, rcx, [rbx+8] ; shape:hoist addrOf from call
+// 9:                 mov, rcx, [rbx+8] ; shape:hoist addrOf from call
 rex(48)op(8b)modR/M(4b)d8(08)
-// 14:                 call, [rdi]       ; (call ptr)
+// 10:                 call, [rdi]       ; (call ptr)
 rex(48)op(ff)modR/M(17)
-// 15:                 add, rsp, 32      
+// 11:                 add, rsp, 32      
 rex(48)op(83)modR/M(c4)i8(20)
-// 16:                 pop, rdi          
+// 12:                 pop, rdi          
 rex(48)op(8f)modR/M(c7)
-// 17:                 pop, rbx          
+// 13:                 pop, rbx          
 rex(48)op(8f)modR/M(c3)
-// 18:                 ret               
+// 14:                 ret               
 op(c3)
+// 17: .const0:
+// 18: .data, "hello world!" <b> 0
+_strdata(68-65-6c-6c,6f-20-77-6f,72-6c-64-21)_intdata(00)

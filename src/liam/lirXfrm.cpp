@@ -13,10 +13,10 @@ lirTransform::~lirTransform()
 
 void lirTransform::runStreams(lirStreams& lir)
 {
-   for(auto it=lir.page.begin();it!=lir.page.end();++it)
+   for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
    {
-      m_pCurrStream = &it->second;
-      runStream(it->second);
+      m_pCurrStream = &*it;
+      runStream(*it);
    }
 
    m_pCurrStream = NULL;

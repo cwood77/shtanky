@@ -1,4 +1,4 @@
-=== LIR bundle has 1 stream(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 1 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 ----- start stream .test.consoleTarget.main
 10 <selectSegment> @code/0          
 20 <enterFunc>     ~rval/0, $args/0 ;;; .entrypoint

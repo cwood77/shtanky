@@ -1,6 +1,7 @@
 #pragma once
 #include "../cmn/target.hpp"
 #include "../cmn/type.hpp"
+#include <list>
 #include <map>
 #include <set>
 #include <string>
@@ -31,7 +32,6 @@ public:
 
    virtual const std::string& getName() const = 0;
    virtual size_t getSize() const = 0;
-   virtual void dump() const = 0;
    virtual lirArg& clone() const = 0;
 
    int disp;
@@ -49,7 +49,6 @@ public:
 
    virtual const std::string& getName() const { return name; }
    virtual size_t getSize() const { return m_size; }
-   virtual void dump() const;
    virtual lirArg& clone() const { return copyFieldsInto(*new lirArgVar(name,m_size)); }
 
 private:
@@ -64,7 +63,6 @@ public:
 
    virtual const std::string& getName() const { return name; }
    virtual size_t getSize() const { return m_size; }
-   virtual void dump() const;
    virtual lirArg& clone() const { return copyFieldsInto(*new lirArgConst(name,m_size)); }
 
 private:
@@ -79,7 +77,6 @@ public:
 
    virtual const std::string& getName() const { return name; }
    virtual size_t getSize() const { return m_size; }
-   virtual void dump() const;
    virtual lirArg& clone() const { return copyFieldsInto(*new lirArgTemp(name,m_size)); }
 
 private:
@@ -106,8 +103,6 @@ public:
    lirInstr& injectBefore(lirInstr& noob);
    lirInstr& injectAfter(lirInstr& noob);
    lirInstr& append(lirInstr& noob);
-
-   void dump();
 
    size_t orderNum;
 
@@ -139,7 +134,7 @@ public:
    lirStream() : pTail(NULL), pTop(NULL) {}
    ~lirStream();
 
-   void dump();
+   std::string name;
 
    lirInstr *pTail;
    lirStreams *pTop;
@@ -151,15 +146,10 @@ private:
 
 class lirStreams {
 public:
-   void dump();
+   lirStream& addNewObject(const std::string& name, const std::string& segment);
 
-   // after the first instr on a page is added,
-   // pick a good initial order num that doesn't
-   // overlap
-   // ... so don't write to multiple pages at once!
-   void onNewPageStarted(const std::string& key);
-
-   std::map<std::string,lirStream> page; // keep string, but make a list
+   //std::map<std::string,lirStream> page; // keep string, but make a list
+   std::list<lirStream> objects;
 };
 
 class lirFormatter {
@@ -201,6 +191,7 @@ class lirGenerator { // lirBuilder?
 public:
    lirGenerator(lirStreams& lir, cmn::tgt::iTargetInfo& t);
 
+   // ditch this?
    void createNewStream(const std::string& segment, const std::string& comment);
 
    instrBuilder append(cmn::node& n, cmn::tgt::instrIds id);

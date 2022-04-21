@@ -61,24 +61,24 @@ int _main(int argc,const char *argv[])
 
    // ---------------- register allocation ----------------
 
-   for(auto it=lir.page.begin();it!=lir.page.end();++it)
+   for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
    {
-      cdwVERBOSE("backend passes on %s\n",it->first.c_str());
+      cdwVERBOSE("backend passes on %s\n",it->name.c_str());
 
       varTable vTbl;
-      lirVarGen(vTbl).runStream(it->second);
+      lirVarGen(vTbl).runStream(*it);
 
-      instrPrefs::publishRequirements(it->second,vTbl,t);
+      instrPrefs::publishRequirements(*it,vTbl,t);
 
-      varSplitter::split(it->second,vTbl,t);
+      varSplitter::split(*it,vTbl,t);
 
       varFinder f(t);
-      { varCombiner p(it->second,vTbl,t,f); p.run(); }
+      { varCombiner p(*it,vTbl,t,f); p.run(); }
 
       stackAllocator().run(vTbl,f);
       varAllocator(t).run(vTbl,f);
 
-      asmCodeGen::generate(it->second,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
+      asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
    }
 
    _t.dump();

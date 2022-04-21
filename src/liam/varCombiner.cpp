@@ -94,10 +94,6 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
                (*jit)->storageDisambiguators[&dest] = altStorage;
                (*jit)->storageDisambiguators[&src] = it->first;
             }
-
-
-            cdwDEBUG("      new LIR graph:\n");
-            i.head().dump();
          }
 
          // restart algorithm

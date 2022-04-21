@@ -1,4 +1,4 @@
-=== LIR bundle has 1 stream(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 1 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 ----- start stream .sht.cons.stdout.printLn
 10 <enterFunc> ~rval/0, $self/0, $msg/0            ;;; .sht.cons.stdout.printLn
 20 <precall>   

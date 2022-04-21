@@ -1,7 +1,4 @@
-=== LIR bundle has 2 stream(s) ===   (hint: $=var, ~=temp, @=immediate)
------ start stream .const0
-10 <selectSegment>   @const/0                
-20 <globalConstData> @"hello world!" <b> 0/0 ;;; .const0
+=== LIR bundle has 2 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 ----- start stream .test.test.run
 10 <selectSegment> @code/0                         
 20 <enterFunc>     ~rval/0, $self/0, $args/0       ;;; .test.test.run
@@ -12,4 +9,7 @@
 70 call            ~rval0/0, [~_vtbl]/0, ~0/0, ~/0 ;;; (call ptr)
 80 <postcall>      @totalStackSize/32              
 90 <exitFunc>      
+----- start stream .const0
+10 <selectSegment>   @const/0                
+20 <globalConstData> @"hello world!" <b> 0/0 ;;; .const0
 === end of LIR bundle dump ===

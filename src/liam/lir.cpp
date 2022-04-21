@@ -8,42 +8,11 @@
 
 namespace liam {
 
-// when does a temporary become a variable?
-//
-// when it needs storage across instrs
-// varRefs and literals are inlined into their instrs and thus don't qualify
-//
-// a = b + 1
-//
-//   =
-// a    +
-//     b  1 
-//
-// in this example, b, 1, and a are inlined.  But the temporary between + and = needs
-// storage. (this example is a little contrived b/c + is actually an accumulation into b)
-//
-// can you know from any instruction whether it's a temporary or not?
-
 lirArg& lirArg::copyFieldsInto(lirArg& noob) const
 {
    noob.disp = disp;
    noob.addrOf = addrOf;
    return noob;
-}
-
-void lirArgVar::dump() const
-{
-   cdwDEBUG("v/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
-}
-
-void lirArgConst::dump() const
-{
-   cdwDEBUG("c/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
-}
-
-void lirArgTemp::dump() const
-{
-   cdwDEBUG("t/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
 }
 
 lirInstr::~lirInstr()
@@ -120,17 +89,6 @@ lirInstr& lirInstr::search(size_t orderNum)
    throw std::runtime_error("instr not found!");
 }
 
-void lirInstr::dump()
-{
-   cdwDEBUG("%lld INSTR %d   ",orderNum,instrId);
-   for(auto it=m_args.begin();it!=m_args.end();++it)
-      (*it)->dump();
-   cdwDEBUG("\n");
-
-   if(m_pNext)
-      m_pNext->dump();
-}
-
 lirInstr& lirInstr::head()
 {
    lirInstr *pPtr = this;
@@ -173,49 +131,22 @@ lirStream::~lirStream()
    delete pTail;
 }
 
-void lirStream::dump()
+lirStream& lirStreams::addNewObject(const std::string& name, const std::string& segment)
 {
-   pTail->head().dump();
-}
-
-void lirStreams::dump()
-{
-   for(auto it=page.begin();it!=page.end();++it)
-   {
-      cdwDEBUG("----- %s\n",it->first.c_str());
-      it->second.dump();
-   }
-}
-
-void lirStreams::onNewPageStarted(const std::string& key)
-{
-   lirStream& noob = page[key];
-   noob.pTop = this;
-
-   if(page.size() == 1) return;
-
-   size_t last = 0;
-   for(auto it=page.begin();it!=page.end();++it)
-   {
-      if(key == it->first)
-         continue;
-
-      if(last < it->second.pTail->orderNum)
-         last = it->second.pTail->orderNum;
-   }
-
-   last += 20;
-   cdwDEBUG("reassigning new page to order %lld\n",last);
-   noob.pTail->orderNum = last;
+   objects.push_back(lirStream());
+   lirStream& last = objects.back();
+   last.name = name;
+   last.segment = segment;
+   return last;
 }
 
 void lirFormatter::format(lirStreams& s)
 {
-   m_s.stream() << "=== LIR bundle has " << s.page.size() << " stream(s) ===   (hint: $=var, ~=temp, @=immediate)" << std::endl;
-   for(auto it=s.page.begin();it!=s.page.end();++it)
+   m_s.stream() << "=== LIR bundle has " << s.objects.size() << " objects(s) ===   (hint: $=var, ~=temp, @=immediate)" << std::endl;
+   for(auto it=s.objects.begin();it!=s.objects.end();++it)
    {
-      m_s.stream() << "----- start stream " << it->first << std::endl;
-      format(it->second);
+      m_s.stream() << "----- start stream " << it->name << std::endl;
+      format(*it);
    }
    m_s.stream() << "=== end of LIR bundle dump ===" << std::endl;
 }
@@ -294,9 +225,7 @@ lirGenerator::lirGenerator(lirStreams& lir, cmn::tgt::iTargetInfo& t)
 
 void lirGenerator::createNewStream(const std::string& segment, const std::string& comment)
 {
-   // build this into the stream itself
-   m_pCurrStream = &m_lir.page[comment]; // uniquify
-   m_pCurrStream->segment = segment;
+   m_pCurrStream = &m_lir.addNewObject(comment,segment);
 }
 
 instrBuilder lirGenerator::append(cmn::node& n, cmn::tgt::instrIds id)

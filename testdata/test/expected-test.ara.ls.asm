@@ -1,7 +1,3 @@
-.seg const
-.const0:
-.data, "hello world!" <b> 0
-
 .seg code       
 .test.test.run: 
                 push, rbx         
@@ -16,4 +12,8 @@
                 pop, rdi          
                 pop, rbx          
                 ret               
+
+.seg const
+.const0:
+.data, "hello world!" <b> 0
 
