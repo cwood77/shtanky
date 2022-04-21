@@ -87,7 +87,7 @@ class lirInstr {
 public:
    virtual ~lirInstr();
 
-   static lirInstr& append(lirInstr*& pPrev, const cmn::tgt::instrIds id, const std::string& comment);
+   static lirInstr& append(lirInstr*& pPrev, const cmn::tgt::instrIds id, const std::string& comment); // audit
 
    template<class T>
    T& addArg(const std::string& n, size_t z)
@@ -99,7 +99,7 @@ public:
 
    lirArg& addArg(lirArg& a) { m_args.push_back(&a); return a; }
 
-   lirInstr& injectBefore(const cmn::tgt::instrIds id, const std::string& comment);
+   lirInstr& injectBefore(const cmn::tgt::instrIds id, const std::string& comment); // audit
    lirInstr& injectBefore(lirInstr& noob);
    lirInstr& injectAfter(lirInstr& noob);
    lirInstr& append(lirInstr& noob);
@@ -107,7 +107,7 @@ public:
    size_t orderNum;
 
    const cmn::tgt::instrIds instrId;
-   const cmn::tgt::instrFmt *pInstrFmt;
+   const cmn::tgt::instrFmt *pInstrFmt; // kill?
 
    std::string comment;
 
@@ -137,11 +137,11 @@ public:
    std::string name;
 
    lirInstr *pTail;
-   lirStreams *pTop;
+   lirStreams *pTop; // kill?
    std::string segment;
 
 private:
-   std::map<lirArg*,lirInstr*> m_temps;
+   std::map<lirArg*,lirInstr*> m_temps; // kill?
 };
 
 class lirStreams {
@@ -162,6 +162,7 @@ private:
    void format(lirStream& s);
    void format(lirInstr& i, cmn::textTableLineWriter& t);
    void format(lirArg& a, cmn::textTableLineWriter& t);
+   void appendTargetHints();
 
    cmn::outStream& m_s;
    cmn::tgt::iTargetInfo& m_t;

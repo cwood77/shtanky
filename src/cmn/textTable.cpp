@@ -47,16 +47,6 @@ void textTable::compiledCells::compile(const std::map<size_t,std::map<size_t,std
    }
 }
 
-std::string textTable::compiledCells::indentForMissingCols(size_t firstCol) const
-{
-   std::stringstream indent;
-
-   for(auto it=m_colWidths.begin();it!=m_colWidths.end()&&it->first<firstCol;++it)
-      indent << std::string(it->second,' ');
-
-   return indent.str();
-}
-
 std::string textTable::compiledCells::leftJustify(size_t col, const std::string& text) const
 {
    if(m_lastCol == col)
@@ -77,9 +67,15 @@ void textTable::writer::writeLine(size_t row, const std::map<size_t,std::string>
    for(;m_currRow<row;m_currRow++)
       m_stream << std::endl;
 
-   m_stream << m_cc.indentForMissingCols(cols.begin()->first);
-   for(auto it=cols.begin();it!=cols.end();++it)
-      m_stream << m_cc.leftJustify(it->first,it->second);
+   size_t last = (--(cols.end()))->first;
+   for(size_t i=0;i<=last;i++)
+   {
+      auto it = cols.find(i);
+      if(it != cols.end())
+         m_stream << m_cc.leftJustify(i,it->second);
+      else
+         m_stream << m_cc.leftJustify(i,"");
+   }
 }
 
 } // namespace cmn

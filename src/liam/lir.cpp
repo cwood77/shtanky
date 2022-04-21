@@ -4,6 +4,7 @@
 #include "../cmn/throw.hpp"
 #include "../cmn/trace.hpp"
 #include "lir.hpp"
+#include <algorithm>
 #include <sstream>
 
 namespace liam {
@@ -145,10 +146,13 @@ void lirFormatter::format(lirStreams& s)
    m_s.stream() << "=== LIR bundle has " << s.objects.size() << " objects(s) ===   (hint: $=var, ~=temp, @=immediate)" << std::endl;
    for(auto it=s.objects.begin();it!=s.objects.end();++it)
    {
+      m_s.stream() << std::endl;
       m_s.stream() << "----- start stream " << it->name << std::endl;
       format(*it);
    }
+   m_s.stream() << std::endl;
    m_s.stream() << "=== end of LIR bundle dump ===" << std::endl;
+   appendTargetHints();
 }
 
 void lirFormatter::format(lirStream& s)
@@ -208,6 +212,62 @@ void lirFormatter::format(lirArg& a, cmn::textTableLineWriter& t)
       t[2] << "]";
 
    t[2] << "/" << a.getSize();
+}
+
+void lirFormatter::appendTargetHints()
+{
+   m_s.stream() << std::endl;
+
+   m_s.stream() << "~~~ some debugging hints for this target ~~~" << std::endl << std::endl;
+
+   {
+      std::vector<size_t> regsORder,regsPassing;
+      m_t.getCallConvention().createRegisterBankInPreferredOrder(regsORder);
+      m_t.getCallConvention().getRValAndArgBank(regsPassing);
+      cmn::textTable regTable;
+      regTable(0,0) << "pref order";
+      regTable(1,0) << "passing order";
+      regTable(2,0) << "saved in Prolog or Call";
+      regTable(3,0) << "as int";
+      size_t i=1;
+      for(auto it=regsORder.begin();it!=regsORder.end();++it,i++)
+      {
+         regTable(0,i) << m_t.getProc().getRegName(*it);
+
+         auto ans = std::find(regsPassing.begin(),regsPassing.end(),*it);
+         if(ans != regsPassing.end())
+            regTable(1,i) << std::distance(regsPassing.begin(),ans);
+         else
+            regTable(1,i) << "-";
+
+         if(m_t.getCallConvention().requiresPrologEpilogSave(*it))
+            regTable(2,i) << "P";
+         if(m_t.getCallConvention().requiresSubCallSave(*it))
+            regTable(2,i) << "C";
+
+         regTable(3,i) << *it;
+      }
+      regTable.compileAndWrite(m_s.stream());
+      m_s.stream() << std::endl << std::endl;
+   }
+
+   {
+      std::map<size_t,size_t> regs;
+      m_t.getProc().createRegisterMap(regs);
+      cmn::textTable regTable;
+      regTable(0,0) << "reg";
+      size_t i=1;
+      for(auto it=regs.begin();it!=regs.end();++it,i++)
+      {
+         regTable(0,i) << m_t.getProc().getRegName(it->first);
+         regTable(1,i) << it->first;
+      }
+      regTable.compileAndWrite(m_s.stream());
+      m_s.stream() << std::endl << std::endl;
+   }
+
+   m_s.stream() << "cc shadow space = " << m_t.getCallConvention().getShadowSpace()
+      << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
