@@ -97,7 +97,7 @@ bool var::requiresStorageLater(size_t orderNum, size_t storage)
 
 std::string var::getImmediateData()
 {
-   return dynamic_cast<const lirArgConst&>(lastArg()).name;
+   return lastArg().getName();
 }
 
 void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
@@ -280,7 +280,7 @@ lirArg& varGenerator::claimAndAddArgOffWire(lirInstr& i, cmn::node& n)
       m_donatedNames.erase(&n);
       var *pVar = NULL;
       if(m_nameHint.empty())
-         pVar = &m_vTable.create(dynamic_cast<lirArgVar&>(*pArg).name);
+         pVar = &m_vTable.create(pArg->getName());
       else
       {
          auto finalName = m_vTable.pickUniqueName(m_nameHint);
@@ -338,16 +338,16 @@ lirArg& varGenerator::duplicateArg(const lirArg& a)
    const lirArgVar *pVar = dynamic_cast<const lirArgVar*>(&a);
    const lirArgConst *pConst = dynamic_cast<const lirArgConst*>(&a);
    if(pVar)
-      return *new lirArgVar(pVar->name,pVar->getSize());
+      return *new lirArgVar(pVar->getName(),pVar->getSize());
    else
-      return *new lirArgConst(pConst->name,pConst->getSize());
+      return *new lirArgConst(pConst->getName(),pConst->getSize());
 }
 
 var& varWriter::createVar()
 {
    var *pVar = NULL;
    if(m_nameHint.empty())
-      pVar = &m_pVGen->m_vTable.create(dynamic_cast<lirArgVar&>(*m_pArg).name);
+      pVar = &m_pVGen->m_vTable.create(dynamic_cast<lirArgVar&>(*m_pArg).getName());
    else
    {
       auto finalName = m_pVGen->m_vTable.pickUniqueName(m_nameHint);

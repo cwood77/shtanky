@@ -1,13 +1,13 @@
 === LIR bundle has 2 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .test.test.run
-10 <enterFunc> ~rval/0, $self/0, $args/0                     ;;; .test.test.run
-20 <precall>   
-30 mov         ~_vtbl/0, [~self+8]/0                         ;;; fieldaccess: _vtbl
-40 call        ~rval0/0, [~_vtbl]/0, [~self+8]/0, @.const0/0 ;;; (call ptr)
+0 <enterFunc> ~rval/0, $self/0, $args/0                     ;;; .test.test.run
+0 <precall>   
+0 mov         ~_vtbl/0, [~self+8]/0                         ;;; fieldaccess: _vtbl
+0 call        ~rval0/0, [~_vtbl]/0, [~self+8]/0, @.const0/0 ;;; (call ptr)
 
 ----- start stream .const0
-10 <globalConstData> @"hello world!" <b> 0/0 ;;; .const0
+0 <globalConstData> @"hello world!" <b> 0/0 ;;; .const0
 
 === end of LIR bundle dump ===
 

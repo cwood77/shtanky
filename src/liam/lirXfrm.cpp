@@ -148,7 +148,7 @@ void lirPairedInstrDecomposition::runInstr(lirInstr& i)
    // inject kPostCallStackAlloc
    if(i.instrId == cmn::tgt::kCall)
    {
-      auto& other = i.searchUp(cmn::tgt::kPreCallStackAlloc);
+      auto& other = i.searchUp([](auto& i) { return i.instrId == cmn::tgt::kPreCallStackAlloc; });
       auto noob = new lirInstr(cmn::tgt::kPostCallStackAlloc);
       noob->addArg(other.getArgs()[0]->clone());
       scheduleInjectAfter(*noob,i);

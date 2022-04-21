@@ -1,9 +1,9 @@
 === LIR bundle has 1 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .sht.cons.stdout.printLn
-10 <enterFunc> ~rval/0, $self/0, $msg/0            ;;; .sht.cons.stdout.printLn
-20 <precall>   
-30 call        ~rval0/0, @._osCall/0, @1/0, $msg/0 ;;; (call label)
+0 <enterFunc> ~rval/0, $self/0, $msg/0            ;;; .sht.cons.stdout.printLn
+0 <precall>   
+0 call        ~rval0/0, @._osCall/0, @1/0, $msg/0 ;;; (call label)
 
 === end of LIR bundle dump ===
 

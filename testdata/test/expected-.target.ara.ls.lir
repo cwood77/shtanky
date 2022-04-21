@@ -1,8 +1,8 @@
 === LIR bundle has 1 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .test.consoleTarget.main
-10 <enterFunc>    ~rval/0, $args/0 ;;; .entrypoint
-20 <reserveLocal> $cout/8          ;;; cout
+0 <enterFunc>    ~rval/0, $args/0 ;;; .entrypoint
+0 <reserveLocal> $cout/8          ;;; cout
 
 === end of LIR bundle dump ===
 

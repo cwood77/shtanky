@@ -83,7 +83,7 @@ void instrPrefs::handle(lirInstr& i)
                   auto& cc = m_target.getCallConvention();
                   std::vector<size_t> argStorage;
                   cc.getRValAndArgBank(argStorage);
-                  var& v = m_vTable.demand(pVar->name);
+                  var& v = m_vTable.demand(pVar->getName());
                   v.requireStorage(i,argStorage[0]);
                }
             }

@@ -79,9 +79,8 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
 
             // emit a move to implement this
             {
-               auto& mov = i.injectBefore(
-                  cmn::tgt::kMov,
-                  cmn::fmt("      (preserve) [combiner]"));
+               auto& mov = i.injectBefore(*new lirInstr(cmn::tgt::kMov));
+               mov.comment =  cmn::fmt("      (preserve) [combiner]");
                auto& dest = mov.addArg<lirArgVar>(":combDest",0);
                auto& src = mov.addArg<lirArgVar>(":combSrc",0);
 

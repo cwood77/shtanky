@@ -72,11 +72,12 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
 {
    cdwDEBUG("emitting move for split before %lld (%lld -> %lld)\n",orderNum,srcStor,destStor);
 
-   auto& mov = m_s.pTail->head()
-      .search(orderNum)
-         .injectBefore(
-            cmn::tgt::kMov,
-            cmn::fmt("      (%s req for %s) [splitter]",v.name.c_str(),m_t.getProc().getRegName(destStor)));
+   auto& mov = m_s.pTail
+      ->searchUp([=](auto& i){ return i.orderNum == orderNum; })
+         .injectBefore(*new lirInstr(cmn::tgt::kMov));
+   mov.comment = cmn::fmt("      (%s req for %s) [splitter]",
+      v.name.c_str(),
+      m_t.getProc().getRegName(destStor));
 
    auto& dest = mov.addArg<lirArgVar>("spltD",v.getSize());
 

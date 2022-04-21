@@ -1,21 +1,12 @@
 #pragma once
 #include "../cmn/target.hpp"
 #include "../cmn/type.hpp"
+#include <functional>
 #include <list>
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
-
-// backend compile
-// - number instrs
-// - determine var lifetime (using numbers)
-// - each var solicits requirements from clients
-// - create a register bank from the target
-// - step over each instruction
-//   - for each living variable, choose a slot
-// - select an overload for each instruction
-// - write
 
 namespace cmn { class node; }
 namespace cmn { class outStream; }
@@ -27,67 +18,55 @@ class lirStreams;
 
 class lirArg {
 public:
-   lirArg() : disp(0), addrOf(false) {}
    virtual ~lirArg() {}
 
-   virtual const std::string& getName() const = 0;
-   virtual size_t getSize() const = 0;
+   const std::string& getName() const { return m_name; }
+   // sizes here are typically pseudo, but some instrs differ
+   size_t getSize() const { return m_size; }
    virtual lirArg& clone() const = 0;
 
    int disp;
    bool addrOf;
 
 protected:
+   lirArg(const std::string& name, size_t size)
+   : disp(0), addrOf(false), m_name(name), m_size(size) {}
+
+   template<class T>
+   T& _clone() const
+   {
+      T& dup = *new T(m_name,m_size);
+      copyFieldsInto(dup);
+      return dup;
+   }
+
    virtual lirArg& copyFieldsInto(lirArg& noob) const;
-};
-
-class lirArgVar : public lirArg { // named var
-public:
-   lirArgVar(const std::string& name, size_t size) : name(name), m_size(size) {}
-
-   std::string name;
-
-   virtual const std::string& getName() const { return name; }
-   virtual size_t getSize() const { return m_size; }
-   virtual lirArg& clone() const { return copyFieldsInto(*new lirArgVar(name,m_size)); }
 
 private:
+   const std::string m_name;
    const size_t m_size;
 };
 
+class lirArgVar : public lirArg {
+public:
+   lirArgVar(const std::string& name, size_t size) : lirArg(name,size) {}
+   virtual lirArg& clone() const { return _clone<lirArgVar>(); }
+};
 class lirArgConst : public lirArg {
 public:
-   lirArgConst(const std::string& name, size_t size) : name(name), m_size(size) {}
-
-   std::string name;
-
-   virtual const std::string& getName() const { return name; }
-   virtual size_t getSize() const { return m_size; }
-   virtual lirArg& clone() const { return copyFieldsInto(*new lirArgConst(name,m_size)); }
-
-private:
-   const size_t m_size;
+   lirArgConst(const std::string& name, size_t size) : lirArg(name,size) {}
+   virtual lirArg& clone() const { return _clone<lirArgConst>(); }
 };
-
-class lirArgTemp : public lirArg { // private var
+class lirArgTemp : public lirArg {
 public:
-   lirArgTemp(const std::string& name, size_t size) : name(name), m_size(size) {}
-
-   std::string name;
-
-   virtual const std::string& getName() const { return name; }
-   virtual size_t getSize() const { return m_size; }
-   virtual lirArg& clone() const { return copyFieldsInto(*new lirArgTemp(name,m_size)); }
-
-private:
-   const size_t m_size;
+   lirArgTemp(const std::string& name, size_t size) : lirArg(name,size) {}
+   virtual lirArg& clone() const { return _clone<lirArgTemp>(); }
 };
 
 class lirInstr {
 public:
+   explicit lirInstr(const cmn::tgt::instrIds id);
    virtual ~lirInstr();
-
-   static lirInstr& append(lirInstr*& pPrev, const cmn::tgt::instrIds id, const std::string& comment); // audit
 
    template<class T>
    T& addArg(const std::string& n, size_t z)
@@ -96,34 +75,24 @@ public:
       addArg(*pArg);
       return *pArg;
    }
-
    lirArg& addArg(lirArg& a) { m_args.push_back(&a); return a; }
 
-   lirInstr& injectBefore(const cmn::tgt::instrIds id, const std::string& comment); // audit
    lirInstr& injectBefore(lirInstr& noob);
    lirInstr& injectAfter(lirInstr& noob);
    lirInstr& append(lirInstr& noob);
-
-   size_t orderNum;
-
-   const cmn::tgt::instrIds instrId;
-   const cmn::tgt::instrFmt *pInstrFmt; // kill?
-
-   std::string comment;
 
    bool isLast() const { return m_pNext == NULL; }
    lirInstr& next() { return *m_pNext; }
    lirInstr& head();
    lirInstr& tail();
-   lirInstr& search(size_t orderNum); // rename search down
-   lirInstr& searchUp(cmn::tgt::instrIds id);
+   lirInstr& searchUp(std::function<bool(const lirInstr&)> pred);
 
+   size_t orderNum;
+   const cmn::tgt::instrIds instrId;
+   std::string comment;
    std::vector<lirArg*>& getArgs() { return m_args; }
 
-//private:
-   explicit lirInstr(const cmn::tgt::instrIds id);
 private:
-
    lirInstr *m_pPrev;
    lirInstr *m_pNext;
    std::vector<lirArg*> m_args;
@@ -131,24 +100,19 @@ private:
 
 class lirStream {
 public:
-   lirStream() : pTail(NULL), pTop(NULL) {}
+   lirStream() : pTail(NULL) {}
    ~lirStream();
 
    std::string name;
 
    lirInstr *pTail;
-   lirStreams *pTop; // kill?
    std::string segment;
-
-private:
-   std::map<lirArg*,lirInstr*> m_temps; // kill?
 };
 
 class lirStreams {
 public:
    lirStream& addNewObject(const std::string& name, const std::string& segment);
 
-   //std::map<std::string,lirStream> page; // keep string, but make a list
    std::list<lirStream> objects;
 };
 

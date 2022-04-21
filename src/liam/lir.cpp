@@ -16,37 +16,19 @@ lirArg& lirArg::copyFieldsInto(lirArg& noob) const
    return noob;
 }
 
+lirInstr::lirInstr(const cmn::tgt::instrIds id)
+: orderNum(0)
+, instrId(id)
+, m_pPrev(NULL)
+, m_pNext(NULL)
+{
+}
+
 lirInstr::~lirInstr()
 {
    for(auto it=m_args.begin();it!=m_args.end();++it)
       delete *it;
    delete m_pNext;
-}
-
-lirInstr& lirInstr::append(lirInstr*& pPrev, const cmn::tgt::instrIds id, const std::string& comment)
-{
-   auto *pNoob = new lirInstr(id);
-
-   if(pPrev)
-   {
-      pPrev->m_pNext = pNoob;
-      pNoob->m_pPrev = pPrev;
-      pNoob->orderNum = pPrev->orderNum + 10;
-   }
-
-   pPrev = pNoob;
-
-   pNoob->comment = comment;
-
-   return *pNoob;
-}
-
-lirInstr& lirInstr::injectBefore(const cmn::tgt::instrIds id, const std::string& comment)
-{
-   auto *pNoob = new lirInstr(id);
-   pNoob->orderNum = orderNum - 1;
-   pNoob->comment = comment;
-   return injectBefore(*pNoob);
 }
 
 lirInstr& lirInstr::injectBefore(lirInstr& noob)
@@ -77,19 +59,6 @@ lirInstr& lirInstr::append(lirInstr& noob)
    return noob;
 }
 
-lirInstr& lirInstr::search(size_t orderNum)
-{
-   lirInstr *pThumb = this;
-   while(true)
-   {
-      if(pThumb->orderNum == orderNum)
-         return *pThumb;
-      pThumb = &pThumb->next();
-   }
-
-   throw std::runtime_error("instr not found!");
-}
-
 lirInstr& lirInstr::head()
 {
    lirInstr *pPtr = this;
@@ -106,25 +75,16 @@ lirInstr& lirInstr::tail()
    return *pPtr;
 }
 
-lirInstr& lirInstr::searchUp(cmn::tgt::instrIds id)
+lirInstr& lirInstr::searchUp(std::function<bool(const lirInstr&)> pred)
 {
    lirInstr *pPtr = this;
    while(pPtr)
    {
-      if(pPtr->instrId == id)
+      if(pred(*pPtr))
          return *pPtr;
       pPtr = pPtr->m_pPrev;
    }
-   cdwTHROW("searchUp failed for instr %d",id);
-}
-
-lirInstr::lirInstr(const cmn::tgt::instrIds id)
-: orderNum(10)
-, instrId(id)
-, pInstrFmt(NULL)
-, m_pPrev(NULL)
-, m_pNext(NULL)
-{
+   cdwTHROW("searchUp failed to find match");
 }
 
 lirStream::~lirStream()
@@ -290,8 +250,12 @@ void lirGenerator::createNewStream(const std::string& segment, const std::string
 
 instrBuilder lirGenerator::append(cmn::node& n, cmn::tgt::instrIds id)
 {
-   lirInstr& i = lirInstr::append(m_pCurrStream->pTail,id,"");
-   return instrBuilder(*this,m_t,i,n);
+   auto *pInstr = new lirInstr(id);
+   if(!m_pCurrStream->pTail)
+      m_pCurrStream->pTail = pInstr;
+   else
+      m_pCurrStream->pTail->append(*pInstr);
+   return instrBuilder(*this,m_t,*pInstr,n);
 }
 
 instructionless lirGenerator::noInstr(cmn::node& n)

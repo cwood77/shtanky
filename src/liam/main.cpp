@@ -23,6 +23,8 @@ using namespace liam;
 
 int _main(int argc,const char *argv[])
 {
+   cdwDEBUG("compiled with C++ %u\n",__cplusplus);
+
    cmn::cmdLine cl(argc,argv);
 
    // load
