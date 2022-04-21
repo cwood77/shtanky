@@ -6,48 +6,6 @@
 
 namespace liam {
 
-void varAllocator::onInstrWithAvailVar(lirInstr& i)
-{
-   availVarPass::onInstrWithAvailVar(i);
-
-   for(auto it=m_v.all().begin();it!=m_v.all().end();++it)
-   {
-      var& vr = *it->second;
-      if(vr.isAlive(i.orderNum))
-      {
-         auto storage = vr.getStorageAt(i.orderNum);
-         if(storage.size() == 0)
-         {
-            // alive variable with no assigned storage... assign some now
-
-            size_t stor = cmn::tgt::kStorageUnassigned;
-            if(dynamic_cast<const lirArgConst*>(&vr.lastArg()))
-            {
-               // TODO HACK - where is this now? In varGen
-               // this is a constant... use immediate
-               stor = cmn::tgt::kStorageImmediate;
-               cdwVERBOSE("[varAlloc] picking IMMEDIATE for var %s\n",vr.name.c_str());
-            }
-            else
-            {
-               stor = m_f.chooseFreeStorage(vr.getSize());
-               cdwVERBOSE("[varAlloc] picking %lld for var %s\n",stor,vr.name.c_str());
-            }
-
-            vr.requireStorage(i,stor);
-         }
-         else if(storage.size() == 1
-               && *storage.begin() == cmn::tgt::kStorageUndecidedStack)
-         {
-            // TODO HACK - where is this now? NOWHERE!
-            // this guy asked for a stack slot, but didn't care where
-            auto stor = m_f.decideStackStorage(vr.getSize());
-            vr.changeStorage(i,cmn::tgt::kStorageUndecidedStack,stor);
-         }
-      }
-   }
-}
-
 void stackAllocator::run(varTable& v, varFinder& f)
 {
    for(auto it=v.all().begin();it!=v.all().end();++it)
@@ -79,7 +37,7 @@ public:
    }
 };
 
-void varAllocator2::run(varTable& v, varFinder& f)
+void varAllocator::run(varTable& v, varFinder& f)
 {
    std::set<var*,varPrioritySorter> priOrder;
 
@@ -106,7 +64,6 @@ void varAllocator2::run(varTable& v, varFinder& f)
             for(auto jit=it->second->instrToStorageMap.begin();
                jit!=it->second->instrToStorageMap.end();++jit)
                if(firstAlive <= jit->first && jit->first <= lastAlive)
-                  //used.insert(jit->second.begin(),jit->second.end());
                   for(auto kit=jit->second.begin();kit!=jit->second.end();++kit)
                      f.recordStorageUsed(*kit);
 

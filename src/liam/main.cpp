@@ -2,6 +2,7 @@
 #include "../cmn/cmdline.hpp"
 #include "../cmn/global.hpp"
 #include "../cmn/intel64.hpp"
+#include "../cmn/main.hpp"
 #include "../cmn/out.hpp"
 #include "../cmn/symbolTable.hpp"
 #include "../cmn/trace.hpp"
@@ -75,7 +76,7 @@ int _main(int argc,const char *argv[])
       { varCombiner p(it->second,vTbl,t,f); p.run(); }
 
       stackAllocator().run(vTbl,f);
-      varAllocator2(t).run(vTbl,f);
+      varAllocator(t).run(vTbl,f);
 
       asmCodeGen::generate(it->second,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
    }
@@ -88,15 +89,4 @@ int _main(int argc,const char *argv[])
    return 0;
 }
 
-int main(int argc,const char *argv[])
-{
-   try
-   {
-      return _main(argc,argv);
-   }
-   catch(std::exception& x)
-   {
-      cdwINFO("ERROR: %s\n",x.what());
-      return -2;
-   }
-}
+cdwImplMain();
