@@ -29,6 +29,10 @@ void varSplitter::split(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
 
 void varSplitter::checkVar(var& v)
 {
+   if(m_done.find(&v)!=m_done.end())
+      return;
+   m_done.insert(&v);
+
    if(v.storageToInstrMap.size() > 1)
    {
       // this var has at least two different storage demands
@@ -61,6 +65,7 @@ void varSplitter::checkVar(var& v)
    // update the table _after_ iterating on it
    for(auto it=m_newInstrs.begin();it!=m_newInstrs.end();++it)
       v.requireStorage(*it->first,it->second);
+   m_newInstrs.clear();
 }
 
 void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t destStor)

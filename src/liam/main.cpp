@@ -20,7 +20,7 @@
 
 using namespace liam;
 
-int main(int argc,const char *argv[])
+int _main(int argc,const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
 
@@ -46,14 +46,16 @@ int main(int argc,const char *argv[])
    // generate LIR
    lirStreams lir;
    cmn::tgt::w64EmuTargetInfo t;
-   cmn::outBundle out;
+   cmn::outBundle out,dbgOut;
+   cmn::unconditionalWriter wr;
+   dbgOut.scheduleAutoUpdate(wr);
    { lirGenerator lGen(lir,t); astCodeGen v(lGen,t); prj.acceptVisitor(v); }
-   { auto& s = out.get<cmn::outStream>(prj.sourceFullPath,"lir");
+   { auto& s = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir");
      lirFormatter(s,t).format(lir); }
 
    // LIR transforms
    runLirTransforms(lir,t);
-   { auto& sp = out.get<cmn::outStream>(prj.sourceFullPath,"lir-post");
+   { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-post");
      lirFormatter(sp,t).format(lir); }
 
    // ---------------- register allocation ----------------
@@ -72,6 +74,7 @@ int main(int argc,const char *argv[])
       varFinder f(t);
       { varCombiner p(it->second,vTbl,t,f); p.run(); }
 
+      stackAllocator().run(vTbl,f);
       varAllocator2(t).run(vTbl,f);
 
       asmCodeGen::generate(it->second,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
@@ -80,6 +83,20 @@ int main(int argc,const char *argv[])
    _t.dump();
    _c.dump();
 
-   cmn::unconditionalWriter wr;
    out.updateDisk(wr);
+
+   return 0;
+}
+
+int main(int argc,const char *argv[])
+{
+   try
+   {
+      return _main(argc,argv);
+   }
+   catch(std::exception& x)
+   {
+      cdwINFO("ERROR: %s\n",x.what());
+      return -2;
+   }
 }

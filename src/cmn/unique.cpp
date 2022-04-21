@@ -23,6 +23,8 @@ std::string uniquifier::makeUnique(const std::string& s)
          m_set.insert(noob);
          return noob;
       }
+      else
+         i++;
    }
 }
 

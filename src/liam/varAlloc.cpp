@@ -23,6 +23,7 @@ void varAllocator::onInstrWithAvailVar(lirInstr& i)
             size_t stor = cmn::tgt::kStorageUnassigned;
             if(dynamic_cast<const lirArgConst*>(&vr.lastArg()))
             {
+               // TODO HACK - where is this now? In varGen
                // this is a constant... use immediate
                stor = cmn::tgt::kStorageImmediate;
                cdwVERBOSE("[varAlloc] picking IMMEDIATE for var %s\n",vr.name.c_str());
@@ -38,9 +39,29 @@ void varAllocator::onInstrWithAvailVar(lirInstr& i)
          else if(storage.size() == 1
                && *storage.begin() == cmn::tgt::kStorageUndecidedStack)
          {
+            // TODO HACK - where is this now? NOWHERE!
             // this guy asked for a stack slot, but didn't care where
             auto stor = m_f.decideStackStorage(vr.getSize());
             vr.changeStorage(i,cmn::tgt::kStorageUndecidedStack,stor);
+         }
+      }
+   }
+}
+
+void stackAllocator::run(varTable& v, varFinder& f)
+{
+   for(auto it=v.all().begin();it!=v.all().end();++it)
+   {
+      auto jit = it->second->storageToInstrMap.find(cmn::tgt::kStorageUndecidedStack);
+      if(jit != it->second->storageToInstrMap.end())
+      {
+         // at least one instruction wants a stack allocation
+         auto nu = f.decideStackStorage(it->second->getSize());
+         auto instrs = jit->second;
+         for(auto kit=instrs.begin();kit!=instrs.end();++kit)
+         {
+            cdwDEBUG("deciding undecided stack storage as %lld for instr %lld\n",nu,*kit);
+            it->second->changeStorage(*kit,cmn::tgt::kStorageUndecidedStack,nu);
          }
       }
    }
@@ -78,22 +99,7 @@ void varAllocator2::run(varTable& v, varFinder& f)
       size_t firstAlive = (*vit)->refs.begin()->first;
       size_t lastAlive = (--((*vit)->refs.end()))->first;
 
-#if 0
-      // gather a complete list of consumed storage by orderNum
-      std::map<size_t,std::set<size_t> > attestedStorage;
-      for(auto it=v.all().begin();it!=v.all().end();++it)
-         for(auto jit=it->second->instrToStorageMap.begin();
-            jit!=it->second->instrToStorageMap.end();++jit)
-            attestedStorage[jit->first].insert(jit->second.begin(),jit->second.end());
-
-      for(auto candidate=ideal.begin();candidate!=ideal.end();++candidate)
-      {
-         if
-      }
-#endif
-
       f.onNewInstr();
-      //std::set<size_t> used;
       // record all the storage used by variables living during my lifetime
       for(auto it=v.all().begin();it!=v.all().end();++it)
          if(it->second->isAlive(firstAlive,lastAlive))
@@ -107,22 +113,6 @@ void varAllocator2::run(varTable& v, varFinder& f)
       size_t ans = f.chooseFreeStorage((*vit)->lastArg().getSize());
       cdwDEBUG("assigning r%ld for var %s\n",ans,(*vit)->name.c_str());
       (*vit)->requireStorage(firstAlive,ans);
-
-#if 0
-      for(auto candidate=ideal.begin();candidate!=ideal.end();++candidate)
-      {
-         if(used.find(*candidate)==used.end())
-         {
-            // win! you get a register!
-            cdwDEBUG("assigning r%ld for var %s\n",*candidate,(*vit)->name.c_str());
-            (*vit)->requireStorage(firstAlive,*candidate);
-            break;
-         }
-      }
-
-      if((*vit)->storageToInstrMap.size() == 0)
-         cdwTHROW("stack unimpled");
-#endif
    }
 }
 

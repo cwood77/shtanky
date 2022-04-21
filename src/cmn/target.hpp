@@ -84,11 +84,11 @@ enum genericStorageClasses {
 
 inline bool isStackStorage(size_t s) { return s & _kStackFlag; }
 inline int getStackDisp(size_t s) { return (short)(s & 0xFFFF); }
-inline size_t makeStackStorage(int disp) { return ((size_t)disp) | _kStackFlag; }
+inline size_t makeStackStorage(int disp) { return (disp & 0xFFFF) | _kStackFlag; }
 
 inline bool isVStack(size_t s) { return s & _kVirtStackFlag; }
 inline int getVStackInt(size_t s) { return (short)(s & 0xFFFF); }
-inline size_t makeVStack(int disp) { return ((size_t)disp) | _kVirtStackFlag; }
+inline size_t makeVStack(int disp) { return (disp & 0xFFFF) | _kVirtStackFlag; }
 
 class instrInfo {
 public:

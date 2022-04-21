@@ -70,7 +70,7 @@ void astCodeGen::visit(cmn::localDeclNode& n)
    hNodeVisitor::visit(n);
 
    m_lGen.append(n,cmn::tgt::kReserveLocal)
-      .withArg<lirArgConst>("size",
+      .withArg<lirArgVar>(m_u.makeUnique(n.name),
          cmn::type::gNodeCache->demand(n.demandSoleChild<cmn::typeNode>())
             .getRealAllocSize(m_t))
       .withComment(n.name);

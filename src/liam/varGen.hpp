@@ -76,6 +76,7 @@ public:
    void requireStorage(size_t orderNum, size_t s);
 
    void changeStorage(lirInstr& i, size_t old, size_t nu);
+   void changeStorage(size_t orderNum, size_t old, size_t nu);
 
    bool isAlive(size_t orderNum);
    bool isAlive(size_t start, size_t end);

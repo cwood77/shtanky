@@ -8,4 +8,4 @@ name:len(0b-00-00-00,00-00-00-00)name:bytes(2e-65-6e-74,72-79-70-6f,69-6e-74)off
 // class importTable
 numentries(00-00-00-00,00-00-00-00)
 // returnedto: class obj
-blockSize(09-00-00-00,00-00-00-00)block(48-83-ec-08,48-83-c4-08,c3)
+blockSize(11-00-00-00,00-00-00-00)block(48-83-ec-08,48-83-ec-08,48-83-c4-08,48-83-c4-08,c3)

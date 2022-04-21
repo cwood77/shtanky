@@ -33,12 +33,21 @@ void var::requireStorage(size_t orderNum, size_t s)
 
 void var::changeStorage(lirInstr& i, size_t old, size_t nu)
 {
-   instrToStorageMap[i.orderNum].erase(old);
-   instrToStorageMap[i.orderNum].erase(nu);
-   storageToInstrMap[old].erase(i.orderNum);
-   if(storageToInstrMap[old].size())
+   changeStorage(i.orderNum,old,nu);
+}
+
+void var::changeStorage(size_t orderNum, size_t old, size_t nu)
+{
+   instrToStorageMap[orderNum].erase(old);
+   instrToStorageMap[orderNum].insert(nu);
+   storageToInstrMap[old].erase(orderNum);
+   if(storageToInstrMap[old].size() == 0)
       storageToInstrMap.erase(old);
-   storageToInstrMap[nu].insert(i.orderNum);
+   storageToInstrMap[nu].insert(orderNum);
+
+   for(auto it=storageDisambiguators.begin();it!=storageDisambiguators.end();++it)
+      if(it->second == old)
+         it->second = nu;
 }
 
 bool var::isAlive(size_t orderNum)
@@ -51,6 +60,8 @@ bool var::isAlive(size_t start, size_t end)
    return isAlive(start) || isAlive(end) ||
       (start < refs.begin()->first && (--(refs.end()))->first < end);
 }
+
+// TODO - this table makes sense but this code DOES NOT implement it?
 
 // ans    req
 //  b  0
@@ -144,7 +155,7 @@ size_t virtStackTable::mapToReal(size_t virt)
 {
    auto it = m_map.find(virt);
    if(it == m_map.end())
-      throw std::runtime_error("unknown virtual stack storage");
+      cdwTHROW("unknown virtual stack storage %lld",virt);
    return it->second;
 }
 
@@ -217,7 +228,8 @@ size_t varTable::getStorageFor(size_t orderNum, lirArg& a)
 
    auto stors = v.getStorageAt(orderNum);
    if(stors.size() != 1)
-      cdwTHROW("insanity!");
+      cdwTHROW("insane?  somehow arg %s on instr %lld has no storage?",
+         a.getName().c_str(),orderNum);
    return *(stors.begin());
 }
 

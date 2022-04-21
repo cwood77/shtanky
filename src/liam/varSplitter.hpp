@@ -28,6 +28,7 @@ private:
    lirStream& m_s;
    varTable& m_v;
    cmn::tgt::iTargetInfo& m_t;
+   std::set<var*> m_done;
 
    std::list<std::pair<lirInstr*,size_t> > m_newInstrs;
 };
