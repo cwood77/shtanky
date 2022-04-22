@@ -2,13 +2,6 @@
 
 namespace araceli {
 
-// for varRefs
-// - if these refer to fields, scope then with 'self'
-
-// for methods: two things
-// - inject self args
-// - passthru vtables
-
 void declasser::visit(cmn::invokeNode& n)
 {
    std::unique_ptr<cmn::invokeFuncPtrNode> pInvoke(new cmn::invokeFuncPtrNode());
@@ -52,8 +45,6 @@ void declasser::visit(cmn::varRefNode& n)
 {
    hNodeVisitor::visit(n);
 
-   // we can assume that unlinked varRefs are the result of transforms and are _not_
-   // fields
    auto pType = n.pDef.getRefee();
    if(!pType)
       throw std::runtime_error("ISE: unbound verRef in transform");

@@ -52,7 +52,7 @@ const size_t userClassType::getRealAllocSize(const tgt::iTargetInfo& t) const
 {
    size_t totalSize = 0;
    for(auto it=m_order.begin();it!=m_order.end();++it)
-      totalSize += m_members.find(*it)->second->getRealAllocSize(t);
+      totalSize += t.getRealSize(m_members.find(*it)->second->getPseudoRefSize());
    return totalSize;
 }
 
@@ -70,7 +70,7 @@ size_t userClassType::getOffsetOfField(const std::string& name, const tgt::iTarg
    for(auto it=m_order.begin();it!=m_order.end();++it)
    {
       if(*it != name)
-         offset += m_members.find(*it)->second->getRealAllocSize(t);
+         offset += t.getRealSize(m_members.find(*it)->second->getPseudoRefSize());
       else
          return offset;
    }

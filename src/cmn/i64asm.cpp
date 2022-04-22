@@ -51,6 +51,14 @@ static const genInfo kGenInfo[] = {
    },
    { genInfo::kOpcodeReg, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
+   { "MOV{REX.W + C7 /0 id}", (unsigned char[]){
+      genInfo::kOpcode1WithReg, 0xC7,
+      genInfo::kArgFmtBytesWithFixedOp, 0x0,
+      genInfo::kArg2Imm32,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+
    { "POP{8F /0}", (unsigned char[]){
       genInfo::kOpcode1, 0x8F,
       genInfo::kArgFmtBytesWithFixedOp, 0x0,
@@ -409,6 +417,7 @@ unsigned char *argFmtBytes::computeTotalByteStream()
       }
       else if(*pThumb == genInfo::kCodeOffset32 ||
               *pThumb == genInfo::kArg2Imm8 ||
+              *pThumb == genInfo::kArg2Imm32 ||
               *pThumb == genInfo::kArg2Imm64)
       {
          // pass thru with 0-byte payload

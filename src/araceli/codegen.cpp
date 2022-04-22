@@ -228,6 +228,17 @@ void codeGen::visit(cmn::varRefNode& n)
    visitChildren(n);
 }
 
+void codeGen::visit(cmn::assignmentNode& n)
+{
+   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+
+   n.getChildren()[0]->acceptVisitor(*this);
+
+   source << " = ";
+
+   n.getChildren()[1]->acceptVisitor(*this);
+}
+
 void codeGen::visit(cmn::stringLiteralNode& n)
 {
    auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();

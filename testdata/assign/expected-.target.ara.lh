@@ -1,0 +1,9 @@
+class .assign.consoleTarget {
+}
+
+func .assign.consoleTarget.ctor() : .assign.consoleTarget;
+
+[entrypoint]
+func .assign.consoleTarget.main(
+   args : str[]) : void;
+

@@ -41,14 +41,15 @@ void asmArgWriter::write(size_t orderNum, lirArg& a)
    }
 
    if(cmn::tgt::isStackStorage(stor))
-      m_w[1] << "["
-         << m_t.getProc().getRegName(framePtr)
-         << (cmn::tgt::getStackDisp(stor) + a.disp)
-      << "]";
+   {
+      m_w[1] << "[" << m_t.getProc().getRegName(framePtr);
+      writeDispIf(cmn::tgt::getStackDisp(stor) + a.disp);
+      m_w[1] << "]";
+   }
    else if(a.addrOf)
    {
       m_w[1] << "[" << m_t.getProc().getRegName(stor);
-      writeDispIf(a);
+      writeDispIf(a.disp);
       m_w[1] << "]";
    }
    else
@@ -57,19 +58,19 @@ void asmArgWriter::write(size_t orderNum, lirArg& a)
          m_w[1] << a.getName();
       else
          m_w[1] << m_t.getProc().getRegName(stor);
-      writeDispIf(a);
+      writeDispIf(a.disp);
    }
 
    m_first = false;
 }
 
-void asmArgWriter::writeDispIf(lirArg& a)
+void asmArgWriter::writeDispIf(const __int64& disp)
 {
-   if(a.disp)
+   if(disp)
    {
-      if(a.disp > 0)
+      if(disp > 0)
          m_w[1] << "+";
-      m_w[1] << a.disp;
+      m_w[1] << disp;
    }
 }
 
@@ -152,7 +153,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
             m_w.advanceLine();
          }
          break;
-      case cmn::tgt::kReserveLocal:
+      case cmn::tgt::kReserveLocal: // TODO this stack space is duplicated by enter/exit func?
          {
             m_w[1]
                << "sub, "

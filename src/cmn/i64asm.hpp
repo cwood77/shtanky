@@ -33,6 +33,7 @@ public:
       kOpcode1WithReg, // lower 3-bits of opcode are a register
       kCodeOffset32,
       kArg2Imm8,
+      kArg2Imm32,
       kArg2Imm64,
       kArgFmtBytes, // optional; if omitted arg bytes are suffixed, if any
       kArgFmtBytesWithFixedOp,

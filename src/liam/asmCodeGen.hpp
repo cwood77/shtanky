@@ -21,7 +21,7 @@ public:
 
 private:
    void write(size_t orderNum, lirArg& a);
-   void writeDispIf(lirArg& a);
+   void writeDispIf(const __int64& disp);
 
    varTable& m_v;
    cmn::tgt::iTargetInfo& m_t;
