@@ -57,7 +57,7 @@ void varAllocator::run(varTable& v, varFinder& f)
       size_t firstAlive = (*vit)->refs.begin()->first;
       size_t lastAlive = (--((*vit)->refs.end()))->first;
 
-      f.onNewInstr();
+      f.resetUsedStorage();
       // record all the storage used by variables living during my lifetime
       for(auto it=v.all().begin();it!=v.all().end();++it)
          if(it->second->isAlive(firstAlive,lastAlive))

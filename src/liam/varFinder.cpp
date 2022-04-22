@@ -3,7 +3,7 @@
 
 namespace liam {
 
-void varFinder::onNewInstr()
+void varFinder::resetUsedStorage()
 {
    m_inUse.clear();
    m_t.getProc().createRegisterMap(m_inUse);
