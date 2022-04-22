@@ -20,10 +20,11 @@ void astCodeGen::visit(cmn::constNode& n)
    std::stringstream expr;
    { dataFormatter v(expr); n.acceptVisitor(v); }
 
-   m_lGen.createNewStream(cmn::objfmt::obj::kLexConst,n.name);
-   m_lGen.append(n,cmn::tgt::kGlobalConstData)
-      .withArg<lirArgConst>(expr.str(),0)
-      .withComment(n.name);
+   m_b.createNewStream(n.name,cmn::objfmt::obj::kLexConst);
+   m_b.forNode(n)
+      .append(cmn::tgt::kGlobalConstData)
+         .withArg<lirArgConst>(expr.str(),0)
+         .withComment(n.name);
 }
 
 void astCodeGen::visit(cmn::funcNode& n)
@@ -31,14 +32,15 @@ void astCodeGen::visit(cmn::funcNode& n)
    if(n.getChildrenOf<cmn::sequenceNode>().size() == 0)
       return; // ignore forward references
 
-   m_lGen.createNewStream(cmn::objfmt::obj::kLexCode,n.name);
+   m_b.createNewStream(n.name,cmn::objfmt::obj::kLexCode);
 
    // determine real func name (different if entrypoint)
    std::string funcNameInAsm = n.name;
    if(n.attributes.find("entrypoint") != n.attributes.end())
       funcNameInAsm = ".entrypoint";
 
-   auto& i = m_lGen.append(n,cmn::tgt::kEnterFunc)
+   auto& i = m_b.forNode(n)
+      .append(cmn::tgt::kEnterFunc)
       .withArg<lirArgTemp>(m_u.makeUnique("rval"),n)
       .returnToParent(0)
       .withComment(funcNameInAsm);
@@ -50,26 +52,29 @@ void astCodeGen::visit(cmn::funcNode& n)
    n.demandSoleChild<cmn::sequenceNode>().acceptVisitor(*this);
 }
 
-void astCodeGen::visit(cmn::invokeFuncPtrNode& n)
+void astCodeGen::visit(cmn::invokeFuncPtrNode& n) // TODO left off here
 {
-   m_lGen.append(n,cmn::tgt::kPreCallStackAlloc);
+   m_b.forNode(n)
+      .append(cmn::tgt::kPreCallStackAlloc);
 
    hNodeVisitor::visit(n);
 
-   auto iCall = m_lGen.append(n,cmn::tgt::kCall)
+   auto& i = m_b.forNode(n)
+      .append(cmn::tgt::kCall)
       .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
       .returnToParent(0)
       .withComment("(call ptr)");
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
-      iCall.inheritArgFromChild(**it);
+      i.inheritArgFromChild(**it);
 }
 
 void astCodeGen::visit(cmn::localDeclNode& n)
 {
    hNodeVisitor::visit(n);
 
-   m_lGen.append(n,cmn::tgt::kReserveLocal)
+   m_b.forNode(n)
+      .append(cmn::tgt::kReserveLocal)
       .withArg<lirArgVar>(m_u.makeUnique(n.name),
          cmn::type::gNodeCache->demand(n.demandSoleChild<cmn::typeNode>())
             .getRealAllocSize(m_t))
@@ -87,9 +92,7 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
    auto& childType = cmn::type::gNodeCache->demand(child)
       .as<cmn::type::iStructType>();
 
-   auto i = m_lGen.noInstr(n);
-   auto& a = i.borrowArgFromChild(child);
-
+   auto& a = m_b.borrowArgFromChild(child);
    auto pA = new lirArgTemp(
       a.getName(),
       cmn::type::gNodeCache->demand(n).getPseudoRefSize());
@@ -99,12 +102,13 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
       // I can just deref the existing arg, no need for a mov
       pA->addrOf = true;
       pA->disp = childType.getOffsetOfField(n.name,m_t);
-      i.returnToParent(*pA);
+      m_b.forNode(n).returnToParent(*pA);
    }
    else
    {
       // my child is already dereffed, so to do it again I must mov
-      m_lGen.append(n,cmn::tgt::kMov)
+      m_b.forNode(n)
+         .append(cmn::tgt::kMov)
          .withArg<lirArgTemp>(m_u.makeUnique(n.name),n)
          .withArg(a.clone())
          .withComment(std::string("fieldaccess: ") + n.name)
@@ -114,11 +118,12 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
 
 void astCodeGen::visit(cmn::callNode& n)
 {
-   m_lGen.append(n,cmn::tgt::kPreCallStackAlloc);
+   m_b.forNode(n).append(cmn::tgt::kPreCallStackAlloc);
 
    hNodeVisitor::visit(n);
 
-   auto iCall = m_lGen.append(n,cmn::tgt::kCall)
+   auto iCall = m_b.forNode(n)
+      .append(cmn::tgt::kCall)
       .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
       .returnToParent(0)
       .withArg<lirArgConst>(n.name,/*n*/ 0) // label
@@ -140,7 +145,7 @@ void astCodeGen::visit(cmn::varRefNode& n)
          n.pDef.ref,
          cmn::type::gNodeCache->demand(*n.pDef.getRefee()).getPseudoRefSize());
 
-      m_lGen.noInstr(n)
+      m_b.forNode(n)
          .returnToParent(*pA);
    }
    else
@@ -149,7 +154,7 @@ void astCodeGen::visit(cmn::varRefNode& n)
          n.pDef.ref,
          cmn::type::gNodeCache->demand(*n.pDef.getRefee()).getPseudoRefSize());
 
-      m_lGen.noInstr(n)
+      m_b.forNode(n)
          .returnToParent(*pA);
    }
 }
@@ -162,7 +167,7 @@ void astCodeGen::visit(cmn::stringLiteralNode& n)
       n.value,
       cmn::type::gNodeCache->demand(n).getPseudoRefSize());
 
-   m_lGen.noInstr(n)
+   m_b.forNode(n)
       .returnToParent(*pA);
 }
 
@@ -172,7 +177,7 @@ void astCodeGen::visit(cmn::boolLiteralNode& n)
       n.value ? "T" : "F",
       cmn::type::gNodeCache->demand(n).getPseudoRefSize());
 
-   m_lGen.noInstr(n)
+   m_b.forNode(n)
       .returnToParent(*pA);
 }
 
@@ -182,7 +187,7 @@ void astCodeGen::visit(cmn::intLiteralNode& n)
       n.lexeme,
       cmn::type::gNodeCache->demand(n).getPseudoRefSize());
 
-   m_lGen.noInstr(n)
+   m_b.forNode(n)
       .returnToParent(*pA);
 }
 

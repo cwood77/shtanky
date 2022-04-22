@@ -287,4 +287,64 @@ instructionless& instructionless::returnToParent(lirArg& a)
    return *this;
 }
 
+
+
+
+
+// ******************************************************************************
+// ******************************************************************************
+// ******************************************************************************
+// ******************************************************************************
+// ******************************************************************************
+
+
+lirBuilder::~lirBuilder()
+{
+   for(auto it=m_orphans.begin();it!=m_orphans.end();++it)
+      delete *it;
+}
+
+void lirBuilder::createNewStream(const std::string& name, const std::string& segment)
+{
+   m_pCurrStream = &m_lir.addNewObject(name,segment);
+}
+
+const lirArg& lirBuilder::borrowArgFromChild(cmn::node& n)
+{
+   return *m_cache[&n];
+}
+
+lirBuilder::instrBuilder lirBuilder::nodeScope::append(cmn::tgt::instrIds i)
+{
+   auto *pI = new lirInstr(i);
+   if(m_b.m_pCurrStream->pTail == NULL)
+      m_b.m_pCurrStream->pTail = pI;
+   else
+      m_b.m_pCurrStream->pTail->append(*pI);
+
+   return lirBuilder::instrBuilder(m_b,m_n,*pI);
+}
+
+lirBuilder::nodeScope& lirBuilder::nodeScope::returnToParent(lirArg& a)
+{
+   m_b.adoptArg(m_n,a);
+   return *this;
+}
+
+void lirBuilder::publishArg(cmn::node& n, lirArg& a)
+{
+   m_cache[&n] = &a;
+}
+
+void lirBuilder::adoptArg(cmn::node& n, lirArg& a)
+{
+   publishArg(n,a);
+   m_orphans.insert(&a);
+}
+
+void lirBuilder::addArgFromNode(cmn::node& n, lirInstr& i)
+{
+   i.addArg(m_cache[&n]->clone());
+}
+
 } // namespace liam

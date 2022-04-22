@@ -10,6 +10,7 @@ namespace cmn { namespace tgt { class iTargetInfo; } }
 namespace liam {
 
 class lirArg;
+class lirBuilder;
 class lirGenerator;
 class lirInstr;
 class lirStreams;
@@ -29,7 +30,8 @@ private:
 
 class astCodeGen : public cmn::liamVisitor<> {
 public:
-   astCodeGen(lirGenerator& l, cmn::tgt::iTargetInfo& t) : m_lGen(l), m_t(t) {}
+   astCodeGen(lirBuilder& b, lirGenerator& l, cmn::tgt::iTargetInfo& t)
+   : m_b(b), m_lGen(l), m_t(t) {}
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
    virtual void visit(cmn::constNode& n);
@@ -44,6 +46,7 @@ public:
    virtual void visit(cmn::intLiteralNode& n);
 
 private:
+   lirBuilder& m_b;
    lirGenerator& m_lGen;
    cmn::tgt::iTargetInfo& m_t;
    cmn::uniquifier m_u;

@@ -233,4 +233,81 @@ private:
    cmn::node& m_n;
 };
 
+class lirBuilder {
+public:
+   class nodeScope;
+   class instrBuilder;
+
+   lirBuilder(lirStreams& lir, cmn::tgt::iTargetInfo& t)
+   : m_lir(lir), m_t(t), m_pCurrStream(NULL) {}
+
+   ~lirBuilder();
+
+   void createNewStream(const std::string& name, const std::string& segment);
+
+   nodeScope forNode(cmn::node& n) { return nodeScope(*this,n); }
+
+   const lirArg& borrowArgFromChild(cmn::node& n);
+
+   class nodeScope {
+   public:
+      nodeScope(lirBuilder& b, cmn::node& n) : m_b(b), m_n(n) {}
+
+      instrBuilder append(cmn::tgt::instrIds i);
+
+      nodeScope& returnToParent(lirArg& a);
+
+   private:
+      lirBuilder& m_b;
+      cmn::node& m_n;
+   };
+
+   class instrBuilder {
+   public:
+      instrBuilder(lirBuilder& b, cmn::node& n, lirInstr& i) : m_b(b), m_n(n), m_i(i) {}
+
+      instrBuilder& withComment(const std::string& c)
+      { m_i.comment = c; return *this; }
+
+      instrBuilder& withArg(lirArg& a) { m_i.addArg(a); return *this; }
+
+      template<class T>
+      instrBuilder& withArg(const std::string& name, size_t s)
+      {
+         m_i.addArg<T>(name,s);
+         return *this;
+      }
+
+      template<class T>
+      instrBuilder& withArg(const std::string& name, cmn::node& n)
+      {
+         auto nSize = cmn::type::gNodeCache->demand(n).getPseudoRefSize();
+         m_i.addArg<T>(name,nSize);
+         return *this;
+      }
+
+      instrBuilder& inheritArgFromChild(cmn::node& n)
+      { m_b.addArgFromNode(n,m_i); return *this; }
+
+      instrBuilder& returnToParent(size_t nArg)
+      { m_b.publishArg(m_n,*m_i.getArgs()[nArg]); return *this; }
+
+   private:
+      lirBuilder& m_b;
+      cmn::node& m_n;
+      lirInstr& m_i;
+   };
+
+private:
+   void publishArg(cmn::node& n, lirArg& a);
+   void adoptArg(cmn::node& n, lirArg& a);
+   void addArgFromNode(cmn::node& n, lirInstr& i);
+
+   lirStreams& m_lir;
+   cmn::tgt::iTargetInfo& m_t;
+   lirStream *m_pCurrStream;
+   std::map<cmn::node*,lirArg*> m_cache;
+   std::set<lirArg*> m_orphans;
+};
+
 } // namespace liam
