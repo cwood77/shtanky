@@ -132,7 +132,6 @@ ARACELI_SRC = \
 	src/araceli/consoleAppTarget.cpp \
 	src/araceli/constHoister.cpp \
 	src/araceli/ctorDtorGenerator.cpp \
-	src/araceli/declasser.cpp \
 	src/araceli/lexor.cpp \
 	src/araceli/loader.cpp \
 	src/araceli/main.cpp \

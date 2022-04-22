@@ -422,8 +422,8 @@ void codeGen::generateMethodSignature(cmn::methodNode& m, cmn::outStream& s)
    bool firstParam = true;
    if(!(m.flags & cmn::nodeFlags::kStatic))
    {
-      s.stream() << cmn::indent(s) << "self : " << cmn::fullyQualifiedName::build(m);
-      firstParam = false;
+      //s.stream() << cmn::indent(s) << "self : " << cmn::fullyQualifiedName::build(m); // this is a transform now
+      //firstParam = false;
    }
 
    auto args = m.getChildrenOf<cmn::argNode>();

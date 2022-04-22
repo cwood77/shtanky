@@ -10,6 +10,7 @@ class selfDecomposition : public cmn::araceliVisitor<> {
 public:
    virtual void visit(cmn::node& n) { visitChildren(n); }
 
+   virtual void visit(cmn::methodNode& n);
    virtual void visit(cmn::invokeNode& n);
    virtual void visit(cmn::varRefNode& n);
 };

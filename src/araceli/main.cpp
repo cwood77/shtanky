@@ -11,7 +11,6 @@
 #include "consoleAppTarget.hpp"
 #include "constHoister.hpp"
 #include "ctorDtorGenerator.hpp"
-#include "declasser.hpp"
 #include "metadata.hpp"
 #include "projectBuilder.hpp"
 #include "selfDecomposition.hpp"
@@ -68,7 +67,6 @@ int main(int argc, const char *argv[])
 
    // compile-away classes
    { selfDecomposition v; pPrj->acceptVisitor(v); }
-   { declasser v; pPrj->acceptVisitor(v); }
    cdwVERBOSE("graph after transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 

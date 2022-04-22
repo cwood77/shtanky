@@ -2,6 +2,29 @@
 
 namespace araceli {
 
+void selfDecomposition::visit(cmn::methodNode& n)
+{
+   if(!(n.flags & cmn::nodeFlags::kStatic))
+   {
+      // inject a 'self' argument first
+
+      cmn::node root;
+      cmn::treeWriter w(root);
+      w
+      .append<cmn::argNode>([](auto&a){a.name="self";})
+         .append<cmn::userTypeNode>([&](auto&t)
+         {
+            t.pDef.ref = cmn::fullyQualifiedName::build(n.getAncestor<cmn::classNode>());
+            t.pDef.bind(n.getAncestor<cmn::classNode>());
+         })
+      ;
+      n.insertChild(0,*root.lastChild());
+      root.getChildren().clear();
+   }
+
+   hNodeVisitor::visit(n);
+}
+
 void selfDecomposition::visit(cmn::invokeNode& n)
 {
    // change invoke nodes to invokeFuncPtr nodes using a vtbl
@@ -40,6 +63,23 @@ void selfDecomposition::visit(cmn::invokeNode& n)
 void selfDecomposition::visit(cmn::varRefNode& n)
 {
    hNodeVisitor::visit(n);
+
+   auto pType = n.pDef.getRefee();
+   const bool isField = (dynamic_cast<cmn::fieldNode*>(pType->getParent()));
+
+   // change reference into explicit field access on 'self'
+   // otherwise, it's a local or arg; leave it alone
+   if(!isField)
+      return;
+
+   std::unique_ptr<cmn::varRefNode> pSelf(new cmn::varRefNode());
+   std::unique_ptr<cmn::fieldAccessNode> pField(new cmn::fieldAccessNode());
+
+   pSelf->pDef.ref = "self";
+   pField->name = n.pDef.ref;
+
+   pField->appendChild(*pSelf.release());
+   delete n.getParent()->replaceChild(n,*pField.release());
 }
 
 } // namespace araceli
