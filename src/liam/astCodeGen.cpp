@@ -159,6 +159,18 @@ void astCodeGen::visit(cmn::varRefNode& n)
    }
 }
 
+void astCodeGen::visit(cmn::assignmentNode& n)
+{
+   n.getChildren()[1]->acceptVisitor(*this);
+   n.getChildren()[0]->acceptVisitor(*this);
+
+   auto& i = m_b.forNode(n)
+      .append(cmn::tgt::kMov)
+         .inheritArgFromChild(*n.getChildren()[0])
+         .inheritArgFromChild(*n.getChildren()[1])
+         .withComment("=");
+}
+
 // all literals are nearly identical (just 'value' different) - share this?
 
 void astCodeGen::visit(cmn::stringLiteralNode& n)

@@ -1,0 +1,11 @@
+// 2: .entrypoint: 
+// 3:              sub, rsp, 8
+rex(48)op(83)modR/M(ec)i8(08)
+// 4:              sub, rsp, 8
+rex(48)op(83)modR/M(ec)i8(08)
+// 5:              add, rsp, 8
+rex(48)op(83)modR/M(c4)i8(08)
+// 6:              add, rsp, 8
+rex(48)op(83)modR/M(c4)i8(08)
+// 7:              ret
+op(c3)

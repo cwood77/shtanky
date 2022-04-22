@@ -1,0 +1,13 @@
+// 2: .assign.assignTester.run: 
+// 3:                           sub, rsp, 8     
+rex(48)op(83)modR/M(ec)i8(08)
+// 4:                           sub, rsp, 8     
+rex(48)op(83)modR/M(ec)i8(08)
+// 5:                           mov, [rbp-8], 7 ; =
+rex(48)op(c7)d8(45)i32(07-00-00-00)
+// 6:                           add, rsp, 8     
+rex(48)op(83)modR/M(c4)i8(08)
+// 7:                           add, rsp, 8     
+rex(48)op(83)modR/M(c4)i8(08)
+// 8:                           ret             
+op(c3)

@@ -1,0 +1,10 @@
+[program]
+class assignTester : .sht.cons.program {
+
+   override run(args : str[]) : void
+   {
+      var x : void;
+      x = 7;
+   }
+
+}

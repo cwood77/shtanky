@@ -1,0 +1,16 @@
+class .assign.assignTester.vtbl {
+   run : ptr;
+}
+
+class .assign.assignTester {
+   _vtbl : .assign.assignTester.vtbl;
+   _out : .sht.cons.iStream;
+}
+
+func .assign.assignTester.ctor() : .assign.assignTester;
+
+func .assign.assignTester.run(
+   self : .assign.assignTester,
+   args : str[]) : void;
+
+ref "..\sht\cons\program.ara.lh";

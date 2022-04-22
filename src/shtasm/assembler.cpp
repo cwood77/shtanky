@@ -63,6 +63,10 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
       {
          w.write("i8",&ai[1].data.bytes.v[0],1);
       }
+      else if(*pByte == cmn::tgt::i64::genInfo::kArg2Imm32)
+      {
+         w.write("i32",&ai[1].data.dwords.v[0],4);
+      }
       else if(*pByte == cmn::tgt::i64::genInfo::kArg2Imm64)
       {
          w.write("i64",&ai[1].data.qwords.v[0],8);

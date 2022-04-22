@@ -32,6 +32,10 @@ public:
    araceliTest& wholeApp();
    araceliTest& expectLiamOf(const std::string& path);
 
+   // because shlink seeds the layout with hardcoded symbols (e.g. .test.test())
+   // while are inappropriate for some tests, skip link until this is fixed
+   araceliTest& skipLinkToWorkaroundHacks();
+
 private:
    instrStream& m_stream;
    const std::string m_folder;

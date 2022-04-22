@@ -47,6 +47,10 @@ static const instrFmt movFmts[] = {
       kR64,
       kI64,
       kArgTypeNone, kArgTypeNone },
+   { "MOV{REX.W + C7 /0 id}",
+      kR64 | kM64,
+      kI32,
+      kArgTypeNone, kArgTypeNone },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
 };
 

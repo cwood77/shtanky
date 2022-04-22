@@ -59,6 +59,12 @@ araceliTest& araceliTest::wholeApp()
    return *this;
 }
 
+araceliTest& araceliTest::skipLinkToWorkaroundHacks()
+{
+   m_pLTest.reset(NULL);
+   return *this;
+}
+
 araceliTest& araceliTest::expectLiamOf(const std::string& path)
 {
    auto header = cmn::pathUtil::addExt(path,cmn::pathUtil::kExtLiamHeader);

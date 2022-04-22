@@ -34,6 +34,7 @@ public:
    virtual void visit(cmn::fieldAccessNode& n);
    virtual void visit(cmn::callNode& n);
    virtual void visit(cmn::varRefNode& n);
+   virtual void visit(cmn::assignmentNode& n);
    virtual void visit(cmn::stringLiteralNode& n);
    virtual void visit(cmn::boolLiteralNode& n);
    virtual void visit(cmn::intLiteralNode& n);
