@@ -1,16 +1,44 @@
 .seg code                 
 .assign.assignTester.run: 
-                          push, rbx         
-                          sub, rsp, 24      
-                          sub, rsp, 8       
-                          mov, [rbp+8], 7   ; =
-                          sub, rsp, 16      
-                          mov, [rbp-16], 7  ; =
-                          mov, rbx, [rbp-8] ; fieldaccess: x
-                          mov, rbx, 7       ; =
-                          add, rsp, 16      
-                          add, rsp, 8       
-                          add, rsp, 24      
-                          pop, rbx          
-                          ret               
+                          ret
+
+.seg code                               
+.assign.assignTester.readFromSubObject: 
+                                        mov, r8, [rdx+8] ; =
+                                        ret              
+
+.seg code                                
+.assign.assignTester.writeIntoSubObject: 
+                                         push, rbx       
+                                         sub, rsp, 16    
+                                         sub, rsp, 16    
+                                         mov, [rbx+8], 7 ; =
+                                         add, rsp, 16    
+                                         add, rsp, 16    
+                                         pop, rbx        
+                                         ret             
+
+.seg code                                  
+.assign.assignTester.readFromSubSubObject: 
+                                           push, rbx         
+                                           push, rdi         
+                                           mov, rbx, [rdi+8] ; fieldaccess: owner of x
+                                           mov, r8, [rbx+8]  ; =
+                                           pop, rdi          
+                                           pop, rbx          
+                                           ret               
+
+.seg code                                   
+.assign.assignTester.writeIntoSubSubObject: 
+                                            push, rbx         
+                                            push, rdi         
+                                            sub, rsp, 16      
+                                            sub, rsp, 16      
+                                            mov, rbx, [rdi+8] ; fieldaccess: owner of x
+                                            mov, [rbx+8], 7   ; =
+                                            add, rsp, 16      
+                                            add, rsp, 16      
+                                            pop, rdi          
+                                            pop, rbx          
+                                            ret               
 

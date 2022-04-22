@@ -1,10 +1,11 @@
 === LIR bundle has 2 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .test.test.run
-0 <enterFunc> ~rval/0, $self/0, $args/0                     ;;; .test.test.run
+0 <enterFunc> ~rval/0, $self/0, $args/0                       ;;; .test.test.run
 0 <precall>   
-0 mov         ~_vtbl/0, [~self+8]/0                         ;;; fieldaccess: _vtbl
-0 call        ~rval0/0, [~_vtbl]/0, [~self+8]/0, @.const0/0 ;;; (call ptr)
+0 mov         ~_vtbl/0, [~self+8]/0                           ;;; fieldaccess: owner of _vtbl
+0 mov         ~printLn/0, [~_vtbl]/0                          ;;; fieldaccess: owner of printLn
+0 call        ~rval0/0, [~printLn]/0, [~self+8]/0, @.const0/0 ;;; (call ptr)
 
 ----- start stream .const0
 0 <globalConstData> @"hello world!" <b> 0/0 ;;; .const0

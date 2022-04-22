@@ -13,6 +13,22 @@ func .assign.assignTester.run(
    self : .assign.assignTester,
    args : str[]) : void;
 
+func .assign.assignTester.readFromSubObject(
+   self : .assign.assignTester,
+   a : .assign.A,
+   v : void) : void;
+
+func .assign.assignTester.writeIntoSubObject(
+   self : .assign.assignTester) : void;
+
+func .assign.assignTester.readFromSubSubObject(
+   self : .assign.assignTester,
+   a : .assign.A,
+   wrong : void) : void;
+
+func .assign.assignTester.writeIntoSubSubObject(
+   self : .assign.assignTester) : void;
+
 class .assign.A {
    x : void;
    b : .assign.B;
@@ -21,6 +37,7 @@ class .assign.A {
 func .assign.A.ctor() : .assign.A;
 
 class .assign.B {
+   unused : void;
    x : void;
 }
 

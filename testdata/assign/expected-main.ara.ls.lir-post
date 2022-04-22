@@ -1,17 +1,39 @@
-=== LIR bundle has 1 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 5 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .assign.assignTester.run
 10 <selectSegment> @code/0                   
 20 <enterFunc>     ~rval/0, $self/0, $args/0 ;;; .assign.assignTester.run
-30 <reserveLocal>  $x/8                      ;;; x
-40 mov             $x/0, @7/0                ;;; =
-50 <reserveLocal>  $a/16                     ;;; a
-60 mov             [~a]/0, @7/0              ;;; =
-70 mov             ~x0/0, [~a+8]/0           ;;; fieldaccess: x
-80 mov             ~x0/0, @7/0               ;;; =
-90 <unreserveLocal>$a/16                     
-100<unreserveLocal>$x/8                      
-110<exitFunc>      
+30 <exitFunc>      
+
+----- start stream .assign.assignTester.readFromSubObject
+10 <selectSegment> @code/0                        
+20 <enterFunc>     ~rval0/0, $self0/0, $a/0, $v/0 ;;; .assign.assignTester.readFromSubObject
+30 mov             $v/0, [~a+8]/0                 ;;; =
+40 <exitFunc>      
+
+----- start stream .assign.assignTester.writeIntoSubObject
+10 <selectSegment> @code/0            
+20 <enterFunc>     ~rval1/0, $self1/0 ;;; .assign.assignTester.writeIntoSubObject
+30 <reserveLocal>  $a0/16             ;;; a
+40 mov             [~a+8]/0, @7/0     ;;; =
+50 <unreserveLocal>$a0/16             
+60 <exitFunc>      
+
+----- start stream .assign.assignTester.readFromSubSubObject
+10 <selectSegment> @code/0                             
+20 <enterFunc>     ~rval2/0, $self2/0, $a1/0, $wrong/0 ;;; .assign.assignTester.readFromSubSubObject
+30 mov             ~x/0, [~a+8]/0                      ;;; fieldaccess: owner of x
+40 mov             $wrong/0, [~x+8]/0                  ;;; =
+50 <exitFunc>      
+
+----- start stream .assign.assignTester.writeIntoSubSubObject
+10 <selectSegment> @code/0            
+20 <enterFunc>     ~rval3/0, $self3/0 ;;; .assign.assignTester.writeIntoSubSubObject
+30 <reserveLocal>  $wrong0/16         ;;; wrong
+40 mov             ~x0/0, [~wrong+8]/0;;; fieldaccess: owner of x
+50 mov             [~x0+8]/0, @7/0    ;;; =
+60 <unreserveLocal>$wrong0/16         
+70 <exitFunc>      
 
 === end of LIR bundle dump ===
 

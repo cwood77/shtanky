@@ -3,7 +3,8 @@
                 push, rbx         
                 push, rdi         
                 sub, rsp, 32      
-                mov, rdi, [rcx+8] ; fieldaccess: _vtbl
+                mov, rbx, [rcx+8] ; fieldaccess: owner of _vtbl
+                mov, rdi, [rbx]   ; fieldaccess: owner of printLn
                 mov, rdx, .const0 ; shape:hoist imm from call
                 mov, rbx, rcx     ;       (preserve) [combiner]
                 mov, rcx, [rbx+8] ; shape:hoist addrOf from call
