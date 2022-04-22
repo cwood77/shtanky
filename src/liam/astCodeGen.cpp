@@ -97,22 +97,63 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
       a.getName(),
       cmn::type::gNodeCache->demand(n).getPseudoRefSize());
 
-   if(!a.addrOf)
+   if(!a.addrOf)// || n.flags & cmn::nodeFlags::kAddressableForWrite)
    {
       // I can just deref the existing arg, no need for a mov
       pA->addrOf = true;
-      pA->disp = childType.getOffsetOfField(n.name,m_t);
+      pA->disp = a.disp + childType.getOffsetOfField(n.name,m_t);
       m_b.forNode(n).returnToParent(*pA);
    }
    else
    {
       // my child is already dereffed, so to do it again I must mov
+
+      // but here lies the quandry: if I'm doing a logical _read_, then
+      // I should emit a mov into a temporary for whoever asked for it
+      // but if I'm doing a logical _write_, then I need to provide
+      // an unmolested temporary to who asked for it, and AFTERWARDS
+      // stash it back into storage
+      //
+      //      a:b:x = 7;
+      //
+      //                      =
+      //           faccess(x)    7
+      //       faccess(b)
+      //  varRef(a)
+      //
+      //  "normal" order of codegen is        but what I want is
+      //         7          7                   7
+      //         [rbp]      varRef(a)           [rbp]                  [rbp-16] (bug)
+      //         [rbp+8]    faccess(b)          [rbp+8]                [rbp-16+8]
+      //         t0         faccess(x)          [[rbp+*]]**            [[rbp-16+8]+8] <- mov t0, [rbp-16+8]
+      //         mov t0,7   =                   mov [rbp+8], 7         mov [t0+8], 7
+      //
+      // maybe I don't change anything at all, but have faccess()
+      // always return the real ptr() to the storage... and let
+      // callers deal with making it addressable.
+      //
+      // what would that mean?  I'd need lirArgs that are
+      // double-dreffed?  Triple?  Arbitrary?  Just double.
+      //
+      // this same effect happens with *, and [].  But this is the
+      // less common scenario.  So that should be the one that's
+      // special
+      //
+      // a field access node is always a deref.
+
+      auto *pTmp = new lirArgTemp(
+         m_u.makeUnique(n.name),
+         cmn::type::gNodeCache->demand(n).getPseudoRefSize());
+
       m_b.forNode(n)
          .append(cmn::tgt::kMov)
-            .withArg<lirArgTemp>(m_u.makeUnique(n.name),n)
+            .withArg(pTmp->clone())
             .withArg(a.clone())
-            .withComment(std::string("fieldaccess: ") + n.name)
-            .returnToParent(0);
+            .withComment(std::string("fieldaccess: owner of ") + n.name);
+
+      pTmp->addrOf = true;
+      pTmp->disp = childType.getOffsetOfField(n.name,m_t);
+      m_b.forNode(n).returnToParent(*pTmp);
    }
 }
 
@@ -161,10 +202,12 @@ void astCodeGen::visit(cmn::varRefNode& n)
 
 void astCodeGen::visit(cmn::assignmentNode& n)
 {
+   n.getChildren()[0]->flags |= cmn::nodeFlags::kAddressableForWrite;
+
    n.getChildren()[1]->acceptVisitor(*this);
    n.getChildren()[0]->acceptVisitor(*this);
 
-   auto& i = m_b.forNode(n)
+   m_b.forNode(n)
       .append(cmn::tgt::kMov)
          .inheritArgFromChild(*n.getChildren()[0])
          .inheritArgFromChild(*n.getChildren()[1])

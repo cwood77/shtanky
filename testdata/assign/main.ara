@@ -3,13 +3,28 @@ class assignTester : .sht.cons.program {
 
    override run(args : str[]) : void
    {
-      var x : void;
-      x = 7;
+   }
 
+   private readFromSubObject(a : A, v : void) : void
+   {
+      v = a:b;
+   }
+
+   private writeIntoSubObject() : void
+   {
       var a : A;
-      a:x = 7;
+      a:b = 7;
+   }
 
-      a:b:x = 7;
+   private readFromSubSubObject(a : A, wrong : void) : void
+   {
+      wrong = a:b:x;
+   }
+
+   private writeIntoSubSubObject() : void
+   {
+      var wrong : A;
+      wrong:b:x = 7;
    }
 
 }
@@ -20,5 +35,6 @@ class A {
 }
 
 class B {
+   public unused : void;
    public x : void;
 }
