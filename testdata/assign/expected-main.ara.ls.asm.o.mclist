@@ -1,13 +1,27 @@
 // 2: .assign.assignTester.run: 
-// 3:                           sub, rsp, 8     
+// 3:                           push, rbx         
+rex(48)op(ff)modR/M(f3)
+// 4:                           sub, rsp, 24      
+rex(48)op(83)modR/M(ec)i8(18)
+// 5:                           sub, rsp, 8       
 rex(48)op(83)modR/M(ec)i8(08)
-// 4:                           sub, rsp, 8     
-rex(48)op(83)modR/M(ec)i8(08)
-// 5:                           mov, [rbp-8], 7 ; =
+// 6:                           mov, [rbp+8], 7   ; =
 rex(48)op(c7)d8(45)i32(07-00-00-00)
-// 6:                           add, rsp, 8     
+// 7:                           sub, rsp, 16      
+rex(48)op(83)modR/M(ec)i8(10)
+// 8:                           mov, [rbp-16], 7  ; =
+rex(48)op(c7)d8(45)i32(07-00-00-00)
+// 9:                           mov, rbx, [rbp-8] ; fieldaccess: x
+rex(48)op(8b)modR/M(5d)d8(f8)
+// 10:                           mov, rbx, 7       ; =
+rex(48)op(bb)i64(07-00-00-00,00-00-00-00)
+// 11:                           add, rsp, 16      
+rex(48)op(83)modR/M(c4)i8(10)
+// 12:                           add, rsp, 8       
 rex(48)op(83)modR/M(c4)i8(08)
-// 7:                           add, rsp, 8     
-rex(48)op(83)modR/M(c4)i8(08)
-// 8:                           ret             
+// 13:                           add, rsp, 24      
+rex(48)op(83)modR/M(c4)i8(18)
+// 14:                           pop, rbx          
+rex(48)op(8f)modR/M(c3)
+// 15:                           ret               
 op(c3)

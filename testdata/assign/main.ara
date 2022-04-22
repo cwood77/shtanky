@@ -5,6 +5,20 @@ class assignTester : .sht.cons.program {
    {
       var x : void;
       x = 7;
+
+      var a : A;
+      a:x = 7;
+
+      a:b:x = 7;
    }
 
+}
+
+class A {
+   public x : void;
+   public b : B;
+}
+
+class B {
+   public x : void;
 }

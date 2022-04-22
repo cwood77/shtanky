@@ -5,8 +5,13 @@
 20 <enterFunc>     ~rval/0, $self/0, $args/0 ;;; .assign.assignTester.run
 30 <reserveLocal>  $x/8                      ;;; x
 40 mov             $x/0, @7/0                ;;; =
-50 <unreserveLocal>$x/8                      
-60 <exitFunc>      
+50 <reserveLocal>  $a/16                     ;;; a
+60 mov             [~a]/0, @7/0              ;;; =
+70 mov             ~x0/0, [~a+8]/0           ;;; fieldaccess: x
+80 mov             ~x0/0, @7/0               ;;; =
+90 <unreserveLocal>$a/16                     
+100<unreserveLocal>$x/8                      
+110<exitFunc>      
 
 === end of LIR bundle dump ===
 

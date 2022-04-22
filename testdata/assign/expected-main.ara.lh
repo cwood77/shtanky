@@ -13,4 +13,17 @@ func .assign.assignTester.run(
    self : .assign.assignTester,
    args : str[]) : void;
 
+class .assign.A {
+   x : void;
+   b : .assign.B;
+}
+
+func .assign.A.ctor() : .assign.A;
+
+class .assign.B {
+   x : void;
+}
+
+func .assign.B.ctor() : .assign.B;
+
 ref "..\sht\cons\program.ara.lh";
