@@ -58,7 +58,7 @@ void instrPrefs::handle(lirInstr& i)
       case cmn::tgt::kReserveLocal:
          {
             var& v = m_vTable.demand(*i.getArgs()[0]);
-            v.requireStorage(i,cmn::tgt::kStorageUndecidedStack);
+            v.requireStorage(i.orderNum,cmn::tgt::kStorageUndecidedStack);
             cdwDEBUG("> local %s needs stack, any stack\n",
                //dynamic_cast<lirArgVar*>(i.getArgs()[0])->name.c_str());
                i.getArgs()[0]->getName().c_str());
@@ -84,7 +84,7 @@ void instrPrefs::handle(lirInstr& i)
                   std::vector<size_t> argStorage;
                   cc.getRValAndArgBank(argStorage);
                   var& v = m_vTable.demand(pVar->getName());
-                  v.requireStorage(i,argStorage[0]);
+                  v.requireStorage(i.orderNum,argStorage[0]);
                }
             }
          }
@@ -136,21 +136,21 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
             // going out
             size_t stor = cmn::tgt::makeStackStorage(stackSpace);
             stor = m_vTable.getVirtualStack().reserveVirtStorage(stor);
-            v.requireStorage(i,stor);
+            v.requireStorage(i.orderNum,stor);
             stackSpace -= m_target.getRealSize(v.getSize());
          }
          else
          {
             // coming in
             throw std::runtime_error("unimpled 3");
-            //v.requireStorage(i,cmn::tgt::kStorageStackArg);
+            //v.requireStorage(i.orderNum,cmn::tgt::kStorageStackArg);
             //cdwDEBUG("assigning RSP+%lld to %s\n",shadow + v.getSize(),v.name.c_str());
          }
       }
       else
       {
          // use a register
-         v.requireStorage(i,argStorage[k+offset2]);
+         v.requireStorage(i.orderNum,argStorage[k+offset2]);
          cdwDEBUG("assigning r%lld to %s\n",argStorage[k+offset2],v.name.c_str());
       }
 
@@ -199,7 +199,7 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
             // going out
             size_t stor = cmn::tgt::makeStackStorage(stackSpace);
             stor = m_vTable.getVirtualStack().reserveVirtStorage(stor);
-            v.requireStorage(i,stor);
+            v.requireStorage(i.orderNum,stor);
             stackSpace += m_target.getRealSize(v.getSize());
          }
          else
@@ -211,7 +211,7 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
       else
       {
          // use a register
-         v.requireStorage(i,argStorage[k]);
+         v.requireStorage(i.orderNum,argStorage[k]);
          cdwDEBUG("assigning r%lld to %s\n",argStorage[k],v.name.c_str());
       }
 

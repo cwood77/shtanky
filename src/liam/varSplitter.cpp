@@ -64,7 +64,7 @@ void varSplitter::checkVar(var& v)
 
    // update the table _after_ iterating on it
    for(auto it=m_newInstrs.begin();it!=m_newInstrs.end();++it)
-      v.requireStorage(*it->first,it->second);
+      v.requireStorage(it->first->orderNum,it->second);
    m_newInstrs.clear();
 }
 

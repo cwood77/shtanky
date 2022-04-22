@@ -31,7 +31,7 @@ void asmArgWriter::write(size_t orderNum, lirArg& a)
       m_w[1] << ",";
    m_w[1] << " ";
 
-   size_t stor = m_v.getStorageFor(orderNum,a);
+   size_t stor = m_v.demand(a).getStorageFor(orderNum,a);
    size_t framePtr = cmn::tgt::kStorageStackFramePtr;
 
    if(cmn::tgt::isVStack(stor))

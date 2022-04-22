@@ -87,8 +87,8 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
                (*jit)->refs[mov.orderNum].push_back(&dest);
                (*jit)->refs[mov.orderNum].push_back(&src);
 
-               (*jit)->requireStorage(mov,it->first);
-               (*jit)->requireStorage(mov,altStorage);
+               (*jit)->requireStorage(mov.orderNum,it->first);
+               (*jit)->requireStorage(mov.orderNum,altStorage);
 
                (*jit)->storageDisambiguators[&dest] = altStorage;
                (*jit)->storageDisambiguators[&src] = it->first;
