@@ -1,6 +1,7 @@
+#include "binReader.hpp"
+#include "binWriter.hpp"
 #include "obj-fmt.hpp"
-#include "reader.hpp"
-#include "writer.hpp"
+#include "throw.hpp"
 #include <stdexcept>
 
 namespace cmn {
@@ -46,7 +47,7 @@ void importTable::flatten(iObjWriter& w) const
       {
          w.write<char>("type",static_cast<char>(jit->type));
          w.write("offset",jit->offset);
-         w.write("instrSize",jit->instrSize);
+         w.write("fromOffsetToEndOfInstr",jit->fromOffsetToEndOfInstr);
          w.nextPart();
       }
    }
@@ -66,10 +67,26 @@ void importTable::unflatten(iObjReader& r)
          patch p;
          p.type = static_cast<patch::types>(r.read<char>());
          r.read(p.offset);
-         r.read(p.instrSize);
+         r.read(p.fromOffsetToEndOfInstr);
          list.push_back(p);
       }
    }
+}
+
+const char *obj::kLexConst = "const";
+const char *obj::kLexData  = "data";
+const char *obj::kLexCode  = "code";
+
+size_t obj::convertLexFlag(const std::string& l)
+{
+   if(l == kLexConst)
+      return kSegConst;
+   else if(l == kLexData)
+      return kSegData;
+   else if(l == kLexCode)
+      return kSegCode;
+   else
+      cdwTHROW("unknown segment '%s'",l.c_str());
 }
 
 void obj::flatten(iObjWriter& w) const

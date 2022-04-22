@@ -54,6 +54,7 @@ void projectBuilder::loadFile(const std::string& fileToLoad)
    std::string contents;
    cmn::pathUtil::loadFileContents(fileToLoad,contents);
    lexor l(contents.c_str());
+   l.setFileName(fileToLoad);
    cmn::commonParser p(l);
    auto file = p.parseFile();
    file->fullPath = fileToLoad;

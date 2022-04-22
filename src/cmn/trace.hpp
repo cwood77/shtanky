@@ -5,8 +5,8 @@
 //
 // #ifdef  cdwTraceContext
 // #undef  cdwTraceContext
-// #define cdwTraceContext "main()"
 // #endif
+// #define cdwTraceContext "main()"
 
 #ifndef cdwTraceContext
 #define cdwTraceContext NULL

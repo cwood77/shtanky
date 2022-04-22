@@ -3,14 +3,21 @@
 
 namespace liam {
 
-// assigned each variable without storage a storage spot
-class varAllocator : public availVarPass {
+// "decides" stack for undecided stack allocs
+class stackAllocator {
 public:
-   varAllocator(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t, varFinder& f)
-   : availVarPass(s,v,t,f) {}
+   void run(varTable& v, varFinder& f);
+};
 
-protected:
-   virtual void onInstrWithAvailVar(lirInstr& i);
+// assigned each variable without storage a storage spot
+class varAllocator {
+public:
+   varAllocator(cmn::tgt::iTargetInfo& t) : m_t(t) {}
+
+   void run(varTable& v, varFinder& f);
+
+private:
+   cmn::tgt::iTargetInfo& m_t;
 };
 
 } // namespace liam

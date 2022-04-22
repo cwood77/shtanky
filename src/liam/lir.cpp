@@ -1,34 +1,27 @@
+#include "../cmn/obj-fmt.hpp"
+#include "../cmn/out.hpp"
+#include "../cmn/textTable.hpp"
 #include "../cmn/throw.hpp"
 #include "../cmn/trace.hpp"
 #include "lir.hpp"
+#include <algorithm>
 #include <sstream>
 
 namespace liam {
 
-// when does a temporary become a variable?
-//
-// when it needs storage across instrs
-// varRefs and literals are inlined into their instrs and thus don't qualify
-//
-// a = b + 1
-//
-//   =
-// a    +
-//     b  1 
-//
-// in this example, b, 1, and a are inlined.  But the temporary between + and = needs
-// storage. (this example is a little contrived b/c + is actually an accumulation into b)
-//
-// can you know from any instruction whether it's a temporary or not?
-
-void lirArgVar::dump() const
+lirArg& lirArg::copyFieldsInto(lirArg& noob) const
 {
-   ::printf("v/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
+   noob.disp = disp;
+   noob.addrOf = addrOf;
+   return noob;
 }
 
-void lirArgConst::dump() const
+lirInstr::lirInstr(const cmn::tgt::instrIds id)
+: orderNum(0)
+, instrId(id)
+, m_pPrev(NULL)
+, m_pNext(NULL)
 {
-   ::printf("c/%s/%lld+%d%s",name.c_str(),m_size,disp,addrOf ? "& " : " ");
 }
 
 lirInstr::~lirInstr()
@@ -38,63 +31,32 @@ lirInstr::~lirInstr()
    delete m_pNext;
 }
 
-lirInstr& lirInstr::append(lirInstr*& pPrev, const cmn::tgt::instrIds id, const std::string& comment)
+lirInstr& lirInstr::injectBefore(lirInstr& noob)
 {
-   auto *pNoob = new lirInstr(id);
-
-   if(pPrev)
-   {
-      pPrev->m_pNext = pNoob;
-      pNoob->m_pPrev = pPrev;
-      pNoob->orderNum = pPrev->orderNum + 10;
-   }
-
-   pPrev = pNoob;
-
-   pNoob->comment = comment;
-
-   return *pNoob;
-}
-
-lirInstr& lirInstr::injectBefore(const cmn::tgt::instrIds id, const std::string& comment)
-{
-   auto *pNoob = new lirInstr(id);
-   pNoob->orderNum = orderNum - 1;
-
-   pNoob->m_pPrev = m_pPrev;
+   noob.m_pPrev = m_pPrev;
    if(m_pPrev)
-      m_pPrev->m_pNext = pNoob;
+      m_pPrev->m_pNext = &noob;
 
-   pNoob->m_pNext = this;
-   m_pPrev = pNoob;
+   noob.m_pNext = this;
+   m_pPrev = &noob;
 
-   pNoob->comment = comment;
-
-   return *pNoob;
+   return noob;
 }
 
-lirInstr& lirInstr::search(size_t orderNum)
+lirInstr& lirInstr::injectAfter(lirInstr& noob)
 {
-   lirInstr *pThumb = this;
-   while(true)
-   {
-      if(pThumb->orderNum == orderNum)
-         return *pThumb;
-      pThumb = &pThumb->next();
-   }
-
-   throw std::runtime_error("instr not found!");
-}
-
-void lirInstr::dump()
-{
-   ::printf("%lld INSTR %d   ",orderNum,instrId);
-   for(auto it=m_args.begin();it!=m_args.end();++it)
-      (*it)->dump();
-   ::printf("\n");
-
    if(m_pNext)
-      m_pNext->dump();
+      return m_pNext->injectBefore(noob);
+   else
+      return append(noob);
+}
+
+lirInstr& lirInstr::append(lirInstr& noob)
+{
+   lirInstr& _tail = tail();
+   _tail.m_pNext = &noob;
+   noob.m_pPrev = &_tail;
+   return noob;
 }
 
 lirInstr& lirInstr::head()
@@ -105,222 +67,284 @@ lirInstr& lirInstr::head()
    return *pPtr;
 }
 
-lirInstr::lirInstr(const cmn::tgt::instrIds id)
-: orderNum(10)
-, instrId(id)
-, pInstrFmt(NULL)
-, m_pPrev(NULL)
-, m_pNext(NULL)
+lirInstr& lirInstr::tail()
 {
+   lirInstr *pPtr = this;
+   while(pPtr->m_pNext)
+      pPtr = pPtr->m_pNext;
+   return *pPtr;
 }
 
-/*
-lirVarStorage lirVarStorage::reg(size_t s)
+lirInstr& lirInstr::searchUp(std::function<bool(const lirInstr&)> pred)
 {
-   lirVarStorage x;
-   x.stackOffset = 0;
-   x.targetStorage = s;
-   return x;
-}
-
-lirVarStorage lirVarStorage::stack(int offset)
-{
-   lirVarStorage x;
-   x.stackOffset = offset;
-   x.targetStorage = cmn::tgt::kStorageStackArg; // TODO
-   return x;
-}
-*/
-
-lirVar::lirVar()
-: firstAccess(0)
-, lastAccess(0)
-, numAccesses(0)
-, size(0)
-, global(0)
-{
+   lirInstr *pPtr = this;
+   while(pPtr)
+   {
+      if(pred(*pPtr))
+         return *pPtr;
+      pPtr = pPtr->m_pPrev;
+   }
+   cdwTHROW("searchUp failed to find match");
 }
 
 lirStream::~lirStream()
 {
-   for(auto it=m_temps.begin();it!=m_temps.end();++it)
-      delete it->second;
-   for(auto it=m_nodeOutputs.begin();it!=m_nodeOutputs.end();++it)
-      delete it->second;
+   delete pTail;
 }
 
-void lirStream::dump()
+lirStream& lirStreams::addNewObject(const std::string& name, const std::string& segment)
 {
-   pTail->head().dump();
+   objects.push_back(lirStream());
+   lirStream& last = objects.back();
+   last.name = name;
+   last.segment = segment;
+   return last;
 }
 
-#if 0
-lirArg& lirStream::publishArgOnWire(cmn::node& n, lirInstr& i, lirArg& a)
+void lirFormatter::format(lirStreams& s)
 {
-   auto it = m_wire.find(&n);
-   if(it != m_wire.end())
-      throw std::runtime_error("value already published on wire");
-
-   m_wire[&n].configure(i,a);
-
-   return a;
-}
-
-lirArg& lirStream::takeArgOffWire(cmn::node& n, lirInstr& i)
-{
-   auto it = m_wire.find(&n);
-   if(it == m_wire.end())
-      throw std::runtime_error("no value on wire");
-
-   lirVarWireStorage& stor = m_wire[&n];
-   auto& arg = stor.duplicateAndAddArg(i);
-   m_wire.erase(&n);
-
-   return arg;
-}
-
-lirArg& publishArgByName(cmn::node& n, lirInstr& i, lirArg& a)
-{
-   throw 3.14;
-}
-#endif
-
-lirArg& lirStream::createNamedArg(lirInstr& i, const std::string& name, size_t size)
-{
-   auto *pArg = new lirArgVar(name,size);
-   i.addArg(*pArg);
-
-   auto& var = m_varTable[name];
-   // recoard as var
-   var.id = name;
-   var.firstAccess = i.orderNum;
-   var.lastAccess = i.orderNum;
-   var.size = size;
-   var.global = 1; // TODO
-
-   return *pArg;
-}
-
-lirArg& lirStream::claimArg(cmn::node& n, lirInstr& i)
-{
-   lirArg *pArg = m_nodeOutputs[&n];
-   m_nodeOutputs.erase(&n);
-   if(!pArg)
-      throw std::runtime_error("no arg was published?");
-
-   auto pAsVar = dynamic_cast<lirArgVar*>(pArg);
-   if(pAsVar)
+   m_s.stream() << "=== LIR bundle has " << s.objects.size() << " objects(s) ===   (hint: $=var, ~=temp, @=immediate)" << std::endl;
+   for(auto it=s.objects.begin();it!=s.objects.end();++it)
    {
-      if(m_temps.find(pArg)!=m_temps.end())
+      m_s.stream() << std::endl;
+      m_s.stream() << "----- start stream " << it->name << std::endl;
+      format(*it);
+   }
+   m_s.stream() << std::endl;
+   m_s.stream() << "=== end of LIR bundle dump ===" << std::endl;
+   appendTargetHints();
+}
+
+void lirFormatter::format(lirStream& s)
+{
+   cmn::textTable t;
+   cmn::textTableLineWriter w(t);
+
+   lirInstr *pInstr = &s.pTail->head();
+   while(true)
+   {
+      format(*pInstr,w);
+      w.advanceLine();
+      if(pInstr->isLast())
+         break;
+      pInstr = &pInstr->next();
+   }
+
+   t.compileAndWrite(m_s.stream());
+   m_s.stream() << std::endl;
+}
+
+void lirFormatter::format(lirInstr& i, cmn::textTableLineWriter& t)
+{
+   t[0] << i.orderNum;
+   t[1] << m_t.getProc().getInstr(i.instrId)->name;
+
+   for(auto it=i.getArgs().begin();it!=i.getArgs().end();++it)
+   {
+      if(it != i.getArgs().begin())
+         t[2] << ", ";
+      format(**it,t);
+   }
+
+   if(!i.comment.empty())
+   t[3] << ";;; " << i.comment;
+}
+
+void lirFormatter::format(lirArg& a, cmn::textTableLineWriter& t)
+{
+   const char *pType = "$";
+   if(dynamic_cast<lirArgConst*>(&a))
+      pType = "@";
+   else if(dynamic_cast<lirArgTemp*>(&a))
+      pType = "~";
+
+   if(a.addrOf)
+      t[2] << "[";
+
+   t[2] << pType << a.getName();
+
+   if(a.disp && 0 < a.disp)
+      t[2] << "+" << a.disp;
+   if(a.disp && 0 > a.disp)
+      t[2] << a.disp;
+
+   if(a.addrOf)
+      t[2] << "]";
+
+   t[2] << "/" << a.getSize();
+}
+
+void lirFormatter::appendTargetHints()
+{
+   m_s.stream() << std::endl;
+
+   m_s.stream() << "~~~ some debugging hints for this target ~~~" << std::endl << std::endl;
+
+   {
+      std::vector<size_t> regsORder,regsPassing;
+      m_t.getCallConvention().createRegisterBankInPreferredOrder(regsORder);
+      m_t.getCallConvention().getRValAndArgBank(regsPassing);
+      cmn::textTable regTable;
+      regTable(0,0) << "pref order";
+      regTable(1,0) << "passing order";
+      regTable(2,0) << "saved in Prolog or Call";
+      regTable(3,0) << "as int";
+      size_t i=1;
+      for(auto it=regsORder.begin();it!=regsORder.end();++it,i++)
       {
-         // convert temporary into variable if actually consumed
-         lirInstr *pOrigInstr = m_temps[pArg];
-         m_temps.erase(pArg);
+         regTable(0,i) << m_t.getProc().getRegName(*it);
 
-         std::stringstream tmpName;
-         tmpName << "_tmp" << m_nTemp++;
-         pAsVar->name = tmpName.str();
+         auto ans = std::find(regsPassing.begin(),regsPassing.end(),*it);
+         if(ans != regsPassing.end())
+            regTable(1,i) << std::distance(regsPassing.begin(),ans);
+         else
+            regTable(1,i) << "-";
 
-         auto& var = m_varTable[tmpName.str()];
-         // recoard as var
-         var.id = tmpName.str();
-         var.firstAccess = pOrigInstr->orderNum;
-         var.lastAccess = pOrigInstr->orderNum;
-         var.size = 0; // TODO
+         if(m_t.getCallConvention().requiresPrologEpilogSave(*it))
+            regTable(2,i) << "P";
+         if(m_t.getCallConvention().requiresSubCallSave(*it))
+            regTable(2,i) << "C";
+
+         regTable(3,i) << *it;
       }
+      regTable.compileAndWrite(m_s.stream());
+      m_s.stream() << std::endl << std::endl;
+   }
 
-      // record usage
-      auto it = m_varTable.find(pAsVar->name);
-      if(it!=m_varTable.end())
+   {
+      std::map<size_t,size_t> regs;
+      m_t.getProc().createRegisterMap(regs);
+      cmn::textTable regTable;
+      regTable(0,0) << "reg";
+      size_t i=1;
+      for(auto it=regs.begin();it!=regs.end();++it,i++)
       {
-         it->second.lastAccess = i.orderNum;
-         it->second.numAccesses++;
+         regTable(0,i) << m_t.getProc().getRegName(it->first);
+         regTable(1,i) << it->first;
       }
+      regTable.compileAndWrite(m_s.stream());
+      m_s.stream() << std::endl << std::endl;
    }
 
-   i.addArg(*pArg);
-   return *pArg;
+   m_s.stream() << "cc shadow space = " << m_t.getCallConvention().getShadowSpace()
+      << std::endl;
 }
 
-lirVar& lirStream::getVariableByName(const std::string& name)
-{
-   auto it = m_varTable.find(name);
-   if(it == m_varTable.end())
-      cdwTHROW("variable not found!");
-   return it->second;
-}
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+// NEW LIR API
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
 
-std::vector<lirVar*> lirStream::getVariablesInScope(size_t instrOrderNum)
-{
-   cdwTHROW("unimpled");
-}
-
-void lirStream::lirVarWireStorage::configure(lirInstr& i, lirArg& a)
+lirGenerator::lirGenerator(lirStreams& lir, cmn::tgt::iTargetInfo& t)
+: m_lir(lir), m_t(t), m_pCurrStream(NULL)
 {
 }
 
-lirArg& lirStream::lirVarWireStorage::duplicateAndAddArg(lirInstr& i)
+void lirGenerator::createNewStream(const std::string& segment, const std::string& comment)
 {
-   cdwTHROW("unimpled");
+   m_pCurrStream = &m_lir.addNewObject(comment,segment);
 }
 
-void lirStream::_donate(cmn::node& n, lirArg& a)
+instrBuilder lirGenerator::append(cmn::node& n, cmn::tgt::instrIds id)
 {
-   m_nodeOutputs[&n] = &a;
+   auto *pInstr = new lirInstr(id);
+   if(!m_pCurrStream->pTail)
+      m_pCurrStream->pTail = pInstr;
+   else
+      m_pCurrStream->pTail->append(*pInstr);
+   return instrBuilder(*this,m_t,*pInstr,n);
 }
 
-void lirStream::_createTemporary(cmn::node& n, lirInstr& i, lirArg& a)
+instructionless lirGenerator::noInstr(cmn::node& n)
 {
-   m_nodeOutputs[&n] = &a;
-   m_temps[&a] = &i;
+   return instructionless(*this,n);
 }
 
-void lirStreams::dump()
+void lirGenerator::bindArg(cmn::node& n, lirArg& a)
 {
-   for(auto it=page.begin();it!=page.end();++it)
-   {
-      ::printf("----- %s\n",it->first.c_str());
-      it->second.dump();
-   }
+   // I'm borrowing from an instr, so don't delete these
+   m_nodeTable[&n] = &a;
 }
 
-void lirStreams::onNewPageStarted(const std::string& key)
+void lirGenerator::addArgFromNode(cmn::node& n, lirInstr& i)
 {
-   lirStream& noob = page[key];
-   noob.pTop = this;
-
-   if(page.size() == 1) return;
-
-   size_t last = 0;
-   for(auto it=page.begin();it!=page.end();++it)
-   {
-      if(key == it->first)
-         continue;
-
-      if(last < it->second.pTail->orderNum)
-         last = it->second.pTail->orderNum;
-   }
-
-   last += 20;
-   cdwDEBUG("reassigning new page to order %lld\n",last);
-   noob.pTail->orderNum = last;
+   // because instrs own their args, make a copy
+   i.addArg(m_nodeTable[&n]->clone());
 }
 
-lirInstr& lirStreams::search(size_t orderNum)
+const lirArg& instructionless::borrowArgFromChild(cmn::node& n)
 {
-   for(auto it=page.begin();it!=page.end();++it)
-   {
-      if(orderNum <= it->second.pTail->orderNum)
-      {
-         auto& h = it->second.pTail->head();
-         if(orderNum >= h.orderNum)
-         {
-            return h.search(orderNum);
-         }
-      }
-   }
+   return *m_g.m_nodeTable[&n]; // TODO HACK- method?
+}
 
-   cdwTHROW("can't find orderNum on any page..?");
+instructionless& instructionless::returnToParent(lirArg& a)
+{
+   m_g.bindArg(m_n,a);
+   m_g.m_adoptedOrphans.insert(&a); // TODO HACK- method?
+   return *this;
+}
+
+
+
+
+
+// ******************************************************************************
+// ******************************************************************************
+// ******************************************************************************
+// ******************************************************************************
+// ******************************************************************************
+
+
+lirBuilder::~lirBuilder()
+{
+   for(auto it=m_orphans.begin();it!=m_orphans.end();++it)
+      delete *it;
+}
+
+void lirBuilder::createNewStream(const std::string& name, const std::string& segment)
+{
+   m_pCurrStream = &m_lir.addNewObject(name,segment);
+}
+
+const lirArg& lirBuilder::borrowArgFromChild(cmn::node& n)
+{
+   return *m_cache[&n];
+}
+
+lirBuilder::instrBuilder lirBuilder::nodeScope::append(cmn::tgt::instrIds i)
+{
+   auto *pI = new lirInstr(i);
+   if(m_b.m_pCurrStream->pTail == NULL)
+      m_b.m_pCurrStream->pTail = pI;
+   else
+      m_b.m_pCurrStream->pTail->append(*pI);
+
+   return lirBuilder::instrBuilder(m_b,m_n,*pI);
+}
+
+lirBuilder::nodeScope& lirBuilder::nodeScope::returnToParent(lirArg& a)
+{
+   m_b.adoptArg(m_n,a);
+   return *this;
+}
+
+void lirBuilder::publishArg(cmn::node& n, lirArg& a)
+{
+   m_cache[&n] = &a;
+}
+
+void lirBuilder::adoptArg(cmn::node& n, lirArg& a)
+{
+   publishArg(n,a);
+   m_orphans.insert(&a);
+}
+
+void lirBuilder::addArgFromNode(cmn::node& n, lirInstr& i)
+{
+   i.addArg(m_cache[&n]->clone());
 }
 
 } // namespace liam

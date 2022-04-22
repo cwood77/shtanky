@@ -2,6 +2,7 @@
 #include "global.hpp"
 #include <map>
 #include <typeinfo>
+#include <vector>
 
 // example needs
 // - offsets in field access codegen
@@ -24,7 +25,9 @@ public:
    virtual ~iType() {}
 
    virtual const std::string& getName() const = 0;
-   virtual const size_t getSize() = 0;
+
+   virtual const size_t getRealAllocSize(const tgt::iTargetInfo& t) const = 0;
+   virtual const size_t getPseudoRefSize() const = 0;
 
    template<class T> bool is() const { return _is(typeid(T).name()); }
    template<class T> T& as() { return *reinterpret_cast<T*>(_as(typeid(T).name())); }
@@ -40,11 +43,23 @@ public:
    virtual size_t getOffsetOfField(const std::string& name, const tgt::iTargetInfo& t) const = 0;
 };
 
+class iFunctionType {
+public:
+   virtual iType& getReturnType() = 0;
+   virtual std::vector<iType*> getArgTypes() = 0;
+
+   virtual bool isStatic() const = 0;
+   virtual iType *getClassType() = 0;
+};
+
 class table {
 public:
    ~table();
 
+   // always brings back something: a stub if the type doesn't exist yet
    iType& fetch(const std::string& name);
+
+   // makes sure only one instance of any given type is maintained
    iType& publish(iType *pType);
 
    void dump();
@@ -58,15 +73,26 @@ extern timedGlobal<table> gTable;
 class typeBuilder {
 public:
    static typeBuilder *createString();
+   static typeBuilder *createInt();
    static typeBuilder *createVoid();
    static typeBuilder *createClass(const std::string& name);
    static typeBuilder *createPtr();
    static typeBuilder *open(iType& t);
+   static typeBuilder *createFunction(const std::string& fqn);
 
    ~typeBuilder();
 
    typeBuilder& array();
+
+   // classes
    typeBuilder& addMember(const std::string& name, iType& ty);
+
+   // function/methods
+   typeBuilder& setClassType(iType& ty);
+   typeBuilder& setStatic(bool v = true);
+   typeBuilder& setReturnType(iType& ty);
+   typeBuilder& appendArgType(const std::string& name, iType& ty);
+
    iType& finish();
 
 private:

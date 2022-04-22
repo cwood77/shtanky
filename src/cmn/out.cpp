@@ -1,5 +1,6 @@
 #include "out.hpp"
 #include "pathUtil.hpp"
+#include "trace.hpp"
 #include <fstream>
 
 namespace cmn {
@@ -26,7 +27,7 @@ void outBundle::updateDisk(iFileWriter& f)
 
 iOutStream*& outBundle::_get(const std::string& basePath, const std::string& ext, std::string& key)
 {
-   key = cmn::pathUtil::addExtension(basePath,ext);
+   key = cmn::pathUtil::addExt(basePath,ext);
    return _get(key);
 }
 
@@ -36,18 +37,18 @@ iOutStream*& outBundle::_get(const std::string& key)
    return pStream;
 }
 
-void fileWriter::skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const
+void unconditionalWriter::skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const
 {
-   ::printf("writing %s\n",fullPath.c_str());
+   cdwVERBOSE("writing %s\n",fullPath.c_str());
    std::ofstream file(fullPath.c_str());
    file << newContents;
 }
 
-void testFileWriter::skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const
+void stdoutFileWriter::skipWriteOrDelete(const std::string& fullPath, const std::string& newContents) const
 {
-   ::printf("testFileWriter -----------------\n");
-   ::printf("would have written to file %s\n",fullPath.c_str());
-   ::printf("%s",newContents.c_str());
+   cdwVERBOSE("stdoutFileWriter -----------------\n");
+   cdwVERBOSE("would have written to file %s\n",fullPath.c_str());
+   cdwVERBOSE("%s",newContents.c_str());
 }
 
 } // namespace cmn

@@ -10,6 +10,7 @@ size_t getMatchPattern(argTypes a)
    size_t rVal = 0;
    switch(a)
    {
+      // widen R8 --> ... --> R64
       case argTypes::kR8:
          rVal |= argTypes::kR8;
       case argTypes::kR16:
@@ -20,6 +21,7 @@ size_t getMatchPattern(argTypes a)
          rVal |= argTypes::kR64;
          break;
 
+      // widen I8 --> ... --> I64
       case argTypes::kI8:
          rVal |= argTypes::kI8;
       case argTypes::kI16:
@@ -30,12 +32,13 @@ size_t getMatchPattern(argTypes a)
          rVal |= argTypes::kI64;
          break;
 
+      // no widening
       case argTypes::kArgTypeNone:
       case argTypes::kM8:
       case argTypes::kM16:
       case argTypes::kM32:
       case argTypes::kM64:
-         rVal = a; // no casting
+         rVal = a;
          break;
 
       default:
@@ -70,7 +73,7 @@ const instrFmt& instrInfo::demandFmt(const std::vector<argTypes> a) const
 }
 
 asmArgInfo::asmArgInfo()
-: flags(0), index(0), scale(0), disp(0)
+: flags(0), disp(0)
 {
    data.qwords.v[0] = 0;
 }
@@ -78,7 +81,7 @@ asmArgInfo::asmArgInfo()
 argTypes asmArgInfo::computeArgType()
 {
    if(flags & kLabel)
-      return kI32;
+      return kI32; // assume a rip-rel offset
 
    else if(flags & kImm8)
       return kI8;
@@ -96,7 +99,25 @@ argTypes asmArgInfo::computeArgType()
       return kR64;
 
    else
-      throw std::runtime_error("can't compute arg type in " __FILE__);
+      cdwTHROW("can't compute arg type");
+}
+
+const char *iProcessorInfo::getRegName(size_t r) const
+{
+   switch(r)
+   {
+      case kStorageUnassigned:
+         return "<unassigned>";
+         break;
+      case kStorageImmediate:
+         return "<immediate>";
+         break;
+      case kStorageUndecidedStack:
+         return "<undecided-stack>";
+         break;
+      default:
+         cdwTHROW("unknown reg");
+   }
 }
 
 } // namespace tgt

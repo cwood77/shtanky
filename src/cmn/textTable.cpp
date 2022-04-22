@@ -29,35 +29,25 @@ void textTable::compileAndWrite(std::ostream& stream)
 
 void textTable::compiledCells::compile(const std::map<size_t,std::map<size_t,std::stringstream*> >& cells)
 {
-   for(auto it=cells.begin();it!=cells.end();++it)
+   for(auto row=cells.begin();row!=cells.end();++row)
    {
-      for(auto jit=it->second.begin();jit!=it->second.end();++jit)
+      for(auto cell=row->second.begin();cell!=row->second.end();++cell)
       {
-         auto s = jit->second->str();
-         m_cells[it->first][jit->first] = s;
+         auto s = cell->second->str();
+         m_cells[row->first][cell->first] = s;
 
          auto width = s.length();
-         auto& maxW = m_colWidths[jit->first];
+         auto& maxW = m_colWidths[cell->first];
          if(width > maxW)
             maxW = width + 1; // add one so columns have a 'border'
 
-         if(jit->first > m_lastCol)
-            m_lastCol = jit->first;
+         if(cell->first > m_lastCol)
+            m_lastCol = cell->first;
       }
    }
 }
 
-std::string textTable::compiledCells::indent(size_t firstCol) const
-{
-   std::stringstream indent;
-
-   for(auto it=m_colWidths.begin();it!=m_colWidths.end()&&it->first<firstCol;++it)
-      indent << std::string(it->second,' ');
-
-   return indent.str();
-}
-
-std::string textTable::compiledCells::pad(size_t col, const std::string& text) const
+std::string textTable::compiledCells::leftJustify(size_t col, const std::string& text) const
 {
    if(m_lastCol == col)
       return text;
@@ -77,9 +67,15 @@ void textTable::writer::writeLine(size_t row, const std::map<size_t,std::string>
    for(;m_currRow<row;m_currRow++)
       m_stream << std::endl;
 
-   m_stream << m_cc.indent(cols.begin()->first);
-   for(auto it=cols.begin();it!=cols.end();++it)
-      m_stream << m_cc.pad(it->first,it->second);
+   size_t last = (--(cols.end()))->first;
+   for(size_t i=0;i<=last;i++)
+   {
+      auto it = cols.find(i);
+      if(it != cols.end())
+         m_stream << m_cc.leftJustify(i,it->second);
+      else
+         m_stream << m_cc.leftJustify(i,"");
+   }
 }
 
 } // namespace cmn

@@ -5,10 +5,11 @@
 #include <vector>
 
 namespace cmn { namespace objfmt { class obj; } }
+namespace cmn { namespace objfmt { class patch; } }
 
 namespace shlink {
 
-class objectDirectory;
+class iObjectProvider;
 
 // during the layout operation, keeps track of what is left and what has already been done
 // specifically, layoutProgress asks for only reachable objects (i.e. it prunes)
@@ -36,6 +37,7 @@ public:
 
    unsigned long append(cmn::objfmt::obj& o);
 
+   unsigned char *getHeadPtr() { return &m_bytes[0]; }
    const unsigned char *getHeadPtr() const { return &m_bytes[0]; }
 
 private:
@@ -45,22 +47,33 @@ private:
 
 class layout {
 public:
+   layout() : m_osCallOffset(0) {}
+
    // after all reachable objects are placed, segments are tallied and laid into contiguous
    // space
    void place(cmn::objfmt::obj& o);
    void markDonePlacing();
 
    // fixes-up all patches in the segments to resolve symbols
-   void link(objectDirectory& d);
+   void link(iObjectProvider& d);
 
    // for writing
    const std::map<unsigned long,segmentBlock>& getSegments() const { return m_segments; }
    unsigned long getOsCallOffset() const { return m_osCallOffset; }
 
 private:
-   void link(objectDirectory& d, cmn::objfmt::obj& o);
-   unsigned long calculateTotalOffset(cmn::objfmt::obj& o);
-   void patchDWord(unsigned long addr, unsigned long value);
+   void link(iObjectProvider& d, cmn::objfmt::obj& refer);
+
+   unsigned long totalOffsetOfObj(cmn::objfmt::obj& o);
+   unsigned long totalOffsetOfRIP(cmn::objfmt::obj& o, cmn::objfmt::patch& p);
+   long *laidOutSitePtr(cmn::objfmt::obj& o, cmn::objfmt::patch& p);
+
+   cmn::objfmt::obj& lookupObject(iObjectProvider& d, const std::string& name);
+
+   void patchRipRelDWord(
+      cmn::objfmt::obj& refer,
+      cmn::objfmt::obj& refee,
+      cmn::objfmt::patch& referPatch);
 
    std::map<cmn::objfmt::obj*,unsigned long> m_objPlacements;
    std::map<unsigned long,segmentBlock> m_segments;

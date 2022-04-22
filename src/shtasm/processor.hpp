@@ -1,11 +1,10 @@
 #pragma once
-#include "../cmn/writer.hpp"
+#include "../cmn/binWriter.hpp"
 #include "assembler.hpp"
 #include <memory>
 
 // the processor reads from the lineParser and decides what to do.
-// instructions and directives are outsourced to the assembler.
-// segment directives are handled directly.
+// instructions, data declarations, and segment directives are all handled differently
 
 namespace cmn { namespace objfmt { class obj; } }
 namespace cmn { namespace objfmt { class objFile; } }
@@ -23,6 +22,13 @@ public:
    void process();
 
 private:
+   void processSegmentDirective(const std::vector<std::string>& a);
+   void processDataDecl(const std::string& l, const std::vector<std::string>& a,
+      const std::string& rawLine);
+   void processInstr(const std::string& l, const std::vector<std::string>& a,
+      const std::string& rawLine);
+   unsigned long parseObjFlags(const char *pText);
+
    /* iTableWriter */
    virtual void exportSymbol(const std::string& name);
    virtual void importSymbol(const std::string& name, const cmn::objfmt::patch& p);

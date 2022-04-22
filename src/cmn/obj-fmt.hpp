@@ -14,16 +14,17 @@ namespace objfmt {
 class patch {
 public:
    enum types {
-      kAbs,
+      kAbs, // TODO HACK - I hate absolute patches.  They necessitate a loader.  Can't I get rid of them?
       kRelToNextInstr,
    } type;
    unsigned long offset;
-   unsigned long instrSize;
+   unsigned long fromOffsetToEndOfInstr;
 };
 
 class exportTable {
 public:
    std::map<std::string,unsigned long> toc;
+   // maybe also hints at what to load to fulfill exports?
 
    void flatten(iObjWriter& w) const;
    void unflatten(iObjReader& r);
@@ -39,6 +40,24 @@ public:
 
 class obj {
 public:
+   static const char *kLexConst;
+   static const char *kLexData;
+   static const char *kLexCode;
+
+   enum {
+      kFlagUninit = 1 << 4, // lower short is for user numbering of blocks
+      kFlagZero   = 1 << 5,
+      kFlagConst  = 1 << 6,
+   };
+
+   enum {
+      kSegConst = kFlagConst | 1,
+      kSegData  =              2,
+      kSegCode  =              3,
+   };
+
+   static size_t convertLexFlag(const std::string& l);
+
    obj() : flags(0), blockSize(0) {}
 
    unsigned long flags;

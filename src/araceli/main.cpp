@@ -14,7 +14,6 @@
 #include "metadata.hpp"
 #include "projectBuilder.hpp"
 #include "symbolTable.hpp"
-#include <stdio.h>
 #include <string.h>
 
 using namespace araceli;
@@ -32,7 +31,7 @@ int main(int argc, const char *argv[])
 
    // initial link to discover and load everything
    araceli::nodeLinker().linkGraph(*pPrj);
-   ::printf("graph after linking ----\n");
+   cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // gather metadata
@@ -48,19 +47,19 @@ int main(int argc, const char *argv[])
 
    // subsequent link to update with new target
    araceli::nodeLinker().linkGraph(*pPrj);
-   ::printf("graph after linking ----\n");
+   cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // ---------------- lowering transforms ----------------
 
    // hoist out constants
    { araceli::constHoister v; pPrj->acceptVisitor(v); }
-   ::printf("graph after const hoist ----\n");
+   cdwVERBOSE("graph after const hoist ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // compile-away classes
    { declasser v; pPrj->acceptVisitor(v); }
-   ::printf("graph after transforms ----\n");
+   cdwVERBOSE("graph after transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // -----------------------------------------------------
@@ -70,7 +69,7 @@ int main(int argc, const char *argv[])
    codeGen v(out);
    pPrj->acceptVisitor(v);
    { batGen v(out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
-   cmn::fileWriter wr;
+   cmn::unconditionalWriter wr;
    out.updateDisk(wr);
 
    return 0;

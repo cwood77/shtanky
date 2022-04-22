@@ -1,6 +1,6 @@
 #pragma once
+#include "../cmn/binWriter.hpp"
 #include "../cmn/lexor.hpp"
-#include "../cmn/writer.hpp"
 #include <fstream>
 #include <string>
 #include <vector>
@@ -13,17 +13,22 @@ class iTableWriter;
 
 class lineLexor {
 public:
-   explicit lineLexor(const std::string& file) : m_file(file.c_str()), m_line(0) {}
+   explicit lineLexor(const std::string& file)
+   : m_fileName(file), m_file(file.c_str()), m_line(0) {}
 
    bool isDone() const { return !m_file.good(); }
    std::string getNextLine();
    size_t getLineNumber() const { return m_line; }
+   const std::string& getFileName() const { return m_fileName; }
 
 private:
+   const std::string m_fileName;
    std::ifstream m_file;
    unsigned long m_line;
 };
 
+// simple parser for lines of the form
+// [<label>:] <word0>, <word1>, <word2...> [; <comment>]
 class lineParser {
 public:
    explicit lineParser(lineLexor& l) : m_l(l) {}
@@ -34,7 +39,7 @@ public:
 private:
    void eatWhitespace(const char*& pThumb);
    std::string trimTrailingWhitespace(const std::string& w);
-   bool shaveOffPart(const char*& pThumb, char delim, std::string& part);
+   bool shaveOffPart(const char*& pThumb, char delim, std::string& leftpart);
 
    lineLexor& m_l;
 };
@@ -88,7 +93,7 @@ public:
 // <memExpr> ::== <typeExpr> '[' <reg> <scale> ']'
 // <typeExpr> ::== '(' <typeDesig> ')'
 //               | e
-// <scale> ::== '+' <number> '*' <reg> <disp>
+// <scale> ::== '+' <number> '*' <reg> <disp>     currently no index or scale is supported
 //            | '+' <reg> <disp>
 //            | e
 // <disp> ::== '+' <number>
@@ -160,7 +165,7 @@ private:
 //
 class dataParser {
 public:
-   dataParser(dataLexor& l, iTableWriter& tw) : m_l(l), m_tw(tw), m_rep(1) {}
+   dataParser(dataLexor& l, iTableWriter& tw) : m_l(l), m_tw(tw) {}
 
    void parse(cmn::iObjWriter& w);
 
@@ -176,7 +181,6 @@ private:
 
    dataLexor& m_l;
    iTableWriter& m_tw;
-   __int64 m_rep;
 };
 
 } // namespace shtasm

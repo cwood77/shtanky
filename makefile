@@ -52,6 +52,8 @@ dirs:
 
 CMN_SRC = \
 	src/cmn/ast.cpp \
+	src/cmn/binReader.cpp \
+	src/cmn/binWriter.cpp \
 	src/cmn/cmdline.cpp \
 	src/cmn/commonLexor.cpp \
 	src/cmn/commonParser.cpp \
@@ -63,7 +65,6 @@ CMN_SRC = \
 	src/cmn/obj-fmt.cpp \
 	src/cmn/out.cpp \
 	src/cmn/pathUtil.cpp \
-	src/cmn/reader.cpp \
 	src/cmn/symbolTable.cpp \
 	src/cmn/target.cpp \
 	src/cmn/textTable.cpp \
@@ -71,7 +72,7 @@ CMN_SRC = \
 	src/cmn/trace.cpp \
 	src/cmn/type.cpp \
 	src/cmn/typeVisitor.cpp \
-	src/cmn/writer.cpp \
+	src/cmn/unique.cpp \
 
 CMN_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(CMN_SRC)))
 
@@ -168,6 +169,7 @@ LIAM_SRC = \
 	src/liam/instrPrefs.cpp \
 	src/liam/lexor.cpp \
 	src/liam/lir.cpp \
+	src/liam/lirXfrm.cpp \
 	src/liam/main.cpp \
 	src/liam/projectBuilder.cpp \
 	src/liam/varAlloc.cpp \

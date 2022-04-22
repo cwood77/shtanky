@@ -6,4 +6,6 @@ func .test.test.run(
 }
 
 const .const0 : str = "hello world!";
+func ._osCall(code : str, payload : str) : void;
+
 ref "test.ara.lh";

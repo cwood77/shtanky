@@ -39,7 +39,7 @@ void fileRefCollector::onLink(cmn::linkBase& l)
    if(f.fullPath.empty())
       throw std::runtime_error("missing file path during collect");
 
-   auto adjF = cmn::pathUtil::addExtension(f.fullPath,cmn::pathUtil::kExtLiamHeader);
+   auto adjF = cmn::pathUtil::addExt(f.fullPath,cmn::pathUtil::kExtLiamHeader);
    m_pRefs->addRef(adjF);
 
    cdwDEBUG("adding ref from %s to '%s' b/c of link w/ ref '%s' to node '%s'\n",
@@ -86,9 +86,9 @@ void codeGen::visit(cmn::fileNode& n)
    cmn::fileNode *pPrev = m_pActiveFile;
    m_pActiveFile = &n;
    m_hRefs.destPath
-      = cmn::pathUtil::addExtension(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader);
+      = cmn::pathUtil::addExt(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader);
    m_sRefs.destPath
-      = cmn::pathUtil::addExtension(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource);
+      = cmn::pathUtil::addExt(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource);
 
    hNodeVisitor::visit(n);
 
@@ -98,6 +98,12 @@ void codeGen::visit(cmn::fileNode& n)
    }
    {
       auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
+
+      // TODO should this be stuffed into the target?
+      // emit a prototype for .osCall into every ls file
+      source << "func ._osCall(code : str, payload : str) : void;" << std::endl;
+      source << std::endl;
+
       m_sRefs.addRef(m_hRefs.destPath); // always include your own header :)
       m_sRefs.flush(source);
    }
@@ -239,7 +245,7 @@ void codeGen::visit(cmn::boolLiteralNode& n)
 void codeGen::visit(cmn::intLiteralNode& n)
 {
    auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-   source << n.value;
+   source << n.lexeme;
    visitChildren(n);
 }
 
@@ -341,6 +347,10 @@ void codeGen::generateClassMethod(cmn::classNode& n, cmn::methodNode& m, cmn::ou
 
 void codeGen::generateMethodSignature(cmn::methodNode& m, cmn::outStream& s)
 {
+   if(m.attributes.size())
+      for(auto it=m.attributes.begin();it!=m.attributes.end();++it)
+         s.stream() << cmn::indent(s) << "[" << *it << "]" << std::endl;
+
    s.stream()
       << cmn::indent(s) << "func " << cmn::fullyQualifiedName::build(m,m.baseImpl.ref) << "("
       << std::endl
@@ -359,10 +369,10 @@ void codeGen::generateMethodSignature(cmn::methodNode& m, cmn::outStream& s)
    for(auto jit=args.begin();jit!=args.end();++jit)
    {
       if(!firstParam)
-         s.stream() << "," << std::endl << cmn::indent(s);
+         s.stream() << "," << std::endl;
 
       s.stream()
-         << (*jit)->name << " : ";
+         << cmn::indent(s) << (*jit)->name << " : ";
       ;
       liamTypeWriter tyW(s.stream(),m_refColl);
       (*jit)->demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);

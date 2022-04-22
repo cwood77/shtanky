@@ -32,7 +32,7 @@ void availVarPass::run()
 
 void availVarPass::onInstr(lirInstr& i)
 {
-   m_f.onNewInstr();
+   m_f.resetUsedStorage();
 
    for(auto it=m_v.all().begin();it!=m_v.all().end();++it)
    {

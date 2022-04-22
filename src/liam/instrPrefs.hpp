@@ -9,12 +9,11 @@ namespace liam {
 class lirArg;
 class lirInstr;
 class lirStream;
-class lirStreams;
 class varTable;
 
 class instrPrefs {
 public:
-   static size_t publishRequirements(lirStreams& s, varTable& v, const cmn::tgt::iTargetInfo& target);
+   static size_t publishRequirements(lirStream& s, varTable& v, const cmn::tgt::iTargetInfo& target);
 
 private:
    instrPrefs(varTable& v, const cmn::tgt::iTargetInfo& target)
@@ -23,6 +22,7 @@ private:
    void handle(lirStream& s);
    void handle(lirInstr& i);
    void handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, bool outOrIn, bool isInvoke);
+   void handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, bool isLeaving);
 
    lirStream *m_pCurrStream;
    varTable& m_vTable;

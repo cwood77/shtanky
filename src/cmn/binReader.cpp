@@ -1,8 +1,7 @@
-#include "../cmn/fmt.hpp"
-#include "reader.hpp"
+#include "binReader.hpp"
+#include "throw.hpp"
 #include <cstring>
 #include <memory>
-#include <stdexcept>
 
 namespace cmn {
 
@@ -11,7 +10,7 @@ binFileReader::binFileReader(const std::string& filePath)
 {
    m_pFile = ::fopen(filePath.c_str(),"rb");
    if(!m_pFile)
-      throw std::runtime_error(cmn::fmt("can't open file '%s' for reading",filePath.c_str()));
+      cdwTHROW("can't open file '%s' for reading",filePath.c_str());
 }
 
 binFileReader::~binFileReader()
@@ -39,7 +38,7 @@ void binFileReader::readThumbprint(const char *pExpected)
    ::memset(thumbprint,0,l+1);
    read(thumbprint,l);
    if(std::string(pExpected) != thumbprint)
-      throw std::runtime_error("bad file format");
+      cdwTHROW("bad file format - failed thumprint");
 }
 
 } // namespace cmn

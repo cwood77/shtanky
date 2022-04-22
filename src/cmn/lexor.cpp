@@ -36,11 +36,6 @@ void stringLiteralReader::advance(lexorState& s) const
    s.token = lexorBase::kStringLiteral;
 }
 
-void intLiteralReader::collectTerminators(std::string& t) const
-{
-   //t += "0123456789";
-}
-
 void intLiteralReader::advance(lexorState& s) const
 {
    if(!::isdigit(s.pThumb[0]))
@@ -169,7 +164,7 @@ void lexorBase::demandOneOf(const char *f, unsigned long l, size_t n, ...)
    msg << "expected ";
 
    bool first = true;
-   bool bad = true;
+   bool demandFailed = true;
    va_list ap;
    va_start(ap,n);
    for(size_t i=0;i<n;i++)
@@ -183,11 +178,11 @@ void lexorBase::demandOneOf(const char *f, unsigned long l, size_t n, ...)
       first = false;
 
       if(getToken() == static_cast<size_t>(t))
-         bad = false;
+         demandFailed = false;
    }
    va_end(ap);
 
-   if(!bad)
+   if(!demandFailed)
       return;
 
    msg << " but got " << getTokenName();
@@ -196,8 +191,11 @@ void lexorBase::demandOneOf(const char *f, unsigned long l, size_t n, ...)
 
 void lexorBase::error(const char *f, unsigned long l, const std::string& msg)
 {
+   std::string fileAppendage = " in " + m_state.fileName;
+
    std::stringstream fullMsg;
    fullMsg << msg << " near line " << m_state.lineNumber
+      << ( m_state.fileName.empty() ? "" : fileAppendage )
       << " {in parser " << f << ", " << l << "}";
 
    throw std::runtime_error(fullMsg.str());

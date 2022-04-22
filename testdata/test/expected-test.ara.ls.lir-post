@@ -1,0 +1,30 @@
+=== LIR bundle has 2 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+
+----- start stream .test.test.run
+10 <selectSegment> @code/0                         
+20 <enterFunc>     ~rval/0, $self/0, $args/0       ;;; .test.test.run
+30 <precall>       @totalStackSize/32              
+40 mov             ~_vtbl/0, [~self+8]/0           ;;; fieldaccess: _vtbl
+50 mov             ~/0, @.const0/0                 ;;; shape:hoist imm from call
+60 mov             ~0/0, [~self+8]/0               ;;; shape:hoist addrOf from call
+70 call            ~rval0/0, [~_vtbl]/0, ~0/0, ~/0 ;;; (call ptr)
+80 <postcall>      @totalStackSize/32              
+90 <exitFunc>      
+
+----- start stream .const0
+10 <selectSegment>   @const/0                
+20 <globalConstData> @"hello world!" <b> 0/0 ;;; .const0
+
+=== end of LIR bundle dump ===
+
+~~~ some debugging hints for this target ~~~
+
+pref order              rbx rdi rsi r12 r13 r14 r15 rax rcx rdx r8 r9 r10 r11
+passing order           -   -   -   -   -   -   -   0   1   2   3  4  -   -
+saved in Prolog or Call P   P   P   P   P   P   P   C   C   C   C  C  C   C
+as int                  24  30  29  35  36  37  38  23  25  26  31 32 33  34
+
+reg rax rbx rcx rdx rbp rsp rsi rdi r8 r9 r10 r11 r12 r13 r14 r15
+    23  24  25  26  27  28  29  30  31 32 33  34  35  36  37  38
+
+cc shadow space = 32

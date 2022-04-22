@@ -7,6 +7,8 @@
 namespace cmn {
 namespace tgt {
 
+// these are bitfields because instructions can support multiple (e.g. an arg that's R/M32)
+// types are widened for matching (e.g. '7' will match I8, I16, I32, ...)
 enum argTypes {
    kArgTypeNone = 1 <<  1,
 
@@ -73,7 +75,6 @@ enum genericStorageClasses {
    kStorageUnassigned,
    kStorageStackPtr,
    kStorageStackFramePtr,
-   //kStoragePatch,
    kStorageImmediate,
    kStorageUndecidedStack,
    _kStorageFirstReg  = 23,
@@ -83,16 +84,14 @@ enum genericStorageClasses {
 
 inline bool isStackStorage(size_t s) { return s & _kStackFlag; }
 inline int getStackDisp(size_t s) { return (short)(s & 0xFFFF); }
-inline size_t makeStackStorage(int disp) { return ((size_t)disp) | _kStackFlag; }
+inline size_t makeStackStorage(int disp) { return (disp & 0xFFFF) | _kStackFlag; }
 
 inline bool isVStack(size_t s) { return s & _kVirtStackFlag; }
 inline int getVStackInt(size_t s) { return (short)(s & 0xFFFF); }
-inline size_t makeVStack(int disp) { return ((size_t)disp) | _kVirtStackFlag; }
+inline size_t makeVStack(int disp) { return (disp & 0xFFFF) | _kVirtStackFlag; }
 
 class instrInfo {
 public:
-   instrInfo(const char *name, const instrFmt *f) : name(name), fmts(f) {}
-
    const char *name;
    const instrFmt *fmts;
 
@@ -104,14 +103,13 @@ public:
 class asmArgInfo {
 public:
    enum argFlags {
-      kPtr      = 1<< 1,
-      kLabel    = 1<< 2,
-      kImm8     = 1<< 3,
-      kImm16    = 1<< 4,
-      kImm32    = 1<< 5,
-      kImm64    = 1<< 6,
-      kReg64    = 1<< 7,
-      kMem64    = 1<< 8,
+      kLabel    = 1<< 1,
+      kImm8     = 1<< 2,
+      kImm16    = 1<< 3,
+      kImm32    = 1<< 4,
+      kImm64    = 1<< 5,
+      kReg64    = 1<< 6,
+      kMem64    = 1<< 7,
    };
 
    asmArgInfo();
@@ -134,8 +132,8 @@ public:
    } data;
 
    std::string label;
-   __int64 index;
-   __int64 scale;
+   //__int64 index;
+   //__int64 scale;
    __int64 disp;
 
    argTypes computeArgType();
@@ -148,11 +146,12 @@ public:
    virtual size_t getShadowSpace() const = 0;
    //virtual size_t getRegisterHome(size_t r) const = 0;
 
+   // return the total stack size given args sizes in v
    virtual size_t getArgumentStackSpace(std::vector<size_t>& v) const = 0;
    virtual void getRValAndArgBank(std::vector<size_t>& v) const = 0;
 
    virtual bool requiresPrologEpilogSave(size_t r) const = 0;
-   virtual bool requiresSubCallSave(size_t r) const = 0;
+   virtual bool requiresSubCallSave(size_t r) const = 0; // TODO HACK - not used... yet
 
    virtual void createRegisterBankInPreferredOrder(std::vector<size_t>& v) const = 0;
 };
@@ -165,7 +164,7 @@ public:
 class iProcessorInfo {
 public:
    virtual void createRegisterMap(std::map<size_t,size_t>& m) const = 0;
-   virtual const char *getRegName(size_t r) const = 0;
+   virtual const char *getRegName(size_t r) const;
    virtual const instrInfo *getInstr(instrIds i) const = 0;
 };
 

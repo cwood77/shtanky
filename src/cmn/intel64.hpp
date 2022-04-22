@@ -5,8 +5,6 @@ namespace cmn {
 namespace tgt {
 namespace i64 {
 
-   // these are flags to support trash, reqs
-
 // all regs support 64, 32, 16, 8 bits
 enum {
    // supports TWO 8 bit (high byte unsupported by shtanky currently)
@@ -32,8 +30,6 @@ enum {
    kReg15,
 };
 
-                  //RSP+8 = RCX
-
 } // namespace i64
 
 class x8664Processor : public tgt::iProcessorInfo {
@@ -45,8 +41,8 @@ public:
 
 class w64CallingConvention : public tgt::iCallingConvention {
 public:
-   virtual bool stackArgsPushRToL() const;
-   virtual size_t getShadowSpace() const;
+   virtual bool stackArgsPushRToL() const { return true; }
+   virtual size_t getShadowSpace() const { return 32; }
    virtual size_t getArgumentStackSpace(std::vector<size_t>& v) const;
    virtual void getRValAndArgBank(std::vector<size_t>& v) const;
    virtual bool requiresPrologEpilogSave(size_t r) const;

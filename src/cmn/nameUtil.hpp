@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+// in araceli/liam, names are '.' delimited.
+
 namespace cmn {
 
 class nameUtil {

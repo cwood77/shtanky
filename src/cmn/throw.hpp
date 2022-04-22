@@ -9,7 +9,7 @@ class thrower {
 public:
    thrower(const char *file, unsigned long line) : m_f(file), m_l(line) {}
 
-   std::runtime_error create(const std::string& msg);
+   std::runtime_error create(const std::string& msg, ...);
 
 private:
    const char *m_f;

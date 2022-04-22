@@ -1,9 +1,7 @@
-#include "../cmn/fmt.hpp"
 #include "../cmn/lexor.hpp"
 #include "../cmn/intel64.hpp"
 #include "i64asm.hpp"
 #include "throw.hpp"
-#include <stdexcept>
 
 namespace cmn {
 namespace tgt {
@@ -89,7 +87,7 @@ const genInfo *getGenInfo() { return kGenInfo; }
 void modRm::encodeRegArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte)
 {
    if(ai.flags != asmArgInfo::kReg64)
-      cdwTHROW(cmn::fmt("don't know how to encode argument type %lld",ai.flags));
+      cdwTHROW("don't know how to encode argument type %lld",ai.flags);
 
    size_t storage = ai.data.qwords.v[0];
 
@@ -165,7 +163,7 @@ void modRm::encodeOpcodeArg(unsigned char opcode, unsigned char& rex, unsigned c
 
 void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize)
 {
-   if(ai.flags == (asmArgInfo::kMem64 | asmArgInfo::kPtr | asmArgInfo::kReg64))
+   if(ai.flags == (asmArgInfo::kMem64 | asmArgInfo::kReg64))
       encodeModRmArg_MemDisp(ai,rex,modRmByte,dispSize);
    else if(ai.flags == asmArgInfo::kReg64)
    {
@@ -173,7 +171,7 @@ void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned ch
       dispSize = 0;
    }
    else
-      cdwTHROW(cmn::fmt("don't know how to encode argument type %lld",ai.flags));
+      cdwTHROW("don't know how to encode argument type %lld",ai.flags);
 }
 
 void modRm::encodeModRmArg_MemDisp(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize)
@@ -410,7 +408,6 @@ unsigned char *argFmtBytes::computeTotalByteStream()
          m_totalByteStream.push_back(*pThumb | m_opcodeMask);
       }
       else if(*pThumb == genInfo::kCodeOffset32 ||
-              //*pThumb == genInfo::kArg1Imm8 ||
               *pThumb == genInfo::kArg2Imm8 ||
               *pThumb == genInfo::kArg2Imm64)
       {
@@ -433,7 +430,7 @@ unsigned char *argFmtBytes::computeTotalByteStream()
          argsInserted = true;
       }
       else
-         throw std::runtime_error(cmn::fmt("don't know byte %d",(int)*pThumb));
+         cdwTHROW("don't know byte %d",(int)*pThumb);
    }
 
    if(!argsInserted)

@@ -1,7 +1,7 @@
+#include "../cmn/binWriter.hpp"
 #include "../cmn/cmdline.hpp"
 #include "../cmn/pathUtil.hpp"
 #include "../cmn/trace.hpp"
-#include "../cmn/writer.hpp"
 #include "formatter.hpp"
 #include "layout.hpp"
 #include "objdir.hpp"
@@ -13,6 +13,7 @@ int main(int argc, const char *argv[])
    cmn::cmdLine cl(argc,argv);
    std::string outFile = cl.getArg(".\\testdata\\test\\test.ara.ls.asm.o.app");
 
+   // load all object files indicated on command-line
    objectDirectory oDir;
    for(size_t i=0;;i++)
    {
@@ -23,36 +24,36 @@ int main(int argc, const char *argv[])
       oDir.loadObjectFile(path);
    }
 
+   // layout objects by segment, only including referenced objects
    layout l;
    {
+      objectProviderRecorder oDirWrapper(oDir);
       layoutProgress lProg;
-      lProg.seedRequiredObject(".test.test.run");
-      lProg.seedRequiredObject(".sht.cons.stdout.printLn");
+      lProg.seedRequiredObject(".test.test.run"); // TODO HACK should be entrypoint
+      lProg.seedRequiredObject(".sht.cons.stdout.printLn"); // TODO HACK keep this lame-o hacks until linker is totally working (i.e. no symbols are pruned inadvertently)
 
       while(!lProg.isDone())
       {
          auto name = lProg.getUnplacedObjectName();
-         auto& o = oDir.demand(name);
+         auto& o = oDirWrapper.demand(name);
 
          l.place(o);
          lProg.markObjectPlaced(o);
       }
 
       l.markDonePlacing();
+
+      oDir.determinePruneList(oDirWrapper.demanded);
    }
 
+   // link objects together
    l.link(oDir);
 
+   // write
    {
       cdwVERBOSE("writing...\n");
       cmn::compositeObjWriter w;
-      w.sink(
-         *new cmn::retailObjWriter(
-            *new cmn::binFileWriter(outFile)));
-      w.sink(
-         *new cmn::listingObjWriter(
-            *new cmn::binFileWriter(cmn::pathUtil::addExtension(outFile,cmn::pathUtil::kExtList))));
-
+      w.sinkNewFileWithListing(outFile);
       formatter(w).write(l);
       cdwVERBOSE("done writing\n");
    }

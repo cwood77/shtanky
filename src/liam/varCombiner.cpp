@@ -30,8 +30,8 @@ void varCombiner::onInstr(lirInstr& i)
 
 void varCombiner::onInstrStorage(lirInstr& i, var& v, size_t storage)
 {
-   availVarPass::onInstrStorage(i,v,storage);
    m_clients[storage].insert(&v);
+   availVarPass::onInstrStorage(i,v,storage);
 }
 
 void varCombiner::onInstrWithAvailVar(lirInstr& i)
@@ -79,25 +79,20 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
 
             // emit a move to implement this
             {
-               auto& mov = i.injectBefore(
-                  cmn::tgt::kMov,
-                  cmn::fmt("      (preserve) [combiner]"));
+               auto& mov = i.injectBefore(*new lirInstr(cmn::tgt::kMov));
+               mov.comment =  cmn::fmt("      (preserve) [combiner]");
                auto& dest = mov.addArg<lirArgVar>(":combDest",0);
                auto& src = mov.addArg<lirArgVar>(":combSrc",0);
 
                (*jit)->refs[mov.orderNum].push_back(&dest);
                (*jit)->refs[mov.orderNum].push_back(&src);
 
-               (*jit)->requireStorage(mov,it->first);
-               (*jit)->requireStorage(mov,altStorage);
+               (*jit)->requireStorage(mov.orderNum,it->first);
+               (*jit)->requireStorage(mov.orderNum,altStorage);
 
                (*jit)->storageDisambiguators[&dest] = altStorage;
                (*jit)->storageDisambiguators[&src] = it->first;
             }
-
-
-            cdwDEBUG("      new LIR graph:\n");
-            i.head().dump();
          }
 
          // restart algorithm

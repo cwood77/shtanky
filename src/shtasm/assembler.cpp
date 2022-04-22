@@ -1,5 +1,5 @@
+#include "../cmn/binWriter.hpp"
 #include "../cmn/fmt.hpp"
-#include "../cmn/writer.hpp"
 #include "assembler.hpp"
 #include <stdexcept>
 
@@ -99,7 +99,7 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
          cmn::objfmt::patch p;
          p.type = cmn::objfmt::patch::kRelToNextInstr;
          p.offset = it->first;
-         p.instrSize = nextInstr - it->first;
+         p.fromOffsetToEndOfInstr = nextInstr - it->first;
          m_tw.importSymbol(it->second,p);
       }
    }

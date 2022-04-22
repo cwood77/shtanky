@@ -31,7 +31,7 @@ void asmArgWriter::write(size_t orderNum, lirArg& a)
       m_w[1] << ",";
    m_w[1] << " ";
 
-   size_t stor = m_v.getStorageFor(orderNum,a);
+   size_t stor = m_v.demand(a).getStorageFor(orderNum,a);
    size_t framePtr = cmn::tgt::kStorageStackFramePtr;
 
    if(cmn::tgt::isVStack(stor))
@@ -54,7 +54,7 @@ void asmArgWriter::write(size_t orderNum, lirArg& a)
    else
    {
       if(stor == cmn::tgt::kStorageImmediate)
-         m_w[1] << dynamic_cast<lirArgConst&>(a).name;
+         m_w[1] << a.getName();
       else
          m_w[1] << m_t.getProc().getRegName(stor);
       writeDispIf(a);
@@ -100,7 +100,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
    {
       case cmn::tgt::kSelectSegment:
          {
-            m_w[0] << ".seg " << dynamic_cast<lirArgConst*>(i.getArgs()[0])->name;
+            m_w[0] << ".seg " << i.getArgs()[0]->getName();
             m_w.advanceLine();
          }
          break;
@@ -157,7 +157,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
             m_w[1]
                << "sub, "
                << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
-               << m_t.getRealSize(i.getArgs()[0]->getSize());
+               << i.getArgs()[0]->getSize(); // this size is already real
             m_w.advanceLine();
          }
          break;
@@ -166,7 +166,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
             m_w[1]
                << "add, "
                << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
-               << m_t.getRealSize(i.getArgs()[0]->getSize());
+               << i.getArgs()[0]->getSize(); // this size is already real
             m_w.advanceLine();
          }
          break;
@@ -174,7 +174,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
          {
             m_w[0] << i.comment << ":";
             m_w.advanceLine();
-            m_w[0] << ".data, " << dynamic_cast<lirArgConst*>(i.getArgs()[0])->name;
+            m_w[0] << ".data, " << i.getArgs()[0]->getName();
             m_w.advanceLine();
          }
          break;

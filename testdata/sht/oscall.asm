@@ -1,2 +1,2 @@
-.seg 1
+.seg code
 ._osCall:

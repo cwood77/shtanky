@@ -1,26 +1,27 @@
+#include "../cmn/binWriter.hpp"
 #include "../cmn/cmdline.hpp"
 #include "../cmn/i64asm.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/obj-fmt.hpp"
 #include "../cmn/pathUtil.hpp"
-#include "../cmn/trace.hpp"
-#include "../cmn/writer.hpp"
 #include "frontend.hpp"
 #include "processor.hpp"
 
+using namespace shtasm;
+
 int main(int argc, const char *argv[])
 {
-   using namespace shtasm;
-
    cmn::cmdLine cl(argc,argv);
-   std::string input = cl.getArg(".\\testdata\\test\\test.ara.ls.asm");
+   std::string inputPath = cl.getArg(".\\testdata\\test\\test.ara.ls.asm");
 
-   cmn::binFileWriter listingFile(
-      cmn::pathUtil::addExtension(input,cmn::pathUtil::kExtObj_Then_McList));
-   cmn::binFileWriter odaListingFile(
-      cmn::pathUtil::addExtension(input,cmn::pathUtil::kExtObj_Then_McOdaList));
+   std::string oPath = cmn::pathUtil::addExt(inputPath,cmn::pathUtil::kExtObj);
+   std::string mcListPath = cmn::pathUtil::addExt(oPath,cmn::pathUtil::kExtMcList);
+   std::string odaListPath = cmn::pathUtil::addExt(oPath,cmn::pathUtil::kExtMcOdaList);
 
-   lineLexor l(input);
+   cmn::binFileWriter listingFile(mcListPath);
+   cmn::binFileWriter odaListingFile(odaListPath);
+
+   lineLexor l(inputPath);
    lineParser p(l);
    cmn::tgt::w64EmuTargetInfo t;
    cmn::objfmt::objFile o;
@@ -31,12 +32,7 @@ int main(int argc, const char *argv[])
 
    {
       cmn::compositeObjWriter w;
-      w.sink(
-         *new cmn::retailObjWriter(
-            *new cmn::binFileWriter(cmn::pathUtil::addExtension(input,cmn::pathUtil::kExtObj))));
-      w.sink(
-         *new cmn::listingObjWriter(
-            *new cmn::binFileWriter(cmn::pathUtil::addExtension(input,cmn::pathUtil::kExtObj_Then_List))));
+      w.sinkNewFileWithListing(oPath);
       o.flatten(w);
    }
 

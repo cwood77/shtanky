@@ -66,24 +66,30 @@ static const instrFmt retFmts[] = {
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
 };
 
-// TODO why don't some of these have names?
-//      to avoid shtasm allowing them as input?
 static const instrInfo kInstrs[] = {
-   { "",                  NULL     }, // sel segment
+   { "<selectSegment>",   NULL     },
    { "<enterFunc>",       NULL     },
    { "<exitFunc>",        NULL     },
+
    { "<reserveLocal>",    NULL     },
    { "<unreserveLocal>",  NULL     },
-   { "",                  NULL     }, // global const data
+
+   { "<globalConstData>", NULL     },
+
    { "push",              (const instrFmt*)&pushFmts },
    { "pop",               (const instrFmt*)&popFmts },
+
    { "sub",               (const instrFmt*)&subFmts },
    { "add",               (const instrFmt*)&addFmts },
+
    { "mov",               (const instrFmt*)&movFmts },
+
    { "<precall>",         NULL     },
    { "call",              (const instrFmt*)&callFmts },
    { "<postcall>",        NULL     },
+
    { "ret",               (const instrFmt*)&retFmts },
+
    { "system",            NULL     },
 };
 
@@ -114,20 +120,6 @@ const char *x8664Processor::getRegName(size_t r) const
 {
    switch(r)
    {
-      case kStorageUnassigned:
-         return "<unassigned>";
-         break;
-         /*
-      case kStoragePatch:
-         return "<patch>";
-         break;
-         */
-      case kStorageImmediate:
-         return "<immediate>";
-         break;
-      case kStorageUndecidedStack:
-         return "<undecided-stack>";
-         break;
       case i64::kRegA:
          return "rax";
          break;
@@ -179,23 +171,13 @@ const char *x8664Processor::getRegName(size_t r) const
          return "r15";
          break;
       default:
-         cdwTHROW("unknown reg");
+         return iProcessorInfo::getRegName(r);
    }
 }
 
 const instrInfo *x8664Processor::getInstr(instrIds i) const
 {
    return kInstrs+i;
-}
-
-bool w64CallingConvention::stackArgsPushRToL() const
-{
-   return true;
-}
-
-size_t w64CallingConvention::getShadowSpace() const
-{
-   return 32;
 }
 
 size_t w64CallingConvention::getArgumentStackSpace(std::vector<size_t>& v) const

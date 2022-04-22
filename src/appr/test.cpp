@@ -21,7 +21,7 @@ shlinkTest& shlinkTest::test()
       .withVariable(m_outFile)
       .because("linked app");
 
-   auto listFile = cmn::pathUtil::addExtension(m_outFile,"list");
+   auto listFile = cmn::pathUtil::addExt(m_outFile,cmn::pathUtil::kExtList);
    m_stream.appendNew<compareInstr>()
       .withControl(cmn::pathUtil::addPrefixToFilePart(listFile,"expected-"))
       .withVariable(listFile)
@@ -61,8 +61,8 @@ araceliTest& araceliTest::wholeApp()
 
 araceliTest& araceliTest::expectLiamOf(const std::string& path)
 {
-   auto header = cmn::pathUtil::addExtension(path,cmn::pathUtil::kExtLiamHeader);
-   auto source = cmn::pathUtil::addExtension(path,cmn::pathUtil::kExtLiamSource);
+   auto header = cmn::pathUtil::addExt(path,cmn::pathUtil::kExtLiamHeader);
+   auto source = cmn::pathUtil::addExt(path,cmn::pathUtil::kExtLiamSource);
 
    m_stream.appendNew<compareInstr>()
       .withControl(cmn::pathUtil::addPrefixToFilePart(header,"expected-"))
@@ -88,12 +88,22 @@ liamTest::liamTest(instrStream& s, const std::string& file)
       .withArg(file)
       .thenCheckReturnValue("liam compile");
 
-   auto asmFile = cmn::pathUtil::addExtension(file,"asm");
+   auto asmFile = cmn::pathUtil::addExt(file,cmn::pathUtil::kExtAsm);
+   auto lirFile = cmn::pathUtil::addExt(file,cmn::pathUtil::kExtLir);
+   auto lirPostFile = cmn::pathUtil::addExt(file,cmn::pathUtil::kExtLirPost);
 
    s.appendNew<compareInstr>()
       .withControl(cmn::pathUtil::addPrefixToFilePart(asmFile,"expected-"))
       .withVariable(asmFile)
       .because("generated assembly");
+   s.appendNew<compareInstr>()
+      .withControl(cmn::pathUtil::addPrefixToFilePart(lirFile,"expected-"))
+      .withVariable(lirFile)
+      .because("LIR early dump");
+   s.appendNew<compareInstr>()
+      .withControl(cmn::pathUtil::addPrefixToFilePart(lirPostFile,"expected-"))
+      .withVariable(lirPostFile)
+      .because("LIR late dump");
 
    recordFileForNextStage(asmFile);
 }
@@ -111,9 +121,9 @@ shtasmTest::shtasmTest(instrStream& s, const std::string& file)
       .withArg(file)
       .thenCheckReturnValue("shtasm assemble");
 
-   auto oFile = cmn::pathUtil::addExtension(file,"o");
-   auto mcListFile = cmn::pathUtil::addExtension(file,"o.mclist");
-   auto oListFile = cmn::pathUtil::addExtension(file,"o.list");
+   auto oFile = cmn::pathUtil::addExt(file,cmn::pathUtil::kExtObj);
+   auto mcListFile = cmn::pathUtil::addExt(oFile,cmn::pathUtil::kExtMcList);
+   auto oListFile = cmn::pathUtil::addExt(oFile,cmn::pathUtil::kExtList);
 
    s.appendNew<compareInstr>()
       .withControl(cmn::pathUtil::addPrefixToFilePart(oFile,"expected-"))

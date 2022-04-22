@@ -19,7 +19,8 @@ private:
 
 class staticallySizedType : public typeBase {
 public:
-   virtual const size_t getSize() { return m_size; }
+   virtual const size_t getRealAllocSize(const tgt::iTargetInfo& t) const;
+   virtual const size_t getPseudoRefSize() const { return m_size; }
 
 protected:
    staticallySizedType(const std::string& name, size_t s) : typeBase(name), m_size(s) {}
@@ -33,6 +34,11 @@ private:
 class stringType : public staticallySizedType {
 public:
    stringType() : staticallySizedType("string",0) {}
+};
+
+class intType : public staticallySizedType {
+public:
+   intType() : staticallySizedType("int",0) {}
 };
 
 class voidType : public staticallySizedType {
@@ -62,7 +68,8 @@ class userClassType : public typeBase, public iStructType {
 public:
    explicit userClassType(const std::string& name) : typeBase(name) {}
 
-   virtual const size_t getSize() { return 0; }
+   virtual const size_t getRealAllocSize(const tgt::iTargetInfo& t) const;
+   virtual const size_t getPseudoRefSize() const { return 0; }
    virtual bool _is(const std::string& name) const;
    virtual void *_as(const std::string& name);
    virtual iType& getField(const std::string& name);
@@ -75,6 +82,33 @@ private:
    std::map<std::string,iType*> m_members;
 };
 
+// ----------------------- function type -----------------------
+
+class functionType : public staticallySizedType, public iFunctionType {
+public:
+   explicit functionType(const std::string& name)
+   : staticallySizedType(name,0), m_pClass(NULL), m_static(false), m_pRType(NULL) {}
+
+   virtual bool _is(const std::string& name) const;
+   virtual void *_as(const std::string& name);
+   virtual iType& getReturnType() { return *m_pRType; }
+   virtual std::vector<iType*> getArgTypes() { return m_argTypes; }
+   virtual bool isStatic() const { return m_static; }
+   virtual iType *getClassType() { return m_pClass; }
+
+   void setClassType(iType& ty) { m_pClass = &ty; }
+   void setStatic(bool v = true) { m_static = v; }
+   void setReturnType(iType& ty) { m_pRType = &ty; }
+   void appendArgType(const std::string& name, iType& ty);
+
+private:
+   iType *m_pClass;
+   bool m_static;
+   iType *m_pRType;
+   std::vector<std::string> m_argNames;
+   std::vector<iType*> m_argTypes;
+};
+
 // ----------------------- misc types -----------------------
 
 class stubTypeWrapper : public iType {
@@ -83,7 +117,10 @@ public:
    ~stubTypeWrapper() { delete pReal; }
 
    virtual const std::string& getName() const { return m_name; }
-   virtual const size_t getSize() { return demandReal().getSize(); }
+   virtual const size_t getRealAllocSize(const tgt::iTargetInfo& t) const
+   { return demandReal().getRealAllocSize(t); }
+   virtual const size_t getPseudoRefSize() const
+   { return demandReal().getPseudoRefSize(); }
    virtual bool _is(const std::string& name) const { return demandReal()._is(name); }
    virtual void *_as(const std::string& name) { return demandReal()._as(name); }
 

@@ -1,20 +1,16 @@
 #pragma once
 #include "../cmn/target.hpp"
+#include "../cmn/type.hpp"
+#include <functional>
+#include <list>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
-// backend compile
-// - number instrs
-// - determine var lifetime (using numbers)
-// - each var solicits requirements from clients
-// - create a register bank from the target
-// - step over each instruction
-//   - for each living variable, choose a slot
-// - select an overload for each instruction
-// - write
-
 namespace cmn { class node; }
+namespace cmn { class outStream; }
+namespace cmn { class textTableLineWriter; }
 
 namespace liam {
 
@@ -22,47 +18,55 @@ class lirStreams;
 
 class lirArg {
 public:
-   lirArg() : disp(0), addrOf(false) {}
    virtual ~lirArg() {}
 
-   virtual size_t getSize() const = 0;
-   virtual void dump() const = 0;
+   const std::string& getName() const { return m_name; }
+   // sizes here are typically pseudo, but some instrs differ
+   size_t getSize() const { return m_size; }
+   virtual lirArg& clone() const = 0;
 
    int disp;
    bool addrOf;
+
+protected:
+   lirArg(const std::string& name, size_t size)
+   : disp(0), addrOf(false), m_name(name), m_size(size) {}
+
+   template<class T>
+   T& _clone() const
+   {
+      T& dup = *new T(m_name,m_size);
+      copyFieldsInto(dup);
+      return dup;
+   }
+
+   virtual lirArg& copyFieldsInto(lirArg& noob) const;
+
+private:
+   const std::string m_name;
+   const size_t m_size;
 };
 
 class lirArgVar : public lirArg {
 public:
-   lirArgVar(const std::string& name, size_t size) : name(name), m_size(size) {}
-
-   std::string name;
-
-   virtual size_t getSize() const { return m_size; }
-   virtual void dump() const;
-
-private:
-   const size_t m_size;
+   lirArgVar(const std::string& name, size_t size) : lirArg(name,size) {}
+   virtual lirArg& clone() const { return _clone<lirArgVar>(); }
 };
-
 class lirArgConst : public lirArg {
 public:
-   lirArgConst(const std::string& name, size_t size) : name(name), m_size(size) {}
-
-   std::string name;
-
-   virtual size_t getSize() const { return m_size; }
-   virtual void dump() const;
-
-private:
-   const size_t m_size;
+   lirArgConst(const std::string& name, size_t size) : lirArg(name,size) {}
+   virtual lirArg& clone() const { return _clone<lirArgConst>(); }
+};
+class lirArgTemp : public lirArg {
+public:
+   lirArgTemp(const std::string& name, size_t size) : lirArg(name,size) {}
+   virtual lirArg& clone() const { return _clone<lirArgTemp>(); }
 };
 
 class lirInstr {
 public:
+   explicit lirInstr(const cmn::tgt::instrIds id);
    virtual ~lirInstr();
-
-   static lirInstr& append(lirInstr*& pPrev, const cmn::tgt::instrIds id, const std::string& comment);
 
    template<class T>
    T& addArg(const std::string& n, size_t z)
@@ -71,143 +75,239 @@ public:
       addArg(*pArg);
       return *pArg;
    }
-
    lirArg& addArg(lirArg& a) { m_args.push_back(&a); return a; }
 
-   lirInstr& injectBefore(const cmn::tgt::instrIds id, const std::string& comment);
-
-   void dump();
-
-   size_t orderNum;
-
-   const cmn::tgt::instrIds instrId;
-   const cmn::tgt::instrFmt *pInstrFmt;
-
-   std::string comment;
+   lirInstr& injectBefore(lirInstr& noob);
+   lirInstr& injectAfter(lirInstr& noob);
+   lirInstr& append(lirInstr& noob);
 
    bool isLast() const { return m_pNext == NULL; }
    lirInstr& next() { return *m_pNext; }
    lirInstr& head();
-   lirInstr& search(size_t orderNum);
+   lirInstr& tail();
+   lirInstr& searchUp(std::function<bool(const lirInstr&)> pred);
 
+   size_t orderNum;
+   const cmn::tgt::instrIds instrId;
+   std::string comment;
    std::vector<lirArg*>& getArgs() { return m_args; }
 
 private:
-   explicit lirInstr(const cmn::tgt::instrIds id);
-
    lirInstr *m_pPrev;
    lirInstr *m_pNext;
    std::vector<lirArg*> m_args;
 };
 
-class lirVarStorage {
-public:
-   static lirVarStorage reg(size_t s);
-   static lirVarStorage stack(int offset);
-
-   int stackOffset;
-   size_t targetStorage;
-};
-
-class lirVar {
-public:
-   lirVar();
-
-   std::string id;
-   size_t firstAccess;
-   size_t lastAccess;
-   size_t numAccesses;
-   size_t size;
-
-   size_t global;
-
-   std::map<size_t,lirVarStorage> storage;
-};
-
 class lirStream {
 public:
-   lirStream() : pTail(NULL), pTop(NULL), m_nTemp(0) {}
+   lirStream() : pTail(NULL) {}
    ~lirStream();
 
-   void dump();
+   std::string name;
 
    lirInstr *pTail;
-   lirStreams *pTop;
-
-   // -------------------------- new APIs
-
-#if 0
-   lirArg& publishArgOnWire(cmn::node& n, lirInstr& i, lirArg& a);
-   lirArg& takeArgOffWire(cmn::node& n, lirInstr& i);
-
-   lirArg& publishArgByName(cmn::node& n, lirInstr& i, lirArg& a);
-   lirArg& takeArgByName(cmn::node& n, lirInstr& i);
-#endif
-
-   // -------------------------- old APIs
-
-   // append a new arg to i
-   // add to variable table under name with i's #
-   lirArg& createNamedArg(/*cmn::node& n,*/ lirInstr& i, const std::string& name, size_t size);
-   //lirArg& findNamedArg(cmn::node& n, const std::string& name);
-
-   // put a on wire; a belongs to caller
-   //
-   // donations are inlined into callers, and are never variables
-   template<class T>
-   void donate(cmn::node& n, const std::string& value, size_t size)
-   { _donate(n,*new T(value,size)); }
-
-   // put a on wire; a belongs to caller (or is destroyed)
-   template<class T>
-   void createTemporary(cmn::node& n, lirInstr& i, const std::string& value, size_t size)
-   { _createTemporary(n,i,*new T(value,size)); }
-
-   // take arg off wire, attach to i
-   // if a is a temp, create a variable for it
-   // update variable for usage
-   lirArg& claimArg(cmn::node& n, lirInstr& i);
-
-   lirVar& getVariableByName(const std::string& name);
-   std::vector<lirVar*> getVariablesInScope(size_t instrOrderNum); // unused
-
-private:
-   class lirVarWireStorage {
-   public:
-      lirVarWireStorage() : pInstr(NULL), pArg(NULL) {}
-
-      void configure(lirInstr& i, lirArg& a);
-
-      lirArg& duplicateAndAddArg(lirInstr& i);
-
-      lirInstr *pInstr;
-      lirArg *pArg;
-   };
-
-   void _donate(cmn::node& n, lirArg& a);
-   void _createTemporary(cmn::node& n, lirInstr& i, lirArg& a);
-
-   std::map<cmn::node*,lirVarWireStorage> m_wire;
-
-   size_t m_nTemp;
-   std::map<lirArg*,lirInstr*> m_temps;
-   std::map<cmn::node*,lirArg*> m_nodeOutputs;
-   std::map<std::string,lirVar> m_varTable;
+   std::string segment;
 };
 
 class lirStreams {
 public:
-   void dump();
+   lirStream& addNewObject(const std::string& name, const std::string& segment);
 
-   // after the first instr on a page is added,
-   // pick a good initial order num that doesn't
-   // overlap
-   // ... so don't write to multiple pages at once!
-   void onNewPageStarted(const std::string& key);
+   std::list<lirStream> objects;
+};
 
-   lirInstr& search(size_t orderNum);
+class lirFormatter {
+public:
+   lirFormatter(cmn::outStream& s, cmn::tgt::iTargetInfo& t) : m_s(s), m_t(t) {}
 
-   std::map<std::string,lirStream> page;
+   void format(lirStreams& s);
+
+private:
+   void format(lirStream& s);
+   void format(lirInstr& i, cmn::textTableLineWriter& t);
+   void format(lirArg& a, cmn::textTableLineWriter& t);
+   void appendTargetHints();
+
+   cmn::outStream& m_s;
+   cmn::tgt::iTargetInfo& m_t;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+// NEW LIR API
+//
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+class instrBuilder;
+class instructionless;
+
+// maybe instead it's
+//
+// m_lGen
+//    .forNode(n)              // returns 'instructionless' API
+//    .append(cmn::tgt::kCall) // returns instr API
+//    .addArg()                // returns arg
+//
+// you can re-run forNode() to add more
+
+class lirGenerator { // lirBuilder?
+public:
+   lirGenerator(lirStreams& lir, cmn::tgt::iTargetInfo& t);
+
+   // ditch this?
+   void createNewStream(const std::string& segment, const std::string& comment);
+
+   instrBuilder append(cmn::node& n, cmn::tgt::instrIds id);
+
+   instructionless noInstr(cmn::node& n);
+
+private:
+   void bindArg(cmn::node& n, lirArg& a);
+   void addArgFromNode(cmn::node& n, lirInstr& i);
+
+   lirStreams& m_lir;
+   cmn::tgt::iTargetInfo& m_t;
+   lirStream *m_pCurrStream;
+   std::set<std::string> m_nameTable;
+   std::map<cmn::node*,lirArg*> m_nodeTable;
+   std::set<lirArg*> m_adoptedOrphans; // TODO delete these
+
+friend class instrBuilder;
+friend class instructionless;
+};
+
+class instrBuilder {
+public:
+   instrBuilder(lirGenerator& g, cmn::tgt::iTargetInfo& t, lirInstr& i, cmn::node& n)
+   : m_g(g), m_t(t), m_i(i), m_n(n) {}
+
+   instrBuilder& withArg(lirArg& a)
+   {
+      m_i.addArg(a);
+      return *this;
+   }
+
+   template<class T>
+   instrBuilder& withArg(const std::string& name, size_t s)
+   {
+      m_i.addArg<T>(name,s);
+      return *this;
+   }
+
+   template<class T>
+   instrBuilder& withArg(const std::string& name, cmn::node& n)
+   {
+      auto nSize = cmn::type::gNodeCache->demand(n).getPseudoRefSize();
+      m_i.addArg<T>(name,nSize);
+      return *this;
+   }
+
+   instrBuilder& inheritArgFromChild(cmn::node& n) //?method name follows a different pattern
+   { m_g.addArgFromNode(n,m_i); return *this; }
+
+   instrBuilder& withComment(const std::string& c)
+   { m_i.comment = c; return *this; }
+
+   instrBuilder& returnToParent(size_t nArg)
+   { m_g.bindArg(m_n,*m_i.getArgs()[nArg]); return *this; }
+
+private:
+   lirGenerator& m_g;
+   cmn::tgt::iTargetInfo& m_t;
+   lirInstr& m_i;
+   cmn::node& m_n;
+};
+
+class instructionless {
+public:
+   instructionless(lirGenerator& g, cmn::node& n) : m_g(g), m_n(n) {}
+
+   const lirArg& borrowArgFromChild(cmn::node& n);
+
+   instructionless& returnToParent(lirArg& a);
+
+private:
+   lirGenerator& m_g;
+   cmn::node& m_n;
+};
+
+class lirBuilder {
+public:
+   class nodeScope;
+   class instrBuilder;
+
+   lirBuilder(lirStreams& lir, cmn::tgt::iTargetInfo& t)
+   : m_lir(lir), m_t(t), m_pCurrStream(NULL) {}
+
+   ~lirBuilder();
+
+   void createNewStream(const std::string& name, const std::string& segment);
+
+   nodeScope forNode(cmn::node& n) { return nodeScope(*this,n); }
+
+   const lirArg& borrowArgFromChild(cmn::node& n);
+
+   class nodeScope {
+   public:
+      nodeScope(lirBuilder& b, cmn::node& n) : m_b(b), m_n(n) {}
+
+      instrBuilder append(cmn::tgt::instrIds i);
+
+      nodeScope& returnToParent(lirArg& a);
+
+   private:
+      lirBuilder& m_b;
+      cmn::node& m_n;
+   };
+
+   class instrBuilder {
+   public:
+      instrBuilder(lirBuilder& b, cmn::node& n, lirInstr& i) : m_b(b), m_n(n), m_i(i) {}
+
+      instrBuilder& withComment(const std::string& c)
+      { m_i.comment = c; return *this; }
+
+      instrBuilder& withArg(lirArg& a) { m_i.addArg(a); return *this; }
+
+      template<class T>
+      instrBuilder& withArg(const std::string& name, size_t s)
+      {
+         m_i.addArg<T>(name,s);
+         return *this;
+      }
+
+      template<class T>
+      instrBuilder& withArg(const std::string& name, cmn::node& n)
+      {
+         auto nSize = cmn::type::gNodeCache->demand(n).getPseudoRefSize();
+         m_i.addArg<T>(name,nSize);
+         return *this;
+      }
+
+      instrBuilder& inheritArgFromChild(cmn::node& n)
+      { m_b.addArgFromNode(n,m_i); return *this; }
+
+      instrBuilder& returnToParent(size_t nArg)
+      { m_b.publishArg(m_n,*m_i.getArgs()[nArg]); return *this; }
+
+   private:
+      lirBuilder& m_b;
+      cmn::node& m_n;
+      lirInstr& m_i;
+   };
+
+private:
+   void publishArg(cmn::node& n, lirArg& a);
+   void adoptArg(cmn::node& n, lirArg& a);
+   void addArgFromNode(cmn::node& n, lirInstr& i);
+
+   lirStreams& m_lir;
+   cmn::tgt::iTargetInfo& m_t;
+   lirStream *m_pCurrStream;
+   std::map<cmn::node*,lirArg*> m_cache;
+   std::set<lirArg*> m_orphans;
 };
 
 } // namespace liam

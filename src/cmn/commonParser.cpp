@@ -4,17 +4,8 @@
 
 namespace cmn {
 
-parserBase::parserBase(lexorBase& l)
-: m_nFac(l)
-{
-}
-
-} // namespace cmn
-
-namespace cmn {
-
 commonParser::commonParser(commonLexor& l)
-: parserBase(l)
+: m_nFac(l)
 , m_l(l)
 {
 }
@@ -465,7 +456,7 @@ void commonParser::parseRValue(node& owner, node *pExprRoot)
    else if(m_l.getToken() == commonLexor::kIntLiteral)
    {
       auto& l = m_nFac.appendNewChild<intLiteralNode>(owner);
-      l.value = m_l.getLexeme();
+      l.lexeme = m_l.getLexeme();
       m_l.advance();
    }
    else

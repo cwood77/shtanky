@@ -1,5 +1,5 @@
 #include "ast.hpp"
-#include <stdio.h>
+#include "trace.hpp"
 
 namespace cmn {
 
@@ -85,7 +85,7 @@ void classNode::computeLineage(std::list<classNode*>& l)
 
 void diagVisitor::visit(araceliProjectNode& n)
 {
-   ::printf("%sproject; target=%s\n",
+   cdwDEBUG("%sproject; target=%s\n",
       getIndent().c_str(),
       n.targetType.c_str());
 
@@ -95,10 +95,9 @@ void diagVisitor::visit(araceliProjectNode& n)
 
 void diagVisitor::visit(liamProjectNode& n)
 {
-   ::printf("%sproject; path=%s; #search=%lld; #included=%lld\n",
+   cdwDEBUG("%sproject; path=%s; #included=%lld\n",
       getIndent().c_str(),
       n.sourceFullPath.c_str(),
-      n.searchPaths.size(),
       n.loadedPaths.size());
 
    autoIndent _a(*this);
@@ -107,7 +106,7 @@ void diagVisitor::visit(liamProjectNode& n)
 
 void diagVisitor::visit(scopeNode& n)
 {
-   ::printf("%sscope; path=%s; name=%s; inProject=%d; loaded=%d\n",
+   cdwDEBUG("%sscope; path=%s; name=%s; inProject=%d; loaded=%d\n",
       getIndent().c_str(),
       n.path.c_str(),
       n.scopeName.c_str(),
@@ -120,7 +119,7 @@ void diagVisitor::visit(scopeNode& n)
 
 void diagVisitor::visit(fileNode& n)
 {
-   ::printf("%sfile path:%s\n",
+   cdwDEBUG("%sfile path:%s\n",
       getIndent().c_str(),
       n.fullPath.c_str());
 
@@ -130,7 +129,7 @@ void diagVisitor::visit(fileNode& n)
 
 void diagVisitor::visit(fileRefNode& n)
 {
-   ::printf("%sfileRef path:%s\n",
+   cdwDEBUG("%sfileRef path:%s\n",
       getIndent().c_str(),
       n.ref.c_str());
 
@@ -140,7 +139,7 @@ void diagVisitor::visit(fileRefNode& n)
 
 void diagVisitor::visit(classNode& n)
 {
-   ::printf("%sclass; name=%s; #bases=%lld\n",
+   cdwDEBUG("%sclass; name=%s; #bases=%lld\n",
       getIndent().c_str(),
       n.name.c_str(),
       n.baseClasses.size());
@@ -151,7 +150,7 @@ void diagVisitor::visit(classNode& n)
 
 void diagVisitor::visit(memberNode& n)
 {
-   ::printf("%smember; name=%s\n",
+   cdwDEBUG("%smember; name=%s\n",
       getIndent().c_str(),
       n.name.c_str());
 
@@ -161,7 +160,7 @@ void diagVisitor::visit(memberNode& n)
 
 void diagVisitor::visit(methodNode& n)
 {
-   ::printf("%smethod; baseLinked?=%d\n",
+   cdwDEBUG("%smethod; baseLinked?=%d\n",
       getIndent().c_str(),
       n.baseImpl.getRefee() ? 1 : 0);
 
@@ -170,7 +169,7 @@ void diagVisitor::visit(methodNode& n)
 
 void diagVisitor::visit(fieldNode& n)
 {
-   ::printf("%sfield\n",
+   cdwDEBUG("%sfield\n",
       getIndent().c_str());
 
    hNodeVisitor::visit(n);
@@ -178,7 +177,7 @@ void diagVisitor::visit(fieldNode& n)
 
 void diagVisitor::visit(constNode& n)
 {
-   ::printf("%sconst; name=%s\n",
+   cdwDEBUG("%sconst; name=%s\n",
       getIndent().c_str(),
       n.name.c_str());
 
@@ -188,7 +187,7 @@ void diagVisitor::visit(constNode& n)
 
 void diagVisitor::visit(funcNode& n)
 {
-   ::printf("%sfunc; name=%s\n",
+   cdwDEBUG("%sfunc; name=%s\n",
       getIndent().c_str(),
       n.name.c_str());
 
@@ -198,7 +197,7 @@ void diagVisitor::visit(funcNode& n)
 
 void diagVisitor::visit(argNode& n)
 {
-   ::printf("%sarg; name=%s\n",
+   cdwDEBUG("%sarg; name=%s\n",
       getIndent().c_str(),
       n.name.c_str());
 
@@ -208,7 +207,7 @@ void diagVisitor::visit(argNode& n)
 
 void diagVisitor::visit(strTypeNode& n)
 {
-   ::printf("%sstrType\n",
+   cdwDEBUG("%sstrType\n",
       getIndent().c_str());
 
    autoIndent _a(*this);
@@ -217,7 +216,7 @@ void diagVisitor::visit(strTypeNode& n)
 
 void diagVisitor::visit(arrayTypeNode& n)
 {
-   ::printf("%sarrayType\n",
+   cdwDEBUG("%sarrayType\n",
       getIndent().c_str());
 
    autoIndent _a(*this);
@@ -226,7 +225,7 @@ void diagVisitor::visit(arrayTypeNode& n)
 
 void diagVisitor::visit(voidTypeNode& n)
 {
-   ::printf("%svoidType\n",
+   cdwDEBUG("%svoidType\n",
       getIndent().c_str());
 
    autoIndent _a(*this);
@@ -235,7 +234,7 @@ void diagVisitor::visit(voidTypeNode& n)
 
 void diagVisitor::visit(userTypeNode& n)
 {
-   ::printf("%suserType name=%s linked?=%d\n",
+   cdwDEBUG("%suserType name=%s linked?=%d\n",
       getIndent().c_str(),
       n.pDef.ref.c_str(),
       n.pDef.getRefee() ? 1 : 0);
@@ -250,7 +249,7 @@ void diagVisitor::visit(ptrTypeNode& n)
 
 void diagVisitor::visit(sequenceNode& n)
 {
-   ::printf("%ssequence\n",
+   cdwDEBUG("%ssequence\n",
       getIndent().c_str());
 
    autoIndent _a(*this);
@@ -259,7 +258,7 @@ void diagVisitor::visit(sequenceNode& n)
 
 void diagVisitor::visit(invokeNode& n)
 {
-   ::printf("%sinvoke; name=%s; protoLinked?=%d\n",
+   cdwDEBUG("%sinvoke; name=%s; protoLinked?=%d\n",
       getIndent().c_str(),
       n.proto.ref.c_str(),
       n.proto.getRefee() ? 1 : 0);
@@ -270,7 +269,7 @@ void diagVisitor::visit(invokeNode& n)
 
 void diagVisitor::visit(invokeFuncPtrNode& n)
 {
-   ::printf("%sinvoke func ptr\n",
+   cdwDEBUG("%sinvoke func ptr\n",
       getIndent().c_str());
 
    autoIndent _a(*this);
@@ -279,7 +278,7 @@ void diagVisitor::visit(invokeFuncPtrNode& n)
 
 void diagVisitor::visit(fieldAccessNode& n)
 {
-   ::printf("%sfield access; name=%s\n",
+   cdwDEBUG("%sfield access; name=%s\n",
       getIndent().c_str(),
       n.name.c_str());
 
@@ -289,7 +288,7 @@ void diagVisitor::visit(fieldAccessNode& n)
 
 void diagVisitor::visit(callNode& n)
 {
-   ::printf("%scall; name=%s\n",
+   cdwDEBUG("%scall; name=%s\n",
       getIndent().c_str(),
       n.name.c_str());
 
@@ -299,7 +298,7 @@ void diagVisitor::visit(callNode& n)
 
 void diagVisitor::visit(localDeclNode& n)
 {
-   ::printf("%slocalDeclNode; name=%s\n",
+   cdwDEBUG("%slocalDeclNode; name=%s\n",
       getIndent().c_str(),
       n.name.c_str());
 
@@ -309,7 +308,7 @@ void diagVisitor::visit(localDeclNode& n)
 
 void diagVisitor::visit(varRefNode& n)
 {
-   ::printf("%svarRef; name=%s; linked?=%d\n",
+   cdwDEBUG("%svarRef; name=%s; linked?=%d\n",
       getIndent().c_str(),
       n.pDef.ref.c_str(),
       n.pDef.getRefee() ? 1 : 0);
@@ -320,7 +319,7 @@ void diagVisitor::visit(varRefNode& n)
 
 void diagVisitor::visit(assignmentNode& n)
 {
-   ::printf("%sassignment\n",
+   cdwDEBUG("%sassignment\n",
       getIndent().c_str());
 
    autoIndent _a(*this);
@@ -329,7 +328,7 @@ void diagVisitor::visit(assignmentNode& n)
 
 void diagVisitor::visit(bopNode& n)
 {
-   ::printf("%sbop %s\n",
+   cdwDEBUG("%sbop %s\n",
       getIndent().c_str(),
       n.op.c_str());
 
@@ -339,7 +338,7 @@ void diagVisitor::visit(bopNode& n)
 
 void diagVisitor::visit(stringLiteralNode& n)
 {
-   ::printf("%sstrLit; value=%s\n",
+   cdwDEBUG("%sstrLit; value=%s\n",
       getIndent().c_str(),
       n.value.c_str());
 
@@ -349,7 +348,7 @@ void diagVisitor::visit(stringLiteralNode& n)
 
 void diagVisitor::visit(boolLiteralNode& n)
 {
-   ::printf("%sboolLit; value=%d\n",
+   cdwDEBUG("%sboolLit; value=%d\n",
       getIndent().c_str(),
       n.value ? 1 : 0);
 
@@ -359,9 +358,9 @@ void diagVisitor::visit(boolLiteralNode& n)
 
 void diagVisitor::visit(intLiteralNode& n)
 {
-   ::printf("%sintLit; value=%s\n",
+   cdwDEBUG("%sintLit; value=%s\n",
       getIndent().c_str(),
-      n.value.c_str());
+      n.lexeme.c_str());
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);

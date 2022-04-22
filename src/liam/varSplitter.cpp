@@ -7,16 +7,32 @@
 
 namespace liam {
 
-void varSplitter::split(lirStreams& s, varTable& v, cmn::tgt::iTargetInfo& t)
+void varSplitter::split(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
 {
    varSplitter self(s,v,t);
 
-   for(auto it=v.all().begin();it!=v.all().end();++it)
-      self.checkVar(*it->second);
+   lirInstr *pInstr = &s.pTail->head();
+   while(true)
+   {
+      for(auto it=pInstr->getArgs().begin();it!=pInstr->getArgs().end();++it)
+      {
+         var *pVar = v.fetch(**it);
+         if(pVar)
+            self.checkVar(*pVar);
+      }
+
+      if(pInstr->isLast())
+         break;
+      pInstr = &pInstr->next();
+   }
 }
 
 void varSplitter::checkVar(var& v)
 {
+   if(m_done.find(&v)!=m_done.end())
+      return;
+   m_done.insert(&v);
+
    if(v.storageToInstrMap.size() > 1)
    {
       // this var has at least two different storage demands
@@ -48,18 +64,20 @@ void varSplitter::checkVar(var& v)
 
    // update the table _after_ iterating on it
    for(auto it=m_newInstrs.begin();it!=m_newInstrs.end();++it)
-      v.requireStorage(*it->first,it->second);
+      v.requireStorage(it->first->orderNum,it->second);
+   m_newInstrs.clear();
 }
 
 void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t destStor)
 {
    cdwDEBUG("emitting move for split before %lld (%lld -> %lld)\n",orderNum,srcStor,destStor);
 
-   auto& mov = m_s.
-      search(orderNum)
-         .injectBefore(
-            cmn::tgt::kMov,
-            cmn::fmt("      (%s req for %s) [splitter]",v.name.c_str(),m_t.getProc().getRegName(destStor)));
+   auto& mov = m_s.pTail
+      ->searchUp([=](auto& i){ return i.orderNum == orderNum; })
+         .injectBefore(*new lirInstr(cmn::tgt::kMov));
+   mov.comment = cmn::fmt("      (%s req for %s) [splitter]",
+      v.name.c_str(),
+      m_t.getProc().getRegName(destStor));
 
    auto& dest = mov.addArg<lirArgVar>("spltD",v.getSize());
 

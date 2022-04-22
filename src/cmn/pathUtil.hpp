@@ -9,15 +9,16 @@ public:
    static const char *kExtLiamHeader;
    static const char *kExtLiamSource;
 
+   static const char *kExtLir;
+   static const char *kExtLirPost;
+   static const char *kExtAsm;
    static const char *kExtObj;
-   static const char *kExtObj_Then_List;
-   static const char *kExtObj_Then_McList;
-   static const char *kExtObj_Then_McOdaList;
-
    static const char *kExtList;
+   static const char *kExtMcList;
+   static const char *kExtMcOdaList;
 
-   static std::string addExtension(const std::string& path, const std::string& ext);
-   static std::string getExtension(const std::string& path);
+   static std::string addExt(const std::string& path, const std::string& ext);
+   static std::string getExt(const std::string& path);
    static std::string getLastPart(const std::string& path);
    static std::string addPrefixToFilePart(const std::string& path, const std::string& prefix);
 

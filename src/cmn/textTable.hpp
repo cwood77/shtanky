@@ -23,8 +23,7 @@ private:
 
       const std::map<size_t,std::map<size_t,std::string> >& cells() const { return m_cells; }
 
-      std::string indent(size_t firstCol) const;
-      std::string pad(size_t col, const std::string& text) const;
+      std::string leftJustify(size_t col, const std::string& text) const;
 
    private:
       std::map<size_t,std::map<size_t,std::string> > m_cells;

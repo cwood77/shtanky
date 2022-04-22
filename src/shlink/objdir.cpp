@@ -1,11 +1,9 @@
-#include "../cmn/fmt.hpp"
+#include "../cmn/binReader.hpp"
 #include "../cmn/obj-fmt.hpp"
-#include "../cmn/reader.hpp"
 #include "../cmn/throw.hpp"
 #include "../cmn/trace.hpp"
 #include "objdir.hpp"
 #include <memory>
-#include <stdexcept>
 
 namespace shlink {
 
@@ -28,7 +26,7 @@ void objectDirectory::loadObjectFile(const std::string& path)
       auto& xt = (*it)->xt;
 
       if(xt.toc.size() == 0)
-         cdwTHROW(cmn::fmt("objects with no exports are _always_ pruned?!! obj #%lld in '%s'",i,path.c_str()));
+         cdwTHROW("objects with no exports are _always_ pruned?!! obj #%lld in '%s'",i,path.c_str());
 
       for(auto jit=xt.toc.begin();jit!=xt.toc.end();++jit)
       {
@@ -37,7 +35,7 @@ void objectDirectory::loadObjectFile(const std::string& path)
          if(!pObj)
             pObj = *it;
          else
-            throw std::runtime_error(cmn::fmt("duplicate symbol %s",jit->first.c_str()));
+            cdwTHROW("duplicate symbol %s",jit->first.c_str());
       }
    }
 
@@ -48,8 +46,15 @@ cmn::objfmt::obj& objectDirectory::demand(const std::string& oName)
 {
    auto it = m_objDir.find(oName);
    if(it == m_objDir.end())
-      throw std::runtime_error(cmn::fmt("can't find symbol '%s'",oName.c_str()));
+      cdwTHROW("can't find symbol '%s'",oName.c_str());
    return *it->second;
+}
+
+void objectDirectory::determinePruneList(const std::set<std::string>& demanded)
+{
+   for(auto it=m_objDir.begin();it!=m_objDir.end();++it)
+      if(demanded.find(it->first)==demanded.end())
+         cdwVERBOSE("pruned object %s (i.e. nobody asked for it)\n",it->first.c_str());
 }
 
 } // namespace shlink
