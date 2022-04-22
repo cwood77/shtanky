@@ -52,7 +52,7 @@ int _main(int argc,const char *argv[])
    cmn::outBundle out,dbgOut;
    cmn::unconditionalWriter wr;
    dbgOut.scheduleAutoUpdate(wr);
-   { lirBuilder b(lir,t); lirGenerator lGen(lir,t); astCodeGen v(b,lGen,t); prj.acceptVisitor(v); }
+   { lirBuilder b(lir,t); astCodeGen v(b,t); prj.acceptVisitor(v); }
    { auto& s = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir");
      lirFormatter(s,t).format(lir); }
 

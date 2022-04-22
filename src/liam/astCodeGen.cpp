@@ -41,9 +41,9 @@ void astCodeGen::visit(cmn::funcNode& n)
 
    auto& i = m_b.forNode(n)
       .append(cmn::tgt::kEnterFunc)
-      .withArg<lirArgTemp>(m_u.makeUnique("rval"),n)
-      .returnToParent(0)
-      .withComment(funcNameInAsm);
+         .withArg<lirArgTemp>(m_u.makeUnique("rval"),n)
+         .returnToParent(0)
+         .withComment(funcNameInAsm);
 
    auto args = n.getChildrenOf<cmn::argNode>();
    for(auto it=args.begin();it!=args.end();++it)
@@ -61,9 +61,9 @@ void astCodeGen::visit(cmn::invokeFuncPtrNode& n) // TODO left off here
 
    auto& i = m_b.forNode(n)
       .append(cmn::tgt::kCall)
-      .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
-      .returnToParent(0)
-      .withComment("(call ptr)");
+         .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
+         .returnToParent(0)
+         .withComment("(call ptr)");
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       i.inheritArgFromChild(**it);
@@ -75,10 +75,10 @@ void astCodeGen::visit(cmn::localDeclNode& n)
 
    m_b.forNode(n)
       .append(cmn::tgt::kReserveLocal)
-      .withArg<lirArgVar>(m_u.makeUnique(n.name),
-         cmn::type::gNodeCache->demand(n.demandSoleChild<cmn::typeNode>())
-            .getRealAllocSize(m_t))
-      .withComment(n.name);
+         .withArg<lirArgVar>(m_u.makeUnique(n.name),
+            cmn::type::gNodeCache->demand(n.demandSoleChild<cmn::typeNode>())
+               .getRealAllocSize(m_t))
+         .withComment(n.name);
 
    // TODO not handling initializers here (i.e. constant
    // initial value)
@@ -109,10 +109,10 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
       // my child is already dereffed, so to do it again I must mov
       m_b.forNode(n)
          .append(cmn::tgt::kMov)
-         .withArg<lirArgTemp>(m_u.makeUnique(n.name),n)
-         .withArg(a.clone())
-         .withComment(std::string("fieldaccess: ") + n.name)
-         .returnToParent(0);
+            .withArg<lirArgTemp>(m_u.makeUnique(n.name),n)
+            .withArg(a.clone())
+            .withComment(std::string("fieldaccess: ") + n.name)
+            .returnToParent(0);
    }
 }
 
@@ -124,10 +124,10 @@ void astCodeGen::visit(cmn::callNode& n)
 
    auto iCall = m_b.forNode(n)
       .append(cmn::tgt::kCall)
-      .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
-      .returnToParent(0)
-      .withArg<lirArgConst>(n.name,/*n*/ 0) // label
-      .withComment("(call label)");
+         .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
+         .returnToParent(0)
+         .withArg<lirArgConst>(n.name,/*n*/ 0) // label
+         .withComment("(call label)");
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       iCall.inheritArgFromChild(**it);
