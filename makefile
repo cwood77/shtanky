@@ -138,6 +138,7 @@ ARACELI_SRC = \
 	src/araceli/main.cpp \
 	src/araceli/metadata.cpp \
 	src/araceli/projectBuilder.cpp \
+	src/araceli/selfDecomposition.cpp \
 	src/araceli/symbolTable.cpp \
 
 ARACELI_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(ARACELI_SRC)))

@@ -428,4 +428,30 @@ void fullyQualifiedName::prepend(const std::string& n)
    m_fqn = n + m_fqn;
 }
 
+void cloningNodeVisitor::visit(node& n)
+{
+   as<node>().lineNumber = n.lineNumber;
+   as<node>().attributes = n.attributes;
+   as<node>().flags = n.flags;
+}
+
+void cloningNodeVisitor::visit(varRefNode& n)
+{
+   hNodeVisitor::visit(n);
+   as<varRefNode>().pDef.ref = n.pDef.ref;
+   as<varRefNode>().pDef.bind(*n.pDef.getRefee());
+}
+
+node& cloneTree(node& n)
+{
+   creatingNodeVisitor creator;
+   n.acceptVisitor(creator);
+   { cloningNodeVisitor v(*creator.inst.get()); n.acceptVisitor(v); }
+
+   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+      creator.inst->appendChild(cloneTree(**it));
+
+   return *creator.inst.release();
+}
+
 } // namespace cmn

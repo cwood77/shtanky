@@ -523,7 +523,6 @@ public:
    virtual void visit(liamProjectNode& n) { T::unexpected(n); }
    virtual void visit(fileRefNode& n) { T::unexpected(n); }
    virtual void visit(ptrTypeNode& n) { T::unexpected(n); }
-   virtual void visit(invokeFuncPtrNode& n) { T::unexpected(n); }
 
    virtual void _implementLanguage() {} // araceli
 };
@@ -574,6 +573,94 @@ private:
    iNodeVisitor& m_inner;
 };
 
+class creatingNodeVisitor : public iNodeVisitor {
+public:
+   virtual void visit(node&) { inst.reset(new node()); }
+   virtual void visit(araceliProjectNode&) { inst.reset(new araceliProjectNode()); }
+   virtual void visit(liamProjectNode&) { inst.reset(new liamProjectNode()); }
+   virtual void visit(scopeNode&) { inst.reset(new scopeNode()); }
+   virtual void visit(fileNode&) { inst.reset(new fileNode()); }
+   virtual void visit(fileRefNode&) { inst.reset(new fileRefNode()); }
+   virtual void visit(classNode&) { inst.reset(new classNode()); }
+   virtual void visit(memberNode&) { inst.reset(new memberNode()); }
+   virtual void visit(methodNode&) { inst.reset(new methodNode()); }
+   virtual void visit(fieldNode&) { inst.reset(new fieldNode()); }
+   virtual void visit(constNode&) { inst.reset(new constNode()); }
+   virtual void visit(funcNode&) { inst.reset(new funcNode()); }
+   virtual void visit(argNode&) { inst.reset(new argNode()); }
+   virtual void visit(typeNode&) { inst.reset(new typeNode()); }
+   virtual void visit(strTypeNode&) { inst.reset(new strTypeNode()); }
+   virtual void visit(arrayTypeNode&) { inst.reset(new arrayTypeNode()); }
+   virtual void visit(voidTypeNode&) { inst.reset(new voidTypeNode()); }
+   virtual void visit(userTypeNode&) { inst.reset(new userTypeNode()); }
+   virtual void visit(ptrTypeNode&) { inst.reset(new ptrTypeNode()); }
+   virtual void visit(sequenceNode&) { inst.reset(new sequenceNode()); }
+   virtual void visit(invokeNode&) { inst.reset(new invokeNode()); }
+   virtual void visit(invokeFuncPtrNode&) { inst.reset(new invokeFuncPtrNode()); }
+   virtual void visit(fieldAccessNode&) { inst.reset(new fieldAccessNode()); }
+   virtual void visit(callNode&) { inst.reset(new callNode()); }
+   virtual void visit(localDeclNode&) { inst.reset(new localDeclNode()); }
+   virtual void visit(varRefNode&) { inst.reset(new varRefNode()); }
+   virtual void visit(assignmentNode&) { inst.reset(new assignmentNode()); }
+   virtual void visit(bopNode&) { inst.reset(new bopNode()); }
+   virtual void visit(stringLiteralNode&) { inst.reset(new stringLiteralNode()); }
+   virtual void visit(boolLiteralNode&) { inst.reset(new boolLiteralNode()); }
+   virtual void visit(intLiteralNode&) { inst.reset(new intLiteralNode()); }
+
+   virtual void _implementLanguage() {} // all
+
+   std::unique_ptr<cmn::node> inst;
+};
+
+// Out of laziness, I implement these only when needed
+class cloningNodeVisitor : public hNodeVisitor {
+public:
+   explicit cloningNodeVisitor(node& n) : m_n(n) {}
+
+   virtual void visit(node& n);
+   virtual void visit(araceliProjectNode& n) { unexpected(n); }
+   virtual void visit(liamProjectNode& n) { unexpected(n); }
+   virtual void visit(scopeNode& n) { unexpected(n); }
+   virtual void visit(fileNode& n) { unexpected(n); }
+   virtual void visit(fileRefNode& n) { unexpected(n); }
+   virtual void visit(classNode& n) { unexpected(n); }
+   virtual void visit(memberNode& n) { unexpected(n); }
+   virtual void visit(methodNode& n) { unexpected(n); }
+   virtual void visit(fieldNode& n) { unexpected(n); }
+   virtual void visit(constNode& n) { unexpected(n); }
+   virtual void visit(funcNode& n) { unexpected(n); }
+   virtual void visit(argNode& n) { unexpected(n); }
+   virtual void visit(typeNode& n) { unexpected(n); }
+   virtual void visit(strTypeNode& n) { unexpected(n); }
+   virtual void visit(arrayTypeNode& n) { unexpected(n); }
+   virtual void visit(voidTypeNode& n) { unexpected(n); }
+   virtual void visit(userTypeNode& n) { unexpected(n); }
+   virtual void visit(ptrTypeNode& n) { unexpected(n); }
+   virtual void visit(sequenceNode& n) { unexpected(n); }
+   virtual void visit(invokeNode& n) { unexpected(n); }
+   virtual void visit(invokeFuncPtrNode& n) { unexpected(n); }
+   virtual void visit(fieldAccessNode& n) { unexpected(n); }
+   virtual void visit(callNode& n) { unexpected(n); }
+   virtual void visit(localDeclNode& n) { unexpected(n); }
+   virtual void visit(varRefNode& n);
+   virtual void visit(assignmentNode& n) { unexpected(n); }
+   virtual void visit(bopNode& n) { unexpected(n); }
+   virtual void visit(stringLiteralNode& n) { unexpected(n); }
+   virtual void visit(boolLiteralNode& n) { unexpected(n); }
+   virtual void visit(intLiteralNode& n) { unexpected(n); }
+
+   virtual void _implementLanguage() {} // all
+
+private:
+   template<class T> T& as() { return dynamic_cast<T&>(m_n); }
+
+   node& m_n;
+};
+
+node& cloneTree(node& n);
+
+// ----------------------- transform aids -----------------------
+
 class treeWriter {
 public:
    explicit treeWriter(cmn::node& n) : m_pNode(&n) {}
@@ -604,6 +691,7 @@ public:
    treeWriter& parent() { m_pNode = m_pNode->getParent(); return *this; }
 
    void set(cmn::node& n);
+   cmn::node& get() { return *m_pNode; }
 
 private:
    cmn::node *m_pNode;

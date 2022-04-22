@@ -4,6 +4,7 @@ namespace araceli {
 
 void declasser::visit(cmn::invokeNode& n)
 {
+   /*
    std::unique_ptr<cmn::invokeFuncPtrNode> pInvoke(new cmn::invokeFuncPtrNode());
    std::unique_ptr<cmn::fieldAccessNode> pVTable(new cmn::fieldAccessNode());
    std::unique_ptr<cmn::fieldAccessNode> pFuncPtr(new cmn::fieldAccessNode());
@@ -39,6 +40,8 @@ void declasser::visit(cmn::invokeNode& n)
    delete n.getParent()->replaceChild(n,*pInvoke.release());
 
    hNodeVisitor::visit(*nInvoke);
+   */
+   hNodeVisitor::visit(n);
 }
 
 void declasser::visit(cmn::varRefNode& n)

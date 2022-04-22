@@ -14,6 +14,7 @@
 #include "declasser.hpp"
 #include "metadata.hpp"
 #include "projectBuilder.hpp"
+#include "selfDecomposition.hpp"
 #include "symbolTable.hpp"
 #include <string.h>
 
@@ -66,6 +67,7 @@ int main(int argc, const char *argv[])
 #endif
 
    // compile-away classes
+   { selfDecomposition v; pPrj->acceptVisitor(v); }
    { declasser v; pPrj->acceptVisitor(v); }
    cdwVERBOSE("graph after transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
