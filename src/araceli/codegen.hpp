@@ -53,6 +53,7 @@ public:
    virtual void visit(cmn::fileNode& n);
    virtual void visit(cmn::classNode& n);
    virtual void visit(cmn::constNode& n);
+   virtual void visit(cmn::funcNode& n);
    virtual void visit(cmn::sequenceNode& n);
    virtual void visit(cmn::invokeNode& n);
    virtual void visit(cmn::invokeFuncPtrNode& n);

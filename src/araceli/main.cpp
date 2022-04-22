@@ -10,6 +10,7 @@
 #include "codegen.hpp"
 #include "consoleAppTarget.hpp"
 #include "constHoister.hpp"
+#include "ctorDtorGenerator.hpp"
 #include "declasser.hpp"
 #include "metadata.hpp"
 #include "projectBuilder.hpp"
@@ -56,6 +57,13 @@ int main(int argc, const char *argv[])
    { araceli::constHoister v; pPrj->acceptVisitor(v); }
    cdwVERBOSE("graph after const hoist ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+
+#if 0
+   // ctor/dtor stuff
+   { ctorDtorGenerator v; pPrj->acceptVisitor(v); }
+   cdwVERBOSE("graph after transforms ----\n");
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+#endif
 
    // compile-away classes
    { declasser v; pPrj->acceptVisitor(v); }

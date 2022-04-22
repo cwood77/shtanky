@@ -1,6 +1,7 @@
 #pragma once
 
 #include "throw.hpp"
+#include <functional>
 #include <list>
 #include <memory>
 #include <set>
@@ -521,7 +522,6 @@ class araceliVisitor : public T {
 public:
    virtual void visit(liamProjectNode& n) { T::unexpected(n); }
    virtual void visit(fileRefNode& n) { T::unexpected(n); }
-   virtual void visit(funcNode& n) { T::unexpected(n); }
    virtual void visit(ptrTypeNode& n) { T::unexpected(n); }
    virtual void visit(invokeFuncPtrNode& n) { T::unexpected(n); }
 
@@ -572,6 +572,41 @@ public:
 
 private:
    iNodeVisitor& m_inner;
+};
+
+class treeWriter {
+public:
+   explicit treeWriter(cmn::node& n) : m_pNode(&n) {}
+
+   template<class T>
+   treeWriter& append(std::function<void(T&)> initializer = [](T& n){})
+   {
+      std::unique_ptr<T> pNode(new T());
+      initializer(*pNode.get());
+      m_pNode->appendChild(*pNode.release());
+      m_pNode = m_pNode->lastChild();
+      return *this;
+   }
+
+   template<class T>
+   treeWriter& backTo(std::function<bool(const T&)> pred = [](const T&){ return true; })
+   {
+      while(true)
+      {
+         if(T* pDerived = dynamic_cast<T*>(m_pNode))
+            if(pred(*pDerived))
+               return *this;
+
+         parent();
+      }
+   }
+
+   treeWriter& parent() { m_pNode = m_pNode->getParent(); return *this; }
+
+   void set(cmn::node& n);
+
+private:
+   cmn::node *m_pNode;
 };
 
 } // namespace cmn

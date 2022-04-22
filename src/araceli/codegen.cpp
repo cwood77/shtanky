@@ -143,6 +143,56 @@ void codeGen::visit(cmn::constNode& n)
    source << ";" << std::endl;
 }
 
+void codeGen::visit(cmn::funcNode& m)
+{
+   hNodeVisitor::visit(m);
+   return;
+
+   auto& s = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource);
+
+   // =============================================================
+   // direct copy of method node
+   // =============================================================
+   if(m.attributes.size())
+      for(auto it=m.attributes.begin();it!=m.attributes.end();++it)
+         s.stream() << cmn::indent(s) << "[" << *it << "]" << std::endl;
+
+   s.stream()
+      << cmn::indent(s) << "func " << cmn::fullyQualifiedName::build(m,/*m,m.baseImpl.ref*/m.name) << "("
+      << std::endl
+   ;
+
+   cmn::autoIndent _i(s);
+
+   bool firstParam = true;
+   if(!(m.flags & cmn::nodeFlags::kStatic)          && false)
+   {
+      s.stream() << cmn::indent(s) << "self : " << cmn::fullyQualifiedName::build(m);
+      firstParam = false;
+   }
+
+   auto args = m.getChildrenOf<cmn::argNode>();
+   for(auto jit=args.begin();jit!=args.end();++jit)
+   {
+      if(!firstParam)
+         s.stream() << "," << std::endl;
+
+      s.stream()
+         << cmn::indent(s) << (*jit)->name << " : ";
+      ;
+      liamTypeWriter tyW(s.stream(),m_refColl);
+      (*jit)->demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
+
+      firstParam = false;
+   }
+
+   s.stream()
+      << ") : void" // TODO - actually print the right return value
+   ;
+
+   hNodeVisitor::visit(m);
+}
+
 void codeGen::visit(cmn::sequenceNode& n)
 {
    auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource);
