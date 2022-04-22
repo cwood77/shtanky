@@ -3,6 +3,13 @@
 
 namespace araceli {
 
+// for varRefs
+// - if these refer to fields, scope then with 'self'
+
+// for methods: two things
+// - inject self args
+// - change to invokeFuncPtr node with vtable
+
 class declasser : public cmn::araceliVisitor<> {
 public:
    virtual void visit(cmn::node& n) { visitChildren(n); }
