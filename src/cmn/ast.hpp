@@ -624,18 +624,18 @@ public:
    virtual void visit(fileNode& n) { unexpected(n); }
    virtual void visit(fileRefNode& n) { unexpected(n); }
    virtual void visit(classNode& n) { unexpected(n); }
-   virtual void visit(memberNode& n) { unexpected(n); }
-   virtual void visit(methodNode& n) { unexpected(n); }
+   virtual void visit(memberNode& n);
+   virtual void visit(methodNode& n);
    virtual void visit(fieldNode& n) { unexpected(n); }
    virtual void visit(constNode& n) { unexpected(n); }
    virtual void visit(funcNode& n) { unexpected(n); }
-   virtual void visit(argNode& n) { unexpected(n); }
-   virtual void visit(typeNode& n) { unexpected(n); }
-   virtual void visit(strTypeNode& n) { unexpected(n); }
-   virtual void visit(arrayTypeNode& n) { unexpected(n); }
-   virtual void visit(voidTypeNode& n) { unexpected(n); }
-   virtual void visit(userTypeNode& n) { unexpected(n); }
-   virtual void visit(ptrTypeNode& n) { unexpected(n); }
+   virtual void visit(argNode& n);
+   virtual void visit(typeNode& n);
+   virtual void visit(strTypeNode& n);
+   virtual void visit(arrayTypeNode& n);
+   virtual void visit(voidTypeNode& n);
+   virtual void visit(userTypeNode& n);
+   virtual void visit(ptrTypeNode& n);
    virtual void visit(sequenceNode& n) { unexpected(n); }
    virtual void visit(invokeNode& n) { unexpected(n); }
    virtual void visit(invokeFuncPtrNode& n) { unexpected(n); }

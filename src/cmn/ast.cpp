@@ -435,6 +435,58 @@ void cloningNodeVisitor::visit(node& n)
    as<node>().flags = n.flags;
 }
 
+void cloningNodeVisitor::visit(memberNode& n)
+{
+   as<memberNode>().name = n.name;
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(methodNode& n)
+{
+   as<methodNode>().baseImpl.ref = n.baseImpl.ref;
+   if(n.baseImpl.getRefee())
+      as<methodNode>().baseImpl.bind(*n.baseImpl.getRefee());
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(argNode& n)
+{
+   as<argNode>().name = n.name;
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(typeNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(strTypeNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(arrayTypeNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(voidTypeNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(userTypeNode& n)
+{
+   as<userTypeNode>().pDef.ref = n.pDef.ref;
+   as<userTypeNode>().pDef.bind(*n.pDef.getRefee());
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(ptrTypeNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
 void cloningNodeVisitor::visit(varRefNode& n)
 {
    hNodeVisitor::visit(n);

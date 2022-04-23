@@ -6,6 +6,7 @@
 #include "../cmn/cmdline.hpp"
 #include "../cmn/out.hpp"
 #include "../cmn/trace.hpp"
+#include "abstractGenerator.hpp"
 #include "batGen.hpp"
 #include "codegen.hpp"
 #include "consoleAppTarget.hpp"
@@ -67,6 +68,7 @@ int main(int argc, const char *argv[])
 
    // compile-away classes
    { selfDecomposition v; pPrj->acceptVisitor(v); }
+   { abstractGenerator v; pPrj->acceptVisitor(v); }
    cdwVERBOSE("graph after transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
