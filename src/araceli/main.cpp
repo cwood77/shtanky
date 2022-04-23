@@ -13,6 +13,7 @@
 #include "constHoister.hpp"
 #include "ctorDtorGenerator.hpp"
 #include "metadata.hpp"
+#include "objectBaser.hpp"
 #include "projectBuilder.hpp"
 #include "selfDecomposition.hpp"
 #include "symbolTable.hpp"
@@ -46,6 +47,9 @@ int main(int argc, const char *argv[])
 
    // use metadata to generate the target
    consoleAppTarget().codegen(*pPrj,md);
+
+   // inject implied base class
+   { objectBaser v; pPrj->acceptVisitor(v); }
 
    // subsequent link to update with new target
    araceli::nodeLinker().linkGraph(*pPrj);

@@ -137,6 +137,7 @@ ARACELI_SRC = \
 	src/araceli/loader.cpp \
 	src/araceli/main.cpp \
 	src/araceli/metadata.cpp \
+	src/araceli/objectBaser.cpp \
 	src/araceli/projectBuilder.cpp \
 	src/araceli/selfDecomposition.cpp \
 	src/araceli/symbolTable.cpp \
