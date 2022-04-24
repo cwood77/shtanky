@@ -200,13 +200,23 @@ class link : public linkBase {
 public:
    virtual void bind(node& dest)
    {
-      m_pRefee = dynamic_cast<T*>(&dest);
-      if(!m_pRefee)
+      auto *p = dynamic_cast<T*>(&dest);
+      if(!p)
          cdwTHROW(
             std::string("link expected node type ") + typeid(T).name());
+      m_pRefee = &dest;
    }
 
    T *getRefee() { return dynamic_cast<T*>(m_pRefee); }
+};
+
+// ----------------------- interfaces -----------------------
+
+// anything that can be referred to by a varRef: e.g. fields, methods, functions, locals,
+// arguments, globals, etc.
+class iVarSourceNode {
+public:
+   virtual const std::string& getNameForVarRefee() const = 0;
 };
 
 // ----------------------- project -----------------------
@@ -269,11 +279,12 @@ private:
    void computeLineage(std::list<classNode*>& l);
 };
 
-class memberNode : public node {
+class memberNode : public node, public iVarSourceNode {
 public:
    std::string name;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+   virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
 class methodNode : public memberNode {
@@ -288,25 +299,28 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
-class constNode : public node {
+class constNode : public node, public iVarSourceNode {
 public:
    std::string name;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+   virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
-class funcNode : public node {
+class funcNode : public node, public iVarSourceNode {
 public:
    std::string name;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+   virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
-class argNode : public node {
+class argNode : public node, public iVarSourceNode {
 public:
    std::string name;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+   virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
 // ----------------------- types -----------------------
@@ -376,11 +390,12 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
-class localDeclNode : public node {
+class localDeclNode : public node, public iVarSourceNode {
 public:
    std::string name;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+   virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
 class varRefNode : public node {
