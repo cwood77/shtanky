@@ -4,7 +4,7 @@
 
 namespace araceli {
 
-class classInfo {
+class classInfoOLD {
 public:
    std::map<std::string,cmn::methodNode*> lastMethod;
    std::map<std::string,std::string> vTable;
@@ -13,7 +13,7 @@ public:
 
 class classInfos {
 public:
-   std::map<std::string,classInfo> catalog;
+   std::map<std::string,classInfoOLD> catalog;
 };
 
 // find all abstract methods of a given class, and it's bases

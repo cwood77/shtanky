@@ -8,7 +8,7 @@ void abstractGenerator::visit(cmn::classNode& n)
    populateVTable(n);
 
    auto fqn = cmn::fullyQualifiedName::build(n);
-   classInfo& info = m_infos.catalog[fqn];
+   classInfoOLD& info = m_infos.catalog[fqn];
 
    // generate abstract bodies
    for(auto it=info.lastMethod.begin();it!=info.lastMethod.end();++it)
@@ -43,7 +43,7 @@ void abstractGenerator::visit(cmn::classNode& n)
 void abstractGenerator::populateVTable(cmn::classNode& n)
 {
    auto fqn = cmn::fullyQualifiedName::build(n);
-   classInfo& info = m_infos.catalog[fqn];
+   classInfoOLD& info = m_infos.catalog[fqn];
 
    // calculate all base classes
    auto l = n.computeLineage();

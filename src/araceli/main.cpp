@@ -8,6 +8,7 @@
 #include "../cmn/trace.hpp"
 #include "abstractGenerator.hpp"
 #include "batGen.hpp"
+#include "classInfo.hpp"
 #include "codegen.hpp"
 #include "consoleAppTarget.hpp"
 #include "constHoister.hpp"
@@ -57,6 +58,20 @@ int main(int argc, const char *argv[])
    araceli::nodeLinker().linkGraph(*pPrj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+
+   // capture class info
+if(exp) {
+   classCatalog cc;
+   { classInfoBuilder v(cc); pPrj->acceptVisitor(v); }
+   cmn::outBundle dbgOut;
+   cmn::unconditionalWriter wr;
+   dbgOut.scheduleAutoUpdate(wr);
+   {
+      classInfoFormatter fmt(dbgOut.get<cmn::outStream>(
+         projectDir + "\\.classInfo"));
+      fmt.format(cc);
+   }
+} // exp
 
    // ---------------- lowering transforms ----------------
 

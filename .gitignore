@@ -42,4 +42,5 @@ testdata/**/*.asm.*
 testdata/**/.target.ara
 testdata/**/.app
 testdata/**/.app.list
+testdata/**/.classInfo
 !testdata/**/expected-*

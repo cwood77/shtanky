@@ -129,6 +129,7 @@ $(APPR_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 ARACELI_SRC = \
 	src/araceli/abstractGenerator.cpp \
 	src/araceli/batGen.cpp \
+	src/araceli/classInfo.cpp \
 	src/araceli/codegen.cpp \
 	src/araceli/consoleAppTarget.cpp \
 	src/araceli/constHoister.cpp \
