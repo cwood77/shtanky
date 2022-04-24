@@ -6,6 +6,19 @@ void ctorDtorGenerator::visit(cmn::classNode& n)
 {
    cmn::treeWriter w(n);
 
+   w
+      .append<cmn::methodNode>([](auto&m){m.name="cctor";})
+         .append<cmn::sequenceNode>()
+      .backTo<cmn::classNode>()
+      .append<cmn::methodNode>([](auto&m)
+      {
+         m.name = "cdtor";
+         m.flags |= cmn::nodeFlags::kOverride;
+      })
+         .append<cmn::sequenceNode>()
+   ;
+
+#if 0
    // supert-constructor
    cmn::userTypeNode *pSelf = NULL;
    w
@@ -18,6 +31,7 @@ void ctorDtorGenerator::visit(cmn::classNode& n)
       .backTo<cmn::funcNode>()
          .append<cmn::sequenceNode>()
    ;
+#endif
 
 #if 0
    w

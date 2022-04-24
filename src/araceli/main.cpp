@@ -72,8 +72,16 @@ int main(int argc, const char *argv[])
 #endif
 
    // compile-away classes
-   { selfDecomposition v; pPrj->acceptVisitor(v); }
+   if(exp){ ctorDtorGenerator v; pPrj->acceptVisitor(v); }
    if(exp){ abstractGenerator v; pPrj->acceptVisitor(v); }
+   // self param, self fields, invoke decomp
+   { selfDecomposition v; pPrj->acceptVisitor(v); } // TODO some invokes should turn into calls
+   // TODO basecall decomp
+   // TODO method motion
+   // TODO vtbl type gen
+   // TODO vtbl const gen
+   // TODO matryoshka decomp
+   // TODO stack new/delete decomp
    cdwVERBOSE("graph after transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
