@@ -13,6 +13,7 @@
 #include "constHoister.hpp"
 #include "ctorDtorGenerator.hpp"
 #include "metadata.hpp"
+#include "methodMover.hpp"
 #include "objectBaser.hpp"
 #include "projectBuilder.hpp"
 #include "selfDecomposition.hpp"
@@ -77,7 +78,7 @@ int main(int argc, const char *argv[])
    // self param, self fields, invoke decomp
    { selfDecomposition v; pPrj->acceptVisitor(v); } // TODO some invokes should turn into calls
    // TODO basecall decomp
-   // TODO method motion
+   if(exp){ methodMover v; pPrj->acceptVisitor(v); }
    // TODO vtbl type gen
    // TODO vtbl const gen
    // TODO matryoshka decomp
