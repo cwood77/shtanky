@@ -24,7 +24,8 @@ using namespace araceli;
 int main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   std::string projectDir = cl.getArg(".\\testdata\\test");
+   bool exp = cl.getSwitch("--exp","",false);
+   std::string projectDir = cl.getNextArg(".\\testdata\\test");
    std::string batchBuild = projectDir + "\\.build.bat";
 
    std::unique_ptr<cmn::araceliProjectNode> pPrj = projectBuilder::create("ca");
@@ -49,7 +50,7 @@ int main(int argc, const char *argv[])
    consoleAppTarget().codegen(*pPrj,md);
 
    // inject implied base class
-   { objectBaser v; pPrj->acceptVisitor(v); }
+   if(exp){ objectBaser v; pPrj->acceptVisitor(v); }
 
    // subsequent link to update with new target
    araceli::nodeLinker().linkGraph(*pPrj);
@@ -72,7 +73,7 @@ int main(int argc, const char *argv[])
 
    // compile-away classes
    { selfDecomposition v; pPrj->acceptVisitor(v); }
-   { abstractGenerator v; pPrj->acceptVisitor(v); }
+   if(exp){ abstractGenerator v; pPrj->acceptVisitor(v); }
    cdwVERBOSE("graph after transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 

@@ -11,13 +11,13 @@ using namespace shlink;
 int main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   std::string outFile = cl.getArg(".\\testdata\\test\\test.ara.ls.asm.o.app");
+   std::string outFile = cl.getNextArg(".\\testdata\\test\\test.ara.ls.asm.o.app");
 
    // load all object files indicated on command-line
    objectDirectory oDir;
    for(size_t i=0;;i++)
    {
-      auto path = cl.getArg(i==0 ? ".\\testdata\\test\\test.ara.ls.asm.o" : "");
+      auto path = cl.getNextArg(i==0 ? ".\\testdata\\test\\test.ara.ls.asm.o" : "");
       if(path.empty())
          break;
 

@@ -29,7 +29,7 @@ int _main(int argc,const char *argv[])
 
    // load
    cmn::liamProjectNode prj;
-   prj.sourceFullPath = cl.getArg("testdata\\test\\test.ara.ls");
+   prj.sourceFullPath = cl.getNextArg("testdata\\test\\test.ara.ls");
    projectBuilder::build(prj);
    cdwVERBOSE("graph after loading ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }

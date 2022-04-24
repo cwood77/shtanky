@@ -12,7 +12,7 @@ using namespace shtasm;
 int main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   std::string inputPath = cl.getArg(".\\testdata\\test\\test.ara.ls.asm");
+   std::string inputPath = cl.getNextArg(".\\testdata\\test\\test.ara.ls.asm");
 
    std::string oPath = cmn::pathUtil::addExt(inputPath,cmn::pathUtil::kExtObj);
    std::string mcListPath = cmn::pathUtil::addExt(oPath,cmn::pathUtil::kExtMcList);
