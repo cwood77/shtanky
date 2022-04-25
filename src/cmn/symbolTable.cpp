@@ -124,7 +124,7 @@ void localFinder::visit(sequenceNode& n)
 }
 
 linkResolver::linkResolver(symbolTable& st, linkBase& l, size_t mode)
-: m_sTable(st), m_l(l), m_mode(mode)
+: m_sTable(st), m_l(l), m_mode(mode), m_checkedScope(false)
 {
    if(m_l._getRefee())
       return;
@@ -147,8 +147,12 @@ void linkResolver::visit(scopeNode& n)
    if(m_l._getRefee())
       return;
 
-   if(m_mode & kContainingScopes)
+   if(!m_checkedScope)
    {
+      // always resolve against your own scope
+      // you never need to do this again, because the symbol table knows how to walk
+      // scopes
+      m_checkedScope = true;
       tryResolve(fullyQualifiedName::build(n));
       if(m_l._getRefee())
          return;
@@ -166,16 +170,13 @@ void linkResolver::visit(classNode& n)
 
    if(m_mode & kOwnClass)
    {
-      m_mode &= ~kOwnClass; // don't do this again
+      // the next type I check, I'll actually be
+      // my own base class, so remove this flag
+      m_mode &= ~kOwnClass;
 
-      if(m_mode & kLocalsAndFields) // TODO do I need a special mode for fields?  They're published?
-         n.getChildrenOf<fieldNode>(fields);
-      else
-      {
-         tryResolve(fullyQualifiedName::build(n));
-         if(m_l._getRefee())
-            return;
-      }
+      tryResolve(fullyQualifiedName::build(n));
+      if(m_l._getRefee())
+         return;
    }
 
    if(m_mode & kBaseClasses)
@@ -184,27 +185,11 @@ void linkResolver::visit(classNode& n)
       {
          if(it->getRefee())
          {
-            if(m_mode & kLocalsAndFields)
-            {
-               it->getRefee()->getChildrenOf<fieldNode>(fields);
-               it->getRefee()->acceptVisitor(*this);
-            }
-            else
-            {
-               tryResolve(fullyQualifiedName::build(*it->getRefee()));
-               if(m_l._getRefee())
-                  return;
-            }
+            tryResolve(fullyQualifiedName::build(*it->getRefee()));
+            if(m_l._getRefee())
+               return;
          }
       }
-   }
-
-   if(m_mode & kLocalsAndFields)
-   {
-      n.getChildrenOf<fieldNode>(fields);
-      for(auto it=fields.begin();it!=fields.end();++it)
-         if(m_l._getRefee() == NULL)
-            m_sTable.tryResolveVarType((*it)->name,**it,m_l);
    }
 
    hNodeVisitor::visit(n);
@@ -215,7 +200,7 @@ void linkResolver::visit(methodNode& n)
    if(m_l._getRefee())
       return;
 
-   if(m_mode & kLocalsAndFields)
+   if(m_mode & kArgs)
    {
       // check args
       auto args = n.getChildrenOf<argNode>();
@@ -232,7 +217,7 @@ void linkResolver::visit(funcNode& n)
    if(m_l._getRefee())
       return;
 
-   if(m_mode & kLocalsAndFields)
+   if(m_mode & kArgs)
    {
       // check args
       auto args = n.getChildrenOf<argNode>();
@@ -336,7 +321,7 @@ void nodeResolver::visit(varRefNode& n)
    }
 
    linkResolver v(m_sTable,n.pSrc,
-      linkResolver::kBaseClasses | linkResolver::kLocalsAndFields);
+      linkResolver::kBaseClasses | linkResolver::kArgs);
    n.acceptVisitor(v);
 
    hNodeVisitor::visit(n);

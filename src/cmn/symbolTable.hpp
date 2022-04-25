@@ -64,7 +64,7 @@ public:
       kContainingScopes = 0x1,
       kOwnClass         = 0x2,
       kBaseClasses      = 0x4,
-      kLocalsAndFields  = 0x8,
+      kArgs             = 0x8,
    };
 
    linkResolver(symbolTable& st, linkBase& l, size_t mode);
@@ -83,6 +83,7 @@ private:
    symbolTable& m_sTable;
    linkBase& m_l;
    size_t m_mode;
+   bool m_checkedScope;
 };
 
 class nodePublisher : public hNodeVisitor {
