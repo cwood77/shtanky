@@ -19,6 +19,7 @@
 #include "projectBuilder.hpp"
 #include "selfDecomposition.hpp"
 #include "symbolTable.hpp"
+#include "vtableGenerator.hpp"
 #include <string.h>
 
 using namespace araceli;
@@ -60,8 +61,8 @@ int main(int argc, const char *argv[])
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // capture class info
-if(exp) {
    classCatalog cc;
+if(exp) {
    { classInfoBuilder v(cc); pPrj->acceptVisitor(v); }
    cmn::outBundle dbgOut;
    cmn::unconditionalWriter wr;
@@ -96,6 +97,7 @@ if(exp) {
    if(exp){ methodMover v; pPrj->acceptVisitor(v); }
    // TODO vtbl type gen
    // TODO vtbl const gen
+   if(exp) { vtableGenerator().generate(cc); }
    // TODO matryoshka decomp
    // TODO stack new/delete decomp
    cdwVERBOSE("graph after transforms ----\n");
