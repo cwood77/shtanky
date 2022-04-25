@@ -273,8 +273,8 @@ void codeGen::visit(cmn::localDeclNode& n)
 void codeGen::visit(cmn::varRefNode& n)
 {
    auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-   source << n.pDef.ref;
-   m_refColl.onLink(n.pDef);
+   source << n.pSrc.ref;
+   m_refColl.onLink(n.pSrc);
    visitChildren(n);
 }
 

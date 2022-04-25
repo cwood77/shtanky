@@ -310,8 +310,8 @@ void diagVisitor::visit(varRefNode& n)
 {
    cdwDEBUG("%svarRef; name=%s; linked?=%d\n",
       getIndent().c_str(),
-      n.pDef.ref.c_str(),
-      n.pDef.getRefee() ? 1 : 0);
+      n.pSrc.ref.c_str(),
+      n.pSrc.getRefee() ? 1 : 0);
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);
@@ -490,8 +490,8 @@ void cloningNodeVisitor::visit(ptrTypeNode& n)
 void cloningNodeVisitor::visit(varRefNode& n)
 {
    hNodeVisitor::visit(n);
-   as<varRefNode>().pDef.ref = n.pDef.ref;
-   as<varRefNode>().pDef.bind(*n.pDef.getRefee());
+   as<varRefNode>().pSrc.ref = n.pSrc.ref;
+   as<varRefNode>().pSrc.bind(*n.pSrc.getRefee());
 }
 
 node& cloneTree(node& n)

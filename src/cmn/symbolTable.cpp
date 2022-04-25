@@ -263,9 +263,7 @@ void nodePublisher::visit(memberNode& n)
 {
    bool isField = (dynamic_cast<fieldNode*>(&n)!=NULL);
    if(isField || (n.flags & (nodeFlags::kOverride | nodeFlags::kAbstract)))
-   {
       m_sTable.publish(fullyQualifiedName::build(n,n.name),n);
-   }
 
    hNodeVisitor::visit(n);
 }
@@ -326,18 +324,18 @@ void nodeResolver::visit(invokeNode& n)
 
 void nodeResolver::visit(varRefNode& n)
 {
-   m_sTable.markRequired(n.pDef);
+   m_sTable.markRequired(n.pSrc);
 
-   if(!n.pDef._getRefee())
+   if(!n.pSrc._getRefee())
    {
       // check locals first
       std::map<std::string,node*> locals;
       { localFinder v(locals); n.acceptVisitor(v); }
       for(auto it=locals.begin();it!=locals.end();++it)
-         m_sTable.tryResolveVarType(it->first,*it->second,n.pDef);
+         m_sTable.tryResolveVarType(it->first,*it->second,n.pSrc);
    }
 
-   linkResolver v(m_sTable,n.pDef,
+   linkResolver v(m_sTable,n.pSrc,
       linkResolver::kBaseClasses | linkResolver::kLocalsAndFields);
    n.acceptVisitor(v);
 

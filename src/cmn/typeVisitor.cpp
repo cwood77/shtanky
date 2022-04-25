@@ -171,7 +171,7 @@ void typePropagator::visit(varRefNode& n)
 {
    hNodeVisitor::visit(n);
 
-   typeNode *pTy = n.pDef.getRefee();
+   typeNode *pTy = n.pSrc.getRefee();
    type::gNodeCache->publish(n,type::gNodeCache->demand(*pTy));
 }
 

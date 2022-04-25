@@ -37,7 +37,7 @@ void ctorDtorGenerator::visit(cmn::classNode& n)
    w
       .append<cmn::assignmentNode>()
          .append<cmn::fieldAccessNode>([](auto& f){ f.name = "vtbl"; })
-            .append<cmn::varRefNode>([&](auto& v){ v.pDef.ref="self"; v.pDef.bind(*pSelf); })
+            .append<cmn::varRefNode>([&](auto& v){ v.pSrc.ref="self"; v.pSrc.bind(*pSelf); })
          .parent()
          .append<cmn::varRefNode>()
    ;

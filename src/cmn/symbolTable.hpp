@@ -57,7 +57,7 @@ private:
    std::map<std::string,node*>& m_table;
 };
 
-// knows all the scopes of a given node
+// knows how to bind different kinds of links
 class linkResolver : public hNodeVisitor {
 public:
    enum {
@@ -85,7 +85,6 @@ private:
    size_t m_mode;
 };
 
-// knows all the links in a given node
 class nodePublisher : public hNodeVisitor {
 public:
    explicit nodePublisher(symbolTable& st) : m_sTable(st) {}

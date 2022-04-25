@@ -25,8 +25,8 @@ void constHoister::visit(cmn::stringLiteralNode& n)
       name << ".const" << m_next++;
       pConst->name = name.str();
    }
-   pRef->pDef.ref = pConst->name;
-   pRef->pDef.bind(*pType.get());
+   pRef->pSrc.ref = pConst->name;
+   pRef->pSrc.bind(*pType.get());
 
    // chain
    pConst->appendChild(*pType.release());

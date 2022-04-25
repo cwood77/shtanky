@@ -64,7 +64,7 @@ void selfDecomposition::visit(cmn::varRefNode& n)
 {
    hNodeVisitor::visit(n);
 
-   auto pType = n.pDef.getRefee();
+   auto pType = n.pSrc.getRefee();
    const bool isField = (dynamic_cast<cmn::fieldNode*>(pType->getParent()));
 
    // change reference into explicit field access on 'self'
@@ -75,8 +75,8 @@ void selfDecomposition::visit(cmn::varRefNode& n)
    std::unique_ptr<cmn::varRefNode> pSelf(new cmn::varRefNode());
    std::unique_ptr<cmn::fieldAccessNode> pField(new cmn::fieldAccessNode());
 
-   pSelf->pDef.ref = "self";
-   pField->name = n.pDef.ref;
+   pSelf->pSrc.ref = "self";
+   pField->name = n.pSrc.ref;
 
    pField->appendChild(*pSelf.release());
    delete n.getParent()->replaceChild(n,*pField.release());
