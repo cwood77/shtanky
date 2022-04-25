@@ -44,6 +44,7 @@ class bopNode;
 class stringLiteralNode;
 class boolLiteralNode;
 class intLiteralNode;
+class structLiteralNode;
 
 class iNodeVisitor {
 public:
@@ -80,6 +81,7 @@ public:
    virtual void visit(stringLiteralNode& n) = 0;
    virtual void visit(boolLiteralNode& n) = 0;
    virtual void visit(intLiteralNode& n) = 0;
+   virtual void visit(structLiteralNode& n) = 0;
 
 protected:
    virtual void _implementLanguage() = 0;
@@ -443,6 +445,11 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class structLiteralNode : public node {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 // ----------------------- language visitors -----------------------
 
 class hNodeVisitor : public iNodeVisitor {
@@ -478,6 +485,7 @@ public:
    virtual void visit(stringLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(boolLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(intLiteralNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(structLiteralNode& n) { visit(static_cast<node&>(n)); }
 };
 
 class diagVisitor : public hNodeVisitor {
@@ -514,6 +522,7 @@ public:
    virtual void visit(stringLiteralNode& n);
    virtual void visit(boolLiteralNode& n);
    virtual void visit(intLiteralNode& n);
+   virtual void visit(structLiteralNode& n);
 
    virtual void _implementLanguage() {} // all
 
@@ -621,6 +630,7 @@ public:
    virtual void visit(stringLiteralNode&) { inst.reset(new stringLiteralNode()); }
    virtual void visit(boolLiteralNode&) { inst.reset(new boolLiteralNode()); }
    virtual void visit(intLiteralNode&) { inst.reset(new intLiteralNode()); }
+   virtual void visit(structLiteralNode&) { inst.reset(new structLiteralNode()); }
 
    virtual void _implementLanguage() {} // all
 
@@ -663,6 +673,7 @@ public:
    virtual void visit(stringLiteralNode& n) { unexpected(n); }
    virtual void visit(boolLiteralNode& n) { unexpected(n); }
    virtual void visit(intLiteralNode& n) { unexpected(n); }
+   virtual void visit(structLiteralNode& n) { unexpected(n); }
 
    virtual void _implementLanguage() {} // all
 

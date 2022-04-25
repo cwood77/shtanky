@@ -438,6 +438,15 @@ node& commonParser::parseLValuePrime(node& n)
 
 void commonParser::parseRValue(node& owner, node *pExprRoot)
 {
+   if(!parseLiteral(owner))
+      owner.appendChild(parseLValue());
+
+   if(m_l.getTokenClass() & commonLexor::kClassBop)
+      parseBop(owner,pExprRoot);
+}
+
+bool commonParser::parseLiteral(node& owner)
+{
    if(m_l.getToken() == commonLexor::kStringLiteral)
    {
       auto& l = m_nFac.appendNewChild<stringLiteralNode>(owner);
@@ -459,11 +468,41 @@ void commonParser::parseRValue(node& owner, node *pExprRoot)
       l.lexeme = m_l.getLexeme();
       m_l.advance();
    }
-   else
-      owner.appendChild(parseLValue());
+   else if(m_l.getToken() == commonLexor::kLBrace)
+   {
+      m_l.advance();
 
-   if(m_l.getTokenClass() & commonLexor::kClassBop)
-      parseBop(owner,pExprRoot);
+      auto& n = m_nFac.appendNewChild<structLiteralNode>(owner);
+      parseStructLiteralPart(n);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kRBrace);
+   }
+   else
+      return false;
+
+   return true;
+}
+
+void commonParser::parseStructLiteralPart(node& owner)
+{
+   if(m_l.getToken() == commonLexor::kRBrace)
+      return;
+
+   if(!parseLiteral(owner))
+   {
+      m_l.demand(cdwLoc,commonLexor::kName);
+      auto name = m_l.getLexeme();
+      m_l.advance();
+
+      auto& ref = m_nFac.appendNewChild<varRefNode>(owner);
+      ref.pSrc.ref = name;
+   }
+
+   if(m_l.getToken() == commonLexor::kComma)
+   {
+      m_l.advance();
+      parseStructLiteralPart(owner);
+   }
 }
 
 void commonParser::parseBop(node& owner, node *pExprRoot)

@@ -64,10 +64,21 @@ class lexorBase;
 //             | <faccess>
 //             | <index-op>
 //
-// <rvalue> ::== <string-literal>
-//             | <bool-literal>
+// <rvalue> ::== <literal>
 //             | <lvalue>
 //             | <bop>
+//
+// <literal> ::== <string-literal>
+//              | <bool-literal>
+//              | <int-literal>
+//              | <struct-literal>
+//
+// <struct-literal> ::== '{' <struct-literal-part> '}'
+// <struct-literal-part> :: == <literal> <struct-literal-part-prime>
+//                           | <name> <struct-literal-part-prime> // here, name can be a func
+//                           | e
+// <struct-literal-part-prime> ::== ',' <struct-literal-part>
+//                                | e
 //
 // <faccess>  ::== <lvalue> '->' <name>
 // <index-op> ::== <lvalue> '[' <lvalue> ']'
@@ -149,6 +160,8 @@ private:
    node& parseLValuePrime(node& n);
    void parseRValue(node& owner) { parseRValue(owner,&owner); }
    void parseRValue(node& owner, node *pExprRoot);
+   bool parseLiteral(node& owner);
+   void parseStructLiteralPart(node& owner);
    void parseBop(node& owner, node *pExprRoot);
 
    void parseType(node& owner);

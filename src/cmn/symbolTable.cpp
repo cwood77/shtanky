@@ -260,6 +260,13 @@ void nodePublisher::visit(constNode& n)
    hNodeVisitor::visit(n);
 }
 
+void nodePublisher::visit(funcNode& n)
+{
+   m_sTable.publish(fullyQualifiedName::build(n,n.name),n);
+
+   hNodeVisitor::visit(n);
+}
+
 void nodeResolver::visit(classNode& n)
 {
    for(auto it=n.baseClasses.begin();it!=n.baseClasses.end();++it)

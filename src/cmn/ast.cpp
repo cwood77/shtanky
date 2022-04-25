@@ -366,6 +366,15 @@ void diagVisitor::visit(intLiteralNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(structLiteralNode& n)
+{
+   cdwDEBUG("%sstructLit\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 diagVisitor::autoIndent::autoIndent(diagVisitor& v)
 : m_v(v)
 {

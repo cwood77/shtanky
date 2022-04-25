@@ -93,6 +93,7 @@ public:
    virtual void visit(classNode& n);
    virtual void visit(memberNode& n);
    virtual void visit(constNode& n);
+   virtual void visit(funcNode& n);
 
    virtual void _implementLanguage() {} // all
 
