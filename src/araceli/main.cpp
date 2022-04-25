@@ -10,6 +10,7 @@
 #include "batGen.hpp"
 #include "classInfo.hpp"
 #include "codegen.hpp"
+#include "codegen2.hpp"
 #include "consoleAppTarget.hpp"
 #include "constHoister.hpp"
 #include "ctorDtorGenerator.hpp"
@@ -107,8 +108,10 @@ if(exp) {
 
    // codegen
    cmn::outBundle out;
-   codeGen v(out);
-   pPrj->acceptVisitor(v);
+if(exp)
+   { araceli2::codeGen v(out); pPrj->acceptVisitor(v); }
+else
+   { codeGen v(out); pPrj->acceptVisitor(v); }
    { batGen v(out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
    cmn::unconditionalWriter wr;
    out.updateDisk(wr);
