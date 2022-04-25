@@ -491,7 +491,7 @@ void cloningNodeVisitor::visit(varRefNode& n)
 {
    hNodeVisitor::visit(n);
    as<varRefNode>().pSrc.ref = n.pSrc.ref;
-   as<varRefNode>().pSrc.bind(*n.pSrc.getRefee());
+   as<varRefNode>().pSrc.bind(*n.pSrc._getRefee());
 }
 
 node& cloneTree(node& n)

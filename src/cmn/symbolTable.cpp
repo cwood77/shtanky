@@ -20,7 +20,7 @@ void symbolTable::tryResolveVarType(const std::string& objName, node& obj, linkB
 {
    if(objName == l.ref)
    {
-      l.bind(obj.demandSoleChild<typeNode>());
+      l.bind(obj);
       unresolved.erase(&l);
    }
 }
@@ -270,7 +270,7 @@ void nodePublisher::visit(memberNode& n)
 
 void nodePublisher::visit(constNode& n)
 {
-   m_sTable.publish(fullyQualifiedName::build(n,n.name),n.demandSoleChild<typeNode>());
+   m_sTable.publish(fullyQualifiedName::build(n,n.name),n);
 
    hNodeVisitor::visit(n);
 }

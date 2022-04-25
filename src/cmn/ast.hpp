@@ -400,7 +400,7 @@ public:
 
 class varRefNode : public node {
 public:
-   link<typeNode> pSrc;
+   link<iVarSourceNode> pSrc;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };

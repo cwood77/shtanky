@@ -176,7 +176,7 @@ void astCodeGen::visit(cmn::callNode& n)
 
 void astCodeGen::visit(cmn::varRefNode& n)
 {
-   cmn::node& declSite = *n.pSrc.getRefee()->getParent();
+   cmn::iVarSourceNode& declSite = *n.pSrc.getRefee();
    if(dynamic_cast<cmn::constNode*>(&declSite))
    {
       // references to another stream, like a global, are patched
@@ -184,7 +184,7 @@ void astCodeGen::visit(cmn::varRefNode& n)
 
       auto pA = new lirArgConst(
          n.pSrc.ref,
-         cmn::type::gNodeCache->demand(*n.pSrc.getRefee()).getPseudoRefSize());
+         cmn::type::gNodeCache->demand(*n.pSrc._getRefee()).getPseudoRefSize());
 
       m_b.forNode(n)
          .returnToParent(*pA);
@@ -193,7 +193,7 @@ void astCodeGen::visit(cmn::varRefNode& n)
    {
       auto pA = new lirArgVar(
          n.pSrc.ref,
-         cmn::type::gNodeCache->demand(*n.pSrc.getRefee()).getPseudoRefSize());
+         cmn::type::gNodeCache->demand(*n.pSrc._getRefee()).getPseudoRefSize());
 
       m_b.forNode(n)
          .returnToParent(*pA);

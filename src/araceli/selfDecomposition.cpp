@@ -64,8 +64,8 @@ void selfDecomposition::visit(cmn::varRefNode& n)
 {
    hNodeVisitor::visit(n);
 
-   auto pType = n.pSrc.getRefee();
-   const bool isField = (dynamic_cast<cmn::fieldNode*>(pType->getParent()));
+   auto pSrc = n.pSrc.getRefee();
+   const bool isField = (dynamic_cast<cmn::fieldNode*>(pSrc));
 
    // change reference into explicit field access on 'self'
    // otherwise, it's a local or arg; leave it alone
