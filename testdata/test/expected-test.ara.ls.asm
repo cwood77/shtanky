@@ -16,5 +16,5 @@
 
 .seg const
 .const0:
-.data, "hello world!" <b> 0
+.data, "hello world!" <b> 0 
 

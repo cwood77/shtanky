@@ -26,5 +26,5 @@ rex(48)op(8f)modR/M(c3)
 // 15:                 ret               
 op(c3)
 // 18: .const0:
-// 19: .data, "hello world!" <b> 0
+// 19: .data, "hello world!" <b> 0 
 _strdata(68-65-6c-6c,6f-20-77-6f,72-6c-64-21)_intdata(00)

@@ -13,8 +13,8 @@
 100<exitFunc>      
 
 ----- start stream .const0
-10 <selectSegment>   @const/0                
-20 <globalConstData> @"hello world!" <b> 0/0 ;;; .const0
+10 <selectSegment>   @const/0                 
+20 <globalConstData> @"hello world!" <b> 0 /0 ;;; .const0
 
 === end of LIR bundle dump ===
 

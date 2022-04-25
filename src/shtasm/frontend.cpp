@@ -337,8 +337,6 @@ void dataParser::parseData(cmn::iObjWriter& w)
    }
    else if(m_l.getToken() == dataLexor::kName)
    {
-      cdwTHROW("is this used?");
-
       // TODO I hate absolute!  How do function pointers work in C++?
       cmn::objfmt::patch p;
       p.type = cmn::objfmt::patch::kAbs;

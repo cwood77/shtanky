@@ -9,10 +9,15 @@
 
 namespace liam {
 
+void dataFormatter::visit(cmn::varRefNode& n)
+{
+   m_o << n.pSrc.ref << " ";
+}
+
 void dataFormatter::visit(cmn::stringLiteralNode& n)
 {
    // provide NULL-termination
-   m_o << "\"" << n.value << "\" <b> 0";
+   m_o << "\"" << n.value << "\" <b> 0 ";
 }
 
 void astCodeGen::visit(cmn::constNode& n)
