@@ -239,7 +239,7 @@ void sourceCodeGen::visit(cmn::fieldAccessNode& n)
 
 void sourceCodeGen::visit(cmn::callNode& n)
 {
-   m_pOut->stream() << n.name;
+   m_pOut->stream() << n.pTarget.ref;
 
    generateCallFromOpenParen(n,false);
 }

@@ -172,7 +172,7 @@ void astCodeGen::visit(cmn::callNode& n)
       .append(cmn::tgt::kCall)
          .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
          .returnToParent(0)
-         .withArg<lirArgConst>(n.name,/*n*/ 0) // label
+         .withArg<lirArgConst>(n.pTarget.ref,/*n*/ 0) // label
          .withComment("(call label)");
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)

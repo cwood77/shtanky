@@ -107,7 +107,6 @@ void functionVisitor::visit(funcNode& n)
 {
    m_pBuilder.reset(type::typeBuilder::createFunction(fullyQualifiedName::build(n,n.name)));
    m_pBuilder->setStatic(true);
-   m_pBuilder->setReturnType(type::gNodeCache->demand(n.demandSoleChild<typeNode>()));
 
    m_pBuilder->setReturnType(type::gNodeCache->demand(n.demandSoleChild<typeNode>()));
    hNodeVisitor::visit(n);
@@ -174,7 +173,7 @@ void typePropagator::visit(callNode& n)
 {
    hNodeVisitor::visit(n);
 
-   auto fqn = fullyQualifiedName::build(n,n.name);
+   auto fqn = fullyQualifiedName::build(n,n.pTarget.ref);
    auto& rVal = type::gTable->fetch(fqn).as<type::iFunctionType>().getReturnType();
    type::gNodeCache->publish(n,rVal);
 }

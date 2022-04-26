@@ -15,6 +15,7 @@
 #include "constHoister.hpp"
 #include "ctorDtorGenerator.hpp"
 #include "inheritImplementor.hpp"
+#include "matryoshkaDecomp.hpp"
 #include "metadata.hpp"
 #include "methodMover.hpp"
 #include "objectBaser.hpp"
@@ -94,6 +95,7 @@ if(exp) {
    if(exp) { vtableGenerator().generate(cc); }
    if(exp) { inheritImplementor().generate(cc); }
    // TODO matryoshka decomp
+   if(exp) { matryoshkaDecomposition(cc).run(); }
    // TODO stack new/delete decomp
    cdwVERBOSE("graph after transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }

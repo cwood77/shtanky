@@ -139,6 +139,7 @@ ARACELI_SRC = \
 	src/araceli/lexor.cpp \
 	src/araceli/loader.cpp \
 	src/araceli/main.cpp \
+	src/araceli/matryoshkaDecomp.cpp \
 	src/araceli/metadata.cpp \
 	src/araceli/methodMover.cpp \
 	src/araceli/objectBaser.cpp \

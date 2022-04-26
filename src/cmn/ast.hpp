@@ -393,7 +393,7 @@ public:
 
 class callNode : public node {
 public:
-   std::string name;
+   link<std::string> pTarget;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };

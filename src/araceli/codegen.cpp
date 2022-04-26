@@ -250,7 +250,7 @@ void codeGen::visit(cmn::callNode& n)
 {
    auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
 
-   source << n.name;
+//   source << n.name;
 
    generateCallFromOpenParen(n,false);
 }

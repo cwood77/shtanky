@@ -358,7 +358,7 @@ void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
    varRefNode& func = dynamic_cast<varRefNode&>(*inst.get());
 
    auto& c = m_nFac.appendNewChild<callNode>(owner);
-   c.name = func.pSrc.ref;
+   c.pTarget.ref = func.pSrc.ref;
 
    parsePassedArgList(c);
 

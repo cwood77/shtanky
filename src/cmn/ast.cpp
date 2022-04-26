@@ -288,9 +288,10 @@ void diagVisitor::visit(fieldAccessNode& n)
 
 void diagVisitor::visit(callNode& n)
 {
-   cdwDEBUG("%scall; name=%s\n",
+   cdwDEBUG("%scall; name=%s; linked?=%d\n",
       getIndent().c_str(),
-      n.name.c_str());
+      n.pTarget.ref.c_str(),
+      n.pTarget.getRefee() ? 1 : 0);
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);
