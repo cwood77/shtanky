@@ -1,27 +1,54 @@
-=== LIR bundle has 5 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 14 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .assign.assignTester.run
 0 <enterFunc> ~rval/0, $self/0, $args/0 ;;; .assign.assignTester.run
 
 ----- start stream .assign.assignTester.readFromSubObject
 0 <enterFunc> ~rval0/0, $self0/0, $a/0, $v/0 ;;; .assign.assignTester.readFromSubObject
-0 mov         $v/0, [~a+8]/0                 ;;; =
+0 mov         $v/0, [~a+16]/0                ;;; =
 
 ----- start stream .assign.assignTester.writeIntoSubObject
 0 <enterFunc>    ~rval1/0, $self1/0 ;;; .assign.assignTester.writeIntoSubObject
-0 <reserveLocal> $a0/16             ;;; a
-0 mov            [~a+8]/0, @7/0     ;;; =
+0 <reserveLocal> $a0/24             ;;; a
+0 mov            [~a+16]/0, @7/0    ;;; =
 
 ----- start stream .assign.assignTester.readFromSubSubObject
 0 <enterFunc> ~rval2/0, $self2/0, $a1/0, $wrong/0 ;;; .assign.assignTester.readFromSubSubObject
-0 mov         ~x/0, [~a+8]/0                      ;;; fieldaccess: owner of x
-0 mov         $wrong/0, [~x+8]/0                  ;;; =
+0 mov         ~x/0, [~a+16]/0                     ;;; fieldaccess: owner of x
+0 mov         $wrong/0, [~x+16]/0                 ;;; =
 
 ----- start stream .assign.assignTester.writeIntoSubSubObject
-0 <enterFunc>    ~rval3/0, $self3/0 ;;; .assign.assignTester.writeIntoSubSubObject
-0 <reserveLocal> $wrong0/16         ;;; wrong
-0 mov            ~x0/0, [~wrong+8]/0;;; fieldaccess: owner of x
-0 mov            [~x0+8]/0, @7/0    ;;; =
+0 <enterFunc>    ~rval3/0, $self3/0   ;;; .assign.assignTester.writeIntoSubSubObject
+0 <reserveLocal> $wrong0/24           ;;; wrong
+0 mov            ~x0/0, [~wrong+16]/0 ;;; fieldaccess: owner of x
+0 mov            [~x0+16]/0, @7/0     ;;; =
+
+----- start stream .assign.assignTester.cctor
+0 <enterFunc> ~rval4/0, $self4/0 ;;; .assign.assignTester.cctor
+
+----- start stream .assign.assignTester.cdtor
+0 <enterFunc> ~rval5/0, $self5/0 ;;; .assign.assignTester.cdtor
+
+----- start stream .assign.A.cctor
+0 <enterFunc> ~rval6/0, $self6/0 ;;; .assign.A.cctor
+
+----- start stream .assign.A.cdtor
+0 <enterFunc> ~rval7/0, $self7/0 ;;; .assign.A.cdtor
+
+----- start stream .assign.B.cctor
+0 <enterFunc> ~rval8/0, $self8/0 ;;; .assign.B.cctor
+
+----- start stream .assign.B.cdtor
+0 <enterFunc> ~rval9/0, $self9/0 ;;; .assign.B.cdtor
+
+----- start stream A_vtbl_inst
+0 <globalConstData> @/0 ;;; A_vtbl_inst
+
+----- start stream B_vtbl_inst
+0 <globalConstData> @/0 ;;; B_vtbl_inst
+
+----- start stream assignTester_vtbl_inst
+0 <globalConstData> @.assign.assignTester.run /0 ;;; assignTester_vtbl_inst
 
 === end of LIR bundle dump ===
 

@@ -1,16 +1,20 @@
-class .test.test.vtbl {
-   run : ptr;
-}
-
 class .test.test {
-   _vtbl : .test.test.vtbl;
+   _vtbl : .test.test_vtbl;
    _out : .sht.cons.iStream;
 }
-
-func .test.test.ctor() : .test.test;
 
 func .test.test.run(
    self : .test.test,
    args : str[]) : void;
+
+func .test.test.cctor(
+   self : .test.test) : .test.test;
+
+func .test.test.cdtor(
+   self : .test.test) : .test.test;
+
+class .test.test_vtbl {
+   run : ptr;
+}
 
 ref "..\sht\cons\program.ara.lh";

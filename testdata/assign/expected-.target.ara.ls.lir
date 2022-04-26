@@ -1,8 +1,17 @@
-=== LIR bundle has 1 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 4 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .assign.consoleTarget.main
 0 <enterFunc>    ~rval/0, $args/0 ;;; .entrypoint
 0 <reserveLocal> $cout/8          ;;; cout
+
+----- start stream .assign.consoleTarget.cctor
+0 <enterFunc> ~rval0/0, $self/0 ;;; .assign.consoleTarget.cctor
+
+----- start stream .assign.consoleTarget.cdtor
+0 <enterFunc> ~rval1/0, $self0/0 ;;; .assign.consoleTarget.cdtor
+
+----- start stream consoleTarget_vtbl_inst
+0 <globalConstData> @/0 ;;; consoleTarget_vtbl_inst
 
 === end of LIR bundle dump ===
 

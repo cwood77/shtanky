@@ -113,21 +113,21 @@ void codeGenBase::generatePrototype(cmn::funcNode& m)
       for(auto it=m.attributes.begin();it!=m.attributes.end();++it)
          m_pOut->stream() << cmn::indent(*m_pOut) << "[" << *it << "]" << std::endl;
 
+   cmn::autoIndent _i(*m_pOut);
    m_pOut->stream()
       << "func " << m.name << "("
-      << std::endl
+      << std::endl << cmn::indent(*m_pOut)
    ;
 
-   cmn::autoIndent _i(*m_pOut);
    bool firstParam = true;
    auto args = m.getChildrenOf<cmn::argNode>();
    for(auto jit=args.begin();jit!=args.end();++jit)
    {
       if(!firstParam)
-         m_pOut->stream() << "," << std::endl;
+         m_pOut->stream() << "," << std::endl << cmn::indent(*m_pOut);
 
       m_pOut->stream()
-         << cmn::indent(*m_pOut) << (*jit)->name << " : ";
+         << (*jit)->name << " : ";
       ;
       liamTypeWriter tyW(m_pOut->stream(),m_refColl);
       (*jit)->demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
@@ -135,7 +135,7 @@ void codeGenBase::generatePrototype(cmn::funcNode& m)
       firstParam = false;
    }
 
-   m_pOut->stream() << cmn::indent(*m_pOut) << ") : ";
+   m_pOut->stream() << ") : ";
    liamTypeWriter tyW(m_pOut->stream(),m_refColl);
    m.demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
 }

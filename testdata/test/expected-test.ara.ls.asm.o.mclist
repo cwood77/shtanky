@@ -1,30 +1,39 @@
-// 2: .test.test.run: 
-// 3:                 push, rbx         
-rex(48)op(ff)modR/M(f3)
-// 4:                 push, rdi         
-rex(48)op(ff)modR/M(f7)
-// 5:                 sub, rsp, 32      
-rex(48)op(83)modR/M(ec)i8(20)
-// 6:                 mov, rbx, [rcx+8] ; fieldaccess: owner of _vtbl
-rex(48)op(8b)modR/M(59)d8(08)
-// 7:                 mov, rdi, [rbx]   ; fieldaccess: owner of printLn
-rex(48)op(8b)modR/M(3b)
-// 8:                 mov, rdx, .const0 ; shape:hoist imm from call
-rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
-// 9:                 mov, rbx, rcx     ;       (preserve) [combiner]
-rex(48)op(89)modR/M(cb)
-// 10:                 mov, rcx, [rbx+8] ; shape:hoist addrOf from call
-rex(48)op(8b)modR/M(4b)d8(08)
-// 11:                 call, [rdi]       ; (call ptr)
-rex(48)op(ff)modR/M(17)
-// 12:                 add, rsp, 32      
-rex(48)op(83)modR/M(c4)i8(20)
-// 13:                 pop, rdi          
-rex(48)op(8f)modR/M(c7)
-// 14:                 pop, rbx          
-rex(48)op(8f)modR/M(c3)
-// 15:                 ret               
-op(c3)
-// 18: .const0:
-// 19: .data, "hello world!" <b> 0 
+// 2: .const0:
+// 3: .data, "hello world!" <b> 0 
 _strdata(68-65-6c-6c,6f-20-77-6f,72-6c-64-21)_intdata(00)
+// 6: .test.test.run: 
+// 7:                 push, rbx         
+rex(48)op(ff)modR/M(f3)
+// 8:                 push, rdi         
+rex(48)op(ff)modR/M(f7)
+// 9:                 sub, rsp, 32      
+rex(48)op(83)modR/M(ec)i8(20)
+// 10:                 mov, rbx, [rcx+8] ; fieldaccess: owner of _vtbl
+rex(48)op(8b)modR/M(59)d8(08)
+// 11:                 mov, rdi, [rbx]   ; fieldaccess: owner of printLn
+rex(48)op(8b)modR/M(3b)
+// 12:                 mov, rdx, .const0 ; shape:hoist imm from call
+rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
+// 13:                 mov, rbx, rcx     ;       (preserve) [combiner]
+rex(48)op(89)modR/M(cb)
+// 14:                 mov, rcx, [rbx+8] ; shape:hoist addrOf from call
+rex(48)op(8b)modR/M(4b)d8(08)
+// 15:                 call, [rdi]       ; (call ptr)
+rex(48)op(ff)modR/M(17)
+// 16:                 add, rsp, 32      
+rex(48)op(83)modR/M(c4)i8(20)
+// 17:                 pop, rdi          
+rex(48)op(8f)modR/M(c7)
+// 18:                 pop, rbx          
+rex(48)op(8f)modR/M(c3)
+// 19:                 ret               
+op(c3)
+// 22: .test.test.cctor: 
+// 23:                   ret
+op(c3)
+// 26: .test.test.cdtor: 
+// 27:                   ret
+op(c3)
+// 30: test_vtbl_inst:
+// 31: .data, .test.test.run 
+_lbldata(00-00-00-00,00-00-00-00)

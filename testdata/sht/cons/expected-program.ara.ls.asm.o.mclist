@@ -1,11 +1,44 @@
-// 2: .sht.cons.stdout.printLn: 
-// 3:                           sub, rsp, 32   
-rex(48)op(83)modR/M(ec)i8(20)
-// 4:                           mov, rcx, 1    ; shape:hoist imm from call
-rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
-// 5:                           call, ._osCall ; (call label)
-op(e8)co32(00-00-00-00)
-// 6:                           add, rsp, 32   
-rex(48)op(83)modR/M(c4)i8(20)
-// 7:                           ret            
+// 2: .sht.cons.iStream.printLn: 
+// 3:                            ret
 op(c3)
+// 6: .sht.cons.iStream.cctor: 
+// 7:                          ret
+op(c3)
+// 10: .sht.cons.iStream.cdtor: 
+// 11:                          ret
+op(c3)
+// 14: .sht.cons.stdout.printLn: 
+// 15:                           sub, rsp, 32   
+rex(48)op(83)modR/M(ec)i8(20)
+// 16:                           mov, rcx, 1    ; shape:hoist imm from call
+rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
+// 17:                           call, ._osCall ; (call label)
+op(e8)co32(00-00-00-00)
+// 18:                           add, rsp, 32   
+rex(48)op(83)modR/M(c4)i8(20)
+// 19:                           ret            
+op(c3)
+// 22: .sht.cons.stdout.cctor: 
+// 23:                         ret
+op(c3)
+// 26: .sht.cons.stdout.cdtor: 
+// 27:                         ret
+op(c3)
+// 30: .sht.cons.program.run: 
+// 31:                        ret
+op(c3)
+// 34: .sht.cons.program.cctor: 
+// 35:                          ret
+op(c3)
+// 38: .sht.cons.program.cdtor: 
+// 39:                          ret
+op(c3)
+// 42: iStream_vtbl_inst:
+// 43: .data, .sht.cons.iStream.printLn 
+_lbldata(00-00-00-00,00-00-00-00)
+// 46: program_vtbl_inst:
+// 47: .data, .sht.cons.program.run 
+_lbldata(00-00-00-00,00-00-00-00)
+// 50: stdout_vtbl_inst:
+// 51: .data, .sht.cons.stdout.printLn 
+_lbldata(00-00-00-00,00-00-00-00)

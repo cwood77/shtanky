@@ -29,7 +29,7 @@ using namespace araceli;
 int main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   bool exp = cl.getSwitch("--exp","",false);
+   bool exp = cl.getSwitch("--exp","",true);
    std::string projectDir = cl.getNextArg(".\\testdata\\test");
    std::string batchBuild = projectDir + "\\.build.bat";
 

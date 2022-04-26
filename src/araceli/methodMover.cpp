@@ -12,6 +12,7 @@ void methodMover::visit(cmn::fileNode& n)
       cmn::methodNode *pMethod = *it;
 
       std::unique_ptr<cmn::funcNode> pFunc(new cmn::funcNode());
+      pFunc->attributes = pMethod->attributes;
       pFunc->name = cmn::fullyQualifiedName::build(*pMethod,pMethod->name);
       for(auto jit=pMethod->getChildren().begin();jit!=pMethod->getChildren().end();++jit)
          pFunc->appendChild(**jit);

@@ -1,3 +1,7 @@
+.seg const
+.const0:
+.data, "hello world!" <b> 0 
+
 .seg code       
 .test.test.run: 
                 push, rbx         
@@ -14,7 +18,15 @@
                 pop, rbx          
                 ret               
 
+.seg code         
+.test.test.cctor: 
+                  ret
+
+.seg code         
+.test.test.cdtor: 
+                  ret
+
 .seg const
-.const0:
-.data, "hello world!" <b> 0 
+test_vtbl_inst:
+.data, .test.test.run 
 

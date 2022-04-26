@@ -9,3 +9,11 @@ rex(48)op(83)modR/M(c4)i8(08)
 rex(48)op(83)modR/M(c4)i8(08)
 // 7:              ret
 op(c3)
+// 10: .assign.consoleTarget.cctor: 
+// 11:                              ret
+op(c3)
+// 14: .assign.consoleTarget.cdtor: 
+// 15:                              ret
+op(c3)
+// 18: consoleTarget_vtbl_inst:
+// 19: .data, 

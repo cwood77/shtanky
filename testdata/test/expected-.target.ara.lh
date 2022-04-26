@@ -1,9 +1,17 @@
 class .test.consoleTarget {
+   _vtbl : .test.consoleTarget_vtbl;
 }
-
-func .test.consoleTarget.ctor() : .test.consoleTarget;
 
 [entrypoint]
 func .test.consoleTarget.main(
    args : str[]) : void;
+
+func .test.consoleTarget.cctor(
+   self : .test.consoleTarget) : .test.consoleTarget;
+
+func .test.consoleTarget.cdtor(
+   self : .test.consoleTarget) : .test.consoleTarget;
+
+class .test.consoleTarget_vtbl {
+}
 

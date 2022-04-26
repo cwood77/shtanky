@@ -1,4 +1,7 @@
-=== LIR bundle has 2 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 5 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+
+----- start stream .const0
+0 <globalConstData> @"hello world!" <b> 0 /0 ;;; .const0
 
 ----- start stream .test.test.run
 0 <enterFunc> ~rval/0, $self/0, $args/0                       ;;; .test.test.run
@@ -7,8 +10,14 @@
 0 mov         ~printLn/0, [~_vtbl]/0                          ;;; fieldaccess: owner of printLn
 0 call        ~rval0/0, [~printLn]/0, [~self+8]/0, @.const0/0 ;;; (call ptr)
 
------ start stream .const0
-0 <globalConstData> @"hello world!" <b> 0 /0 ;;; .const0
+----- start stream .test.test.cctor
+0 <enterFunc> ~rval1/0, $self0/0 ;;; .test.test.cctor
+
+----- start stream .test.test.cdtor
+0 <enterFunc> ~rval2/0, $self1/0 ;;; .test.test.cdtor
+
+----- start stream test_vtbl_inst
+0 <globalConstData> @.test.test.run /0 ;;; test_vtbl_inst
 
 === end of LIR bundle dump ===
 
