@@ -14,6 +14,7 @@
 #include "consoleAppTarget.hpp"
 #include "constHoister.hpp"
 #include "ctorDtorGenerator.hpp"
+#include "inheritImplementor.hpp"
 #include "metadata.hpp"
 #include "methodMover.hpp"
 #include "objectBaser.hpp"
@@ -92,6 +93,7 @@ if(exp) {
    // TODO vtbl type gen
    // TODO vtbl const gen
    if(exp) { vtableGenerator().generate(cc); }
+   if(exp) { inheritImplementor().generate(cc); }
    // TODO matryoshka decomp
    // TODO stack new/delete decomp
    cdwVERBOSE("graph after transforms ----\n");

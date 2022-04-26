@@ -458,6 +458,11 @@ void cloningNodeVisitor::visit(methodNode& n)
    hNodeVisitor::visit(n);
 }
 
+void cloningNodeVisitor::visit(fieldNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
 void cloningNodeVisitor::visit(argNode& n)
 {
    as<argNode>().name = n.name;

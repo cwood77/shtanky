@@ -31,7 +31,7 @@ public:
 
 class classInfo {
 public:
-//   classInfo();
+   classInfo();
 
    void addOrReplaceVirtualMethod(cmn::classNode& forClass, cmn::methodNode& n);
 
@@ -39,6 +39,8 @@ public:
    std::string fqn;
    //size_t flags;
    cmn::classNode *pNode;
+   cmn::classNode *pVTableClass;
+   std::list<std::string> bases;
 
    std::vector<methodInfo> inheritedAndDirectMethods;
    std::map<std::string,size_t> nameLookup;

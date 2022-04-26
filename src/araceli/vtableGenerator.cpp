@@ -9,14 +9,11 @@ void vtableGenerator::generate(classCatalog& cc)
 {
    for(auto cit=cc.classes.begin();cit!=cc.classes.end();++cit)
    {
-      std::string classShortName;
-      cmn::nameUtil::stripLast(cit->first,classShortName);
-
       std::unique_ptr<cmn::classNode> pClass(new cmn::classNode());
-      pClass->name = classShortName + "_vtbl";
+      pClass->name = cit->second.name + "_vtbl";
 
       std::unique_ptr<cmn::constNode> pConst(new cmn::constNode());
-      pConst->name = classShortName + "_vtbl_inst";
+      pConst->name = cit->second.name + "_vtbl_inst";
 
       auto& sNode = cmn::treeWriter(*pConst.get())
          .append<cmn::userTypeNode>([&](auto& t)
@@ -43,6 +40,8 @@ void vtableGenerator::generate(classCatalog& cc)
                //v.pSrc.bind(*mit->pMethod);
             });
       }
+
+      cit->second.pVTableClass = pClass.get();
 
       cmn::fileNode& file = cit->second.pNode->getAncestor<cmn::fileNode>();
       file.appendChild(*pClass.release());

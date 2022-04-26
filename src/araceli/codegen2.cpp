@@ -145,9 +145,12 @@ void headerCodeGen::visit(cmn::classNode& n)
    // however, parents _also_ are generated.  This is in case they have methods
    // which would need a self parameter
    std::vector<cmn::fieldNode*> totalFields;
+#if 0
    auto lineage = n.computeLineage();
    for(auto it=lineage.begin();it!=lineage.end();++it)
       (*it)->getChildrenOf(totalFields);
+#endif
+   n.getChildrenOf(totalFields);
 
    m_pOut->stream()
       << cmn::indent(*m_pOut) << "class " << cmn::fullyQualifiedName::build(n)
@@ -159,7 +162,7 @@ void headerCodeGen::visit(cmn::classNode& n)
 
       // hmm....
       // TODO if I move this into a transform, then I must really move field collapsing above too.
-      m_pOut->stream() << cmn::indent(*m_pOut) << "_vtbl : " << (cmn::fullyQualifiedName::build(n) + "_vtbl") << ";" << std::endl;
+//      m_pOut->stream() << cmn::indent(*m_pOut) << "_vtbl : " << (cmn::fullyQualifiedName::build(n) + "_vtbl") << ";" << std::endl;
 
       for(auto it=totalFields.begin();it!=totalFields.end();++it)
       {

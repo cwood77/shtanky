@@ -650,7 +650,7 @@ public:
    virtual void visit(classNode& n) { unexpected(n); }
    virtual void visit(memberNode& n);
    virtual void visit(methodNode& n);
-   virtual void visit(fieldNode& n) { unexpected(n); }
+   virtual void visit(fieldNode& n);
    virtual void visit(constNode& n) { unexpected(n); }
    virtual void visit(funcNode& n) { unexpected(n); }
    virtual void visit(argNode& n);

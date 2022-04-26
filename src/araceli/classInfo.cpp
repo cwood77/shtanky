@@ -3,6 +3,11 @@
 
 namespace araceli {
 
+classInfo::classInfo()
+: pNode(NULL), pVTableClass(NULL)
+{
+}
+
 void classInfo::addOrReplaceVirtualMethod(cmn::classNode& forClass, cmn::methodNode& n)
 {
    auto it = nameLookup.find(n.name);
@@ -28,6 +33,10 @@ classInfo& classCatalog::create(cmn::classNode& n)
    info.name = n.name;
    info.fqn = fqn;
    info.pNode = &n;
+   auto l = n.computeLineage();
+   for(auto it=l.begin();it!=l.end();++it)
+      info.bases.push_back(cmn::fullyQualifiedName::build(**it));
+   info.bases.pop_back(); // do not include myself
    return info;
 }
 
