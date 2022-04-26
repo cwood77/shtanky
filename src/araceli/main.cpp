@@ -35,7 +35,8 @@ int main(int argc, const char *argv[])
 
    std::unique_ptr<cmn::araceliProjectNode> pPrj = projectBuilder::create("ca");
    projectBuilder::addScope(*pPrj.get(),projectDir,/*inProject*/true);
-   projectBuilder::addScope(*pPrj.get(),".\\testdata\\sht",/*inProject*/false);
+   consoleAppTarget tgt;
+   tgt.addScopes(*pPrj.get());
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // initial link to discover and load everything
@@ -52,7 +53,7 @@ int main(int argc, const char *argv[])
    }
 
    // use metadata to generate the target
-   consoleAppTarget().codegen(*pPrj,md);
+   tgt.araceliCodegen(*pPrj,md);
 
    // inject implied base class
    if(exp){ objectBaser v; pPrj->acceptVisitor(v); }
@@ -102,10 +103,10 @@ if(exp) {
    // codegen
    cmn::outBundle out;
 if(exp)
-   { araceli2::codeGen v(out); pPrj->acceptVisitor(v); }
+   { araceli2::codeGen v(tgt,out); pPrj->acceptVisitor(v); }
 else
    { codeGen v(out); pPrj->acceptVisitor(v); }
-   { batGen v(out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
+   { batGen v(tgt,out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
    cmn::unconditionalWriter wr;
    out.updateDisk(wr);
 

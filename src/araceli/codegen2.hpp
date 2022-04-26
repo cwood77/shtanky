@@ -4,7 +4,11 @@
 
 namespace cmn { class outBundle; }
 
+namespace araceli { class iTarget; }
+
 namespace araceli2 {
+
+using namespace araceli;
 
 class fileRefs {
 public:
@@ -74,7 +78,11 @@ public:
 
 class sourceCodeGen : public codeGenBase {
 public:
-   sourceCodeGen(cmn::outBundle& out, const std::string& path) : codeGenBase(out,path) {}
+   sourceCodeGen(
+      cmn::outBundle& out,
+      const std::string& headerPath,
+      const std::string& sourcePath,
+      iTarget& tgt) : codeGenBase(out,sourcePath), m_headerPath(headerPath), m_tgt(tgt) {}
 
    virtual void visit(cmn::constNode& n);
    virtual void visit(cmn::funcNode& n);
@@ -90,19 +98,26 @@ public:
    virtual void visit(cmn::intLiteralNode& n);
    virtual void visit(cmn::structLiteralNode& n);
 
+protected:
+   virtual void appendFileSuffix();
+
 private:
    void generateCallFromOpenParen(cmn::node& n, bool skipFirst);
    void generateCommaDelimitedChildren(cmn::node& n, bool skipFirst = false);
+
+   std::string m_headerPath;
+   iTarget& m_tgt;
 };
 
 class codeGen : public cmn::araceliVisitor<> {
 public:
-   explicit codeGen(cmn::outBundle& out) : m_out(out) {}
+   explicit codeGen(iTarget& tgt, cmn::outBundle& out) : m_tgt(tgt), m_out(out) {}
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
    virtual void visit(cmn::fileNode& n);
 
 private:
+   iTarget& m_tgt;
    cmn::outBundle& m_out;
 };
 

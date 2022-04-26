@@ -2,6 +2,7 @@
 #include "../cmn/pathUtil.hpp"
 #include "../cmn/trace.hpp"
 #include "codegen2.hpp"
+#include "iTarget.hpp"
 #include <stdexcept>
 
 namespace araceli2 {
@@ -295,6 +296,13 @@ void sourceCodeGen::visit(cmn::structLiteralNode& n)
    m_pOut->stream() << " }";
 }
 
+void sourceCodeGen::appendFileSuffix()
+{
+   m_tgt.liamCodegen(*m_pOut);
+   m_pOut->stream() << std::endl;
+   m_refs.addRef(m_headerPath);
+}
+
 void sourceCodeGen::generateCallFromOpenParen(cmn::node& n, bool skipFirst)
 {
    m_pOut->stream() << "(";
@@ -322,7 +330,7 @@ void codeGen::visit(cmn::fileNode& n)
    auto source = cmn::pathUtil::addExt(n.fullPath,cmn::pathUtil::kExtLiamSource);
 
    { headerCodeGen v(m_out,header); n.acceptVisitor(v); }
-   { sourceCodeGen v(m_out,source); n.acceptVisitor(v); }
+   { sourceCodeGen v(m_out,header,source,m_tgt); n.acceptVisitor(v); }
 }
 
 } // namespace araceli

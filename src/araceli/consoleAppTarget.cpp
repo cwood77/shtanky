@@ -4,10 +4,16 @@
 #include "consoleAppTarget.hpp"
 #include "loader.hpp"
 #include "metadata.hpp"
+#include "projectBuilder.hpp"
 
 namespace araceli {
 
-void consoleAppTarget::codegen(cmn::araceliProjectNode& root, metadata& md)
+void consoleAppTarget::addScopes(cmn::araceliProjectNode& root)
+{
+   projectBuilder::addScope(root,".\\testdata\\sht",/*inProject*/false);
+}
+
+void consoleAppTarget::araceliCodegen(cmn::araceliProjectNode& root, metadata& md)
 {
    std::list<cmn::node*> topLevels;
    md.demandMulti("program",topLevels);
@@ -65,6 +71,20 @@ if (0) {
    out.updateDisk(wr);
 
    loader::loadFile(scope,fullPath);
+}
+
+void consoleAppTarget::liamCodegen(cmn::outStream& sourceStream)
+{
+   sourceStream.stream() << std::endl;
+   sourceStream.stream() << "func ._osCall(code : str, payload : str) : void;" << std::endl;
+}
+
+void consoleAppTarget::adjustFiles(phase p, std::list<std::string>& files)
+{
+   if(p == iTarget::kShtasmPhase)
+      files.push_back("testdata\\sht\\oscall.asm");
+   else if(p == iTarget::kShlinkPhase)
+      files.push_back("testdata\\sht\\oscall.asm.o");
 }
 
 cmn::scopeNode& consoleAppTarget::findProjectScope(cmn::araceliProjectNode& root)
