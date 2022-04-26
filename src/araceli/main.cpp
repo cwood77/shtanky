@@ -85,7 +85,7 @@ if(exp) {
 
    // compile-away classes
    if(exp){ ctorDtorGenerator v; pPrj->acceptVisitor(v); }
-   if(exp){ abstractGenerator v; pPrj->acceptVisitor(v); }
+   if(exp){ abstractGenerator::generate(cc); }
    // self param, self fields, invoke decomp
    { selfDecomposition v; pPrj->acceptVisitor(v); } // TODO some invokes should turn into calls
    // TODO basecall decomp

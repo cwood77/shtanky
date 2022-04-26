@@ -35,7 +35,7 @@ void vtableGenerator::generate(classCatalog& cc)
          cmn::treeWriter(sNode)
             .append<cmn::varRefNode>([=](auto& v)
             {
-               v.pSrc.ref = mit->fqn;
+               v.pSrc.ref = cmn::fullyQualifiedName::build(*cit->second.pNode,mit->name);
                // these methods have been moved, so don't bind them
                //v.pSrc.bind(*mit->pMethod);
             });

@@ -1,32 +1,14 @@
 #pragma once
 #include "../cmn/ast.hpp"
 #include <map>
+#include "classInfo.hpp"
 
 namespace araceli {
 
-class classInfoOLD {
+// find all abstract methods of a given class, and it's bases, and implement them
+class abstractGenerator {
 public:
-   std::map<std::string,cmn::methodNode*> lastMethod;
-   std::map<std::string,std::string> vTable;
-   std::set<std::string> abstracts;
-};
-
-class classInfos {
-public:
-   std::map<std::string,classInfoOLD> catalog;
-};
-
-// find all abstract methods of a given class, and it's bases
-// implement those to throw errors
-class abstractGenerator : public cmn::araceliVisitor<> {
-public:
-   virtual void visit(cmn::node& n) { visitChildren(n); }
-   virtual void visit(cmn::classNode& n);
-
-   classInfos m_infos;
-
-private:
-   void populateVTable(cmn::classNode& n);
+   static void generate(classCatalog& cc);
 };
 
 } // namespace araceli

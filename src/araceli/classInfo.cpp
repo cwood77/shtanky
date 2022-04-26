@@ -49,7 +49,7 @@ void classInfoBuilder::visit(cmn::classNode& n)
    {
       auto methods = (*it)->getChildrenOf<cmn::methodNode>();
       for(auto mit=methods.begin();mit!=methods.end();++mit)
-         if((*mit)->flags & (cmn::nodeFlags::kOverride | cmn::nodeFlags::kAbstract))
+         if((*mit)->flags & (cmn::nodeFlags::kVirtual | cmn::nodeFlags::kOverride | cmn::nodeFlags::kAbstract))
             info.addOrReplaceVirtualMethod(n,**mit);
    }
 }

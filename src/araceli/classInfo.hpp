@@ -9,7 +9,7 @@
 // ADD data, but don't bother EDITING existing data.
 //
 // classInfo is gathered _after_ object is added as the implied base class, but _before_
-// all other transformations.  objectBaser is an exception because it participats in
+// all other transformations.  objectBaser is an exception because it participates in
 // symbol linking (i.e. load).
 
 namespace cmn { class outStream; }

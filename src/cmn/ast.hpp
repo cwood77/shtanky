@@ -99,16 +99,17 @@ protected:
 
 namespace nodeFlags {
    enum {
-      kOverride            = 1 << 0,
-      kAbstract            = 1 << 1,
-      kStatic              = 1 << 2,
-      kInterface           = 1 << 3,
+      kVirtual             = 1 << 0,
+      kOverride            = 1 << 1,
+      kAbstract            = 1 << 2,
+      kStatic              = 1 << 3,
+      kInterface           = 1 << 4,
 
-      kPublic              = 1 << 4,
-      kProtected           = 1 << 5,
-      kPrivate             = 1 << 6,
+      kPublic              = 1 << 5,
+      kProtected           = 1 << 6,
+      kPrivate             = 1 << 7,
 
-      kAddressableForWrite = 1 << 7, // used in codegen
+      kAddressableForWrite = 1 << 8, // used in codegen
    };
 };
 
