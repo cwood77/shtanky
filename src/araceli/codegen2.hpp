@@ -39,23 +39,46 @@ public:
    virtual void visit(cmn::arrayTypeNode& n);
    virtual void visit(cmn::voidTypeNode& n);
    virtual void visit(cmn::userTypeNode& n);
+   virtual void visit(cmn::ptrTypeNode& n);
 
 private:
    std::ostream& m_o;
    fileRefCollector& m_refs;
 };
 
-class codeGen : public cmn::araceliVisitor<> {
+class codeGenBase : public cmn::araceliVisitor<> {
 public:
-   explicit codeGen(cmn::outBundle& out) : m_pActiveFile(NULL), m_out(out) {}
+   const std::string& getPath() const { return m_refs.destPath; }
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
    virtual void visit(cmn::fileNode& n);
+
+protected:
+   codeGenBase(cmn::outBundle& out, const std::string& path);
+
+   void generatePrototype(cmn::funcNode& n);
+   virtual void appendFileSuffix() {}
+
+   cmn::outStream *m_pOut;
+   fileRefs m_refs;
+   fileRefCollector m_refColl;
+};
+
+class headerCodeGen : public codeGenBase {
+public:
+   headerCodeGen(cmn::outBundle& out, const std::string& path) : codeGenBase(out,path) {}
+
    virtual void visit(cmn::classNode& n);
+   virtual void visit(cmn::funcNode& n);
+};
+
+class sourceCodeGen : public codeGenBase {
+public:
+   sourceCodeGen(cmn::outBundle& out, const std::string& path) : codeGenBase(out,path) {}
+
    virtual void visit(cmn::constNode& n);
    virtual void visit(cmn::funcNode& n);
    virtual void visit(cmn::sequenceNode& n);
-   virtual void visit(cmn::invokeNode& n);
    virtual void visit(cmn::invokeFuncPtrNode& n);
    virtual void visit(cmn::fieldAccessNode& n);
    virtual void visit(cmn::callNode& n);
@@ -65,19 +88,22 @@ public:
    virtual void visit(cmn::stringLiteralNode& n);
    virtual void visit(cmn::boolLiteralNode& n);
    virtual void visit(cmn::intLiteralNode& n);
+   virtual void visit(cmn::structLiteralNode& n);
 
 private:
-   void generateClassType(cmn::classNode& n, cmn::outStream& header, const std::string& vname);
-
    void generateCallFromOpenParen(cmn::node& n, bool skipFirst);
+   void generateCommaDelimitedChildren(cmn::node& n, bool skipFirst = false);
+};
 
-   cmn::fileNode *m_pActiveFile;
+class codeGen : public cmn::araceliVisitor<> {
+public:
+   explicit codeGen(cmn::outBundle& out) : m_out(out) {}
+
+   virtual void visit(cmn::node& n) { visitChildren(n); }
+   virtual void visit(cmn::fileNode& n);
+
+private:
    cmn::outBundle& m_out;
-
-   fileRefs m_hRefs;
-   fileRefs m_sRefs;
-
-   fileRefCollector m_refColl;
 };
 
 } // namespace araceli

@@ -4,6 +4,14 @@
 #include <string>
 #include <vector>
 
+// generally, classInfo is a snapshot of the AST the user wrote--i.e. soon after parse.
+// classInfo is NOT kept up-to-date throughout transformations; the rule is, you may
+// ADD data, but don't bother EDITING existing data.
+//
+// classInfo is gathered _after_ object is added as the implied base class, but _before_
+// all other transformations.  objectBaser is an exception because it participats in
+// symbol linking (i.e. load).
+
 namespace cmn { class outStream; }
 
 namespace araceli {

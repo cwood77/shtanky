@@ -29,11 +29,14 @@ void fileRefCollector::onLink(cmn::linkBase& l)
       return;
 
    cmn::node *p = l._getRefee();
-   // self isn't linked in some codegen
-   //if(!p)
-   //   throw std::runtime_error("unlinked ref during collect");
    if(!p)
+   {
+      cdwDEBUG(
+         "ignoring unlinked link with ref '%s' of type '%s' for fileRef computation\n",
+         l.ref.c_str(),
+         typeid(l).name());
       return;
+   }
 
    auto& f = p->getAncestor<cmn::fileNode>();
    if(f.fullPath.empty())
@@ -81,223 +84,62 @@ void liamTypeWriter::visit(cmn::userTypeNode& n)
    hNodeVisitor::visit(n);
 }
 
-void codeGen::visit(cmn::fileNode& n)
+void liamTypeWriter::visit(cmn::ptrTypeNode& n)
 {
-   cmn::fileNode *pPrev = m_pActiveFile;
-   m_pActiveFile = &n;
-   m_hRefs.destPath
-      = cmn::pathUtil::addExt(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader);
-   m_sRefs.destPath
-      = cmn::pathUtil::addExt(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource);
-
+   m_o << "ptr";
    hNodeVisitor::visit(n);
-
-   {
-      auto& header = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader).stream();
-      m_hRefs.flush(header);
-   }
-   {
-      auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-
-      // TODO should this be stuffed into the target?
-      // emit a prototype for .osCall into every ls file
-      source << "func ._osCall(code : str, payload : str) : void;" << std::endl;
-      source << std::endl;
-
-      m_sRefs.addRef(m_hRefs.destPath); // always include your own header :)
-      m_sRefs.flush(source);
-   }
-
-   m_refColl.bind(NULL);
-   m_pActiveFile = pPrev;
 }
 
-void codeGen::visit(cmn::classNode& n)
+void codeGenBase::visit(cmn::fileNode& n)
 {
-   auto& header = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamHeader);
-   m_refColl.bind(&m_hRefs);
-
-   std::string vname;
-   generateClassType(n,header,vname);
-
-   m_refColl.bind(&m_sRefs);
+   hNodeVisitor::visit(n);
+   appendFileSuffix();
+   m_refs.flush(m_pOut->stream());
 }
 
-void codeGen::visit(cmn::constNode& n)
+codeGenBase::codeGenBase(cmn::outBundle& out, const std::string& path) : m_pOut(NULL)
 {
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-
-   source << "const " << n.name << " : ";
-   liamTypeWriter tyW(source,m_refColl);
-   n.getChildren()[0]->acceptVisitor(tyW);
-   source << " = ";
-   n.getChildren()[1]->acceptVisitor(*this);
-   source << ";" << std::endl;
+   m_pOut = &out.get<cmn::outStream>(path);
+   m_refs.destPath = path;
+   m_refColl.bind(&m_refs);
 }
 
-void codeGen::visit(cmn::funcNode& m)
+void codeGenBase::generatePrototype(cmn::funcNode& m)
 {
-   //hNodeVisitor::visit(m);
-   //return;
+   m_pOut->stream() << cmn::indent(*m_pOut);
 
-   auto& s = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource);
-
-   // =============================================================
-   // direct copy of method node
-   // =============================================================
    if(m.attributes.size())
       for(auto it=m.attributes.begin();it!=m.attributes.end();++it)
-         s.stream() << cmn::indent(s) << "[" << *it << "]" << std::endl;
+         m_pOut->stream() << cmn::indent(*m_pOut) << "[" << *it << "]" << std::endl;
 
-   s.stream()
-      << cmn::indent(s) << "func " << cmn::fullyQualifiedName::build(m,/*m,m.baseImpl.ref*/m.name) << "("
+   m_pOut->stream()
+      << "func " << m.name << "("
       << std::endl
    ;
 
-   cmn::autoIndent _i(s);
-
+   cmn::autoIndent _i(*m_pOut);
    bool firstParam = true;
-
    auto args = m.getChildrenOf<cmn::argNode>();
    for(auto jit=args.begin();jit!=args.end();++jit)
    {
       if(!firstParam)
-         s.stream() << "," << std::endl;
+         m_pOut->stream() << "," << std::endl;
 
-      s.stream()
-         << cmn::indent(s) << (*jit)->name << " : ";
+      m_pOut->stream()
+         << cmn::indent(*m_pOut) << (*jit)->name << " : ";
       ;
-      liamTypeWriter tyW(s.stream(),m_refColl);
+      liamTypeWriter tyW(m_pOut->stream(),m_refColl);
       (*jit)->demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
 
       firstParam = false;
    }
 
-   s.stream()
-      << ") : void" // TODO - actually print the right return value
-   ;
-
-   hNodeVisitor::visit(m);
+   m_pOut->stream() << cmn::indent(*m_pOut) << ") : ";
+   liamTypeWriter tyW(m_pOut->stream(),m_refColl);
+   m.demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
 }
 
-void codeGen::visit(cmn::sequenceNode& n)
-{
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource);
-
-   source.stream() << cmn::indent(source) << "{" << std::endl;
-
-   {
-      cmn::autoIndent _i(source);
-
-      for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
-      {
-         source.stream() << cmn::indent(source);
-         (*it)->acceptVisitor(*this);
-         source.stream() << ";" << std::endl;
-      }
-   }
-
-   source.stream() << cmn::indent(source) << "}" << std::endl;
-}
-
-void codeGen::visit(cmn::invokeNode& n)
-{
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-
-   if(n.getChildren().size() < 1)
-      throw std::runtime_error("eh?  bad invokeNode");
-
-   n.getChildren()[0]->acceptVisitor(*this);
-   source << "->" << n.proto.ref;
-
-   generateCallFromOpenParen(n,true);
-}
-
-void codeGen::visit(cmn::invokeFuncPtrNode& n)
-{
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-
-   if(n.getChildren().size() < 1)
-      throw std::runtime_error("eh?  bad invokeNode");
-
-   n.getChildren()[0]->acceptVisitor(*this);
-   source << "->";
-
-   generateCallFromOpenParen(n,true);
-}
-
-void codeGen::visit(cmn::fieldAccessNode& n)
-{
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-   visitChildren(n);
-   source << ":" << n.name;
-}
-
-void codeGen::visit(cmn::callNode& n)
-{
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-
-   source << n.name;
-
-   generateCallFromOpenParen(n,false);
-}
-
-void codeGen::visit(cmn::localDeclNode& n)
-{
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource);
-
-   source.stream() << "var " << n.name << " : ";
-   liamTypeWriter tyW(source.stream(),m_refColl);
-   n.demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
-
-   if(n.getChildren().size() > 1)
-   {
-      source.stream() << " = ";
-      n.getChildren()[1]->acceptVisitor(*this);
-   }
-}
-
-void codeGen::visit(cmn::varRefNode& n)
-{
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-   source << n.pSrc.ref;
-   m_refColl.onLink(n.pSrc);
-   visitChildren(n);
-}
-
-void codeGen::visit(cmn::assignmentNode& n)
-{
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-
-   n.getChildren()[0]->acceptVisitor(*this);
-
-   source << " = ";
-
-   n.getChildren()[1]->acceptVisitor(*this);
-}
-
-void codeGen::visit(cmn::stringLiteralNode& n)
-{
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-   source << "\"" << n.value << "\"";
-   visitChildren(n);
-}
-
-void codeGen::visit(cmn::boolLiteralNode& n)
-{
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-   source << n.value;
-   visitChildren(n);
-}
-
-void codeGen::visit(cmn::intLiteralNode& n)
-{
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-   source << n.lexeme;
-   visitChildren(n);
-}
-
-void codeGen::generateClassType(cmn::classNode& n, cmn::outStream& header, const std::string& vname)
+void headerCodeGen::visit(cmn::classNode& n)
 {
    // gather fields from self _and_ all parents (no inheritance in liam)
    // however, parents _also_ are generated.  This is in case they have methods
@@ -307,47 +149,177 @@ void codeGen::generateClassType(cmn::classNode& n, cmn::outStream& header, const
    for(auto it=lineage.begin();it!=lineage.end();++it)
       (*it)->getChildrenOf(totalFields);
 
-   header.stream()
-      << "class " << cmn::fullyQualifiedName::build(n) << " {" << std::endl
+   m_pOut->stream()
+      << cmn::indent(*m_pOut) << "class " << cmn::fullyQualifiedName::build(n)
+      << " {" << std::endl
    ;
 
    {
-      cmn::autoIndent _i(header);
+      cmn::autoIndent _i(*m_pOut);
 
-      if(!vname.empty())
-         header.stream() << cmn::indent(header) << "_vtbl : " << vname << ";" << std::endl;
+      // hmm....
+      // TODO if I move this into a transform, then I must really move field collapsing above too.
+      m_pOut->stream() << cmn::indent(*m_pOut) << "_vtbl : " << (cmn::fullyQualifiedName::build(n) + "_vtbl") << ";" << std::endl;
 
       for(auto it=totalFields.begin();it!=totalFields.end();++it)
       {
-         header.stream() << cmn::indent(header) << (*it)->name << " : ";
+         m_pOut->stream() << cmn::indent(*m_pOut) << (*it)->name << " : ";
 
-         liamTypeWriter tyW(header.stream(),m_refColl);
+         liamTypeWriter tyW(m_pOut->stream(),m_refColl);
          (*it)->demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
 
-         header.stream() << ";" << std::endl;
+         m_pOut->stream() << ";" << std::endl;
       }
    }
 
-   header.stream()
-      << "}" << std::endl
+   m_pOut->stream()
+      << cmn::indent(*m_pOut) << "}" << std::endl
+      << std::endl
    ;
 }
 
-void codeGen::generateCallFromOpenParen(cmn::node& n, bool skipFirst)
+void headerCodeGen::visit(cmn::funcNode& n)
 {
-   auto& source = m_out.get<cmn::outStream>(m_pActiveFile->fullPath,cmn::pathUtil::kExtLiamSource).stream();
-   source << "(";
+   generatePrototype(n);
+   m_pOut->stream() << ";" << std::endl;
+   m_pOut->stream() << std::endl;
+}
+
+void sourceCodeGen::visit(cmn::constNode& n)
+{
+   m_pOut->stream() << cmn::indent(*m_pOut) << "const " << n.name << " : ";
+   liamTypeWriter tyW(m_pOut->stream(),m_refColl);
+   n.getChildren()[0]->acceptVisitor(tyW);
+   m_pOut->stream() << " = ";
+   n.getChildren()[1]->acceptVisitor(*this);
+   m_pOut->stream() << ";" << std::endl;
+   m_pOut->stream() << std::endl;
+}
+
+void sourceCodeGen::visit(cmn::funcNode& n)
+{
+   generatePrototype(n);
+   m_pOut->stream() << std::endl;
+   hNodeVisitor::visit(n);
+}
+
+void sourceCodeGen::visit(cmn::sequenceNode& n)
+{
+   m_pOut->stream() << cmn::indent(*m_pOut) << "{" << std::endl;
+   {
+      cmn::autoIndent _i(*m_pOut);
+      for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+      {
+         m_pOut->stream() << cmn::indent(*m_pOut);
+         (*it)->acceptVisitor(*this);
+         m_pOut->stream() << ";" << std::endl;
+      }
+   }
+   m_pOut->stream() << cmn::indent(*m_pOut) << "}" << std::endl;
+   m_pOut->stream() << std::endl;
+}
+
+void sourceCodeGen::visit(cmn::invokeFuncPtrNode& n)
+{
+   n.getChildren()[0]->acceptVisitor(*this);
+   m_pOut->stream() << "->";
+
+   generateCallFromOpenParen(n,true);
+}
+
+void sourceCodeGen::visit(cmn::fieldAccessNode& n)
+{
+   hNodeVisitor::visit(n);
+   m_pOut->stream() << ":" << n.name;
+}
+
+void sourceCodeGen::visit(cmn::callNode& n)
+{
+   m_pOut->stream() << n.name;
+
+   generateCallFromOpenParen(n,false);
+}
+
+void sourceCodeGen::visit(cmn::localDeclNode& n)
+{
+   m_pOut->stream() << "var " << n.name << " : ";
+   liamTypeWriter tyW(m_pOut->stream(),m_refColl);
+   n.demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
+
+   if(n.getChildren().size() > 1)
+   {
+      m_pOut->stream() << " = ";
+      n.getChildren()[1]->acceptVisitor(*this);
+   }
+}
+
+void sourceCodeGen::visit(cmn::varRefNode& n)
+{
+   m_pOut->stream() << n.pSrc.ref;
+   m_refColl.onLink(n.pSrc);
+   hNodeVisitor::visit(n);
+}
+
+void sourceCodeGen::visit(cmn::assignmentNode& n)
+{
+   n.getChildren()[0]->acceptVisitor(*this);
+   m_pOut->stream() << " = ";
+   n.getChildren()[1]->acceptVisitor(*this);
+}
+
+void sourceCodeGen::visit(cmn::stringLiteralNode& n)
+{
+   m_pOut->stream() << "\"" << n.value << "\"";
+   hNodeVisitor::visit(n);
+}
+
+void sourceCodeGen::visit(cmn::boolLiteralNode& n)
+{
+   m_pOut->stream() << n.value;
+   hNodeVisitor::visit(n);
+}
+
+void sourceCodeGen::visit(cmn::intLiteralNode& n)
+{
+   m_pOut->stream() << n.lexeme;
+   hNodeVisitor::visit(n);
+}
+
+void sourceCodeGen::visit(cmn::structLiteralNode& n)
+{
+   m_pOut->stream() << "{ ";
+   generateCommaDelimitedChildren(n);
+   m_pOut->stream() << " }";
+}
+
+void sourceCodeGen::generateCallFromOpenParen(cmn::node& n, bool skipFirst)
+{
+   m_pOut->stream() << "(";
+   generateCommaDelimitedChildren(n,skipFirst);
+   m_pOut->stream() << ")";
+}
+
+void sourceCodeGen::generateCommaDelimitedChildren(cmn::node& n, bool skipFirst)
+{
    bool first = true;
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
    {
       if(skipFirst && it==n.getChildren().begin())
          continue;
       if(!first)
-         source << ",";
+         m_pOut->stream() << ",";
       (*it)->acceptVisitor(*this);
       first = false;
    }
-   source << ")";
+}
+
+void codeGen::visit(cmn::fileNode& n)
+{
+   auto header = cmn::pathUtil::addExt(n.fullPath,cmn::pathUtil::kExtLiamHeader);
+   auto source = cmn::pathUtil::addExt(n.fullPath,cmn::pathUtil::kExtLiamSource);
+
+   { headerCodeGen v(m_out,header); n.acceptVisitor(v); }
+   { sourceCodeGen v(m_out,source); n.acceptVisitor(v); }
 }
 
 } // namespace araceli

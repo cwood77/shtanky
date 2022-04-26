@@ -82,13 +82,6 @@ if(exp) {
    cdwVERBOSE("graph after const hoist ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
-#if 0
-   // ctor/dtor stuff
-   { ctorDtorGenerator v; pPrj->acceptVisitor(v); }
-   cdwVERBOSE("graph after transforms ----\n");
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
-#endif
-
    // compile-away classes
    if(exp){ ctorDtorGenerator v; pPrj->acceptVisitor(v); }
    if(exp){ abstractGenerator v; pPrj->acceptVisitor(v); }
