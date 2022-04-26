@@ -9,8 +9,7 @@ void selfDecomposition::visit(cmn::methodNode& n)
       // inject a 'self' argument first
 
       cmn::node root;
-      cmn::treeWriter w(root);
-      w
+      cmn::treeWriter(root)
       .append<cmn::argNode>([](auto&a){a.name="self";})
          .append<cmn::userTypeNode>([&](auto&t)
          {

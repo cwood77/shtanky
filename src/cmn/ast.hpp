@@ -102,12 +102,15 @@ namespace nodeFlags {
       kVirtual             = 1 << 0,
       kOverride            = 1 << 1,
       kAbstract            = 1 << 2,
+      kDynDispatchMask     = (kVirtual | kOverride),
+
       kStatic              = 1 << 3,
       kInterface           = 1 << 4,
 
       kPublic              = 1 << 5,
       kProtected           = 1 << 6,
       kPrivate             = 1 << 7,
+      kAccessSpecifierMask = (kPublic | kProtected | kPrivate),
 
       kAddressableForWrite = 1 << 8, // used in codegen
    };
@@ -370,6 +373,8 @@ public:
 class invokeNode : public node {
 public:
    link<methodNode> proto; // the _ONLY_ unimpled link
+                           // TODO I need this for araceli compile--to tell dynamic vs.
+                           // static dispatch!
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };

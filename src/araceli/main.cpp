@@ -89,9 +89,7 @@ if(exp) {
    // self param, self fields, invoke decomp
    { selfDecomposition v; pPrj->acceptVisitor(v); } // TODO some invokes should turn into calls
    // TODO basecall decomp
-   if(exp){ methodMover v; pPrj->acceptVisitor(v); }
-   // TODO vtbl type gen
-   // TODO vtbl const gen
+   if(exp){ methodMover v(cc); pPrj->acceptVisitor(v); }
    if(exp) { vtableGenerator().generate(cc); }
    if(exp) { inheritImplementor().generate(cc); }
    // TODO matryoshka decomp
