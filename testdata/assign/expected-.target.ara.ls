@@ -2,9 +2,9 @@
 func .assign.consoleTarget.main(
    args : str[]) : void
 {
-   var cout : .sht.cons.iStream;
-   .sht.cons.iStream_sctor(cout);
-   .sht.cons.iStream_sdtor(cout);
+   var cout : .sht.cons.stdout;
+   .sht.cons.stdout_sctor(cout);
+   .sht.cons.stdout_sdtor(cout);
 }
 
 func .assign.consoleTarget.cctor(

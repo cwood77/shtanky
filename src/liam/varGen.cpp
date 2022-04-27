@@ -30,8 +30,6 @@ bool var::isAlive(size_t start, size_t end)
       (start < refs.begin()->first && (--(refs.end()))->first < end);
 }
 
-// TODO - this table makes sense but this code DOES NOT implement it?
-
 // ans    req
 //  b  0
 //  b  1  BX
@@ -67,14 +65,14 @@ size_t var::getStorageFor(size_t orderNum, lirArg& a)
    return *(stors.begin());
 }
 
-bool var::requiresStorageLater(size_t orderNum, size_t storage)
+size_t var::requiresStorageNext(size_t orderNum, size_t storage)
 {
    for(auto it=instrToStorageMap.begin();it!=instrToStorageMap.end();++it)
       if(it->first > orderNum)
          if(it->second.find(storage) != it->second.end())
-            return true;
+            return it->first;
 
-   return false;
+   return 0;
 }
 
 void var::requireStorage(size_t orderNum, size_t s)

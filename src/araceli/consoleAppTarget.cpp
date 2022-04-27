@@ -39,11 +39,11 @@ void consoleAppTarget::araceliCodegen(cmn::araceliProjectNode& root, metadata& m
       << "   [entrypoint]" << std::endl
       << "   static main(args : str[]) : void" << std::endl
       << "   {" << std::endl
-      << "      var cout : .sht.cons.iStream;" << std::endl
+      << "      var cout : .sht.cons.stdout;" << std::endl
       << std::endl
    ;
 
-if (0) {
+if(0) {
    size_t i=0;
    for(auto it=topLevels.begin();it!=topLevels.end();++it,i++)
    {
@@ -52,8 +52,8 @@ if (0) {
          cdwTHROW("everything marked with [program] must be a class");
 
       stream.stream()
-         << "      var obj" << i << " : ptr;"// = "
-//            << cmn::fullyQualifiedName::build(*pClass) << "();" << std::endl
+         << "      var obj" << i << " : "
+         << cmn::fullyQualifiedName::build(*pClass) << ";" << std::endl
       ;
       if(wantsStream(*pClass))
          stream.stream()

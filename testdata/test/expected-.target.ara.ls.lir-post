@@ -1,16 +1,16 @@
 === LIR bundle has 6 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .test.consoleTarget.main
-10 <selectSegment> @code/0                                       
-20 <enterFunc>     ~rval/0, $args/0                              ;;; .entrypoint
-30 <reserveLocal>  $cout/8                                       ;;; cout
-40 <precall>       @totalStackSize/32                            
-50 call            ~rval0/0, @.sht.cons.iStream_sctor/0, $cout/0 ;;; (call label)
-60 <postcall>      @totalStackSize/32                            
-70 <precall>       @totalStackSize/32                            
-80 call            ~rval1/0, @.sht.cons.iStream_sdtor/0, $cout/0 ;;; (call label)
-90 <postcall>      @totalStackSize/32                            
-100<unreserveLocal>$cout/8                                       
+10 <selectSegment> @code/0                                      
+20 <enterFunc>     ~rval/0, $args/0                             ;;; .entrypoint
+30 <reserveLocal>  $cout/8                                      ;;; cout
+40 <precall>       @totalStackSize/32                           
+50 call            ~rval0/0, @.sht.cons.stdout_sctor/0, $cout/0 ;;; (call label)
+60 <postcall>      @totalStackSize/32                           
+70 <precall>       @totalStackSize/32                           
+80 call            ~rval1/0, @.sht.cons.stdout_sdtor/0, $cout/0 ;;; (call label)
+90 <postcall>      @totalStackSize/32                           
+100<unreserveLocal>$cout/8                                      
 110<exitFunc>      
 
 ----- start stream .test.consoleTarget.cctor

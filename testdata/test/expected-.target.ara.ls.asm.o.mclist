@@ -1,27 +1,27 @@
 // 2: .entrypoint: 
-// 3:              sub, rsp, 8                   
+// 3:              sub, rsp, 8                  
 rex(48)op(83)modR/M(ec)i8(08)
-// 4:              sub, rsp, 8                   
+// 4:              sub, rsp, 8                  
 rex(48)op(83)modR/M(ec)i8(08)
-// 5:              sub, rsp, 32                  
+// 5:              sub, rsp, 32                 
 rex(48)op(83)modR/M(ec)i8(20)
-// 6:              mov, rcx, [rbp-8]             ;       (cout req for rcx) [splitter]
+// 6:              mov, rcx, [rbp-8]            ;       (cout req for rcx) [splitter]
 rex(48)op(8b)modR/M(4d)d8(f8)
-// 7:              call, .sht.cons.iStream_sctor ; (call label)
+// 7:              call, .sht.cons.stdout_sctor ; (call label)
 op(e8)co32(00-00-00-00)
-// 8:              add, rsp, 32                  
+// 8:              add, rsp, 32                 
 rex(48)op(83)modR/M(c4)i8(20)
-// 9:              sub, rsp, 32                  
+// 9:              sub, rsp, 32                 
 rex(48)op(83)modR/M(ec)i8(20)
-// 10:              call, .sht.cons.iStream_sdtor ; (call label)
+// 10:              call, .sht.cons.stdout_sdtor ; (call label)
 op(e8)co32(00-00-00-00)
-// 11:              add, rsp, 32                  
+// 11:              add, rsp, 32                 
 rex(48)op(83)modR/M(c4)i8(20)
-// 12:              add, rsp, 8                   
+// 12:              add, rsp, 8                  
 rex(48)op(83)modR/M(c4)i8(08)
-// 13:              add, rsp, 8                   
+// 13:              add, rsp, 8                  
 rex(48)op(83)modR/M(c4)i8(08)
-// 14:              ret                           
+// 14:              ret                          
 op(c3)
 // 17: .test.consoleTarget.cctor: 
 // 18:                            ret

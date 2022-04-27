@@ -1,12 +1,12 @@
 === LIR bundle has 6 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .test.consoleTarget.main
-0 <enterFunc>    ~rval/0, $args/0                              ;;; .entrypoint
-0 <reserveLocal> $cout/8                                       ;;; cout
+0 <enterFunc>    ~rval/0, $args/0                             ;;; .entrypoint
+0 <reserveLocal> $cout/8                                      ;;; cout
 0 <precall>      
-0 call           ~rval0/0, @.sht.cons.iStream_sctor/0, $cout/0 ;;; (call label)
+0 call           ~rval0/0, @.sht.cons.stdout_sctor/0, $cout/0 ;;; (call label)
 0 <precall>      
-0 call           ~rval1/0, @.sht.cons.iStream_sdtor/0, $cout/0 ;;; (call label)
+0 call           ~rval1/0, @.sht.cons.stdout_sdtor/0, $cout/0 ;;; (call label)
 
 ----- start stream .test.consoleTarget.cctor
 0 <enterFunc> ~rval2/0, $self/0 ;;; .test.consoleTarget.cctor
