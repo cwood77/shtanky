@@ -9,7 +9,7 @@
 #include "abstractGenerator.hpp"
 #include "batGen.hpp"
 #include "classInfo.hpp"
-#include "codegen2.hpp"
+#include "codegen.hpp"
 #include "consoleAppTarget.hpp"
 #include "constHoister.hpp"
 #include "ctorDtorGenerator.hpp"
@@ -98,23 +98,10 @@ int main(int argc, const char *argv[])
 
    // -----------------------------------------------------
 
-   // final link so fileRefs are as accurate as possible in codegen
-   try
-   {
-      araceli::nodeLinker().linkGraph(*pPrj);
-   }
-   catch(std::exception&)
-   {
-      cdwVERBOSE("graph during throw ----\n");
-      { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
-      throw;
-   }
-   cdwVERBOSE("graph after linking ----\n");
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
-
    // codegen
+   araceli::nodeLinker().linkGraph(*pPrj); // relink so codegen makes more fileRefs
    cmn::outBundle out;
-   { araceli2::codeGen v(tgt,out); pPrj->acceptVisitor(v); }
+   { codeGen v(tgt,out); pPrj->acceptVisitor(v); }
    { batGen v(tgt,out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
    out.updateDisk(wr);
 

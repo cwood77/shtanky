@@ -1,11 +1,11 @@
 #include "../cmn/out.hpp"
 #include "../cmn/pathUtil.hpp"
 #include "../cmn/trace.hpp"
-#include "codegen2.hpp"
+#include "codegen.hpp"
 #include "iTarget.hpp"
 #include <stdexcept>
 
-namespace araceli2 {
+namespace araceli {
 
 void fileRefs::flush(std::ostream& stream)
 {
@@ -36,7 +36,7 @@ void fileRefCollector::onLink(cmn::linkBase& l)
          "ignoring unlinked link with ref '%s' of type '%s' for fileRef computation\n",
          l.ref.c_str(),
          typeid(l).name());
-      return;
+      cdwTHROW("dangling links illegal in codegen");
    }
    if(dynamic_cast<cmn::intrinsicNode*>(p))
    {

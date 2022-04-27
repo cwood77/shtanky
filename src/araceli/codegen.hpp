@@ -4,11 +4,9 @@
 
 namespace cmn { class outBundle; }
 
-namespace araceli { class iTarget; }
+namespace araceli {
 
-namespace araceli2 {
-
-using namespace araceli;
+class iTarget;
 
 class fileRefs {
 public:
