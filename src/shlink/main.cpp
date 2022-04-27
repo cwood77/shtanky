@@ -29,8 +29,7 @@ int main(int argc, const char *argv[])
    {
       objectProviderRecorder oDirWrapper(oDir);
       layoutProgress lProg;
-      lProg.seedRequiredObject(".test.test.run"); // TODO HACK should be entrypoint
-      lProg.seedRequiredObject(".sht.cons.stdout.printLn"); // TODO HACK keep this lame-o hacks until linker is totally working (i.e. no symbols are pruned inadvertently)
+      lProg.seedRequiredObject(".entrypoint");
 
       while(!lProg.isDone())
       {

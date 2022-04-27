@@ -1,0 +1,30 @@
+// 2: .sht.core.object.cctor: 
+// 3:                         ret
+op(c3)
+// 6: .sht.core.object.cdtor: 
+// 7:                         ret
+op(c3)
+// 10: .sht.core.object_vtbl_inst:
+// 11: .data, 
+// 14: .sht.core.object_sctor: 
+// 15:                         mov, [rcx], .sht.core.object_vtbl_inst ; =
+rex(48)op(c7)modR/M(01)i32(00-00-00-00)
+// 16:                         sub, rsp, 32                           
+rex(48)op(83)modR/M(ec)i8(20)
+// 17:                         call, .sht.core.object.cctor           ; (call label)
+op(e8)co32(00-00-00-00)
+// 18:                         add, rsp, 32                           
+rex(48)op(83)modR/M(c4)i8(20)
+// 19:                         ret                                    
+op(c3)
+// 22: .sht.core.object_sdtor: 
+// 23:                         mov, [rcx], .sht.core.object_vtbl_inst ; =
+rex(48)op(c7)modR/M(01)i32(00-00-00-00)
+// 24:                         sub, rsp, 32                           
+rex(48)op(83)modR/M(ec)i8(20)
+// 25:                         call, .sht.core.object.cdtor           ; (call label)
+op(e8)co32(00-00-00-00)
+// 26:                         add, rsp, 32                           
+rex(48)op(83)modR/M(c4)i8(20)
+// 27:                         ret                                    
+op(c3)

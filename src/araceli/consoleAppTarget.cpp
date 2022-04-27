@@ -43,7 +43,6 @@ void consoleAppTarget::araceliCodegen(cmn::araceliProjectNode& root, metadata& m
       << std::endl
    ;
 
-if(0) {
    size_t i=0;
    for(auto it=topLevels.begin();it!=topLevels.end();++it,i++)
    {
@@ -66,7 +65,6 @@ if(0) {
    i=0;
    for(auto it=topLevels.begin();it!=topLevels.end();++it,i++)
       stream.stream() << "      obj" << i << "->run(args);" << std::endl;
-}
 
    stream.stream()
       << "   }" << std::endl

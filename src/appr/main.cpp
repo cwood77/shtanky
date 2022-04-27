@@ -20,6 +20,7 @@ int main(int argc, const char *argv[])
       .wholeApp()
       .expectLiamOf(".\\testdata\\test\\test.ara")
       .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+      .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
       .expectLiamOf(".\\testdata\\test\\.target.ara")
    ;
 
@@ -27,8 +28,9 @@ int main(int argc, const char *argv[])
       .wholeApp()
       .expectLiamOf(".\\testdata\\assign\\main.ara")
       .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+      .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
       .expectLiamOf(".\\testdata\\assign\\.target.ara")
-      .skipLinkToWorkaroundHacks()
+//      .skipLinkToWorkaroundHacks()
    ;
 
    // ------------------ tests end ------------------

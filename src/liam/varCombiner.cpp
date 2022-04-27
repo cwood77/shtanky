@@ -117,7 +117,7 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
 
       // restore runners-up
       if(winners.size() > 1)
-         cdwTHROW("runners up isn't implemented yet");
+         cdwDEBUG("runners up isn't implemented yet");
 
       // restart algorithm
       restart();

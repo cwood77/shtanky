@@ -4,6 +4,11 @@ func .assign.consoleTarget.main(
 {
    var cout : .sht.cons.stdout;
    .sht.cons.stdout_sctor(cout);
+   var obj0 : .assign.assignTester;
+   .assign.assignTester_sctor(obj0);
+   obj0:_out = cout;
+   obj0:_vtbl:run->(obj0,args);
+   .assign.assignTester_sdtor(obj0);
    .sht.cons.stdout_sdtor(cout);
 }
 
@@ -39,5 +44,6 @@ func .assign.consoleTarget_sdtor(
 func ._osCall(code : str, payload : str) : void;
 
 ref ".target.ara.lh";
+ref "main.ara.lh";
 ref "..\sht\cons\program.ara.lh";
 ref "..\sht\core\object.ara.lh";

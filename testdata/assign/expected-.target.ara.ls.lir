@@ -1,37 +1,46 @@
 === LIR bundle has 6 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .assign.consoleTarget.main
-0 <enterFunc>    ~rval/0, $args/0                             ;;; .entrypoint
-0 <reserveLocal> $cout/8                                      ;;; cout
+0 <enterFunc>    ~rval/0, $args/0                                 ;;; .entrypoint
+0 <reserveLocal> $cout/8                                          ;;; cout
 0 <precall>      
-0 call           ~rval0/0, @.sht.cons.stdout_sctor/0, $cout/0 ;;; (call label)
+0 call           ~rval0/0, @.sht.cons.stdout_sctor/0, $cout/0     ;;; (call label)
+0 <reserveLocal> $obj0/16                                         ;;; obj0
 0 <precall>      
-0 call           ~rval1/0, @.sht.cons.stdout_sdtor/0, $cout/0 ;;; (call label)
+0 call           ~rval1/0, @.assign.assignTester_sctor/0, $obj0/0 ;;; (call label)
+0 mov            [~obj0+8]/0, $cout/0                             ;;; =
+0 <precall>      
+0 mov            ~run/0, [~obj0]/0                                ;;; fieldaccess: owner of run
+0 call           ~rval2/0, [~run]/0, $obj0/0, $args/0             ;;; (call ptr)
+0 <precall>      
+0 call           ~rval3/0, @.assign.assignTester_sdtor/0, $obj0/0 ;;; (call label)
+0 <precall>      
+0 call           ~rval4/0, @.sht.cons.stdout_sdtor/0, $cout/0     ;;; (call label)
 
 ----- start stream .assign.consoleTarget.cctor
-0 <enterFunc> ~rval2/0, $self/0 ;;; .assign.consoleTarget.cctor
+0 <enterFunc> ~rval5/0, $self/0 ;;; .assign.consoleTarget.cctor
 
 ----- start stream .assign.consoleTarget.cdtor
-0 <enterFunc> ~rval3/0, $self0/0 ;;; .assign.consoleTarget.cdtor
+0 <enterFunc> ~rval6/0, $self0/0 ;;; .assign.consoleTarget.cdtor
 
 ----- start stream .assign.consoleTarget_vtbl_inst
 0 <globalConstData> @/0 ;;; .assign.consoleTarget_vtbl_inst
 
 ----- start stream .assign.consoleTarget_sctor
-0 <enterFunc> ~rval4/0, $self1/0                                ;;; .assign.consoleTarget_sctor
+0 <enterFunc> ~rval7/0, $self1/0                                ;;; .assign.consoleTarget_sctor
 0 <precall>   
-0 call        ~rval5/0, @.sht.core.object_sctor/0, $self/0      ;;; (call label)
+0 call        ~rval8/0, @.sht.core.object_sctor/0, $self/0      ;;; (call label)
 0 mov         [~self]/0, @.assign.consoleTarget_vtbl_inst/0     ;;; =
 0 <precall>   
-0 call        ~rval6/0, @.assign.consoleTarget.cctor/0, $self/0 ;;; (call label)
+0 call        ~rval9/0, @.assign.consoleTarget.cctor/0, $self/0 ;;; (call label)
 
 ----- start stream .assign.consoleTarget_sdtor
-0 <enterFunc> ~rval7/0, $self2/0                                ;;; .assign.consoleTarget_sdtor
-0 mov         [~self]/0, @.assign.consoleTarget_vtbl_inst/0     ;;; =
+0 <enterFunc> ~rval10/0, $self2/0                                ;;; .assign.consoleTarget_sdtor
+0 mov         [~self]/0, @.assign.consoleTarget_vtbl_inst/0      ;;; =
 0 <precall>   
-0 call        ~rval8/0, @.assign.consoleTarget.cdtor/0, $self/0 ;;; (call label)
+0 call        ~rval11/0, @.assign.consoleTarget.cdtor/0, $self/0 ;;; (call label)
 0 <precall>   
-0 call        ~rval9/0, @.sht.core.object_sdtor/0, $self/0      ;;; (call label)
+0 call        ~rval12/0, @.sht.core.object_sdtor/0, $self/0      ;;; (call label)
 
 === end of LIR bundle dump ===
 
