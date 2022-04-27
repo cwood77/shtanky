@@ -93,6 +93,8 @@ public:
    std::vector<lirArg*>& getArgs() { return m_args; }
 
 private:
+   void pickOrderNumForNewLocation();
+
    lirInstr *m_pPrev;
    lirInstr *m_pNext;
    std::vector<lirArg*> m_args;

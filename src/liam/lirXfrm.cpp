@@ -44,12 +44,12 @@ void lirTransform::runInstr(lirInstr& i)
 
 void lirTransform::scheduleInjectBefore(lirInstr& noob, lirInstr& before)
 {
-   m_changes.push_back(new injectChange(noob,before,true));
+   m_changes.push_back(new injectChange(noob,before,true,getCurrentStream()));
 }
 
 void lirTransform::scheduleInjectAfter(lirInstr& noob, lirInstr& after)
 {
-   m_changes.push_back(new injectChange(noob,after,false));
+   m_changes.push_back(new injectChange(noob,after,false,getCurrentStream()));
 }
 
 void lirTransform::scheduleAppend(lirInstr& noob)
@@ -69,6 +69,9 @@ void lirTransform::injectChange::apply()
       m_antecedent.injectAfter(*m_pNoob);
       m_pNoob = NULL;
    }
+
+   // sure-up the tail if I injected after it
+   m_s.pTail = &m_s.pTail->tail();
 }
 
 void lirTransform::appendChange::apply()

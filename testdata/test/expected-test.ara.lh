@@ -20,4 +20,7 @@ class .test.test_vtbl {
 func .test.test_sctor(
    self : .test.test) : void;
 
+func .test.test_sdtor(
+   self : .test.test) : void;
+
 ref "..\sht\cons\program.ara.lh";

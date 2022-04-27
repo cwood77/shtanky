@@ -37,8 +37,8 @@ private:
 
    class injectChange : public iChange {
    public:
-      injectChange(lirInstr& noob, lirInstr& antecedent, bool beforeAfter)
-      : m_pNoob(&noob), m_antecedent(antecedent), m_beforeAfter(beforeAfter) {}
+      injectChange(lirInstr& noob, lirInstr& antecedent, bool beforeAfter, lirStream& s)
+      : m_pNoob(&noob), m_antecedent(antecedent), m_beforeAfter(beforeAfter), m_s(s) {}
       ~injectChange() { delete m_pNoob; }
 
       virtual void apply();
@@ -47,6 +47,7 @@ private:
       lirInstr *m_pNoob;
       lirInstr& m_antecedent;
       bool m_beforeAfter;
+      lirStream& m_s;
    };
 
    class appendChange : public iChange {

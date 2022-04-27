@@ -42,7 +42,7 @@ void varSplitter::checkVar(var& v)
       for(++it;it!=v.instrToStorageMap.end();++it)
       {
          size_t currI = it->first;
-         auto pCurrSs = &it->second;
+         auto *pCurrSs = &it->second;
 
          for(auto currS=pCurrSs->begin();currS!=pCurrSs->end();++currS)
          {

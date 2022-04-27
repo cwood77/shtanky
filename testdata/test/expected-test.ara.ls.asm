@@ -41,3 +41,14 @@
                   add, rsp, 32                     
                   ret                              
 
+.seg code         
+.test.test_sdtor: 
+                  mov, [rcx], .test.test_vtbl_inst ; =
+                  sub, rsp, 32                     
+                  call, .test.test.cdtor           ; (call label)
+                  add, rsp, 32                     
+                  sub, rsp, 32                     
+                  call, .sht.cons.program_sdtor    ; (call label)
+                  add, rsp, 32                     
+                  ret                              
+

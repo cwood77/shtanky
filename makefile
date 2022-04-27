@@ -144,6 +144,7 @@ ARACELI_SRC = \
 	src/araceli/objectBaser.cpp \
 	src/araceli/projectBuilder.cpp \
 	src/araceli/selfDecomposition.cpp \
+	src/araceli/stackClassDecomposition.cpp \
 	src/araceli/symbolTable.cpp \
 	src/araceli/vtableGenerator.cpp \
 

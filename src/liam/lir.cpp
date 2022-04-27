@@ -40,6 +40,8 @@ lirInstr& lirInstr::injectBefore(lirInstr& noob)
    noob.m_pNext = this;
    m_pPrev = &noob;
 
+   noob.pickOrderNumForNewLocation();
+
    return noob;
 }
 
@@ -56,6 +58,7 @@ lirInstr& lirInstr::append(lirInstr& noob)
    lirInstr& _tail = tail();
    _tail.m_pNext = &noob;
    noob.m_pPrev = &_tail;
+   noob.pickOrderNumForNewLocation();
    return noob;
 }
 
@@ -85,6 +88,37 @@ lirInstr& lirInstr::searchUp(std::function<bool(const lirInstr&)> pred)
       pPtr = pPtr->m_pPrev;
    }
    cdwTHROW("searchUp failed to find match");
+}
+
+void lirInstr::pickOrderNumForNewLocation()
+{
+   size_t before = m_pPrev ? m_pPrev->orderNum : 0;
+   size_t after = m_pNext ? m_pNext->orderNum : 0;
+
+   if(before == after && before == 0)
+   {
+      // unordered chain; no worries
+      orderNum = 0;
+      return;
+   }
+
+   if(before >= after)
+      cdwTHROW("insane LIR chain with numder %lld, then %lld",before,after);
+
+   auto distance = after-before;
+   size_t candidate = before + (distance / 2.0);
+
+   // integer division truncation means 1/2 = 0;
+   if(candidate == before)
+      candidate++;
+
+   if(candidate == before || candidate == after)
+      cdwTHROW("insanity picking new order num; b=%lld,c=%lld,a=%lld",
+         before,candidate,after);
+
+   cdwVERBOSE("changing order of instr w/ instrId=%lld: %lld -> %lld\n",
+      instrId,orderNum,candidate);
+   orderNum = candidate;
 }
 
 lirStream::~lirStream()

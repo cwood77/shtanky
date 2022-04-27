@@ -54,3 +54,20 @@ op(e8)co32(00-00-00-00)
 rex(48)op(83)modR/M(c4)i8(20)
 // 42:                   ret                              
 op(c3)
+// 45: .test.test_sdtor: 
+// 46:                   mov, [rcx], .test.test_vtbl_inst ; =
+rex(48)op(c7)modR/M(01)i32(00-00-00-00)
+// 47:                   sub, rsp, 32                     
+rex(48)op(83)modR/M(ec)i8(20)
+// 48:                   call, .test.test.cdtor           ; (call label)
+op(e8)co32(00-00-00-00)
+// 49:                   add, rsp, 32                     
+rex(48)op(83)modR/M(c4)i8(20)
+// 50:                   sub, rsp, 32                     
+rex(48)op(83)modR/M(ec)i8(20)
+// 51:                   call, .sht.cons.program_sdtor    ; (call label)
+op(e8)co32(00-00-00-00)
+// 52:                   add, rsp, 32                     
+rex(48)op(83)modR/M(c4)i8(20)
+// 53:                   ret                              
+op(c3)

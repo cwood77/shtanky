@@ -36,6 +36,21 @@ void node::insertChild(size_t i, node& n)
    n.m_pParent = this;
 }
 
+void node::insertChildAfter(node& noob, node& antecedent)
+{
+   for(auto it=m_children.begin();it!=m_children.end();++it)
+   {
+      if(*it == &antecedent)
+      {
+         m_children.insert(it+1,&noob);
+         noob.m_pParent = this;
+         return;
+      }
+   }
+
+   cdwTHROW("can't find antecedent in insert");
+}
+
 node *node::replaceChild(node& old, node& nu)
 {
    int i=0;
@@ -49,7 +64,7 @@ node *node::replaceChild(node& old, node& nu)
       }
    }
 
-   throw std::runtime_error("can't find child to replace");
+   cdwTHROW("can't find child to replace");
 }
 
 void node::removeChild(node& n)

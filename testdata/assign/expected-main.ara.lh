@@ -66,10 +66,19 @@ class .assign.assignTester_vtbl {
 func .assign.A_sctor(
    self : .assign.A) : void;
 
+func .assign.A_sdtor(
+   self : .assign.A) : void;
+
 func .assign.B_sctor(
    self : .assign.B) : void;
 
+func .assign.B_sdtor(
+   self : .assign.B) : void;
+
 func .assign.assignTester_sctor(
+   self : .assign.assignTester) : void;
+
+func .assign.assignTester_sdtor(
    self : .assign.assignTester) : void;
 
 ref "..\sht\cons\program.ara.lh";

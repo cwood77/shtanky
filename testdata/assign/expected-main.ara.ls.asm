@@ -9,14 +9,18 @@
 
 .seg code                                
 .assign.assignTester.writeIntoSubObject: 
-                                         push, rbx        
-                                         sub, rsp, 24     
-                                         sub, rsp, 24     
-                                         mov, [rbx+16], 7 ; =
-                                         add, rsp, 24     
-                                         add, rsp, 24     
-                                         pop, rbx         
-                                         ret              
+                                         sub, rsp, 24          
+                                         sub, rsp, 24          
+                                         sub, rsp, 32          
+                                         call, .assign.A_sctor ; (call label)
+                                         add, rsp, 32          
+                                         mov, [rcx+16], 7      ; =
+                                         sub, rsp, 32          
+                                         call, .assign.A_sdtor ; (call label)
+                                         add, rsp, 32          
+                                         add, rsp, 24          
+                                         add, rsp, 24          
+                                         ret                   
 
 .seg code                                  
 .assign.assignTester.readFromSubSubObject: 
@@ -30,17 +34,21 @@
 
 .seg code                                   
 .assign.assignTester.writeIntoSubSubObject: 
-                                            push, rbx          
-                                            push, rdi          
-                                            sub, rsp, 24       
-                                            sub, rsp, 24       
-                                            mov, rbx, [rdi+16] ; fieldaccess: owner of x
-                                            mov, [rbx+16], 7   ; =
-                                            add, rsp, 24       
-                                            add, rsp, 24       
-                                            pop, rdi           
-                                            pop, rbx           
-                                            ret                
+                                            push, rbx             
+                                            sub, rsp, 24          
+                                            sub, rsp, 24          
+                                            sub, rsp, 32          
+                                            call, .assign.A_sctor ; (call label)
+                                            add, rsp, 32          
+                                            mov, rbx, [rcx+16]    ; fieldaccess: owner of x
+                                            mov, [rbx+16], 7      ; =
+                                            sub, rsp, 32          
+                                            call, .assign.A_sdtor ; (call label)
+                                            add, rsp, 32          
+                                            add, rsp, 24          
+                                            add, rsp, 24          
+                                            pop, rbx              
+                                            ret                   
 
 .seg code                   
 .assign.assignTester.cctor: 
@@ -90,6 +98,17 @@
                  ret                             
 
 .seg code        
+.assign.A_sdtor: 
+                 mov, [rcx], .assign.A_vtbl_inst ; =
+                 sub, rsp, 32                    
+                 call, .assign.A.cdtor           ; (call label)
+                 add, rsp, 32                    
+                 sub, rsp, 32                    
+                 call, .sht.core.object_sdtor    ; (call label)
+                 add, rsp, 32                    
+                 ret                             
+
+.seg code        
 .assign.B_sctor: 
                  sub, rsp, 32                    
                  call, .sht.core.object_sctor    ; (call label)
@@ -97,6 +116,17 @@
                  mov, [rcx], .assign.B_vtbl_inst ; =
                  sub, rsp, 32                    
                  call, .assign.B.cctor           ; (call label)
+                 add, rsp, 32                    
+                 ret                             
+
+.seg code        
+.assign.B_sdtor: 
+                 mov, [rcx], .assign.B_vtbl_inst ; =
+                 sub, rsp, 32                    
+                 call, .assign.B.cdtor           ; (call label)
+                 add, rsp, 32                    
+                 sub, rsp, 32                    
+                 call, .sht.core.object_sdtor    ; (call label)
                  add, rsp, 32                    
                  ret                             
 
@@ -108,6 +138,17 @@
                             mov, [rcx], .assign.assignTester_vtbl_inst ; =
                             sub, rsp, 32                               
                             call, .assign.assignTester.cctor           ; (call label)
+                            add, rsp, 32                               
+                            ret                                        
+
+.seg code                   
+.assign.assignTester_sdtor: 
+                            mov, [rcx], .assign.assignTester_vtbl_inst ; =
+                            sub, rsp, 32                               
+                            call, .assign.assignTester.cdtor           ; (call label)
+                            add, rsp, 32                               
+                            sub, rsp, 32                               
+                            call, .sht.cons.program_sdtor              ; (call label)
                             add, rsp, 32                               
                             ret                                        
 

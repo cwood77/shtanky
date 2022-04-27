@@ -3,6 +3,8 @@ func .assign.consoleTarget.main(
    args : str[]) : void
 {
    var cout : .sht.cons.iStream;
+   .sht.cons.iStream_sctor(cout);
+   .sht.cons.iStream_sdtor(cout);
 }
 
 func .assign.consoleTarget.cctor(
@@ -23,6 +25,14 @@ func .assign.consoleTarget_sctor(
    .sht.core.object_sctor(self);
    self:_vtbl = .assign.consoleTarget_vtbl_inst;
    .assign.consoleTarget.cctor(self);
+}
+
+func .assign.consoleTarget_sdtor(
+   self : .assign.consoleTarget) : void
+{
+   self:_vtbl = .assign.consoleTarget_vtbl_inst;
+   .assign.consoleTarget.cdtor(self);
+   .sht.core.object_sdtor(self);
 }
 
 

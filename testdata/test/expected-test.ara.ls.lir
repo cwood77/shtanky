@@ -1,4 +1,4 @@
-=== LIR bundle has 6 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 7 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .test.const0
 0 <globalConstData> @"hello world!" <b> 0 /0 ;;; .test.const0
@@ -26,6 +26,14 @@
 0 mov         [~self]/0, @.test.test_vtbl_inst/0            ;;; =
 0 <precall>   
 0 call        ~rval5/0, @.test.test.cctor/0, $self/0        ;;; (call label)
+
+----- start stream .test.test_sdtor
+0 <enterFunc> ~rval6/0, $self3/0                            ;;; .test.test_sdtor
+0 mov         [~self]/0, @.test.test_vtbl_inst/0            ;;; =
+0 <precall>   
+0 call        ~rval7/0, @.test.test.cdtor/0, $self/0        ;;; (call label)
+0 <precall>   
+0 call        ~rval8/0, @.sht.cons.program_sdtor/0, $self/0 ;;; (call label)
 
 === end of LIR bundle dump ===
 

@@ -16,7 +16,9 @@ func .assign.assignTester.writeIntoSubObject(
    self : .assign.assignTester) : void
 {
    var a : .assign.A;
+   .assign.A_sctor(a);
    a:b = 7;
+   .assign.A_sdtor(a);
 }
 
 func .assign.assignTester.readFromSubSubObject(
@@ -31,7 +33,9 @@ func .assign.assignTester.writeIntoSubSubObject(
    self : .assign.assignTester) : void
 {
    var wrong : .assign.A;
+   .assign.A_sctor(wrong);
    wrong:b:x = 7;
+   .assign.A_sdtor(wrong);
 }
 
 func .assign.assignTester.cctor(
@@ -78,6 +82,14 @@ func .assign.A_sctor(
    .assign.A.cctor(self);
 }
 
+func .assign.A_sdtor(
+   self : .assign.A) : void
+{
+   self:_vtbl = .assign.A_vtbl_inst;
+   .assign.A.cdtor(self);
+   .sht.core.object_sdtor(self);
+}
+
 func .assign.B_sctor(
    self : .assign.B) : void
 {
@@ -86,12 +98,28 @@ func .assign.B_sctor(
    .assign.B.cctor(self);
 }
 
+func .assign.B_sdtor(
+   self : .assign.B) : void
+{
+   self:_vtbl = .assign.B_vtbl_inst;
+   .assign.B.cdtor(self);
+   .sht.core.object_sdtor(self);
+}
+
 func .assign.assignTester_sctor(
    self : .assign.assignTester) : void
 {
    .sht.cons.program_sctor(self);
    self:_vtbl = .assign.assignTester_vtbl_inst;
    .assign.assignTester.cctor(self);
+}
+
+func .assign.assignTester_sdtor(
+   self : .assign.assignTester) : void
+{
+   self:_vtbl = .assign.assignTester_vtbl_inst;
+   .assign.assignTester.cdtor(self);
+   .sht.cons.program_sdtor(self);
 }
 
 

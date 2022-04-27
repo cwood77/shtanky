@@ -56,9 +56,18 @@ class .sht.cons.stdout_vtbl {
 func .sht.cons.iStream_sctor(
    self : .sht.cons.iStream) : void;
 
+func .sht.cons.iStream_sdtor(
+   self : .sht.cons.iStream) : void;
+
 func .sht.cons.program_sctor(
    self : .sht.cons.program) : void;
 
+func .sht.cons.program_sdtor(
+   self : .sht.cons.program) : void;
+
 func .sht.cons.stdout_sctor(
+   self : .sht.cons.stdout) : void;
+
+func .sht.cons.stdout_sdtor(
    self : .sht.cons.stdout) : void;
 

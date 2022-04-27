@@ -1,20 +1,26 @@
-=== LIR bundle has 5 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 6 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .test.consoleTarget.main
-10 <selectSegment> @code/0          
-20 <enterFunc>     ~rval/0, $args/0 ;;; .entrypoint
-30 <reserveLocal>  $cout/8          ;;; cout
-40 <unreserveLocal>$cout/8          
-50 <exitFunc>      
+10 <selectSegment> @code/0                                       
+20 <enterFunc>     ~rval/0, $args/0                              ;;; .entrypoint
+30 <reserveLocal>  $cout/8                                       ;;; cout
+40 <precall>       @totalStackSize/32                            
+50 call            ~rval0/0, @.sht.cons.iStream_sctor/0, $cout/0 ;;; (call label)
+60 <postcall>      @totalStackSize/32                            
+70 <precall>       @totalStackSize/32                            
+80 call            ~rval1/0, @.sht.cons.iStream_sdtor/0, $cout/0 ;;; (call label)
+90 <postcall>      @totalStackSize/32                            
+100<unreserveLocal>$cout/8                                       
+110<exitFunc>      
 
 ----- start stream .test.consoleTarget.cctor
 10 <selectSegment> @code/0           
-20 <enterFunc>     ~rval0/0, $self/0 ;;; .test.consoleTarget.cctor
+20 <enterFunc>     ~rval2/0, $self/0 ;;; .test.consoleTarget.cctor
 30 <exitFunc>      
 
 ----- start stream .test.consoleTarget.cdtor
 10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval1/0, $self0/0 ;;; .test.consoleTarget.cdtor
+20 <enterFunc>     ~rval3/0, $self0/0 ;;; .test.consoleTarget.cdtor
 30 <exitFunc>      
 
 ----- start stream .test.consoleTarget_vtbl_inst
@@ -23,13 +29,25 @@
 
 ----- start stream .test.consoleTarget_sctor
 10 <selectSegment> @code/0                                         
-20 <enterFunc>     ~rval2/0, $self1/0                              ;;; .test.consoleTarget_sctor
+20 <enterFunc>     ~rval4/0, $self1/0                              ;;; .test.consoleTarget_sctor
 30 <precall>       @totalStackSize/32                              
-40 call            ~rval3/0, @.sht.core.object_sctor/0, $self/0    ;;; (call label)
+40 call            ~rval5/0, @.sht.core.object_sctor/0, $self/0    ;;; (call label)
 50 <postcall>      @totalStackSize/32                              
 60 mov             [~self]/0, @.test.consoleTarget_vtbl_inst/0     ;;; =
 70 <precall>       @totalStackSize/32                              
-80 call            ~rval4/0, @.test.consoleTarget.cctor/0, $self/0 ;;; (call label)
+80 call            ~rval6/0, @.test.consoleTarget.cctor/0, $self/0 ;;; (call label)
+90 <postcall>      @totalStackSize/32                              
+100<exitFunc>      
+
+----- start stream .test.consoleTarget_sdtor
+10 <selectSegment> @code/0                                         
+20 <enterFunc>     ~rval7/0, $self2/0                              ;;; .test.consoleTarget_sdtor
+30 mov             [~self]/0, @.test.consoleTarget_vtbl_inst/0     ;;; =
+40 <precall>       @totalStackSize/32                              
+50 call            ~rval8/0, @.test.consoleTarget.cdtor/0, $self/0 ;;; (call label)
+60 <postcall>      @totalStackSize/32                              
+70 <precall>       @totalStackSize/32                              
+80 call            ~rval9/0, @.sht.core.object_sdtor/0, $self/0    ;;; (call label)
 90 <postcall>      @totalStackSize/32                              
 100<exitFunc>      
 

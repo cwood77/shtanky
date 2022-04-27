@@ -1,36 +1,67 @@
 // 2: .entrypoint: 
-// 3:              sub, rsp, 8
+// 3:              sub, rsp, 8                   
 rex(48)op(83)modR/M(ec)i8(08)
-// 4:              sub, rsp, 8
+// 4:              sub, rsp, 8                   
 rex(48)op(83)modR/M(ec)i8(08)
-// 5:              add, rsp, 8
-rex(48)op(83)modR/M(c4)i8(08)
-// 6:              add, rsp, 8
-rex(48)op(83)modR/M(c4)i8(08)
-// 7:              ret
-op(c3)
-// 10: .assign.consoleTarget.cctor: 
-// 11:                              ret
-op(c3)
-// 14: .assign.consoleTarget.cdtor: 
-// 15:                              ret
-op(c3)
-// 18: .assign.consoleTarget_vtbl_inst:
-// 19: .data, 
-// 22: .assign.consoleTarget_sctor: 
-// 23:                              sub, rsp, 32                                
+// 5:              sub, rsp, 32                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 24:                              call, .sht.core.object_sctor                ; (call label)
+// 6:              mov, rcx, [rbp-8]             ;       (cout req for rcx) [splitter]
+rex(48)op(8b)modR/M(4d)d8(f8)
+// 7:              call, .sht.cons.iStream_sctor ; (call label)
 op(e8)co32(00-00-00-00)
-// 25:                              add, rsp, 32                                
+// 8:              add, rsp, 32                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 26:                              mov, [rcx], .assign.consoleTarget_vtbl_inst ; =
+// 9:              sub, rsp, 32                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 10:              call, .sht.cons.iStream_sdtor ; (call label)
+op(e8)co32(00-00-00-00)
+// 11:              add, rsp, 32                  
+rex(48)op(83)modR/M(c4)i8(20)
+// 12:              add, rsp, 8                   
+rex(48)op(83)modR/M(c4)i8(08)
+// 13:              add, rsp, 8                   
+rex(48)op(83)modR/M(c4)i8(08)
+// 14:              ret                           
+op(c3)
+// 17: .assign.consoleTarget.cctor: 
+// 18:                              ret
+op(c3)
+// 21: .assign.consoleTarget.cdtor: 
+// 22:                              ret
+op(c3)
+// 25: .assign.consoleTarget_vtbl_inst:
+// 26: .data, 
+// 29: .assign.consoleTarget_sctor: 
+// 30:                              sub, rsp, 32                                
+rex(48)op(83)modR/M(ec)i8(20)
+// 31:                              call, .sht.core.object_sctor                ; (call label)
+op(e8)co32(00-00-00-00)
+// 32:                              add, rsp, 32                                
+rex(48)op(83)modR/M(c4)i8(20)
+// 33:                              mov, [rcx], .assign.consoleTarget_vtbl_inst ; =
 rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 27:                              sub, rsp, 32                                
+// 34:                              sub, rsp, 32                                
 rex(48)op(83)modR/M(ec)i8(20)
-// 28:                              call, .assign.consoleTarget.cctor           ; (call label)
+// 35:                              call, .assign.consoleTarget.cctor           ; (call label)
 op(e8)co32(00-00-00-00)
-// 29:                              add, rsp, 32                                
+// 36:                              add, rsp, 32                                
 rex(48)op(83)modR/M(c4)i8(20)
-// 30:                              ret                                         
+// 37:                              ret                                         
+op(c3)
+// 40: .assign.consoleTarget_sdtor: 
+// 41:                              mov, [rcx], .assign.consoleTarget_vtbl_inst ; =
+rex(48)op(c7)modR/M(01)i32(00-00-00-00)
+// 42:                              sub, rsp, 32                                
+rex(48)op(83)modR/M(ec)i8(20)
+// 43:                              call, .assign.consoleTarget.cdtor           ; (call label)
+op(e8)co32(00-00-00-00)
+// 44:                              add, rsp, 32                                
+rex(48)op(83)modR/M(c4)i8(20)
+// 45:                              sub, rsp, 32                                
+rex(48)op(83)modR/M(ec)i8(20)
+// 46:                              call, .sht.core.object_sdtor                ; (call label)
+op(e8)co32(00-00-00-00)
+// 47:                              add, rsp, 32                                
+rex(48)op(83)modR/M(c4)i8(20)
+// 48:                              ret                                         
 op(c3)

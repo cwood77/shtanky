@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace cmn { class callNode; }
 
@@ -14,11 +15,10 @@ public:
    void run();
 
 private:
-   void writeSuperCtor(classInfo& ci);
-   void linkSuperCtors();
+   void writeSuperFunc(classInfo& ci, const std::string& suffix, bool baseFirst);
+   void writeBaseCall(classInfo& ci, const std::string& ssuffix, cmn::treeWriter& w);
 
    classCatalog& m_cc;
-   std::map<std::string,cmn::callNode*> m_scCalls;
 };
 
 } // namespace araceli

@@ -61,6 +61,14 @@ func .sht.cons.iStream_sctor(
    .sht.cons.iStream.cctor(self);
 }
 
+func .sht.cons.iStream_sdtor(
+   self : .sht.cons.iStream) : void
+{
+   self:_vtbl = .sht.cons.iStream_vtbl_inst;
+   .sht.cons.iStream.cdtor(self);
+   .sht.core.object_sdtor(self);
+}
+
 func .sht.cons.program_sctor(
    self : .sht.cons.program) : void
 {
@@ -69,12 +77,28 @@ func .sht.cons.program_sctor(
    .sht.cons.program.cctor(self);
 }
 
+func .sht.cons.program_sdtor(
+   self : .sht.cons.program) : void
+{
+   self:_vtbl = .sht.cons.program_vtbl_inst;
+   .sht.cons.program.cdtor(self);
+   .sht.core.object_sdtor(self);
+}
+
 func .sht.cons.stdout_sctor(
    self : .sht.cons.stdout) : void
 {
    .sht.cons.iStream_sctor(self);
    self:_vtbl = .sht.cons.stdout_vtbl_inst;
    .sht.cons.stdout.cctor(self);
+}
+
+func .sht.cons.stdout_sdtor(
+   self : .sht.cons.stdout) : void
+{
+   self:_vtbl = .sht.cons.stdout_vtbl_inst;
+   .sht.cons.stdout.cdtor(self);
+   .sht.cons.iStream_sdtor(self);
 }
 
 

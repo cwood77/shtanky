@@ -27,6 +27,14 @@ func .test.test_sctor(
    .test.test.cctor(self);
 }
 
+func .test.test_sdtor(
+   self : .test.test) : void
+{
+   self:_vtbl = .test.test_vtbl_inst;
+   .test.test.cdtor(self);
+   .sht.cons.program_sdtor(self);
+}
+
 
 func ._osCall(code : str, payload : str) : void;
 

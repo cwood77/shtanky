@@ -62,6 +62,17 @@
                          ret                                     
 
 .seg code                
+.sht.cons.iStream_sdtor: 
+                         mov, [rcx], .sht.cons.iStream_vtbl_inst ; =
+                         sub, rsp, 32                            
+                         call, .sht.cons.iStream.cdtor           ; (call label)
+                         add, rsp, 32                            
+                         sub, rsp, 32                            
+                         call, .sht.core.object_sdtor            ; (call label)
+                         add, rsp, 32                            
+                         ret                                     
+
+.seg code                
 .sht.cons.program_sctor: 
                          sub, rsp, 32                            
                          call, .sht.core.object_sctor            ; (call label)
@@ -69,6 +80,17 @@
                          mov, [rcx], .sht.cons.program_vtbl_inst ; =
                          sub, rsp, 32                            
                          call, .sht.cons.program.cctor           ; (call label)
+                         add, rsp, 32                            
+                         ret                                     
+
+.seg code                
+.sht.cons.program_sdtor: 
+                         mov, [rcx], .sht.cons.program_vtbl_inst ; =
+                         sub, rsp, 32                            
+                         call, .sht.cons.program.cdtor           ; (call label)
+                         add, rsp, 32                            
+                         sub, rsp, 32                            
+                         call, .sht.core.object_sdtor            ; (call label)
                          add, rsp, 32                            
                          ret                                     
 
@@ -80,6 +102,17 @@
                         mov, [rcx], .sht.cons.stdout_vtbl_inst ; =
                         sub, rsp, 32                           
                         call, .sht.cons.stdout.cctor           ; (call label)
+                        add, rsp, 32                           
+                        ret                                    
+
+.seg code               
+.sht.cons.stdout_sdtor: 
+                        mov, [rcx], .sht.cons.stdout_vtbl_inst ; =
+                        sub, rsp, 32                           
+                        call, .sht.cons.stdout.cdtor           ; (call label)
+                        add, rsp, 32                           
+                        sub, rsp, 32                           
+                        call, .sht.cons.iStream_sdtor          ; (call label)
                         add, rsp, 32                           
                         ret                                    
 

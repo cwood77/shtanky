@@ -7,133 +7,200 @@ rex(4c)op(8b)modR/M(42)d8(10)
 // 8:                                         ret               
 op(c3)
 // 11: .assign.assignTester.writeIntoSubObject: 
-// 12:                                          push, rbx        
-rex(48)op(ff)modR/M(f3)
-// 13:                                          sub, rsp, 24     
+// 12:                                          sub, rsp, 24          
 rex(48)op(83)modR/M(ec)i8(18)
-// 14:                                          sub, rsp, 24     
+// 13:                                          sub, rsp, 24          
 rex(48)op(83)modR/M(ec)i8(18)
-// 15:                                          mov, [rbx+16], 7 ; =
-rex(48)op(c7)d8(43)i32(07-00-00-00)
-// 16:                                          add, rsp, 24     
+// 14:                                          sub, rsp, 32          
+rex(48)op(83)modR/M(ec)i8(20)
+// 15:                                          call, .assign.A_sctor ; (call label)
+op(e8)co32(00-00-00-00)
+// 16:                                          add, rsp, 32          
+rex(48)op(83)modR/M(c4)i8(20)
+// 17:                                          mov, [rcx+16], 7      ; =
+rex(48)op(c7)d8(41)i32(07-00-00-00)
+// 18:                                          sub, rsp, 32          
+rex(48)op(83)modR/M(ec)i8(20)
+// 19:                                          call, .assign.A_sdtor ; (call label)
+op(e8)co32(00-00-00-00)
+// 20:                                          add, rsp, 32          
+rex(48)op(83)modR/M(c4)i8(20)
+// 21:                                          add, rsp, 24          
 rex(48)op(83)modR/M(c4)i8(18)
-// 17:                                          add, rsp, 24     
+// 22:                                          add, rsp, 24          
 rex(48)op(83)modR/M(c4)i8(18)
-// 18:                                          pop, rbx         
-rex(48)op(8f)modR/M(c3)
-// 19:                                          ret              
+// 23:                                          ret                   
 op(c3)
-// 22: .assign.assignTester.readFromSubSubObject: 
-// 23:                                            push, rbx          
+// 26: .assign.assignTester.readFromSubSubObject: 
+// 27:                                            push, rbx          
 rex(48)op(ff)modR/M(f3)
-// 24:                                            push, rdi          
+// 28:                                            push, rdi          
 rex(48)op(ff)modR/M(f7)
-// 25:                                            mov, rbx, [rdi+16] ; fieldaccess: owner of x
+// 29:                                            mov, rbx, [rdi+16] ; fieldaccess: owner of x
 rex(48)op(8b)modR/M(5f)d8(10)
-// 26:                                            mov, r8, [rbx+16]  ; =
+// 30:                                            mov, r8, [rbx+16]  ; =
 rex(4c)op(8b)modR/M(43)d8(10)
-// 27:                                            pop, rdi           
+// 31:                                            pop, rdi           
 rex(48)op(8f)modR/M(c7)
-// 28:                                            pop, rbx           
+// 32:                                            pop, rbx           
 rex(48)op(8f)modR/M(c3)
-// 29:                                            ret                
+// 33:                                            ret                
 op(c3)
-// 32: .assign.assignTester.writeIntoSubSubObject: 
-// 33:                                             push, rbx          
+// 36: .assign.assignTester.writeIntoSubSubObject: 
+// 37:                                             push, rbx             
 rex(48)op(ff)modR/M(f3)
-// 34:                                             push, rdi          
-rex(48)op(ff)modR/M(f7)
-// 35:                                             sub, rsp, 24       
+// 38:                                             sub, rsp, 24          
 rex(48)op(83)modR/M(ec)i8(18)
-// 36:                                             sub, rsp, 24       
+// 39:                                             sub, rsp, 24          
 rex(48)op(83)modR/M(ec)i8(18)
-// 37:                                             mov, rbx, [rdi+16] ; fieldaccess: owner of x
-rex(48)op(8b)modR/M(5f)d8(10)
-// 38:                                             mov, [rbx+16], 7   ; =
+// 40:                                             sub, rsp, 32          
+rex(48)op(83)modR/M(ec)i8(20)
+// 41:                                             call, .assign.A_sctor ; (call label)
+op(e8)co32(00-00-00-00)
+// 42:                                             add, rsp, 32          
+rex(48)op(83)modR/M(c4)i8(20)
+// 43:                                             mov, rbx, [rcx+16]    ; fieldaccess: owner of x
+rex(48)op(8b)modR/M(59)d8(10)
+// 44:                                             mov, [rbx+16], 7      ; =
 rex(48)op(c7)d8(43)i32(07-00-00-00)
-// 39:                                             add, rsp, 24       
+// 45:                                             sub, rsp, 32          
+rex(48)op(83)modR/M(ec)i8(20)
+// 46:                                             call, .assign.A_sdtor ; (call label)
+op(e8)co32(00-00-00-00)
+// 47:                                             add, rsp, 32          
+rex(48)op(83)modR/M(c4)i8(20)
+// 48:                                             add, rsp, 24          
 rex(48)op(83)modR/M(c4)i8(18)
-// 40:                                             add, rsp, 24       
+// 49:                                             add, rsp, 24          
 rex(48)op(83)modR/M(c4)i8(18)
-// 41:                                             pop, rdi           
-rex(48)op(8f)modR/M(c7)
-// 42:                                             pop, rbx           
+// 50:                                             pop, rbx              
 rex(48)op(8f)modR/M(c3)
-// 43:                                             ret                
+// 51:                                             ret                   
 op(c3)
-// 46: .assign.assignTester.cctor: 
-// 47:                             ret
+// 54: .assign.assignTester.cctor: 
+// 55:                             ret
 op(c3)
-// 50: .assign.assignTester.cdtor: 
-// 51:                             ret
+// 58: .assign.assignTester.cdtor: 
+// 59:                             ret
 op(c3)
-// 54: .assign.A.cctor: 
-// 55:                  ret
-op(c3)
-// 58: .assign.A.cdtor: 
-// 59:                  ret
-op(c3)
-// 62: .assign.B.cctor: 
+// 62: .assign.A.cctor: 
 // 63:                  ret
 op(c3)
-// 66: .assign.B.cdtor: 
+// 66: .assign.A.cdtor: 
 // 67:                  ret
 op(c3)
-// 70: .assign.A_vtbl_inst:
-// 71: .data, 
-// 74: .assign.B_vtbl_inst:
-// 75: .data, 
-// 78: .assign.assignTester_vtbl_inst:
-// 79: .data, .assign.assignTester.run 
+// 70: .assign.B.cctor: 
+// 71:                  ret
+op(c3)
+// 74: .assign.B.cdtor: 
+// 75:                  ret
+op(c3)
+// 78: .assign.A_vtbl_inst:
+// 79: .data, 
+// 82: .assign.B_vtbl_inst:
+// 83: .data, 
+// 86: .assign.assignTester_vtbl_inst:
+// 87: .data, .assign.assignTester.run 
 _lbldata(00-00-00-00,00-00-00-00)
-// 82: .assign.A_sctor: 
-// 83:                  sub, rsp, 32                    
+// 90: .assign.A_sctor: 
+// 91:                  sub, rsp, 32                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 84:                  call, .sht.core.object_sctor    ; (call label)
+// 92:                  call, .sht.core.object_sctor    ; (call label)
 op(e8)co32(00-00-00-00)
-// 85:                  add, rsp, 32                    
+// 93:                  add, rsp, 32                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 86:                  mov, [rcx], .assign.A_vtbl_inst ; =
+// 94:                  mov, [rcx], .assign.A_vtbl_inst ; =
 rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 87:                  sub, rsp, 32                    
+// 95:                  sub, rsp, 32                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 88:                  call, .assign.A.cctor           ; (call label)
+// 96:                  call, .assign.A.cctor           ; (call label)
 op(e8)co32(00-00-00-00)
-// 89:                  add, rsp, 32                    
+// 97:                  add, rsp, 32                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 90:                  ret                             
+// 98:                  ret                             
 op(c3)
-// 93: .assign.B_sctor: 
-// 94:                  sub, rsp, 32                    
-rex(48)op(83)modR/M(ec)i8(20)
-// 95:                  call, .sht.core.object_sctor    ; (call label)
-op(e8)co32(00-00-00-00)
-// 96:                  add, rsp, 32                    
-rex(48)op(83)modR/M(c4)i8(20)
-// 97:                  mov, [rcx], .assign.B_vtbl_inst ; =
+// 101: .assign.A_sdtor: 
+// 102:                  mov, [rcx], .assign.A_vtbl_inst ; =
 rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 98:                  sub, rsp, 32                    
+// 103:                  sub, rsp, 32                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 99:                  call, .assign.B.cctor           ; (call label)
+// 104:                  call, .assign.A.cdtor           ; (call label)
 op(e8)co32(00-00-00-00)
-// 100:                  add, rsp, 32                    
+// 105:                  add, rsp, 32                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 101:                  ret                             
+// 106:                  sub, rsp, 32                    
+rex(48)op(83)modR/M(ec)i8(20)
+// 107:                  call, .sht.core.object_sdtor    ; (call label)
+op(e8)co32(00-00-00-00)
+// 108:                  add, rsp, 32                    
+rex(48)op(83)modR/M(c4)i8(20)
+// 109:                  ret                             
 op(c3)
-// 104: .assign.assignTester_sctor: 
-// 105:                             sub, rsp, 32                               
+// 112: .assign.B_sctor: 
+// 113:                  sub, rsp, 32                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 106:                             call, .sht.cons.program_sctor              ; (call label)
+// 114:                  call, .sht.core.object_sctor    ; (call label)
 op(e8)co32(00-00-00-00)
-// 107:                             add, rsp, 32                               
+// 115:                  add, rsp, 32                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 108:                             mov, [rcx], .assign.assignTester_vtbl_inst ; =
+// 116:                  mov, [rcx], .assign.B_vtbl_inst ; =
 rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 109:                             sub, rsp, 32                               
+// 117:                  sub, rsp, 32                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 110:                             call, .assign.assignTester.cctor           ; (call label)
+// 118:                  call, .assign.B.cctor           ; (call label)
 op(e8)co32(00-00-00-00)
-// 111:                             add, rsp, 32                               
+// 119:                  add, rsp, 32                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 112:                             ret                                        
+// 120:                  ret                             
+op(c3)
+// 123: .assign.B_sdtor: 
+// 124:                  mov, [rcx], .assign.B_vtbl_inst ; =
+rex(48)op(c7)modR/M(01)i32(00-00-00-00)
+// 125:                  sub, rsp, 32                    
+rex(48)op(83)modR/M(ec)i8(20)
+// 126:                  call, .assign.B.cdtor           ; (call label)
+op(e8)co32(00-00-00-00)
+// 127:                  add, rsp, 32                    
+rex(48)op(83)modR/M(c4)i8(20)
+// 128:                  sub, rsp, 32                    
+rex(48)op(83)modR/M(ec)i8(20)
+// 129:                  call, .sht.core.object_sdtor    ; (call label)
+op(e8)co32(00-00-00-00)
+// 130:                  add, rsp, 32                    
+rex(48)op(83)modR/M(c4)i8(20)
+// 131:                  ret                             
+op(c3)
+// 134: .assign.assignTester_sctor: 
+// 135:                             sub, rsp, 32                               
+rex(48)op(83)modR/M(ec)i8(20)
+// 136:                             call, .sht.cons.program_sctor              ; (call label)
+op(e8)co32(00-00-00-00)
+// 137:                             add, rsp, 32                               
+rex(48)op(83)modR/M(c4)i8(20)
+// 138:                             mov, [rcx], .assign.assignTester_vtbl_inst ; =
+rex(48)op(c7)modR/M(01)i32(00-00-00-00)
+// 139:                             sub, rsp, 32                               
+rex(48)op(83)modR/M(ec)i8(20)
+// 140:                             call, .assign.assignTester.cctor           ; (call label)
+op(e8)co32(00-00-00-00)
+// 141:                             add, rsp, 32                               
+rex(48)op(83)modR/M(c4)i8(20)
+// 142:                             ret                                        
+op(c3)
+// 145: .assign.assignTester_sdtor: 
+// 146:                             mov, [rcx], .assign.assignTester_vtbl_inst ; =
+rex(48)op(c7)modR/M(01)i32(00-00-00-00)
+// 147:                             sub, rsp, 32                               
+rex(48)op(83)modR/M(ec)i8(20)
+// 148:                             call, .assign.assignTester.cdtor           ; (call label)
+op(e8)co32(00-00-00-00)
+// 149:                             add, rsp, 32                               
+rex(48)op(83)modR/M(c4)i8(20)
+// 150:                             sub, rsp, 32                               
+rex(48)op(83)modR/M(ec)i8(20)
+// 151:                             call, .sht.cons.program_sdtor              ; (call label)
+op(e8)co32(00-00-00-00)
+// 152:                             add, rsp, 32                               
+rex(48)op(83)modR/M(c4)i8(20)
+// 153:                             ret                                        
 op(c3)

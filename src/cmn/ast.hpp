@@ -131,6 +131,7 @@ public:
    void injectAbove(node& n);
    void appendChild(node& n);
    void insertChild(size_t i, node& n);
+   void insertChildAfter(node& noob, node& antecedent);
    node *replaceChild(node& old, node& nu); // caller responsible for delete
    void removeChild(node& n);
 
