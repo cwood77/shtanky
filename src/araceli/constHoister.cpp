@@ -26,7 +26,6 @@ void constHoister::visit(cmn::stringLiteralNode& n)
       pConst->name = name.str();
    }
    pRef->pSrc.ref = cmn::fullyQualifiedName::build(*m_pFile,pConst->name);
-   pRef->pSrc.bind(*pConst.get());
 
    // chain
    pConst->appendChild(*pType.release());

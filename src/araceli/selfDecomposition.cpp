@@ -14,7 +14,6 @@ void selfDecomposition::visit(cmn::methodNode& n)
          .append<cmn::userTypeNode>([&](auto&t)
          {
             t.pDef.ref = cmn::fullyQualifiedName::build(n.getAncestor<cmn::classNode>());
-            t.pDef.bind(n.getAncestor<cmn::classNode>());
          })
       ;
       n.insertChild(0,*root.lastChild());

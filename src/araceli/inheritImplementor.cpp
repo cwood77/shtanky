@@ -51,11 +51,7 @@ void inheritImplementor::addVPtrs(classCatalog& cc)
          cmn::node root;
          cmn::treeWriter(root)
          .append<cmn::fieldNode>([](auto& f){ f.name = "_vtbl"; })
-            .append<cmn::userTypeNode>([&](auto& t)
-            {
-               t.pDef.ref = ci.name + "_vtbl";
-               t.pDef.bind(*ci.pVTableClass);
-            })
+            .append<cmn::userTypeNode>([&](auto& t) { t.pDef.ref = ci.name + "_vtbl"; })
          ;
          ci.pNode->insertChild(0,*root.lastChild());
          root.getChildren().clear();

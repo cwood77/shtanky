@@ -16,11 +16,7 @@ void vtableGenerator::generate(classCatalog& cc)
       pConst->name = cit->second.name + "_vtbl_inst";
 
       auto& sNode = cmn::treeWriter(*pConst.get())
-         .append<cmn::userTypeNode>([&](auto& t)
-         {
-            t.pDef.ref = pClass->name;
-            t.pDef.bind(*pClass.get());
-         })
+         .append<cmn::userTypeNode>([&](auto& t) { t.pDef.ref = pClass->name; })
             .backTo<cmn::constNode>()
          .append<cmn::structLiteralNode>()
             .get();
@@ -36,12 +32,8 @@ void vtableGenerator::generate(classCatalog& cc)
             .append<cmn::varRefNode>([=](auto& v)
             {
                v.pSrc.ref = cmn::fullyQualifiedName::build(*cit->second.pNode,mit->name);
-               // these methods have been moved, so bind to the function version
-               v.pSrc.bind(*mit->pAsFunc);
             });
       }
-
-      cit->second.pVTableClass = pClass.get();
 
       cmn::fileNode& file = cit->second.pNode->getAncestor<cmn::fileNode>();
       file.appendChild(*pClass.release());

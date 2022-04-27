@@ -19,7 +19,6 @@ void methodMover::visit(cmn::fileNode& n)
 
       pMethod->getChildren().clear();
       pMethod->getParent()->removeChild(*pMethod);
-      m_cc.replaceMethod(*pMethod,*pFunc);
       delete pMethod;
 
       n.appendChild(*pFunc.release());

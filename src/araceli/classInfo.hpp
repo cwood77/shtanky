@@ -25,7 +25,6 @@ public:
    size_t flags;
    cmn::methodNode *pMethod;
    cmn::methodNode *pBaseImpl;
-   cmn::funcNode *pAsFunc;
    bool inherited;
 };
 
@@ -39,7 +38,6 @@ public:
    std::string fqn;
    //size_t flags;
    cmn::classNode *pNode;
-   cmn::classNode *pVTableClass;
    std::list<std::string> bases;
 
    std::vector<methodInfo> inheritedAndDirectMethods;
@@ -50,7 +48,6 @@ class classCatalog {
 public:
    classInfo& create(cmn::classNode& n);
    //classInfo& get(cmn::classNode& n);
-   void replaceMethod(cmn::methodNode& m, cmn::funcNode& f);
 
    std::map<std::string,classInfo> classes;
 };

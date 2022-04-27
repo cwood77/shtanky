@@ -18,11 +18,7 @@ void matryoshkaDecomposition::writeSuperCtor(classInfo& ci)
    // function decl
    .append<cmn::funcNode>([&](auto& f){ f.name = ci.name + "_sctor"; })
       .append<cmn::argNode>([](auto& a){ a.name = "self"; })
-         .append<cmn::userTypeNode>([&](auto& t)
-         {
-            t.pDef.ref = ci.fqn;
-            t.pDef.bind(*ci.pNode);
-         })
+         .append<cmn::userTypeNode>([&](auto& t) { t.pDef.ref = ci.fqn; })
             .backTo<cmn::funcNode>()
       .append<cmn::voidTypeNode>()
          .backTo<cmn::funcNode>()
@@ -42,11 +38,7 @@ void matryoshkaDecomposition::writeSuperCtor(classInfo& ci)
       {
          c.pTarget.ref = ci.bases.back() + "_sctor";
       })
-         .append<cmn::varRefNode>([&](auto& v)
-         {
-            v.pSrc.ref = "self";
-            v.pSrc.bind(selfArg);
-         })
+         .append<cmn::varRefNode>([&](auto& v) { v.pSrc.ref = "self"; })
             .backTo<cmn::sequenceNode>()
       ;
    }
@@ -55,11 +47,7 @@ void matryoshkaDecomposition::writeSuperCtor(classInfo& ci)
    // set vtbl
    .append<cmn::assignmentNode>()
       .append<cmn::fieldAccessNode>([](auto& f){ f.name = "_vtbl"; })
-         .append<cmn::varRefNode>([&](auto& v)
-         {
-            v.pSrc.ref = "self";
-            v.pSrc.bind(selfArg);
-         })
+         .append<cmn::varRefNode>([&](auto& v) { v.pSrc.ref = "self"; })
             .backTo<cmn::assignmentNode>()
       .append<cmn::varRefNode>([&](auto& v)
       {
@@ -73,11 +61,7 @@ void matryoshkaDecomposition::writeSuperCtor(classInfo& ci)
    {
       c.pTarget.ref = ci.fqn + ".cctor";
    })
-      .append<cmn::varRefNode>([&](auto& v)
-      {
-         v.pSrc.ref = "self";
-         v.pSrc.bind(selfArg);
-      })
+      .append<cmn::varRefNode>([&](auto& v) { v.pSrc.ref = "self"; })
          .backTo<cmn::sequenceNode>()
    ;
 

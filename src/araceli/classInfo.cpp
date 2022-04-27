@@ -4,12 +4,12 @@
 namespace araceli {
 
 methodInfo::methodInfo()
-: flags(0), pMethod(NULL), pBaseImpl(NULL), pAsFunc(NULL), inherited(false)
+: flags(0), pMethod(NULL), pBaseImpl(NULL), inherited(false)
 {
 }
 
 classInfo::classInfo()
-: pNode(NULL), pVTableClass(NULL)
+: pNode(NULL)
 {
 }
 
@@ -43,20 +43,6 @@ classInfo& classCatalog::create(cmn::classNode& n)
       info.bases.push_back(cmn::fullyQualifiedName::build(**it));
    info.bases.pop_back(); // do not include myself
    return info;
-}
-
-void classCatalog::replaceMethod(cmn::methodNode& m, cmn::funcNode& f)
-{
-   auto fqn = cmn::fullyQualifiedName::build(m.getAncestor<cmn::classNode>());
-   classInfo& ci = classes[fqn];
-
-   auto it = ci.nameLookup.find(m.name);
-   if(it == ci.nameLookup.end())
-      // a method may not be in the table if it was added by a transform
-      // like a ctor
-      return;
-
-   ci.inheritedAndDirectMethods[it->second].pAsFunc = &f;
 }
 
 void classInfoBuilder::visit(cmn::classNode& n)
