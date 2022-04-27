@@ -37,7 +37,8 @@ int main(int argc, const char *argv[])
    std::unique_ptr<cmn::araceliProjectNode> pPrj = projectBuilder::create("ca");
    projectBuilder::addScope(*pPrj.get(),projectDir,/*inProject*/true);
    consoleAppTarget tgt;
-   tgt.addScopes(*pPrj.get());
+   tgt.addAraceliStandardLibrary(*pPrj.get());
+   tgt.populateIntrinsics(*pPrj.get());
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // initial link to discover and load everything
@@ -101,6 +102,20 @@ if(exp) {
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // -----------------------------------------------------
+
+   // final link so fileRefs are as accurate as possible in codegen
+   try
+   {
+      araceli::nodeLinker().linkGraph(*pPrj);
+   }
+   catch(std::exception&)
+   {
+      cdwVERBOSE("graph during throw ----\n");
+      { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+      throw;
+   }
+   cdwVERBOSE("graph after linking ----\n");
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // codegen
    cmn::outBundle out;

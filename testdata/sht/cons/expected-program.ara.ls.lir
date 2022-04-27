@@ -1,4 +1,4 @@
-=== LIR bundle has 12 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 15 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .sht.cons.iStream.printLn
 0 <enterFunc> ~rval/0, $self/0, $msg/0 ;;; .sht.cons.iStream.printLn
@@ -29,14 +29,38 @@
 ----- start stream .sht.cons.program.cdtor
 0 <enterFunc> ~rval8/0, $self7/0 ;;; .sht.cons.program.cdtor
 
------ start stream iStream_vtbl_inst
-0 <globalConstData> @.sht.cons.iStream.printLn /0 ;;; iStream_vtbl_inst
+----- start stream .sht.cons.iStream_vtbl_inst
+0 <globalConstData> @.sht.cons.iStream.printLn /0 ;;; .sht.cons.iStream_vtbl_inst
 
------ start stream program_vtbl_inst
-0 <globalConstData> @.sht.cons.program.run /0 ;;; program_vtbl_inst
+----- start stream .sht.cons.program_vtbl_inst
+0 <globalConstData> @.sht.cons.program.run /0 ;;; .sht.cons.program_vtbl_inst
 
------ start stream stdout_vtbl_inst
-0 <globalConstData> @.sht.cons.stdout.printLn /0 ;;; stdout_vtbl_inst
+----- start stream .sht.cons.stdout_vtbl_inst
+0 <globalConstData> @.sht.cons.stdout.printLn /0 ;;; .sht.cons.stdout_vtbl_inst
+
+----- start stream .sht.cons.iStream_sctor
+0 <enterFunc> ~rval9/0, $self8/0                            ;;; .sht.cons.iStream_sctor
+0 <precall>   
+0 call        ~rval10/0, @.sht.core.object_sctor/0, $self/0 ;;; (call label)
+0 mov         [~self]/0, @.sht.cons.iStream_vtbl_inst/0     ;;; =
+0 <precall>   
+0 call        ~rval11/0, @.sht.cons.iStream.cctor/0, $self/0;;; (call label)
+
+----- start stream .sht.cons.program_sctor
+0 <enterFunc> ~rval12/0, $self9/0                           ;;; .sht.cons.program_sctor
+0 <precall>   
+0 call        ~rval13/0, @.sht.core.object_sctor/0, $self/0 ;;; (call label)
+0 mov         [~self]/0, @.sht.cons.program_vtbl_inst/0     ;;; =
+0 <precall>   
+0 call        ~rval14/0, @.sht.cons.program.cctor/0, $self/0;;; (call label)
+
+----- start stream .sht.cons.stdout_sctor
+0 <enterFunc> ~rval15/0, $self10/0                           ;;; .sht.cons.stdout_sctor
+0 <precall>   
+0 call        ~rval16/0, @.sht.cons.iStream_sctor/0, $self/0 ;;; (call label)
+0 mov         [~self]/0, @.sht.cons.stdout_vtbl_inst/0       ;;; =
+0 <precall>   
+0 call        ~rval17/0, @.sht.cons.stdout.cctor/0, $self/0  ;;; (call label)
 
 === end of LIR bundle dump ===
 

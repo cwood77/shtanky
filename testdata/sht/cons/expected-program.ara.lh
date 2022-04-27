@@ -53,3 +53,12 @@ class .sht.cons.stdout_vtbl {
    printLn : ptr;
 }
 
+func .sht.cons.iStream_sctor(
+   self : .sht.cons.iStream) : void;
+
+func .sht.cons.program_sctor(
+   self : .sht.cons.program) : void;
+
+func .sht.cons.stdout_sctor(
+   self : .sht.cons.stdout) : void;
+

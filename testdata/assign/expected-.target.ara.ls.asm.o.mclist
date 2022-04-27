@@ -15,5 +15,22 @@ op(c3)
 // 14: .assign.consoleTarget.cdtor: 
 // 15:                              ret
 op(c3)
-// 18: consoleTarget_vtbl_inst:
+// 18: .assign.consoleTarget_vtbl_inst:
 // 19: .data, 
+// 22: .assign.consoleTarget_sctor: 
+// 23:                              sub, rsp, 32                                
+rex(48)op(83)modR/M(ec)i8(20)
+// 24:                              call, .sht.core.object_sctor                ; (call label)
+op(e8)co32(00-00-00-00)
+// 25:                              add, rsp, 32                                
+rex(48)op(83)modR/M(c4)i8(20)
+// 26:                              mov, [rcx], .assign.consoleTarget_vtbl_inst ; =
+rex(48)op(c7)modR/M(01)i32(00-00-00-00)
+// 27:                              sub, rsp, 32                                
+rex(48)op(83)modR/M(ec)i8(20)
+// 28:                              call, .assign.consoleTarget.cctor           ; (call label)
+op(e8)co32(00-00-00-00)
+// 29:                              add, rsp, 32                                
+rex(48)op(83)modR/M(c4)i8(20)
+// 30:                              ret                                         
+op(c3)

@@ -67,14 +67,47 @@
                  ret
 
 .seg const
-A_vtbl_inst:
+.assign.A_vtbl_inst:
 .data, 
 
 .seg const
-B_vtbl_inst:
+.assign.B_vtbl_inst:
 .data, 
 
 .seg const
-assignTester_vtbl_inst:
+.assign.assignTester_vtbl_inst:
 .data, .assign.assignTester.run 
+
+.seg code        
+.assign.A_sctor: 
+                 sub, rsp, 32                    
+                 call, .sht.core.object_sctor    ; (call label)
+                 add, rsp, 32                    
+                 mov, [rcx], .assign.A_vtbl_inst ; =
+                 sub, rsp, 32                    
+                 call, .assign.A.cctor           ; (call label)
+                 add, rsp, 32                    
+                 ret                             
+
+.seg code        
+.assign.B_sctor: 
+                 sub, rsp, 32                    
+                 call, .sht.core.object_sctor    ; (call label)
+                 add, rsp, 32                    
+                 mov, [rcx], .assign.B_vtbl_inst ; =
+                 sub, rsp, 32                    
+                 call, .assign.B.cctor           ; (call label)
+                 add, rsp, 32                    
+                 ret                             
+
+.seg code                   
+.assign.assignTester_sctor: 
+                            sub, rsp, 32                               
+                            call, .sht.cons.program_sctor              ; (call label)
+                            add, rsp, 32                               
+                            mov, [rcx], .assign.assignTester_vtbl_inst ; =
+                            sub, rsp, 32                               
+                            call, .assign.assignTester.cctor           ; (call label)
+                            add, rsp, 32                               
+                            ret                                        
 

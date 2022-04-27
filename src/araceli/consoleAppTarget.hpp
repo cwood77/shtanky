@@ -8,10 +8,11 @@ namespace araceli {
 
 class consoleAppTarget : public iTarget {
 public:
-   virtual void addScopes(cmn::araceliProjectNode& root);
+   virtual void addAraceliStandardLibrary(cmn::araceliProjectNode& root);
+   virtual void populateIntrinsics(cmn::araceliProjectNode& root);
    virtual void araceliCodegen(cmn::araceliProjectNode& root, metadata& md);
    virtual void liamCodegen(cmn::outStream& sourceStream);
-   virtual void adjustFiles(phase p, std::list<std::string>& files);
+   virtual void adjustBatchFileFiles(phase p, std::list<std::string>& files);
 
 private:
    cmn::scopeNode& findProjectScope(cmn::araceliProjectNode& root);

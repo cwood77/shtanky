@@ -64,13 +64,39 @@ func .assign.B.cdtor(
 {
 }
 
-const A_vtbl_inst : .assign.A_vtbl = {  };
+const .assign.A_vtbl_inst : .assign.A_vtbl = {  };
 
-const B_vtbl_inst : .assign.B_vtbl = {  };
+const .assign.B_vtbl_inst : .assign.B_vtbl = {  };
 
-const assignTester_vtbl_inst : .assign.assignTester_vtbl = { .assign.assignTester.run };
+const .assign.assignTester_vtbl_inst : .assign.assignTester_vtbl = { .assign.assignTester.run };
+
+func .assign.A_sctor(
+   self : .assign.A) : void
+{
+   .sht.core.object_sctor(self);
+   self:_vtbl = .assign.A_vtbl_inst;
+   .assign.A.cctor(self);
+}
+
+func .assign.B_sctor(
+   self : .assign.B) : void
+{
+   .sht.core.object_sctor(self);
+   self:_vtbl = .assign.B_vtbl_inst;
+   .assign.B.cctor(self);
+}
+
+func .assign.assignTester_sctor(
+   self : .assign.assignTester) : void
+{
+   .sht.cons.program_sctor(self);
+   self:_vtbl = .assign.assignTester_vtbl_inst;
+   .assign.assignTester.cctor(self);
+}
 
 
 func ._osCall(code : str, payload : str) : void;
 
 ref "main.ara.lh";
+ref "..\sht\cons\program.ara.lh";
+ref "..\sht\core\object.ara.lh";

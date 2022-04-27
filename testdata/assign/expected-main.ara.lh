@@ -63,4 +63,13 @@ class .assign.assignTester_vtbl {
    run : ptr;
 }
 
+func .assign.A_sctor(
+   self : .assign.A) : void;
+
+func .assign.B_sctor(
+   self : .assign.B) : void;
+
+func .assign.assignTester_sctor(
+   self : .assign.assignTester) : void;
+
 ref "..\sht\cons\program.ara.lh";

@@ -15,3 +15,6 @@ func .assign.consoleTarget.cdtor(
 class .assign.consoleTarget_vtbl {
 }
 
+func .assign.consoleTarget_sctor(
+   self : .assign.consoleTarget) : void;
+

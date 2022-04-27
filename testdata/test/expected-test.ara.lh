@@ -17,4 +17,7 @@ class .test.test_vtbl {
    run : ptr;
 }
 
+func .test.test_sctor(
+   self : .test.test) : void;
+
 ref "..\sht\cons\program.ara.lh";

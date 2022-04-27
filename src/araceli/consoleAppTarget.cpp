@@ -8,9 +8,16 @@
 
 namespace araceli {
 
-void consoleAppTarget::addScopes(cmn::araceliProjectNode& root)
+void consoleAppTarget::addAraceliStandardLibrary(cmn::araceliProjectNode& root)
 {
    projectBuilder::addScope(root,".\\testdata\\sht",/*inProject*/false);
+}
+
+void consoleAppTarget::populateIntrinsics(cmn::araceliProjectNode& root)
+{
+   auto *pNode = new cmn::intrinsicNode();
+   pNode->name = "._osCall";
+   root.appendChild(*pNode);
 }
 
 void consoleAppTarget::araceliCodegen(cmn::araceliProjectNode& root, metadata& md)
@@ -79,7 +86,7 @@ void consoleAppTarget::liamCodegen(cmn::outStream& sourceStream)
    sourceStream.stream() << "func ._osCall(code : str, payload : str) : void;" << std::endl;
 }
 
-void consoleAppTarget::adjustFiles(phase p, std::list<std::string>& files)
+void consoleAppTarget::adjustBatchFileFiles(phase p, std::list<std::string>& files)
 {
    if(p == iTarget::kShtasmPhase)
       files.push_back("testdata\\sht\\oscall.asm");

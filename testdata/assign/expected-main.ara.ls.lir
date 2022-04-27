@@ -1,4 +1,4 @@
-=== LIR bundle has 14 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 17 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .assign.assignTester.run
 0 <enterFunc> ~rval/0, $self/0, $args/0 ;;; .assign.assignTester.run
@@ -41,14 +41,38 @@
 ----- start stream .assign.B.cdtor
 0 <enterFunc> ~rval9/0, $self9/0 ;;; .assign.B.cdtor
 
------ start stream A_vtbl_inst
-0 <globalConstData> @/0 ;;; A_vtbl_inst
+----- start stream .assign.A_vtbl_inst
+0 <globalConstData> @/0 ;;; .assign.A_vtbl_inst
 
------ start stream B_vtbl_inst
-0 <globalConstData> @/0 ;;; B_vtbl_inst
+----- start stream .assign.B_vtbl_inst
+0 <globalConstData> @/0 ;;; .assign.B_vtbl_inst
 
------ start stream assignTester_vtbl_inst
-0 <globalConstData> @.assign.assignTester.run /0 ;;; assignTester_vtbl_inst
+----- start stream .assign.assignTester_vtbl_inst
+0 <globalConstData> @.assign.assignTester.run /0 ;;; .assign.assignTester_vtbl_inst
+
+----- start stream .assign.A_sctor
+0 <enterFunc> ~rval10/0, $self10/0                          ;;; .assign.A_sctor
+0 <precall>   
+0 call        ~rval11/0, @.sht.core.object_sctor/0, $self/0 ;;; (call label)
+0 mov         [~self]/0, @.assign.A_vtbl_inst/0             ;;; =
+0 <precall>   
+0 call        ~rval12/0, @.assign.A.cctor/0, $self/0        ;;; (call label)
+
+----- start stream .assign.B_sctor
+0 <enterFunc> ~rval13/0, $self11/0                          ;;; .assign.B_sctor
+0 <precall>   
+0 call        ~rval14/0, @.sht.core.object_sctor/0, $self/0 ;;; (call label)
+0 mov         [~self]/0, @.assign.B_vtbl_inst/0             ;;; =
+0 <precall>   
+0 call        ~rval15/0, @.assign.B.cctor/0, $self/0        ;;; (call label)
+
+----- start stream .assign.assignTester_sctor
+0 <enterFunc> ~rval16/0, $self12/0                              ;;; .assign.assignTester_sctor
+0 <precall>   
+0 call        ~rval17/0, @.sht.cons.program_sctor/0, $self/0    ;;; (call label)
+0 mov         [~self]/0, @.assign.assignTester_vtbl_inst/0      ;;; =
+0 <precall>   
+0 call        ~rval18/0, @.assign.assignTester.cctor/0, $self/0 ;;; (call label)
 
 === end of LIR bundle dump ===
 

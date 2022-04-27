@@ -15,10 +15,19 @@ func .assign.consoleTarget.cdtor(
 {
 }
 
-const consoleTarget_vtbl_inst : .assign.consoleTarget_vtbl = {  };
+const .assign.consoleTarget_vtbl_inst : .assign.consoleTarget_vtbl = {  };
+
+func .assign.consoleTarget_sctor(
+   self : .assign.consoleTarget) : void
+{
+   .sht.core.object_sctor(self);
+   self:_vtbl = .assign.consoleTarget_vtbl_inst;
+   .assign.consoleTarget.cctor(self);
+}
 
 
 func ._osCall(code : str, payload : str) : void;
 
 ref ".target.ara.lh";
 ref "..\sht\cons\program.ara.lh";
+ref "..\sht\core\object.ara.lh";

@@ -15,3 +15,6 @@ func .test.consoleTarget.cdtor(
 class .test.consoleTarget_vtbl {
 }
 
+func .test.consoleTarget_sctor(
+   self : .test.consoleTarget) : void;
+

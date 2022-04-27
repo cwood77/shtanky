@@ -18,11 +18,20 @@ void symbolTable::publish(const std::string& fqn, node& n)
 
 void symbolTable::tryResolveVarType(const std::string& objName, node& obj, linkBase& l)
 {
+   cdwVERBOSE("attempting varRef resolution against type %s with name '%s' of link %s\n",
+      typeid(obj).name(),
+      objName.c_str(),
+      l.ref.c_str()
+   );
+
    if(objName == l.ref)
    {
+      cdwVERBOSE("   ok\n");
       l.bind(obj);
       unresolved.erase(&l);
    }
+   else
+      cdwVERBOSE("   nope\n");
 }
 
 void symbolTable::tryResolveExact(const std::string& refingScope, linkBase& l)
@@ -287,6 +296,18 @@ void nodeResolver::visit(methodNode& n)
       linkResolver v(m_sTable,n.baseImpl,linkResolver::kBaseClasses);
       n.acceptVisitor(v);
    }
+
+   hNodeVisitor::visit(n);
+}
+
+void nodeResolver::visit(callNode& n)
+{
+   m_sTable.markRequired(n.pTarget);
+   linkResolver v(m_sTable,n.pTarget,
+      linkResolver::kOwnClass |
+      linkResolver::kBaseClasses |
+      linkResolver::kContainingScopes);
+   n.acceptVisitor(v);
 
    hNodeVisitor::visit(n);
 }

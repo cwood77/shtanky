@@ -38,6 +38,13 @@ void fileRefCollector::onLink(cmn::linkBase& l)
          typeid(l).name());
       return;
    }
+   if(dynamic_cast<cmn::intrinsicNode*>(p))
+   {
+      cdwDEBUG(
+         "ignoring intrinsic '%s' for fileRef computation\n",
+         l.ref.c_str());
+      return;
+   }
 
    auto& f = p->getAncestor<cmn::fileNode>();
    if(f.fullPath.empty())
@@ -115,7 +122,7 @@ void codeGenBase::generatePrototype(cmn::funcNode& m)
 
    cmn::autoIndent _i(*m_pOut);
    m_pOut->stream()
-      << "func " << m.name << "("
+      << "func " << cmn::fullyQualifiedName::build(m,m.name) << "("
       << std::endl << cmn::indent(*m_pOut)
    ;
 
@@ -191,7 +198,7 @@ void headerCodeGen::visit(cmn::funcNode& n)
 
 void sourceCodeGen::visit(cmn::constNode& n)
 {
-   m_pOut->stream() << cmn::indent(*m_pOut) << "const " << n.name << " : ";
+   m_pOut->stream() << cmn::indent(*m_pOut) << "const " << cmn::fullyQualifiedName::build(n,n.name) << " : ";
    liamTypeWriter tyW(m_pOut->stream(),m_refColl);
    n.getChildren()[0]->acceptVisitor(tyW);
    m_pOut->stream() << " = ";
@@ -240,7 +247,7 @@ void sourceCodeGen::visit(cmn::fieldAccessNode& n)
 void sourceCodeGen::visit(cmn::callNode& n)
 {
    m_pOut->stream() << n.pTarget.ref;
-
+   m_refColl.onLink(n.pTarget);
    generateCallFromOpenParen(n,false);
 }
 

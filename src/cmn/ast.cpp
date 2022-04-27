@@ -44,6 +44,7 @@ node *node::replaceChild(node& old, node& nu)
       if(*it == &old)
       {
          m_children[i] = &nu;
+         nu.m_pParent = this;
          return &old;
       }
    }
@@ -188,6 +189,16 @@ void diagVisitor::visit(constNode& n)
 void diagVisitor::visit(funcNode& n)
 {
    cdwDEBUG("%sfunc; name=%s\n",
+      getIndent().c_str(),
+      n.name.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(intrinsicNode& n)
+{
+   cdwDEBUG("%sintrinsic; name=%s\n",
       getIndent().c_str(),
       n.name.c_str());
 

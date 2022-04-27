@@ -47,13 +47,38 @@ func .sht.cons.program.cdtor(
 {
 }
 
-const iStream_vtbl_inst : .sht.cons.iStream_vtbl = { .sht.cons.iStream.printLn };
+const .sht.cons.iStream_vtbl_inst : .sht.cons.iStream_vtbl = { .sht.cons.iStream.printLn };
 
-const program_vtbl_inst : .sht.cons.program_vtbl = { .sht.cons.program.run };
+const .sht.cons.program_vtbl_inst : .sht.cons.program_vtbl = { .sht.cons.program.run };
 
-const stdout_vtbl_inst : .sht.cons.stdout_vtbl = { .sht.cons.stdout.printLn };
+const .sht.cons.stdout_vtbl_inst : .sht.cons.stdout_vtbl = { .sht.cons.stdout.printLn };
+
+func .sht.cons.iStream_sctor(
+   self : .sht.cons.iStream) : void
+{
+   .sht.core.object_sctor(self);
+   self:_vtbl = .sht.cons.iStream_vtbl_inst;
+   .sht.cons.iStream.cctor(self);
+}
+
+func .sht.cons.program_sctor(
+   self : .sht.cons.program) : void
+{
+   .sht.core.object_sctor(self);
+   self:_vtbl = .sht.cons.program_vtbl_inst;
+   .sht.cons.program.cctor(self);
+}
+
+func .sht.cons.stdout_sctor(
+   self : .sht.cons.stdout) : void
+{
+   .sht.cons.iStream_sctor(self);
+   self:_vtbl = .sht.cons.stdout_vtbl_inst;
+   .sht.cons.stdout.cctor(self);
+}
 
 
 func ._osCall(code : str, payload : str) : void;
 
 ref "program.ara.lh";
+ref "..\core\object.ara.lh";

@@ -16,7 +16,7 @@ void matryoshkaDecomposition::writeSuperCtor(classInfo& ci)
    cmn::treeWriter w(root);
    w
    // function decl
-   .append<cmn::funcNode>([&](auto& f){ f.name = ci.fqn + "_sctor"; })
+   .append<cmn::funcNode>([&](auto& f){ f.name = ci.name + "_sctor"; })
       .append<cmn::argNode>([](auto& a){ a.name = "self"; })
          .append<cmn::userTypeNode>([&](auto& t)
          {
@@ -84,6 +84,10 @@ void matryoshkaDecomposition::writeSuperCtor(classInfo& ci)
    // add nodes
    ci.pNode->getAncestor<cmn::fileNode>().appendChild(*root.getChildren()[0]);
    root.getChildren().clear();
+}
+
+void matryoshkaDecomposition::linkSuperCtors()
+{
 }
 
 } // namespace araceli

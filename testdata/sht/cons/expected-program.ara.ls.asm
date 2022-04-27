@@ -39,14 +39,47 @@
                          ret
 
 .seg const
-iStream_vtbl_inst:
+.sht.cons.iStream_vtbl_inst:
 .data, .sht.cons.iStream.printLn 
 
 .seg const
-program_vtbl_inst:
+.sht.cons.program_vtbl_inst:
 .data, .sht.cons.program.run 
 
 .seg const
-stdout_vtbl_inst:
+.sht.cons.stdout_vtbl_inst:
 .data, .sht.cons.stdout.printLn 
+
+.seg code                
+.sht.cons.iStream_sctor: 
+                         sub, rsp, 32                            
+                         call, .sht.core.object_sctor            ; (call label)
+                         add, rsp, 32                            
+                         mov, [rcx], .sht.cons.iStream_vtbl_inst ; =
+                         sub, rsp, 32                            
+                         call, .sht.cons.iStream.cctor           ; (call label)
+                         add, rsp, 32                            
+                         ret                                     
+
+.seg code                
+.sht.cons.program_sctor: 
+                         sub, rsp, 32                            
+                         call, .sht.core.object_sctor            ; (call label)
+                         add, rsp, 32                            
+                         mov, [rcx], .sht.cons.program_vtbl_inst ; =
+                         sub, rsp, 32                            
+                         call, .sht.cons.program.cctor           ; (call label)
+                         add, rsp, 32                            
+                         ret                                     
+
+.seg code               
+.sht.cons.stdout_sctor: 
+                        sub, rsp, 32                           
+                        call, .sht.cons.iStream_sctor          ; (call label)
+                        add, rsp, 32                           
+                        mov, [rcx], .sht.cons.stdout_vtbl_inst ; =
+                        sub, rsp, 32                           
+                        call, .sht.cons.stdout.cctor           ; (call label)
+                        add, rsp, 32                           
+                        ret                                    
 

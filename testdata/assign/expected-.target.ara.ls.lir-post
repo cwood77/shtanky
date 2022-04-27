@@ -1,4 +1,4 @@
-=== LIR bundle has 4 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 5 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .assign.consoleTarget.main
 10 <selectSegment> @code/0          
@@ -17,9 +17,21 @@
 20 <enterFunc>     ~rval1/0, $self0/0 ;;; .assign.consoleTarget.cdtor
 30 <exitFunc>      
 
------ start stream consoleTarget_vtbl_inst
+----- start stream .assign.consoleTarget_vtbl_inst
 10 <selectSegment>   @const/0 
-20 <globalConstData> @/0      ;;; consoleTarget_vtbl_inst
+20 <globalConstData> @/0      ;;; .assign.consoleTarget_vtbl_inst
+
+----- start stream .assign.consoleTarget_sctor
+10 <selectSegment> @code/0                                           
+20 <enterFunc>     ~rval2/0, $self1/0                                ;;; .assign.consoleTarget_sctor
+30 <precall>       @totalStackSize/32                                
+40 call            ~rval3/0, @.sht.core.object_sctor/0, $self/0      ;;; (call label)
+50 <postcall>      @totalStackSize/32                                
+60 mov             [~self]/0, @.assign.consoleTarget_vtbl_inst/0     ;;; =
+70 <precall>       @totalStackSize/32                                
+80 call            ~rval4/0, @.assign.consoleTarget.cctor/0, $self/0 ;;; (call label)
+90 <postcall>      @totalStackSize/32                                
+100<exitFunc>      
 
 === end of LIR bundle dump ===
 

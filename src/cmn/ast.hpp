@@ -25,6 +25,7 @@ class methodNode;
 class fieldNode;
 class constNode;
 class funcNode;
+class intrinsicNode;
 class argNode;
 class typeNode;
 class strTypeNode;
@@ -62,6 +63,7 @@ public:
    virtual void visit(fieldNode& n) = 0;
    virtual void visit(constNode& n) = 0;
    virtual void visit(funcNode& n) = 0;
+   virtual void visit(intrinsicNode& n) = 0;
    virtual void visit(argNode& n) = 0;
    virtual void visit(typeNode& n) = 0;
    virtual void visit(strTypeNode& n) = 0;
@@ -321,6 +323,11 @@ public:
    virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
+class intrinsicNode : public funcNode {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 class argNode : public node, public iVarSourceNode {
 public:
    std::string name;
@@ -393,7 +400,7 @@ public:
 
 class callNode : public node {
 public:
-   link<std::string> pTarget;
+   link<funcNode> pTarget;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
@@ -472,6 +479,7 @@ public:
    virtual void visit(fieldNode& n) { visit(static_cast<memberNode&>(n)); }
    virtual void visit(constNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(funcNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(intrinsicNode& n) { visit(static_cast<funcNode&>(n)); }
    virtual void visit(argNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(typeNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(strTypeNode& n) { visit(static_cast<typeNode&>(n)); }
@@ -510,6 +518,7 @@ public:
    virtual void visit(fieldNode& n);
    virtual void visit(constNode& n);
    virtual void visit(funcNode& n);
+   virtual void visit(intrinsicNode& n);
    virtual void visit(argNode& n);
    virtual void visit(strTypeNode& n);
    virtual void visit(arrayTypeNode& n);
@@ -616,6 +625,7 @@ public:
    virtual void visit(fieldNode&) { inst.reset(new fieldNode()); }
    virtual void visit(constNode&) { inst.reset(new constNode()); }
    virtual void visit(funcNode&) { inst.reset(new funcNode()); }
+   virtual void visit(intrinsicNode&) { inst.reset(new intrinsicNode()); }
    virtual void visit(argNode&) { inst.reset(new argNode()); }
    virtual void visit(typeNode&) { inst.reset(new typeNode()); }
    virtual void visit(strTypeNode&) { inst.reset(new strTypeNode()); }
@@ -659,6 +669,7 @@ public:
    virtual void visit(fieldNode& n);
    virtual void visit(constNode& n) { unexpected(n); }
    virtual void visit(funcNode& n) { unexpected(n); }
+   virtual void visit(intrinsicNode& n) { unexpected(n); }
    virtual void visit(argNode& n);
    virtual void visit(typeNode& n);
    virtual void visit(strTypeNode& n);

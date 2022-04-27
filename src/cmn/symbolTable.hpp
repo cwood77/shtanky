@@ -3,8 +3,6 @@
 #include <map>
 #include <set>
 
-// TODO HACK - this whole component needs to be reworked
-
 namespace cmn {
 
 // the exhaustive list of linkages between AST nodes
@@ -110,6 +108,7 @@ public:
    virtual void visit(methodNode& n);
    virtual void visit(userTypeNode& n);
    //virtual void visit(invokeNode& n);
+   virtual void visit(callNode& n);
    virtual void visit(varRefNode& n);
 
    virtual void _implementLanguage() {} // all
