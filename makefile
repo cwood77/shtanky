@@ -130,7 +130,6 @@ ARACELI_SRC = \
 	src/araceli/abstractGenerator.cpp \
 	src/araceli/batGen.cpp \
 	src/araceli/classInfo.cpp \
-	src/araceli/codegen.cpp \
 	src/araceli/codegen2.cpp \
 	src/araceli/consoleAppTarget.cpp \
 	src/araceli/constHoister.cpp \

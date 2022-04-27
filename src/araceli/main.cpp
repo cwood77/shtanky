@@ -9,7 +9,6 @@
 #include "abstractGenerator.hpp"
 #include "batGen.hpp"
 #include "classInfo.hpp"
-#include "codegen.hpp"
 #include "codegen2.hpp"
 #include "consoleAppTarget.hpp"
 #include "constHoister.hpp"
@@ -30,10 +29,10 @@ using namespace araceli;
 int main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   bool exp = cl.getSwitch("--exp","",true);
    std::string projectDir = cl.getNextArg(".\\testdata\\test");
    std::string batchBuild = projectDir + "\\.build.bat";
 
+   // setup project / target
    std::unique_ptr<cmn::araceliProjectNode> pPrj = projectBuilder::create("ca");
    projectBuilder::addScope(*pPrj.get(),projectDir,/*inProject*/true);
    consoleAppTarget tgt;
@@ -58,16 +57,15 @@ int main(int argc, const char *argv[])
    tgt.araceliCodegen(*pPrj,md);
 
    // inject implied base class
-   if(exp){ objectBaser v; pPrj->acceptVisitor(v); }
+   { objectBaser v; pPrj->acceptVisitor(v); }
 
-   // subsequent link to update with new target
+   // subsequent link to update with new target and load more
    araceli::nodeLinker().linkGraph(*pPrj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // capture class info
    classCatalog cc;
-if(exp) {
    { classInfoBuilder v(cc); pPrj->acceptVisitor(v); }
    cmn::outBundle dbgOut;
    cmn::unconditionalWriter wr;
@@ -77,7 +75,6 @@ if(exp) {
          projectDir + "\\.classInfo"));
       fmt.format(cc);
    }
-} // exp
 
    // ---------------- lowering transforms ----------------
 
@@ -86,19 +83,17 @@ if(exp) {
    cdwVERBOSE("graph after const hoist ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
-   // compile-away classes
-   if(exp){ ctorDtorGenerator v; pPrj->acceptVisitor(v); }
-   if(exp){ abstractGenerator::generate(cc); }
-   // self param, self fields, invoke decomp
-   { selfDecomposition v; pPrj->acceptVisitor(v); } // TODO some invokes should turn into calls
-   // TODO basecall decomp
-   if(exp){ methodMover v(cc); pPrj->acceptVisitor(v); }
-   if(exp) { vtableGenerator().generate(cc); }
-   if(exp) { inheritImplementor().generate(cc); }
-   // TODO matryoshka decomp
-   if(exp) { matryoshkaDecomposition(cc).run(); }
-   // TODO stack new/delete decomp
-   cdwVERBOSE("graph after transforms ----\n");
+   // --- compile-away classes ---
+   { ctorDtorGenerator v; pPrj->acceptVisitor(v); }  // write cctor/cdtor
+   { abstractGenerator::generate(cc); }              // implement pure virtual functions
+   { selfDecomposition v; pPrj->acceptVisitor(v); }  // add self param, scope self fields, invoke decomp
+   // basecall decomp
+   { methodMover v(cc); pPrj->acceptVisitor(v); }    // make methods functions
+   { vtableGenerator().generate(cc); }               // add vtable class and global instance
+   { inheritImplementor().generate(cc); }            // inject fields into derived classes
+   { matryoshkaDecomposition(cc).run(); }            // write sctor/sdtor
+   // stack new/delete decomp
+   cdwVERBOSE("graph after declassing transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // -----------------------------------------------------
@@ -119,12 +114,8 @@ if(exp) {
 
    // codegen
    cmn::outBundle out;
-if(exp)
    { araceli2::codeGen v(tgt,out); pPrj->acceptVisitor(v); }
-else
-   { codeGen v(out); pPrj->acceptVisitor(v); }
    { batGen v(tgt,out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
-   cmn::unconditionalWriter wr;
    out.updateDisk(wr);
 
    return 0;
