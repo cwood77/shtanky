@@ -106,6 +106,7 @@ void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
       if(it!=instrToStorageMap.end() && it->second.find(old)!=it->second.end())
       {
          cdwDEBUG("   hit\n");
+#if 0
          it->second.erase(old);
          it->second.insert(nu);
 
@@ -121,6 +122,7 @@ void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
             if(kit != storageDisambiguators.end() && kit->second == old)
                kit->second = nu;
          }
+#endif
       }
       else
       {

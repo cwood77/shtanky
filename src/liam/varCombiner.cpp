@@ -86,6 +86,7 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
             losers.insert(*jit);
 
       // evict all the losers (and runners-up)
+      std::map<var*,size_t> altStorageMap;
       for(auto jit=losers.begin();jit!=losers.end();++jit)
       {
          // for each loser
@@ -98,30 +99,48 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
          cdwDEBUG("      evicting to %lld\n",altStorage);
 
          // emit a move to implement this
-         {
-            auto& mov = i.injectBefore(*new lirInstr(cmn::tgt::kMov));
-            mov.comment =  cmn::fmt("      (preserve) [combiner]");
-            auto& dest = mov.addArg<lirArgVar>(":combDest",0);
-            auto& src = mov.addArg<lirArgVar>(":combSrc",0);
-
-            (*jit)->refs[mov.orderNum].push_back(&dest);
-            (*jit)->refs[mov.orderNum].push_back(&src);
-
-            (*jit)->requireStorage(mov.orderNum,it->first);
-            (*jit)->requireStorage(mov.orderNum,altStorage);
-
-            (*jit)->storageDisambiguators[&dest] = altStorage;
-            (*jit)->storageDisambiguators[&src] = it->first;
-         }
+         emitMoveBefore(i,**jit,"(preserve) [combiner]",it->first,altStorage);
+         altStorageMap[*jit] = altStorage;
       }
 
-      // restore runners-up
-      if(winners.size() > 1)
-         cdwDEBUG("runners up isn't implemented yet");
+      // placate runners-up
+      // for runners up, I just hosed them by evicting them elsewhere
+      // un-evict them before their storage requirement is needed again
+      for(auto jit=winnerMap.begin();jit!=winnerMap.end();++jit)
+      {
+         if(jit->second == pWinner)
+            continue;
+
+         // emit a move back
+         lirInstr& antecedent = i.tail().searchUp([&](auto& i)
+            { return i.orderNum == jit->first; });
+
+         emitMoveBefore(
+            antecedent,*jit->second,
+            "(restore [combiner])",
+            altStorageMap[jit->second],it->first);
+      }
 
       // restart algorithm
       restart();
    }
+}
+
+void varCombiner::emitMoveBefore(lirInstr& antecedent, var& v, const std::string& comment, size_t srcStorage, size_t destStorage)
+{
+   auto& mov = antecedent.injectBefore(*new lirInstr(cmn::tgt::kMov));
+   mov.comment =  comment;
+   auto& dest = mov.addArg<lirArgVar>(":combDest",0);
+   auto& src = mov.addArg<lirArgVar>(":combSrc",0);
+
+   v.refs[mov.orderNum].push_back(&src);
+   v.refs[mov.orderNum].push_back(&dest);
+
+   v.requireStorage(mov.orderNum,srcStorage);
+   v.requireStorage(mov.orderNum,destStorage);
+
+   v.storageDisambiguators[&src] = srcStorage;
+   v.storageDisambiguators[&dest] = destStorage;
 }
 
 } // namespace liam

@@ -63,24 +63,34 @@ int _main(int argc,const char *argv[])
 
    // ---------------- register allocation ----------------
 
-   for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
+   try
    {
-      cdwVERBOSE("backend passes on %s\n",it->name.c_str());
+      for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
+      {
+         cdwVERBOSE("backend passes on %s\n",it->name.c_str());
 
-      varTable vTbl;
-      lirVarGen(vTbl).runStream(*it);
+         varTable vTbl;
+         lirVarGen(vTbl).runStream(*it);
 
-      instrPrefs::publishRequirements(*it,vTbl,t);
+         instrPrefs::publishRequirements(*it,vTbl,t);
 
-      varSplitter::split(*it,vTbl,t);
+         varSplitter::split(*it,vTbl,t);
 
-      varFinder f(t);
-      { varCombiner p(*it,vTbl,t,f); p.run(); }
+         varFinder f(t);
+         { varCombiner p(*it,vTbl,t,f); p.run(); }
 
-      stackAllocator().run(vTbl,f);
-      varAllocator(t).run(vTbl,f);
+         stackAllocator().run(vTbl,f);
+         varAllocator(t).run(vTbl,f);
 
-      asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
+         asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
+      }
+   }
+   catch(std::exception&)
+   {
+      cdwINFO("handling exception; writing lir-crash file\n");
+      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-crash");
+        lirFormatter(sp,t).format(lir); }
+      throw;
    }
 
    _t.dump();

@@ -14,7 +14,7 @@ rex(48)op(8b)modR/M(59)d8(08)
 rex(48)op(8b)modR/M(3b)
 // 12:                 mov, rdx, .test.const0 ; shape:hoist imm from call
 rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
-// 13:                 mov, rbx, rcx          ;       (preserve) [combiner]
+// 13:                 mov, rbx, rcx          ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
 // 14:                 mov, rcx, [rbx+8]      ; shape:hoist addrOf from call
 rex(48)op(8b)modR/M(4b)d8(08)

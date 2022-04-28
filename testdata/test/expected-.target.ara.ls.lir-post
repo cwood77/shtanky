@@ -1,30 +1,30 @@
 === LIR bundle has 6 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .test.consoleTarget.main
-10 <selectSegment> @code/0                                      
-20 <enterFunc>     ~rval/0, $args/0                             ;;; .entrypoint
-30 <reserveLocal>  $cout/8                                      ;;; cout
-40 <precall>       @totalStackSize/32                           
-50 call            ~rval0/0, @.sht.cons.stdout_sctor/0, $cout/0 ;;; (call label)
-60 <postcall>      @totalStackSize/32                           
-70 <reserveLocal>  $obj0/16                                     ;;; obj0
-80 <precall>       @totalStackSize/32                           
-90 call            ~rval1/0, @.test.test_sctor/0, $obj0/0       ;;; (call label)
-100<postcall>      @totalStackSize/32                           
-110mov             [~obj0+8]/0, $cout/0                         ;;; =
-120<precall>       @totalStackSize/32                           
-130mov             ~run/0, [~obj0]/0                            ;;; fieldaccess: owner of run
-140call            ~rval2/0, [~run]/0, $obj0/0, $args/0         ;;; (call ptr)
-150<postcall>      @totalStackSize/32                           
-160<precall>       @totalStackSize/32                           
-170call            ~rval3/0, @.test.test_sdtor/0, $obj0/0       ;;; (call label)
-180<postcall>      @totalStackSize/32                           
-190<precall>       @totalStackSize/32                           
-200call            ~rval4/0, @.sht.cons.stdout_sdtor/0, $cout/0 ;;; (call label)
-210<postcall>      @totalStackSize/32                           
-220<unreserveLocal>$obj0/16                                     
-230<unreserveLocal>$cout/8                                      
-240<exitFunc>      
+10  <selectSegment>  @code/0                                      
+20  <enterFunc>      ~rval/0, $args/0                             ;;; .entrypoint
+30  <reserveLocal>   $cout/8                                      ;;; cout
+40  <precall>        @totalStackSize/32                           
+50  call             ~rval0/0, @.sht.cons.stdout_sctor/0, $cout/0 ;;; (call label)
+60  <postcall>       @totalStackSize/32                           
+70  <reserveLocal>   $obj0/16                                     ;;; obj0
+80  <precall>        @totalStackSize/32                           
+90  call             ~rval1/0, @.test.test_sctor/0, $obj0/0       ;;; (call label)
+100 <postcall>       @totalStackSize/32                           
+110 mov              [~obj0+8]/0, $cout/0                         ;;; =
+120 <precall>        @totalStackSize/32                           
+130 mov              ~run/0, [~obj0]/0                            ;;; fieldaccess: owner of run
+140 call             ~rval2/0, [~run]/0, $obj0/0, $args/0         ;;; (call ptr)
+150 <postcall>       @totalStackSize/32                           
+160 <precall>        @totalStackSize/32                           
+170 call             ~rval3/0, @.test.test_sdtor/0, $obj0/0       ;;; (call label)
+180 <postcall>       @totalStackSize/32                           
+190 <precall>        @totalStackSize/32                           
+200 call             ~rval4/0, @.sht.cons.stdout_sdtor/0, $cout/0 ;;; (call label)
+210 <postcall>       @totalStackSize/32                           
+220 <unreserveLocal> $obj0/16                                     
+230 <unreserveLocal> $cout/8                                      
+240 <exitFunc>       
 
 ----- start stream .test.consoleTarget.cctor
 10 <selectSegment> @code/0           
@@ -41,28 +41,28 @@
 20 <globalConstData> @/0      ;;; .test.consoleTarget_vtbl_inst
 
 ----- start stream .test.consoleTarget_sctor
-10 <selectSegment> @code/0                                         
-20 <enterFunc>     ~rval7/0, $self1/0                              ;;; .test.consoleTarget_sctor
-30 <precall>       @totalStackSize/32                              
-40 call            ~rval8/0, @.sht.core.object_sctor/0, $self/0    ;;; (call label)
-50 <postcall>      @totalStackSize/32                              
-60 mov             [~self]/0, @.test.consoleTarget_vtbl_inst/0     ;;; =
-70 <precall>       @totalStackSize/32                              
-80 call            ~rval9/0, @.test.consoleTarget.cctor/0, $self/0 ;;; (call label)
-90 <postcall>      @totalStackSize/32                              
-100<exitFunc>      
+10  <selectSegment> @code/0                                         
+20  <enterFunc>     ~rval7/0, $self1/0                              ;;; .test.consoleTarget_sctor
+30  <precall>       @totalStackSize/32                              
+40  call            ~rval8/0, @.sht.core.object_sctor/0, $self/0    ;;; (call label)
+50  <postcall>      @totalStackSize/32                              
+60  mov             [~self]/0, @.test.consoleTarget_vtbl_inst/0     ;;; =
+70  <precall>       @totalStackSize/32                              
+80  call            ~rval9/0, @.test.consoleTarget.cctor/0, $self/0 ;;; (call label)
+90  <postcall>      @totalStackSize/32                              
+100 <exitFunc>      
 
 ----- start stream .test.consoleTarget_sdtor
-10 <selectSegment> @code/0                                          
-20 <enterFunc>     ~rval10/0, $self2/0                              ;;; .test.consoleTarget_sdtor
-30 mov             [~self]/0, @.test.consoleTarget_vtbl_inst/0      ;;; =
-40 <precall>       @totalStackSize/32                               
-50 call            ~rval11/0, @.test.consoleTarget.cdtor/0, $self/0 ;;; (call label)
-60 <postcall>      @totalStackSize/32                               
-70 <precall>       @totalStackSize/32                               
-80 call            ~rval12/0, @.sht.core.object_sdtor/0, $self/0    ;;; (call label)
-90 <postcall>      @totalStackSize/32                               
-100<exitFunc>      
+10  <selectSegment> @code/0                                          
+20  <enterFunc>     ~rval10/0, $self2/0                              ;;; .test.consoleTarget_sdtor
+30  mov             [~self]/0, @.test.consoleTarget_vtbl_inst/0      ;;; =
+40  <precall>       @totalStackSize/32                               
+50  call            ~rval11/0, @.test.consoleTarget.cdtor/0, $self/0 ;;; (call label)
+60  <postcall>      @totalStackSize/32                               
+70  <precall>       @totalStackSize/32                               
+80  call            ~rval12/0, @.sht.core.object_sdtor/0, $self/0    ;;; (call label)
+90  <postcall>      @totalStackSize/32                               
+100 <exitFunc>      
 
 === end of LIR bundle dump ===
 

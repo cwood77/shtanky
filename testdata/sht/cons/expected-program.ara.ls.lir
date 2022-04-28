@@ -39,12 +39,12 @@
 0 <globalConstData> @.sht.cons.stdout.printLn /0 ;;; .sht.cons.stdout_vtbl_inst
 
 ----- start stream .sht.cons.iStream_sctor
-0 <enterFunc> ~rval9/0, $self8/0                            ;;; .sht.cons.iStream_sctor
+0 <enterFunc> ~rval9/0, $self8/0                             ;;; .sht.cons.iStream_sctor
 0 <precall>   
-0 call        ~rval10/0, @.sht.core.object_sctor/0, $self/0 ;;; (call label)
-0 mov         [~self]/0, @.sht.cons.iStream_vtbl_inst/0     ;;; =
+0 call        ~rval10/0, @.sht.core.object_sctor/0, $self/0  ;;; (call label)
+0 mov         [~self]/0, @.sht.cons.iStream_vtbl_inst/0      ;;; =
 0 <precall>   
-0 call        ~rval11/0, @.sht.cons.iStream.cctor/0, $self/0;;; (call label)
+0 call        ~rval11/0, @.sht.cons.iStream.cctor/0, $self/0 ;;; (call label)
 
 ----- start stream .sht.cons.iStream_sdtor
 0 <enterFunc> ~rval12/0, $self9/0                            ;;; .sht.cons.iStream_sdtor
@@ -55,12 +55,12 @@
 0 call        ~rval14/0, @.sht.core.object_sdtor/0, $self/0  ;;; (call label)
 
 ----- start stream .sht.cons.program_sctor
-0 <enterFunc> ~rval15/0, $self10/0                          ;;; .sht.cons.program_sctor
+0 <enterFunc> ~rval15/0, $self10/0                           ;;; .sht.cons.program_sctor
 0 <precall>   
-0 call        ~rval16/0, @.sht.core.object_sctor/0, $self/0 ;;; (call label)
-0 mov         [~self]/0, @.sht.cons.program_vtbl_inst/0     ;;; =
+0 call        ~rval16/0, @.sht.core.object_sctor/0, $self/0  ;;; (call label)
+0 mov         [~self]/0, @.sht.cons.program_vtbl_inst/0      ;;; =
 0 <precall>   
-0 call        ~rval17/0, @.sht.cons.program.cctor/0, $self/0;;; (call label)
+0 call        ~rval17/0, @.sht.cons.program.cctor/0, $self/0 ;;; (call label)
 
 ----- start stream .sht.cons.program_sdtor
 0 <enterFunc> ~rval18/0, $self11/0                           ;;; .sht.cons.program_sdtor
@@ -79,12 +79,12 @@
 0 call        ~rval23/0, @.sht.cons.stdout.cctor/0, $self/0  ;;; (call label)
 
 ----- start stream .sht.cons.stdout_sdtor
-0 <enterFunc> ~rval24/0, $self13/0                          ;;; .sht.cons.stdout_sdtor
-0 mov         [~self]/0, @.sht.cons.stdout_vtbl_inst/0      ;;; =
+0 <enterFunc> ~rval24/0, $self13/0                           ;;; .sht.cons.stdout_sdtor
+0 mov         [~self]/0, @.sht.cons.stdout_vtbl_inst/0       ;;; =
 0 <precall>   
-0 call        ~rval25/0, @.sht.cons.stdout.cdtor/0, $self/0 ;;; (call label)
+0 call        ~rval25/0, @.sht.cons.stdout.cdtor/0, $self/0  ;;; (call label)
 0 <precall>   
-0 call        ~rval26/0, @.sht.cons.iStream_sdtor/0, $self/0;;; (call label)
+0 call        ~rval26/0, @.sht.cons.iStream_sdtor/0, $self/0 ;;; (call label)
 
 === end of LIR bundle dump ===
 
