@@ -118,6 +118,24 @@ public:
    std::list<lirStream> objects;
 };
 
+class lirIncrementalFormatter {
+public:
+   lirIncrementalFormatter(cmn::outStream& s, cmn::tgt::iTargetInfo& t) : m_s(s), m_t(t) {}
+
+   void start(lirStreams& s);
+   void format(lirStream& s);
+   void end();
+
+private:
+   void _format(lirStream& s);
+   void format(lirInstr& i, cmn::textTableLineWriter& t);
+   void format(lirArg& a, cmn::textTableLineWriter& t);
+   void appendTargetHints();
+
+   cmn::outStream& m_s;
+   cmn::tgt::iTargetInfo& m_t;
+};
+
 class lirFormatter {
 public:
    lirFormatter(cmn::outStream& s, cmn::tgt::iTargetInfo& t) : m_s(s), m_t(t) {}
@@ -125,11 +143,6 @@ public:
    void format(lirStreams& s);
 
 private:
-   void format(lirStream& s);
-   void format(lirInstr& i, cmn::textTableLineWriter& t);
-   void format(lirArg& a, cmn::textTableLineWriter& t);
-   void appendTargetHints();
-
    cmn::outStream& m_s;
    cmn::tgt::iTargetInfo& m_t;
 };

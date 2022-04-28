@@ -137,4 +137,28 @@ private:
    varTable& m_v;
 };
 
+// some instructions (e.g. call) have arguments only to enforce calling convention storage
+// requirements; they aren't actually passed at a machine code level.  These need to be
+// stripped before asm gen.
+class spuriousVarStripper : public lirTransform {
+protected:
+   virtual void runInstr(lirInstr& i);
+};
+
+class codeShapeTransform : public lirTransform {
+public:
+   codeShapeTransform(varTable& v, cmn::tgt::iTargetInfo& t) : m_v(v), m_t(t) {}
+
+protected:
+   virtual void runInstr(lirInstr& i);
+
+private:
+   void Register(lirArg& a, std::vector<cmn::tgt::argTypes>& at);
+   void immediate(lirArg& a, std::vector<cmn::tgt::argTypes>& at);
+   void memory(lirArg& a, std::vector<cmn::tgt::argTypes>& at);
+
+   varTable& m_v;
+   cmn::tgt::iTargetInfo& m_t;
+};
+
 } // namespace liam

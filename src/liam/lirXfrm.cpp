@@ -1,3 +1,4 @@
+#include "../cmn/trace.hpp"
 #include "../cmn/unique.hpp"
 #include "lir.hpp"
 #include "lirXfrm.hpp"
@@ -255,6 +256,122 @@ void lirVarGen::runArg(lirInstr& i, lirArg& a)
 
    if(dynamic_cast<lirArgConst*>(&a))
       v.requireStorage(i.orderNum,cmn::tgt::kStorageImmediate);
+}
+
+void spuriousVarStripper::runInstr(lirInstr& i)
+{
+   if(i.instrId == cmn::tgt::kCall)
+   {
+      auto& args = i.getArgs();
+      auto *pKeeper = args[1]; // keep only the call ptr
+
+      for(auto it=args.begin();it!=args.end();++it)
+         if(*it != pKeeper)
+            delete *it;
+
+      args.clear();
+      args.push_back(pKeeper);
+   }
+}
+
+void codeShapeTransform::Register(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
+{
+   size_t size = m_t.getRealSize(a.getSize());
+   if(size > 4)
+      at.push_back(cmn::tgt::kR64);
+   else if(size > 2)
+      at.push_back(cmn::tgt::kR32);
+   else if(size > 1)
+      at.push_back(cmn::tgt::kR16);
+   else
+      at.push_back(cmn::tgt::kR8);
+}
+
+void codeShapeTransform::immediate(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
+{
+   size_t size = m_t.getRealSize(a.getSize());
+   if(size > 4)
+      at.push_back(cmn::tgt::kI64);
+   else if(size > 2)
+      at.push_back(cmn::tgt::kI32);
+   else if(size > 1)
+      at.push_back(cmn::tgt::kI16);
+   else
+      at.push_back(cmn::tgt::kI8);
+}
+
+void codeShapeTransform::memory(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
+{
+   size_t size = m_t.getRealSize(a.getSize());
+   if(size > 4)
+      at.push_back(cmn::tgt::kM64);
+   else if(size > 2)
+      at.push_back(cmn::tgt::kM32);
+   else if(size > 1)
+      at.push_back(cmn::tgt::kM16);
+   else
+      at.push_back(cmn::tgt::kM8);
+}
+
+void codeShapeTransform::runInstr(lirInstr& i)
+{
+   cdwDEBUG("checking codeshape for instr #%lld instrId=%lld\n",i.orderNum,i.instrId);
+
+   // convert lirArgs into the target's argTypes
+   std::vector<cmn::tgt::argTypes> at;
+   for(auto it=i.getArgs().begin();it!=i.getArgs().end();++it)
+   {
+      if((*it)->addrOf)
+      {
+         cdwDEBUG("   m\n");
+         memory(**it,at);
+      }
+      else
+      {
+         size_t stor = m_v.demand(**it).getStorageFor(i.orderNum,**it);
+         if(cmn::tgt::isVStack(stor) || cmn::tgt::isStackStorage(stor))
+         {
+            cdwDEBUG("   m\n");
+            memory(**it,at);
+         }
+         else if(stor == cmn::tgt::kStorageImmediate)
+         {
+            bool isNumeric = ::isdigit((*it)->getName().c_str()[0]);
+            if(isNumeric)
+            {
+               cdwDEBUG("   i\n");
+               immediate(**it,at);
+            }
+            else
+            {
+               cdwDEBUG("   m (l)\n");
+               at.push_back(cmn::tgt::kM64);
+            }
+         }
+         else
+         {
+            cdwDEBUG("   r\n");
+            Register(**it,at);
+         }
+      }
+   }
+
+   // try to find a compatible format
+   auto *pIInfo = m_t.getProc().getInstr(i.instrId);
+   if(pIInfo->fmts == NULL)
+   {
+      cdwDEBUG("not checking magic instruction\n");
+      return;
+   }
+   auto *pFmt = pIInfo->findFmt(at);
+
+   if(!pFmt)
+   {
+      cdwDEBUG("WWWWWWWWWWOOOOOOOOOOOOWWWWWWWWWWWW! no compatible fmt\n");
+      cdwTHROW("nope");
+   }
+   else
+      cdwDEBUG("ok\n");
 }
 
 } // namespace liam

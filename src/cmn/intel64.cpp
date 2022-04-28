@@ -7,68 +7,68 @@ namespace tgt {
 static const instrFmt pushFmts[] = {
    { "PUSH{FF /6}",
       kR64 | kM64,
-      kArgTypeNone, kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, "r", true },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt popFmts[] = {
    { "POP{8F /0}",
       kR64 | kM64,
-      kArgTypeNone, kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, "w", true },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt subFmts[] = {
    { "SUB{REX.W + 83 /5 ib}",
       kR64 | kM64,
       kI8,
-      kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, "br", false },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt addFmts[] = {
    { "ADD{REX.W + 83 /0 ib}",
       kR64 | kM64,
       kI8,
-      kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, "br", false },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt movFmts[] = {
    { "MOV{REX.W + 89 /r}",
       kR64 | kM64,
       kR64,
-      kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, "wr", false },
    { "MOV{REX.W + 8B /r}",
       kR64,
       kR64 | kM64, // TODO anybody who takes a memory could theoretically emit a displacment
                    //      and a patch!
-      kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, "wr", false },
    { "MOV{REX.W + B8+ rd io}",
       kR64,
       kI64,
-      kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, "wr", false },
    { "MOV{REX.W + C7 /0 id}",
       kR64 | kM64,
       kI32,
-      kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, "wr", false },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt callFmts[] = {
    { "CALL{E8 cd}",
       kI32,
-      kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, "r", false },
    { "CALL{FF /2}",
       kR64 | kM64,
-      kArgTypeNone, kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, "r", false },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt retFmts[] = {
    { "RET{C3}",
-      kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrInfo kInstrs[] = {

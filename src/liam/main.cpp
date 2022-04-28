@@ -3,6 +3,7 @@
 #include "../cmn/global.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/main.hpp"
+#include "../cmn/obj-fmt.hpp"
 #include "../cmn/out.hpp"
 #include "../cmn/symbolTable.hpp"
 #include "../cmn/trace.hpp"
@@ -65,6 +66,10 @@ int _main(int argc,const char *argv[])
 
    try
    {
+      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-postreg");
+        lirIncrementalFormatter(sp,t).start(lir); }
+      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-preasm");
+        lirIncrementalFormatter(sp,t).start(lir); }
       for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
       {
          cdwVERBOSE("backend passes on %s\n",it->name.c_str());
@@ -82,8 +87,24 @@ int _main(int argc,const char *argv[])
          stackAllocator().run(vTbl,f);
          varAllocator(t).run(vTbl,f);
 
+         { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-postreg");
+           lirIncrementalFormatter(sp,t).format(*it); }
+
+         if(it->segment == cmn::objfmt::obj::kLexCode)
+         {
+            spuriousVarStripper().runStream(*it);
+//            codeShapeTransform(vTbl,t).runStream(*it);
+         }
+
+         { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-preasm");
+           lirIncrementalFormatter(sp,t).format(*it); }
+
          asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
       }
+      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-postreg");
+        lirIncrementalFormatter(sp,t).end(); }
+      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-preasm");
+        lirIncrementalFormatter(sp,t).end(); }
    }
    catch(std::exception&)
    {

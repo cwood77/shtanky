@@ -194,7 +194,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
       case cmn::tgt::kSyscall:
          {
             m_w[1] << m_t.getProc().getInstr(i.instrId)->name << ",";
-            asmArgWriter(m_v,m_t,m_w).write(i,1,1);
+            asmArgWriter(m_v,m_t,m_w).write(i,1,1); // TODO this needs to be transformed out
             handleComment(i);
             m_w.advanceLine();
          }

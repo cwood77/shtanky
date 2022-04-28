@@ -60,10 +60,14 @@ enum instrIds {
 
 class instrFmt {
 public:
-   instrFmt(const char *g, size_t a1, size_t a2, size_t a3, size_t a4)
-   : guid(g), a1(a1), a2(a2), a3(a3), a4(a4) {}
+   instrFmt(const char *g, size_t a1, size_t a2, size_t a3, size_t a4,
+      const char *io, bool ss);
 
    const char *guid;
+
+   const char *argIo;   // (r)ead, (w)rite, or (b)oth
+   bool stackSensitive; // can I make last-minute stack adjustments or will that affect this
+                        // instr?
 
    size_t a1;
    size_t a2;
@@ -96,6 +100,8 @@ public:
    const instrFmt *fmts;
 
    const instrFmt& demandFmt(const std::vector<argTypes> a) const;
+
+   const instrFmt *findFmt(const std::vector<argTypes> a) const;
 };
 
 // represents everything expressed in a single assembly-level argument.
