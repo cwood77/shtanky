@@ -28,9 +28,13 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
 
          case cmn::tgt::i64::genInfo::kModRmRm:
             argBytes.encodeArgModRmReg(ai[i],false);
+            if(!ai[i].label.empty())
+               label = ai[i].label;
             break;
 
          case cmn::tgt::i64::genInfo::kRipRelCO:
+            if(!label.empty())
+               cdwTHROW("ISE");
             label = ai[i].label;
             break;
 
@@ -55,6 +59,8 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
       }
       else if(*pByte == cmn::tgt::i64::genInfo::kCodeOffset32)
       {
+         if(label.empty())
+            cdwTHROW("emitting co32 but no label??");
          patches[w.tell()] = label;
          unsigned long patch = 0;
          w.write("co32",&patch,sizeof(unsigned long));

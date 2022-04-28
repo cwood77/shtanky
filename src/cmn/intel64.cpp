@@ -41,7 +41,8 @@ static const instrFmt movFmts[] = {
       kArgTypeNone, kArgTypeNone },
    { "MOV{REX.W + 8B /r}",
       kR64,
-      kR64 | kM64,
+      kR64 | kM64, // TODO anybody who takes a memory could theoretically emit a displacment
+                   //      and a patch!
       kArgTypeNone, kArgTypeNone },
    { "MOV{REX.W + B8+ rd io}",
       kR64,

@@ -81,7 +81,7 @@ asmArgInfo::asmArgInfo()
 argTypes asmArgInfo::computeArgType()
 {
    if(flags & kLabel)
-      return kI32; // assume a rip-rel offset
+      return kI32; // assume a rip-rel offset - TODO should be M64
 
    else if(flags & kImm8)
       return kI8;
