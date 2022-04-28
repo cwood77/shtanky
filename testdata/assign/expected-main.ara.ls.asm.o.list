@@ -133,7 +133,7 @@ name:len(1e-00-00-00,00-00-00-00)name:bytes(2e-61-73-73,69-67-6e-2e,61-73-73-69,
 // class importTable
 numentries(01-00-00-00,00-00-00-00)
 name:len(18-00-00-00,00-00-00-00)name:bytes(2e-61-73-73,69-67-6e-2e,61-73-73-69,67-6e-54-65,73-74-65-72,2e-72-75-6e)numentries(01-00-00-00,00-00-00-00)
-type(00)offset(00-00-00-00)fromOffsetToEndOfInstr(00-00-00-00)
+type(01)offset(00-00-00-00)fromOffsetToEndOfInstr(08-00-00-00)
 // returnedto: class obj
 blockSize(08-00-00-00,00-00-00-00)block(00-00-00-00,00-00-00-00)
 // class obj
