@@ -2,6 +2,7 @@
 #include "../cmn/unique.hpp"
 #include "lir.hpp"
 #include "lirXfrm.hpp"
+#include "varFinder.hpp"
 #include "varGen.hpp"
 
 namespace liam {
@@ -274,7 +275,86 @@ void spuriousVarStripper::runInstr(lirInstr& i)
    }
 }
 
-void codeShapeTransform::Register(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
+void codeShapeTransform::runInstr(lirInstr& i)
+{
+   cdwDEBUG("checking codeshape for instr #%lld instrId=%lld\n",i.orderNum,i.instrId);
+
+   // convert lirArgs into the target's argTypes
+   std::vector<cmn::tgt::argTypes> at;
+   categorizeArgs(i,at);
+
+   // see if a compatible format exists
+   const cmn::tgt::instrInfo *pIInfo = NULL;
+   bool needsReshaping;
+   getInstrInfo(i,at,pIInfo,needsReshaping);
+   if(!needsReshaping)
+      return;
+
+   // well, crap; let's try to spill
+
+   // change write operands into registers and try again
+   std::vector<cmn::tgt::argTypes> retryArgs;
+   std::set<size_t> regOffsets;
+   findWorkingInstrFmt(*pIInfo,at,retryArgs,regOffsets);
+   if(regOffsets.size() != 1)
+      cdwTHROW("unimpled");
+
+   // choose registers to use
+   bool needsSpill;
+   size_t altStor = chooseRegister(needsSpill);
+   if(needsSpill && (pIInfo->stackSensitive || isStackFramePtrInUse(i,*pIInfo,at)))
+      cdwTHROW("can't spill, but must spill... arrgh!");
+
+   // inject save
+
+   // inject move
+
+   // inject restore
+
+   cdwDEBUG("unimpled\n");
+}
+
+void codeShapeTransform::categorizeArgs(lirInstr& i, std::vector<cmn::tgt::argTypes>& at)
+{
+   for(auto it=i.getArgs().begin();it!=i.getArgs().end();++it)
+   {
+      if((*it)->addrOf)
+      {
+         cdwDEBUG("   m\n");
+         markMem(**it,at);
+      }
+      else
+      {
+         size_t stor = m_v.demand(**it).getStorageFor(i.orderNum,**it);
+         if(cmn::tgt::isVStack(stor) || cmn::tgt::isStackStorage(stor))
+         {
+            cdwDEBUG("   m\n");
+            markMem(**it,at);
+         }
+         else if(stor == cmn::tgt::kStorageImmediate)
+         {
+            bool isNumeric = ::isdigit((*it)->getName().c_str()[0]);
+            if(isNumeric)
+            {
+               cdwDEBUG("   i\n");
+               markImm(**it,at);
+            }
+            else
+            {
+               cdwDEBUG("   m (l)\n");
+               at.push_back(cmn::tgt::kM64);
+            }
+         }
+         else
+         {
+            cdwDEBUG("   r\n");
+            markReg(**it,at);
+         }
+      }
+   }
+}
+
+void codeShapeTransform::markReg(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
 {
    size_t size = m_t.getRealSize(a.getSize());
    if(size > 4)
@@ -287,7 +367,7 @@ void codeShapeTransform::Register(lirArg& a, std::vector<cmn::tgt::argTypes>& at
       at.push_back(cmn::tgt::kR8);
 }
 
-void codeShapeTransform::immediate(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
+void codeShapeTransform::markImm(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
 {
    size_t size = m_t.getRealSize(a.getSize());
    if(size > 4)
@@ -300,7 +380,7 @@ void codeShapeTransform::immediate(lirArg& a, std::vector<cmn::tgt::argTypes>& a
       at.push_back(cmn::tgt::kI8);
 }
 
-void codeShapeTransform::memory(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
+void codeShapeTransform::markMem(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
 {
    size_t size = m_t.getRealSize(a.getSize());
    if(size > 4)
@@ -313,65 +393,130 @@ void codeShapeTransform::memory(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
       at.push_back(cmn::tgt::kM8);
 }
 
-void codeShapeTransform::runInstr(lirInstr& i)
+void codeShapeTransform::getInstrInfo(lirInstr& i, const std::vector<cmn::tgt::argTypes>& at, const cmn::tgt::instrInfo*& pIInfo, bool& needsReshaping)
 {
-   cdwDEBUG("checking codeshape for instr #%lld instrId=%lld\n",i.orderNum,i.instrId);
-
-   // convert lirArgs into the target's argTypes
-   std::vector<cmn::tgt::argTypes> at;
-   for(auto it=i.getArgs().begin();it!=i.getArgs().end();++it)
-   {
-      if((*it)->addrOf)
-      {
-         cdwDEBUG("   m\n");
-         memory(**it,at);
-      }
-      else
-      {
-         size_t stor = m_v.demand(**it).getStorageFor(i.orderNum,**it);
-         if(cmn::tgt::isVStack(stor) || cmn::tgt::isStackStorage(stor))
-         {
-            cdwDEBUG("   m\n");
-            memory(**it,at);
-         }
-         else if(stor == cmn::tgt::kStorageImmediate)
-         {
-            bool isNumeric = ::isdigit((*it)->getName().c_str()[0]);
-            if(isNumeric)
-            {
-               cdwDEBUG("   i\n");
-               immediate(**it,at);
-            }
-            else
-            {
-               cdwDEBUG("   m (l)\n");
-               at.push_back(cmn::tgt::kM64);
-            }
-         }
-         else
-         {
-            cdwDEBUG("   r\n");
-            Register(**it,at);
-         }
-      }
-   }
-
-   // try to find a compatible format
-   auto *pIInfo = m_t.getProc().getInstr(i.instrId);
+   pIInfo = m_t.getProc().getInstr(i.instrId);
    if(pIInfo->fmts == NULL)
    {
       cdwDEBUG("not checking magic instruction\n");
+      needsReshaping = false;
       return;
    }
    auto *pFmt = pIInfo->findFmt(at);
-
-   if(!pFmt)
+   if(pFmt)
    {
-      cdwDEBUG("WWWWWWWWWWOOOOOOOOOOOOWWWWWWWWWWWW! no compatible fmt\n");
-      cdwTHROW("nope");
+      cdwDEBUG("ok\n");
+      needsReshaping = false;
    }
    else
-      cdwDEBUG("ok\n");
+      needsReshaping = true;
+}
+
+void codeShapeTransform::findWorkingInstrFmt(const cmn::tgt::instrInfo& iInfo, const std::vector<cmn::tgt::argTypes>& args, std::vector<cmn::tgt::argTypes>& retryArgs, std::set<size_t>& changedIndicies)
+{
+   do
+   {
+      bool didWork = mutateInstrFmt(iInfo,args,retryArgs,changedIndicies);
+      if(!didWork)
+         cdwTHROW("can't find any valid mutated instr fmt");
+
+      auto *pFmt = iInfo.findFmt(retryArgs);
+      if(pFmt)
+         return;
+
+   } while(true);
+}
+
+bool codeShapeTransform::mutateInstrFmt(const cmn::tgt::instrInfo& iInfo, const std::vector<cmn::tgt::argTypes>& args, std::vector<cmn::tgt::argTypes>& retryArgs, std::set<size_t>& changedIndicies)
+{
+   size_t origCnt = changedIndicies.size();
+   retryArgs.clear();
+   retryArgs.reserve(args.size());
+   bool makeChanges = true;
+
+   size_t idx=0;
+   for(auto it=args.begin();it!=args.end();++it,idx++)
+   {
+      if(makeChanges && isMemory(*it) && isWriteOnly(iInfo,idx))
+      {
+         retryArgs.push_back(makeRegister(*it));
+         changedIndicies.insert(idx);
+         if(changedIndicies.size() > origCnt)
+            makeChanges = false;
+      }
+      else
+      {
+         retryArgs.push_back(*it);
+      }
+   }
+
+   return !makeChanges;
+}
+
+bool codeShapeTransform::isWriteOnly(const cmn::tgt::instrInfo& info, size_t idx)
+{
+   return info.argIo[idx] == 'w';
+}
+
+bool codeShapeTransform::isMemory(cmn::tgt::argTypes a)
+{
+   return (
+      a == cmn::tgt::kM8 ||
+      a == cmn::tgt::kM16 ||
+      a == cmn::tgt::kM32 ||
+      a == cmn::tgt::kM64
+   );
+}
+
+cmn::tgt::argTypes codeShapeTransform::makeRegister(cmn::tgt::argTypes a)
+{
+   switch(a)
+   {
+      case cmn::tgt::kM8:  return cmn::tgt::kR8;
+      case cmn::tgt::kM16: return cmn::tgt::kR16;
+      case cmn::tgt::kM32: return cmn::tgt::kR32;
+      case cmn::tgt::kM64: return cmn::tgt::kR64;
+      default:
+         cdwTHROW("ISE");
+   }
+}
+
+bool codeShapeTransform::isStackFramePtrInUse(lirInstr& i, const cmn::tgt::instrInfo& iInfo, std::vector<cmn::tgt::argTypes> origArgs)
+{
+   bool stackFramePtrInUse = false;
+
+   size_t idx=0;
+   for(auto it=origArgs.begin();it!=origArgs.end();++it,idx++)
+   {
+      if(isMemory(*it) && isWriteOnly(iInfo,idx))
+         ;
+      else
+      {
+         lirArg& arg = *i.getArgs()[idx];
+         size_t stor = m_v.demand(arg).getStorageFor(i.orderNum,arg);
+         stackFramePtrInUse = cmn::tgt::isVStack(stor);
+         if(stackFramePtrInUse)
+            break;
+      }
+   }
+
+   return stackFramePtrInUse;
+}
+
+size_t codeShapeTransform::chooseRegister(bool& needsSpill)
+{
+   std::vector<size_t> bank;
+   m_t.getCallConvention().createScratchRegisterBank(bank);
+   for(auto it=bank.begin();it!=bank.end();++it)
+   {
+      if(m_f.getUsedRegs().find(*it)==m_f.getUsedRegs().end())
+      {
+         needsSpill = false;
+         return *it;
+      }
+   }
+   needsSpill = true;
+   return *bank.begin();
 }
 
 } // namespace liam

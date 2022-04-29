@@ -9,6 +9,7 @@ class lirArg;
 class lirInstr;
 class lirStream;
 class lirStreams;
+class varFinder;
 class varTable;
 
 class lirTransform {
@@ -147,17 +148,57 @@ protected:
 
 class codeShapeTransform : public lirTransform {
 public:
-   codeShapeTransform(varTable& v, cmn::tgt::iTargetInfo& t) : m_v(v), m_t(t) {}
+   codeShapeTransform(varTable& v, varFinder& f, cmn::tgt::iTargetInfo& t)
+   : m_v(v), m_f(f), m_t(t) {}
 
 protected:
    virtual void runInstr(lirInstr& i);
 
 private:
-   void Register(lirArg& a, std::vector<cmn::tgt::argTypes>& at);
-   void immediate(lirArg& a, std::vector<cmn::tgt::argTypes>& at);
-   void memory(lirArg& a, std::vector<cmn::tgt::argTypes>& at);
+   void categorizeArgs(lirInstr& i, std::vector<cmn::tgt::argTypes>& at);
+   void markReg(lirArg& a, std::vector<cmn::tgt::argTypes>& at);
+   void markImm(lirArg& a, std::vector<cmn::tgt::argTypes>& at);
+   void markMem(lirArg& a, std::vector<cmn::tgt::argTypes>& at);
+
+   void getInstrInfo(
+      lirInstr& i,
+      const std::vector<cmn::tgt::argTypes>& at,
+      const cmn::tgt::instrInfo*& pIInfo,
+      bool& needsReshaping);
+
+   void findWorkingInstrFmt(
+      const cmn::tgt::instrInfo& iInfo,
+      const std::vector<cmn::tgt::argTypes>& args,
+      std::vector<cmn::tgt::argTypes>& retryArgs,
+      std::set<size_t>& changedIndicies);
+   bool mutateInstrFmt(
+      const cmn::tgt::instrInfo& iInfo,
+      const std::vector<cmn::tgt::argTypes>& args,
+      std::vector<cmn::tgt::argTypes>& retryArgs,
+      std::set<size_t>& changedIndicies);
+
+   bool isWriteOnly(const cmn::tgt::instrInfo& info, size_t idx);
+   bool isMemory(cmn::tgt::argTypes a);
+   cmn::tgt::argTypes makeRegister(cmn::tgt::argTypes a);
+   bool isStackFramePtrInUse(
+      lirInstr& i,
+      const cmn::tgt::instrInfo& iInfo,
+      std::vector<cmn::tgt::argTypes> origArgs);
+
+   size_t chooseRegister(bool& needsSpill);
+
+   void patchInstructions(
+//         needSpill
+ //        reg
+ //        offsets
+ //        i
+ //        iInfo
+ //        retryArgs
+
+         );
 
    varTable& m_v;
+   varFinder& m_f;
    cmn::tgt::iTargetInfo& m_t;
 };
 

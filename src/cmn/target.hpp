@@ -97,10 +97,13 @@ inline size_t makeVStack(int disp) { return (disp & 0xFFFF) | _kVirtStackFlag; }
 class instrInfo {
 public:
    const char *name;
+
+   const char *argIo;   // (r)ead, (w)rite, or (b)oth
+   bool stackSensitive; // can I make last-minute stack adjustments or will that affect this
+
    const instrFmt *fmts;
 
    const instrFmt& demandFmt(const std::vector<argTypes> a) const;
-
    const instrFmt *findFmt(const std::vector<argTypes> a) const;
 };
 
@@ -160,6 +163,8 @@ public:
    virtual bool requiresSubCallSave(size_t r) const = 0; // TODO HACK - not used... yet
 
    virtual void createRegisterBankInPreferredOrder(std::vector<size_t>& v) const = 0;
+   // registers that don't require prolog/epilog save
+   virtual void createScratchRegisterBank(std::vector<size_t>& v) const = 0;
 };
 
 class iSyscallConvention : public iCallingConvention {

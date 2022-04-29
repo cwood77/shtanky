@@ -48,6 +48,7 @@ public:
    virtual bool requiresPrologEpilogSave(size_t r) const;
    virtual bool requiresSubCallSave(size_t r) const;
    virtual void createRegisterBankInPreferredOrder(std::vector<size_t>& v) const;
+   virtual void createScratchRegisterBank(std::vector<size_t>& v) const;
 };
 
 class w64EmuTargetInfo : public tgt::iTargetInfo {

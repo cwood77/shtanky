@@ -72,30 +72,30 @@ static const instrFmt retFmts[] = {
 };
 
 static const instrInfo kInstrs[] = {
-   { "<selectSegment>",   NULL     },
-   { "<enterFunc>",       NULL     },
-   { "<exitFunc>",        NULL     },
+   { "<selectSegment>",   NULL, false, NULL     },
+   { "<enterFunc>",       NULL, false, NULL     },
+   { "<exitFunc>",        NULL, false, NULL     },
 
-   { "<reserveLocal>",    NULL     },
-   { "<unreserveLocal>",  NULL     },
+   { "<reserveLocal>",    NULL, false, NULL     },
+   { "<unreserveLocal>",  NULL, false, NULL     },
 
-   { "<globalConstData>", NULL     },
+   { "<globalConstData>", NULL, false, NULL     },
 
-   { "push",              (const instrFmt*)&pushFmts },
-   { "pop",               (const instrFmt*)&popFmts },
+   { "push",              "r",  true,  (const instrFmt*)&pushFmts },
+   { "pop",               "w",  true,  (const instrFmt*)&popFmts },
 
-   { "sub",               (const instrFmt*)&subFmts },
-   { "add",               (const instrFmt*)&addFmts },
+   { "sub",               "br", false, (const instrFmt*)&subFmts },
+   { "add",               "br", false, (const instrFmt*)&addFmts },
 
-   { "mov",               (const instrFmt*)&movFmts },
+   { "mov",               "wr", false, (const instrFmt*)&movFmts },
 
-   { "<precall>",         NULL     },
-   { "call",              (const instrFmt*)&callFmts },
-   { "<postcall>",        NULL     },
+   { "<precall>",         NULL, false, NULL     },
+   { "call",              "x",  true,  (const instrFmt*)&callFmts },
+   { "<postcall>",        NULL, false, NULL     },
 
-   { "ret",               (const instrFmt*)&retFmts },
+   { "ret",               "r",  true, (const instrFmt*)&retFmts },
 
-   { "system",            NULL     },
+   { "system",            "x",  true, NULL     },
 };
 
 void x8664Processor::createRegisterMap(std::map<size_t,size_t>& m) const
@@ -262,6 +262,12 @@ void w64CallingConvention::createRegisterBankInPreferredOrder(std::vector<size_t
    v.push_back(i64::kReg11);
 }
 
+void w64CallingConvention::createScratchRegisterBank(std::vector<size_t>& v) const
+{
+   // volatile - saved around subcalls and not in the calling conventions
+   v.push_back(i64::kReg10);
+   v.push_back(i64::kReg11);
+}
 
 const iSyscallConvention& w64EmuTargetInfo::getSyscallConvention() const
 {
