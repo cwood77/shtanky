@@ -70,39 +70,38 @@ Technical ideas and decisions thus far:
     - global var refs (`LEA REX.W + 8D /r`)
 
 ## todo
-- [ ] handle volatile regs (i.e. regs must be preserved around calls if in use)
-- [x] handle nonvolitile regs (i.e. must be preserved in pro/epilog if used)
-- [ ] use shadow space for spilling 4 regs
-- [x] change 'storage' to allow for stack vars
-~~- [ ] more codegen tests~~
-- [ ] codegen test that exercises stack
-- [ ] stack locals
-- [x] subcall locals
-- [ ] exercise splitter
-- [x] immediate ops
-- [x] patchable ops
-- [x] func labels
-- [x] instr overload selection
-- [x] call decomposition
-- [ ] impl frame ptrs
+By milestone
 
---- multi file compile ---
-- [x] batch build file generation
-- [x] compiler args
-
---- other file compile req's ---
-- [x] hoist strings
-- [x] too many call arg
-- [x] segment directives
-- [x] call nodes (not just invoke)
-- [ ] int literals
-
-- [x] araceli bootstrap codegen
-
-- [ ] code shape transform
-- [ ] stemu callbacks
-- [ ] stemu
-- [ ]   get stemu passing (e.g. study virtual calls)
+### Stemu can callback itself and survive
+- [ ] stemu callbacks - shlink side
 - [ ] are linker TOCs working?
+- [ ] <enterfunc> is double-allocating stack space
+- [ ] stemu impl
+- [ ] stemu callbacks - stemu side
+- [ ] get stemu passing (e.g. study virtual calls)
+
+### Hello World MVP
+- [ ] handle volatile regs (i.e. regs must be preserved around calls if in use)
+- [ ] impl frame ptrs
+- [ ] code shape transform
+
+### Must, but Later
+- [ ] int literals
+- [ ] invoke is sometimes a nonvirtual call
+
+### Could, Someday
+- [ ] use shadow space for spilling 4 regs
+- [ ] more codegen tests
+- [ ] codegen test that exercises stack
+- [ ] exercise splitter
+
+### Big, Hairy
+- [ ] templ
+- [ ] gempl
+- [ ] cop
+- [ ] array class?
+- [ ] passing args into stemu
+- [ ] heap class allocation (actually needs a heap in stemu/stanky)
+- [ ] DLLs
 
 [^1]: The name "shtanky" was suggested by my son, Ethan (age 11).  I selected the first of his suggestions that didn't include "my dad's butt" somewhere in the title.
