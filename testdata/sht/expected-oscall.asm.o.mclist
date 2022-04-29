@@ -1,1 +1,7 @@
-// 2: ._osCall:
+// 2: ._osCall_impl: .data, <qw> 0
+_intdata(00-00-00-00,00-00-00-00)
+// 5: ._osCall:
+// 6:    call, ._osCall_impl
+op(e8)co32(00-00-00-00)
+// 7:    ret
+op(c3)
