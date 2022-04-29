@@ -88,12 +88,15 @@ By milestone
 ### Must, but Later
 - [ ] int literals
 - [ ] invoke is sometimes a nonvirtual call
+- [ ] shlink should inflate segments to page boundaries
 
 ### Could, Someday
 - [ ] use shadow space for spilling 4 regs
 - [ ] more codegen tests
 - [ ] codegen test that exercises stack
 - [ ] exercise splitter
+- [ ] stemu could implement page protection modes on different segmente (e.g. const)
+- [ ] generate windows PE from shlink
 
 ### Big, Hairy
 - [ ] templ
@@ -103,5 +106,6 @@ By milestone
 - [ ] passing args into stemu
 - [ ] heap class allocation (actually needs a heap in stemu/stanky)
 - [ ] DLLs
+- [ ] maybe a 'grep' tool that understand the languages--i.e. can skip comments, etc.
 
 [^1]: The name "shtanky" was suggested by my son, Ethan (age 11).  I selected the first of his suggestions that didn't include "my dad's butt" somewhere in the title.

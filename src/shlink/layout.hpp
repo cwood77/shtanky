@@ -10,6 +10,7 @@ namespace cmn { namespace objfmt { class patch; } }
 namespace shlink {
 
 class iObjectProvider;
+class iSymbolIndex;
 
 // during the layout operation, keeps track of what is left and what has already been done
 // specifically, layoutProgress asks for only reachable objects (i.e. it prunes)
@@ -47,19 +48,18 @@ private:
 
 class layout {
 public:
-   layout() : m_osCallOffset(0) {}
-
    // after all reachable objects are placed, segments are tallied and laid into contiguous
    // space
    void place(cmn::objfmt::obj& o);
    void markDonePlacing();
+   void reportSymbols(const std::set<std::string>& demanded,
+      iObjectProvider& d, iSymbolIndex& indx);
 
    // fixes-up all patches in the segments to resolve symbols
    void link(iObjectProvider& d);
 
    // for writing
    const std::map<unsigned long,segmentBlock>& getSegments() const { return m_segments; }
-   unsigned long getOsCallOffset() const { return m_osCallOffset; }
 
 private:
    void link(iObjectProvider& d, cmn::objfmt::obj& refer);
@@ -68,8 +68,6 @@ private:
    unsigned long totalOffsetOfRIP(cmn::objfmt::obj& o, cmn::objfmt::patch& p);
    long *laidOutSitePtr(cmn::objfmt::obj& o, cmn::objfmt::patch& p);
 
-   cmn::objfmt::obj& lookupObject(iObjectProvider& d, const std::string& name);
-
    void patchRipRelDWord(
       cmn::objfmt::obj& refer,
       cmn::objfmt::obj& refee,
@@ -77,7 +75,6 @@ private:
 
    std::map<cmn::objfmt::obj*,unsigned long> m_objPlacements;
    std::map<unsigned long,segmentBlock> m_segments;
-   unsigned long m_osCallOffset;
 };
 
 } // namespace shlink

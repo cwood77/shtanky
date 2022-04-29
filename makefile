@@ -241,9 +241,11 @@ $(SHTASM_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 
 SHLINK_SRC = \
 	src/shlink/formatter.cpp \
+	src/shlink/iTarget.cpp \
 	src/shlink/layout.cpp \
 	src/shlink/main.cpp \
 	src/shlink/objdir.cpp \
+	src/shlink/shtankyAppTarget.cpp \
 
 SHLINK_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SHLINK_SRC)))
 

@@ -1,9 +1,9 @@
 #include "../cmn/obj-fmt.hpp"
 #include "../cmn/throw.hpp"
 #include "../cmn/trace.hpp"
+#include "iTarget.hpp"
 #include "layout.hpp"
 #include "objdir.hpp"
-#include <stdexcept>
 
 namespace shlink {
 
@@ -69,6 +69,15 @@ void layout::markDonePlacing()
    }
 }
 
+void layout::reportSymbols(const std::set<std::string>& demanded, iObjectProvider& d, iSymbolIndex& indx)
+{
+   for(auto it=demanded.begin();it!=demanded.end();++it)
+   {
+      auto& o = d.demand(*it);
+      indx.reportSymbolLocation(*it,totalOffsetOfObj(o));
+   }
+}
+
 void layout::link(iObjectProvider& d)
 {
    cdwVERBOSE("start linking %lld objects...\n",m_objPlacements.size());
@@ -77,18 +86,6 @@ void layout::link(iObjectProvider& d)
       link(d,*it->first);
 
    cdwVERBOSE("done linking\n");
-
-#if 0
-   {
-      cdwVERBOSE("looking for .osCall symbol...\n");
-      auto pObj = d.tryFind(".osCall");
-      if(!pObj)
-         cdwVERBOSE("   ...missing\n");
-      else
-      {
-      }
-   }
-#endif
 }
 
 void layout::link(iObjectProvider& d, cmn::objfmt::obj& refer)
@@ -102,7 +99,7 @@ void layout::link(iObjectProvider& d, cmn::objfmt::obj& refer)
        patch!=refer.it.patches.end();
        ++patch,i++)
    {
-      auto& refee = lookupObject(d,patch->first);
+      auto& refee = d.demand(patch->first);
       auto refeeOffset = totalOffsetOfObj(refee);
       cdwVERBOSE("    %d: addrOf '%s' = %lu\n",
          i,
@@ -145,14 +142,6 @@ long *layout::laidOutSitePtr(cmn::objfmt::obj& o, cmn::objfmt::patch& p)
       + m_objPlacements[&o]
       + p.offset
    );
-}
-
-cmn::objfmt::obj& layout::lookupObject(iObjectProvider& d, const std::string& name)
-{
-   cmn::objfmt::obj& o = d.demand(name);
-   if(name == "._osCall_impl")
-      m_osCallOffset = totalOffsetOfObj(o);
-   return o;
 }
 
 void layout::patchRipRelDWord(cmn::objfmt::obj& refer, cmn::objfmt::obj& refee, cmn::objfmt::patch& referPatch)

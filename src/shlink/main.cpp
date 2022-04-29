@@ -1,17 +1,19 @@
-#include "../cmn/binWriter.hpp"
 #include "../cmn/cmdline.hpp"
-#include "../cmn/pathUtil.hpp"
 #include "../cmn/trace.hpp"
-#include "formatter.hpp"
+#include "iTarget.hpp"
 #include "layout.hpp"
 #include "objdir.hpp"
+#include <memory>
 
 using namespace shlink;
 
 int main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   std::string outFile = cl.getNextArg(".\\testdata\\test\\test.ara.ls.asm.o.app");
+
+   // determine the target
+   std::unique_ptr<iTarget> pTgt(createTarget(cl));
+   std::unique_ptr<iSymbolIndex> pIndx(pTgt->createIndex());
 
    // load all object files indicated on command-line
    objectDirectory oDir;
@@ -29,7 +31,7 @@ int main(int argc, const char *argv[])
    {
       objectProviderRecorder oDirWrapper(oDir);
       layoutProgress lProg;
-      lProg.seedRequiredObject(".entrypoint");
+      pTgt->seedRequirements(lProg);
 
       while(!lProg.isDone())
       {
@@ -43,19 +45,16 @@ int main(int argc, const char *argv[])
       l.markDonePlacing();
 
       oDir.determinePruneList(oDirWrapper.demanded);
+      l.reportSymbols(oDirWrapper.demanded,oDir,*pIndx.get());
    }
 
    // link objects together
    l.link(oDir);
 
    // write
-   {
-      cdwVERBOSE("writing...\n");
-      cmn::compositeObjWriter w;
-      w.sinkNewFileWithListing(outFile);
-      formatter(w).write(l);
-      cdwVERBOSE("done writing\n");
-   }
+   cdwVERBOSE("writing...\n");
+   pTgt->write(l,*pIndx.get());
+   cdwVERBOSE("done writing\n");
 
    return 0;
 }
