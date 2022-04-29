@@ -73,8 +73,8 @@ Technical ideas and decisions thus far:
 By milestone
 
 ### Stemu can callback itself and survive
-- [ ] stemu callbacks - shlink side
-- [ ] are linker TOCs working?
+- [x] stemu callbacks - shlink side
+- [x] are linker TOCs working?
 - [ ] <enterfunc> is double-allocating stack space
 - [ ] stemu impl
 - [ ] stemu callbacks - stemu side
