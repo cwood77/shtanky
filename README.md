@@ -79,24 +79,30 @@ Technical ideas and decisions thus far:
 - [ ] stack locals
 - [x] subcall locals
 - [ ] exercise splitter
-- [ ] immediate ops
-- [ ] patchable ops
+- [x] immediate ops
+- [x] patchable ops
 - [x] func labels
 - [x] instr overload selection
 - [x] call decomposition
 - [ ] impl frame ptrs
 
 --- multi file compile ---
-- [ ] batch build file generation
-- [ ] compiler args
+- [x] batch build file generation
+- [x] compiler args
 
 --- other file compile req's ---
-- [ ] hoist strings
+- [x] hoist strings
 - [x] too many call arg
-- [ ] segment directives
-- [ ] call nodes (not just invoke)
+- [x] segment directives
+- [x] call nodes (not just invoke)
 - [ ] int literals
 
-- [ ] araceli bootstrap codegen
+- [x] araceli bootstrap codegen
+
+- [ ] code shape transform
+- [ ] stemu callbacks
+- [ ] stemu
+- [ ]   get stemu passing (e.g. study virtual calls)
+- [ ] are linker TOCs working?
 
 [^1]: The name "shtanky" was suggested by my son, Ethan (age 11).  I selected the first of his suggestions that didn't include "my dad's butt" somewhere in the title.

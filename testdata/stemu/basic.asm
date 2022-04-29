@@ -1,0 +1,3 @@
+.seg code
+.entrypoint:
+   ret
