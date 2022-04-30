@@ -1,7 +1,6 @@
 #include "../cmn/binWriter.hpp"
-#include "../cmn/fmt.hpp"
+#include "../cmn/throw.hpp"
 #include "assembler.hpp"
-#include <stdexcept>
 
 namespace shtasm {
 
@@ -10,7 +9,7 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
    // look up genInfo
    auto *pInfo = m_genInfos[f.guid];
    if(!pInfo)
-      throw std::runtime_error(cmn::fmt("no known instr for '%s'",f.guid));
+      cdwTHROW("no known instr for '%s'",f.guid);
 
    // build args
    std::string label;
@@ -95,7 +94,7 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
          pByte += (1+4-1);
       }
       else
-         throw std::runtime_error(cmn::fmt("don't know how to write byte %d",(int)*pByte));
+         cdwTHROW("don't know how to write byte %d",(int)*pByte);
    }
 
    w.nextPart();

@@ -23,6 +23,7 @@ public:
    unsigned long osCallOffset;
 };
 
+// TODO this is cut for now.  Need this eventually for page permissions.
 class tocEntry {
 public:
    tocEntry() : flags(0), size(0) {}

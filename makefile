@@ -15,7 +15,8 @@ debug: \
 	$(OUT_DIR)/debug/araceli.exe \
 	$(OUT_DIR)/debug/liam.exe \
 	$(OUT_DIR)/debug/shtasm.exe \
-	$(OUT_DIR)/debug/shlink.exe
+	$(OUT_DIR)/debug/shlink.exe \
+	$(OUT_DIR)/debug/shtemu.exe
 	@cmd /c appr.bat
 
 all: \
@@ -25,6 +26,7 @@ all: \
 	$(OUT_DIR)/release/liam.exe \
 	$(OUT_DIR)/release/shtasm.exe \
 	$(OUT_DIR)/release/shlink.exe \
+	$(OUT_DIR)/release/shtemu.exe \
 
 clean:
 	rm -rf bin
@@ -36,6 +38,7 @@ dirs:
 	@mkdir -p $(OBJ_DIR)/debug/liam
 	@mkdir -p $(OBJ_DIR)/debug/shtasm
 	@mkdir -p $(OBJ_DIR)/debug/shlink
+	@mkdir -p $(OBJ_DIR)/debug/shtemu
 	@mkdir -p $(OBJ_DIR)/debug/cmn
 	@mkdir -p $(OUT_DIR)/release
 	@mkdir -p $(OBJ_DIR)/release/appr
@@ -43,6 +46,7 @@ dirs:
 	@mkdir -p $(OBJ_DIR)/release/liam
 	@mkdir -p $(OBJ_DIR)/release/shtasm
 	@mkdir -p $(OBJ_DIR)/release/shlink
+	@mkdir -p $(OBJ_DIR)/release/shtemu
 	@mkdir -p $(OBJ_DIR)/release/cmn
 
 .PHONY: debug all clean dirs
@@ -266,3 +270,32 @@ $(OUT_DIR)/release/shlink.exe: $(SHLINK_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
 $(SHLINK_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# shtemu
+
+# I'm using -fpermissive here to allow some ptr math; I don't understand
+# why that's an error in the first place.
+
+SHTEMU_SRC = \
+	src/shtemu/stemu.cpp \
+
+SHTEMU_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SHTEMU_SRC)))
+
+$(OUT_DIR)/debug/shtemu.exe: $(SHTEMU_DEBUG_OBJ) $(OUT_DIR)/debug/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(SHTEMU_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lcmn
+
+$(SHTEMU_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) -fpermissive $< -o $@
+
+SHTEMU_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(SHTEMU_SRC)))
+
+$(OUT_DIR)/release/shtemu.exe: $(SHTEMU_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(SHTEMU_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
+
+$(SHTEMU_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) -fpermissive $< -o $@

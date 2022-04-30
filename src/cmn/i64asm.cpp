@@ -192,7 +192,7 @@ void modRm::encodeModRmArg_Label(const asmArgInfo& ai, unsigned char& rex, unsig
 {
    // encodes as disp32
    unsigned char mod = 0;
-   unsigned char rm = 101;
+   unsigned char rm = 5;
 
    dispSize = 4;
 
@@ -207,7 +207,10 @@ void modRm::encodeModRmArg_MemDisp(const asmArgInfo& ai, unsigned char& rex, uns
 
    // now pick a mod value to show memory access
    if(!ai.disp)
+   {
+      dispSize = 0;
       mod = 0;
+   }
    else
    {
       dispSize = lexorBase::getLexemeIntSize(ai.disp);
@@ -379,25 +382,23 @@ void argFmtBytes::encodeArgModRmReg(asmArgInfo& a, bool regOrRm)
 {
    unsigned char rex = 0;
    unsigned char _modRm = 0;
+   char dispSize = 0;
+   bool dispOrCodeOffset = true;
    gather(rex,_modRm);
 
    if(regOrRm)
       modRm::encodeRegArg(a,rex,_modRm);
    else
-   {
-      char dispSize;
-      bool dispOrCodeOffset;
       modRm::encodeModRmArg(a,rex,_modRm,dispSize,dispOrCodeOffset);
-      if(dispSize)
-      {
-         if(dispOrCodeOffset)
-            setDisp(dispSize,a.disp);
-         else
-            setCodeOffset(dispSize);
-      }
-   }
 
    release(rex,_modRm);
+   if(dispSize)
+   {
+      if(dispOrCodeOffset)
+         setDisp(dispSize,a.disp);
+      else
+         setCodeOffset(dispSize);
+   }
 }
 
 void argFmtBytes::encodeFixedOp(unsigned char op)
@@ -535,10 +536,10 @@ void argFmtBytes::setCodeOffset(char size)
       cdwTHROW("unimplemented");
 
    size_t arrayIdx = m_argFmtByteStream.size();
-   m_argFmtByteStream.resize(arrayIdx + 1 + size);
+   m_argFmtByteStream.resize(arrayIdx + 1 /*+ size*/);
 
    m_argFmtByteStream[arrayIdx] = genInfo::kCodeOffset32;
-   *reinterpret_cast<long*>(&m_argFmtByteStream[arrayIdx+1]) = 0;
+//   *reinterpret_cast<long*>(&m_argFmtByteStream[arrayIdx+1]) = 0;
 }
 
 } // namespace i64

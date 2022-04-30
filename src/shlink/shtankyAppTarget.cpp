@@ -11,7 +11,7 @@ void shtankyAppSymbolIndex::reportSymbolLocation(const std::string& name, unsign
 {
    if(name == ".entrypoint")
       entrypointOffset = finalOffset;
-   if(name == ".osCall_impl")
+   if(name == "._osCall_impl")
       osCallImplOffset = finalOffset;
 }
 
