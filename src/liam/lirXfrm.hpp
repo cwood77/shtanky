@@ -108,6 +108,8 @@ protected:
    virtual void runInstr(lirInstr& i);
 };
 
+// TODO there's two of these--one pre regalloc and one post
+//      combine?  or just rename them?
 class lirCodeShapeDecomposition : public lirTransform {
 protected:
    virtual void runInstr(lirInstr& i);
@@ -125,6 +127,7 @@ private:
    unsigned long m_next;
 };
 
+// TODO is this a good idea?  Prolly not
 void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t);
 
 class lirVarGen : public lirTransform {

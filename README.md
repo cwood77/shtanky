@@ -75,15 +75,16 @@ By milestone
 ### Stemu can callback itself and survive
 - [x] stemu callbacks - shlink side
 - [x] are linker TOCs working?
+- [x] stemu impl
+- [x] stemu callbacks - stemu side
+- [x] get stemu passing (e.g. study virtual calls)
 - [ ] <enterfunc> is double-allocating stack space
-- [ ] stemu impl
-- [ ] stemu callbacks - stemu side
-- [ ] get stemu passing (e.g. study virtual calls)
+- [ ] setup an ATS
 
 ### Hello World MVP
+- [O] code shape transform
 - [ ] handle volatile regs (i.e. regs must be preserved around calls if in use)
 - [ ] impl frame ptrs
-- [ ] code shape transform
 
 ### Must, but Later
 - [ ] int literals
