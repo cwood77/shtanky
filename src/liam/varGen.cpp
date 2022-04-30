@@ -19,6 +19,46 @@ size_t var::getSize()
    return (*refs.begin()->second.begin())->getSize();
 }
 
+void var::unbindArg(lirInstr& i, lirArg& a)
+{
+   size_t stor = getStorageFor(i.orderNum,a);
+
+   // refs
+   {
+      auto& s = refs[i.orderNum];
+      {
+         for(auto it=s.begin();it!=s.end();++it)
+         {
+            if(*it == &a)
+            {
+               s.erase(it);
+               break;
+            }
+         }
+      }
+      if(s.size() == 0)
+         refs.erase(i.orderNum);
+   }
+   // instrToStorage
+   {
+      auto& s = instrToStorageMap[i.orderNum];
+      s.erase(stor);
+      if(s.size() == 0)
+         instrToStorageMap.erase(i.orderNum);
+   }
+   // storageToInstr
+   {
+      auto& s = storageToInstrMap[stor];
+      s.erase(i.orderNum);
+      if(s.size() == 0)
+         storageToInstrMap.erase(stor);
+   }
+   // disAmbig
+   {
+      storageDisambiguators.erase(&a);
+   }
+}
+
 bool var::isAlive(size_t orderNum)
 {
    return refs.begin()->first <= orderNum && orderNum <= (--(refs.end()))->first;

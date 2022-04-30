@@ -185,8 +185,8 @@ rex(48)op(83)modR/M(ec)i8(20)
 op(ff)modR/M(15)co32(00-00-00-00)
 // 141:                             add, rsp, 32                             
 rex(48)op(83)modR/M(c4)i8(20)
-// 142:                             mov, rcx, .assign.assignTester_vtbl_inst ; codeshape decomp
-rex(48)op(8b)modR/M(0d)co32(00-00-00-00)
+// 142:                             mov, r10, .assign.assignTester_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
 // 143:                             mov, [rcx], rax                          ; =
 rex(48)op(89)modR/M(01)
 // 144:                             sub, rsp, 32                             
@@ -198,8 +198,8 @@ rex(48)op(83)modR/M(c4)i8(20)
 // 147:                             ret                                      
 op(c3)
 // 150: .assign.assignTester_sdtor: 
-// 151:                             mov, rax, .assign.assignTester_vtbl_inst ; codeshape decomp
-rex(48)op(8b)modR/M(05)co32(00-00-00-00)
+// 151:                             mov, r10, .assign.assignTester_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
 // 152:                             mov, [rcx], r10                          ; =
 rex(4c)op(89)modR/M(11)
 // 153:                             sub, rsp, 32                             

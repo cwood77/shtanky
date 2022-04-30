@@ -379,8 +379,7 @@ void codeShapeTransform::runInstr(lirInstr& i)
    // modify original instruction
    {
       var& origVar = m_v.demand(origArg);
-      origVar.refs.erase(i.orderNum);
-      origVar.storageDisambiguators.erase(&origArg);
+      origVar.unbindArg(i,origArg);
 
       auto *pUpdatedArg = new lirArgTemp(varName,origArg.getSize());
       i.getArgs()[*regOffsets.begin()] = pUpdatedArg;
