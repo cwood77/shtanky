@@ -30,8 +30,13 @@ void osCallThunk(size_t i, void *misc)
    std::cout << "   misc = " << (misc ? ((const char *)misc) : "NULL") << std::endl;
 }
 
-//typedef void (*oscT)(size_t, void*);
-//oscT gPtr = &osCallThunk;
+typedef void (*oscT)(size_t, void*);
+oscT gPtr = &osCallThunk;
+
+void func(size_t i)
+{
+   gPtr(1, 0);
+}
 
 int main(int argc, const char *argv[])
 {
@@ -43,6 +48,7 @@ int main(int argc, const char *argv[])
 #endif
 
    //gPtr(1, 0);
+   func(0);
 
    if(argc==1)
    {
