@@ -32,7 +32,7 @@ op(e8)co32(00-00-00-00)
 // 18:              add, rsp, 32                     
 rex(48)op(83)modR/M(c4)i8(20)
 // 19:              mov, [rcx+8], rdi                ; =
-rex(48)op(89)d8(79)
+rex(48)op(89)modR/M(79)d8(08)
 // 20:              sub, rsp, 32                     
 rex(48)op(83)modR/M(ec)i8(20)
 // 21:              mov, rdi, [rcx]                  ; fieldaccess: owner of run
