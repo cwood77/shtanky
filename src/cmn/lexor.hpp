@@ -100,7 +100,8 @@ public:
    std::string getTokenName(size_t t); // this works for classes too
    std::string getTokenName() { return getTokenName(m_state.token); }
    std::string getLexeme() { return m_state.lexeme; }
-   __int64 getLexemeInt() const;
+   static __int64 getLexemeInt(const std::string& str);
+   __int64 getLexemeInt() const { return getLexemeInt(m_state.lexeme); }
    static char getLexemeIntSize(const __int64& v);
    char getLexemeIntSize() const { return getLexemeIntSize(getLexemeInt()); }
    unsigned long getLineNumber() { return m_state.lineNumber; }

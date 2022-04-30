@@ -93,7 +93,7 @@ int _main(int argc,const char *argv[])
          if(it->segment == cmn::objfmt::obj::kLexCode)
          {
             spuriousVarStripper().runStream(*it);
-            //codeShapeTransform(vTbl,f,t).runStream(*it);
+            codeShapeTransform(vTbl,f,t).runStream(*it);
          }
 
          { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-preasm");

@@ -14,7 +14,7 @@ rex(48)op(83)modR/M(ec)i8(18)
 // 14:                                          sub, rsp, 32          
 rex(48)op(83)modR/M(ec)i8(20)
 // 15:                                          call, .assign.A_sctor ; (call label)
-op(e8)co32(00-00-00-00)
+op(ff)modR/M(15)co32(00-00-00-00)
 // 16:                                          add, rsp, 32          
 rex(48)op(83)modR/M(c4)i8(20)
 // 17:                                          mov, [rcx+16], 7      ; =
@@ -22,7 +22,7 @@ rex(48)op(c7)modR/M(41)d8(10)i32(07-00-00-00)
 // 18:                                          sub, rsp, 32          
 rex(48)op(83)modR/M(ec)i8(20)
 // 19:                                          call, .assign.A_sdtor ; (call label)
-op(e8)co32(00-00-00-00)
+op(ff)modR/M(15)co32(00-00-00-00)
 // 20:                                          add, rsp, 32          
 rex(48)op(83)modR/M(c4)i8(20)
 // 21:                                          add, rsp, 24          
@@ -56,7 +56,7 @@ rex(48)op(83)modR/M(ec)i8(18)
 // 40:                                             sub, rsp, 32          
 rex(48)op(83)modR/M(ec)i8(20)
 // 41:                                             call, .assign.A_sctor ; (call label)
-op(e8)co32(00-00-00-00)
+op(ff)modR/M(15)co32(00-00-00-00)
 // 42:                                             add, rsp, 32          
 rex(48)op(83)modR/M(c4)i8(20)
 // 43:                                             mov, rbx, [rcx+16]    ; fieldaccess: owner of x
@@ -66,7 +66,7 @@ rex(48)op(c7)modR/M(43)d8(10)i32(07-00-00-00)
 // 45:                                             sub, rsp, 32          
 rex(48)op(83)modR/M(ec)i8(20)
 // 46:                                             call, .assign.A_sdtor ; (call label)
-op(e8)co32(00-00-00-00)
+op(ff)modR/M(15)co32(00-00-00-00)
 // 47:                                             add, rsp, 32          
 rex(48)op(83)modR/M(c4)i8(20)
 // 48:                                             add, rsp, 24          
@@ -103,104 +103,116 @@ op(c3)
 // 87: .data, .assign.assignTester.run 
 _lbldata(00-00-00-00,00-00-00-00)
 // 90: .assign.A_sctor: 
-// 91:                  sub, rsp, 32                    
+// 91:                  sub, rsp, 32                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 92:                  call, .sht.core.object_sctor    ; (call label)
-op(e8)co32(00-00-00-00)
-// 93:                  add, rsp, 32                    
+// 92:                  call, .sht.core.object_sctor  ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 93:                  add, rsp, 32                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 94:                  mov, [rcx], .assign.A_vtbl_inst ; =
-rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 95:                  sub, rsp, 32                    
+// 94:                  mov, r10, .assign.A_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
+// 95:                  mov, [rcx], r10               ; =
+rex(4c)op(89)modR/M(11)
+// 96:                  sub, rsp, 32                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 96:                  call, .assign.A.cctor           ; (call label)
-op(e8)co32(00-00-00-00)
-// 97:                  add, rsp, 32                    
+// 97:                  call, .assign.A.cctor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 98:                  add, rsp, 32                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 98:                  ret                             
+// 99:                  ret                           
 op(c3)
-// 101: .assign.A_sdtor: 
-// 102:                  mov, [rcx], .assign.A_vtbl_inst ; =
-rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 103:                  sub, rsp, 32                    
+// 102: .assign.A_sdtor: 
+// 103:                  mov, r10, .assign.A_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
+// 104:                  mov, [rcx], r10               ; =
+rex(4c)op(89)modR/M(11)
+// 105:                  sub, rsp, 32                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 104:                  call, .assign.A.cdtor           ; (call label)
-op(e8)co32(00-00-00-00)
-// 105:                  add, rsp, 32                    
+// 106:                  call, .assign.A.cdtor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 107:                  add, rsp, 32                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 106:                  sub, rsp, 32                    
+// 108:                  sub, rsp, 32                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 107:                  call, .sht.core.object_sdtor    ; (call label)
-op(e8)co32(00-00-00-00)
-// 108:                  add, rsp, 32                    
+// 109:                  call, .sht.core.object_sdtor  ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 110:                  add, rsp, 32                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 109:                  ret                             
+// 111:                  ret                           
 op(c3)
-// 112: .assign.B_sctor: 
-// 113:                  sub, rsp, 32                    
+// 114: .assign.B_sctor: 
+// 115:                  sub, rsp, 32                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 114:                  call, .sht.core.object_sctor    ; (call label)
-op(e8)co32(00-00-00-00)
-// 115:                  add, rsp, 32                    
+// 116:                  call, .sht.core.object_sctor  ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 117:                  add, rsp, 32                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 116:                  mov, [rcx], .assign.B_vtbl_inst ; =
-rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 117:                  sub, rsp, 32                    
+// 118:                  mov, r10, .assign.B_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
+// 119:                  mov, [rcx], r10               ; =
+rex(4c)op(89)modR/M(11)
+// 120:                  sub, rsp, 32                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 118:                  call, .assign.B.cctor           ; (call label)
-op(e8)co32(00-00-00-00)
-// 119:                  add, rsp, 32                    
+// 121:                  call, .assign.B.cctor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 122:                  add, rsp, 32                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 120:                  ret                             
+// 123:                  ret                           
 op(c3)
-// 123: .assign.B_sdtor: 
-// 124:                  mov, [rcx], .assign.B_vtbl_inst ; =
-rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 125:                  sub, rsp, 32                    
+// 126: .assign.B_sdtor: 
+// 127:                  mov, r10, .assign.B_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
+// 128:                  mov, [rcx], r10               ; =
+rex(4c)op(89)modR/M(11)
+// 129:                  sub, rsp, 32                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 126:                  call, .assign.B.cdtor           ; (call label)
-op(e8)co32(00-00-00-00)
-// 127:                  add, rsp, 32                    
+// 130:                  call, .assign.B.cdtor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 131:                  add, rsp, 32                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 128:                  sub, rsp, 32                    
+// 132:                  sub, rsp, 32                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 129:                  call, .sht.core.object_sdtor    ; (call label)
-op(e8)co32(00-00-00-00)
-// 130:                  add, rsp, 32                    
+// 133:                  call, .sht.core.object_sdtor  ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 134:                  add, rsp, 32                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 131:                  ret                             
+// 135:                  ret                           
 op(c3)
-// 134: .assign.assignTester_sctor: 
-// 135:                             sub, rsp, 32                               
+// 138: .assign.assignTester_sctor: 
+// 139:                             sub, rsp, 32                             
 rex(48)op(83)modR/M(ec)i8(20)
-// 136:                             call, .sht.cons.program_sctor              ; (call label)
-op(e8)co32(00-00-00-00)
-// 137:                             add, rsp, 32                               
+// 140:                             call, .sht.cons.program_sctor            ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 141:                             add, rsp, 32                             
 rex(48)op(83)modR/M(c4)i8(20)
-// 138:                             mov, [rcx], .assign.assignTester_vtbl_inst ; =
-rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 139:                             sub, rsp, 32                               
+// 142:                             mov, rcx, .assign.assignTester_vtbl_inst ; codeshape decomp
+rex(48)op(8b)modR/M(0d)co32(00-00-00-00)
+// 143:                             mov, [rcx], rax                          ; =
+rex(48)op(89)modR/M(01)
+// 144:                             sub, rsp, 32                             
 rex(48)op(83)modR/M(ec)i8(20)
-// 140:                             call, .assign.assignTester.cctor           ; (call label)
-op(e8)co32(00-00-00-00)
-// 141:                             add, rsp, 32                               
+// 145:                             call, .assign.assignTester.cctor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 146:                             add, rsp, 32                             
 rex(48)op(83)modR/M(c4)i8(20)
-// 142:                             ret                                        
+// 147:                             ret                                      
 op(c3)
-// 145: .assign.assignTester_sdtor: 
-// 146:                             mov, [rcx], .assign.assignTester_vtbl_inst ; =
-rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 147:                             sub, rsp, 32                               
+// 150: .assign.assignTester_sdtor: 
+// 151:                             mov, rax, .assign.assignTester_vtbl_inst ; codeshape decomp
+rex(48)op(8b)modR/M(05)co32(00-00-00-00)
+// 152:                             mov, [rcx], r10                          ; =
+rex(4c)op(89)modR/M(11)
+// 153:                             sub, rsp, 32                             
 rex(48)op(83)modR/M(ec)i8(20)
-// 148:                             call, .assign.assignTester.cdtor           ; (call label)
-op(e8)co32(00-00-00-00)
-// 149:                             add, rsp, 32                               
+// 154:                             call, .assign.assignTester.cdtor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 155:                             add, rsp, 32                             
 rex(48)op(83)modR/M(c4)i8(20)
-// 150:                             sub, rsp, 32                               
+// 156:                             sub, rsp, 32                             
 rex(48)op(83)modR/M(ec)i8(20)
-// 151:                             call, .sht.cons.program_sdtor              ; (call label)
-op(e8)co32(00-00-00-00)
-// 152:                             add, rsp, 32                               
+// 157:                             call, .sht.cons.program_sdtor            ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 158:                             add, rsp, 32                             
 rex(48)op(83)modR/M(c4)i8(20)
-// 153:                             ret                                        
+// 159:                             ret                                      
 op(c3)

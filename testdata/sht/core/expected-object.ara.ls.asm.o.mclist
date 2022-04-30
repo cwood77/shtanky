@@ -7,24 +7,28 @@ op(c3)
 // 10: .sht.core.object_vtbl_inst:
 // 11: .data, 
 // 14: .sht.core.object_sctor: 
-// 15:                         mov, [rcx], .sht.core.object_vtbl_inst ; =
-rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 16:                         sub, rsp, 32                           
+// 15:                         mov, r10, .sht.core.object_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
+// 16:                         mov, [rcx], r10                      ; =
+rex(4c)op(89)modR/M(11)
+// 17:                         sub, rsp, 32                         
 rex(48)op(83)modR/M(ec)i8(20)
-// 17:                         call, .sht.core.object.cctor           ; (call label)
-op(e8)co32(00-00-00-00)
-// 18:                         add, rsp, 32                           
+// 18:                         call, .sht.core.object.cctor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 19:                         add, rsp, 32                         
 rex(48)op(83)modR/M(c4)i8(20)
-// 19:                         ret                                    
+// 20:                         ret                                  
 op(c3)
-// 22: .sht.core.object_sdtor: 
-// 23:                         mov, [rcx], .sht.core.object_vtbl_inst ; =
-rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 24:                         sub, rsp, 32                           
+// 23: .sht.core.object_sdtor: 
+// 24:                         mov, r10, .sht.core.object_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
+// 25:                         mov, [rcx], r10                      ; =
+rex(4c)op(89)modR/M(11)
+// 26:                         sub, rsp, 32                         
 rex(48)op(83)modR/M(ec)i8(20)
-// 25:                         call, .sht.core.object.cdtor           ; (call label)
-op(e8)co32(00-00-00-00)
-// 26:                         add, rsp, 32                           
+// 27:                         call, .sht.core.object.cdtor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 28:                         add, rsp, 32                         
 rex(48)op(83)modR/M(c4)i8(20)
-// 27:                         ret                                    
+// 29:                         ret                                  
 op(c3)

@@ -12,7 +12,7 @@
 ----- start stream .sht.cons.stdout.printLn
 0 <enterFunc> ~rval2/0, $self2/0, $msg0/0         ;;; .sht.cons.stdout.printLn
 0 <precall>   
-0 call        ~rval3/0, @._osCall/0, @1/0, $msg/0 ;;; (call label)
+0 call        ~rval3/0, @._osCall/0, @1/1, $msg/0 ;;; (call label)
 
 ----- start stream .sht.cons.stdout.cctor
 0 <enterFunc> ~rval4/0, $self3/0 ;;; .sht.cons.stdout.cctor

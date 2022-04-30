@@ -13,7 +13,7 @@ rex(48)op(8b)modR/M(59)d8(08)
 // 11:                 mov, rdi, [rbx]        ; fieldaccess: owner of printLn
 rex(48)op(8b)modR/M(3b)
 // 12:                 mov, rdx, .test.const0 ; shape:hoist imm from call
-rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
+rex(48)op(8b)modR/M(15)co32(00-00-00-00)
 // 13:                 mov, rbx, rcx          ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
 // 14:                 mov, rcx, [rbx+8]      ; shape:hoist addrOf from call
@@ -38,36 +38,40 @@ op(c3)
 // 31: .data, .test.test.run 
 _lbldata(00-00-00-00,00-00-00-00)
 // 34: .test.test_sctor: 
-// 35:                   sub, rsp, 32                     
+// 35:                   sub, rsp, 32                   
 rex(48)op(83)modR/M(ec)i8(20)
-// 36:                   call, .sht.cons.program_sctor    ; (call label)
-op(e8)co32(00-00-00-00)
-// 37:                   add, rsp, 32                     
+// 36:                   call, .sht.cons.program_sctor  ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 37:                   add, rsp, 32                   
 rex(48)op(83)modR/M(c4)i8(20)
-// 38:                   mov, [rcx], .test.test_vtbl_inst ; =
-rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 39:                   sub, rsp, 32                     
+// 38:                   mov, r10, .test.test_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
+// 39:                   mov, [rcx], r10                ; =
+rex(4c)op(89)modR/M(11)
+// 40:                   sub, rsp, 32                   
 rex(48)op(83)modR/M(ec)i8(20)
-// 40:                   call, .test.test.cctor           ; (call label)
-op(e8)co32(00-00-00-00)
-// 41:                   add, rsp, 32                     
+// 41:                   call, .test.test.cctor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 42:                   add, rsp, 32                   
 rex(48)op(83)modR/M(c4)i8(20)
-// 42:                   ret                              
+// 43:                   ret                            
 op(c3)
-// 45: .test.test_sdtor: 
-// 46:                   mov, [rcx], .test.test_vtbl_inst ; =
-rex(48)op(c7)modR/M(01)i32(00-00-00-00)
-// 47:                   sub, rsp, 32                     
+// 46: .test.test_sdtor: 
+// 47:                   mov, r10, .test.test_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
+// 48:                   mov, [rcx], r10                ; =
+rex(4c)op(89)modR/M(11)
+// 49:                   sub, rsp, 32                   
 rex(48)op(83)modR/M(ec)i8(20)
-// 48:                   call, .test.test.cdtor           ; (call label)
-op(e8)co32(00-00-00-00)
-// 49:                   add, rsp, 32                     
+// 50:                   call, .test.test.cdtor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 51:                   add, rsp, 32                   
 rex(48)op(83)modR/M(c4)i8(20)
-// 50:                   sub, rsp, 32                     
+// 52:                   sub, rsp, 32                   
 rex(48)op(83)modR/M(ec)i8(20)
-// 51:                   call, .sht.cons.program_sdtor    ; (call label)
-op(e8)co32(00-00-00-00)
-// 52:                   add, rsp, 32                     
+// 53:                   call, .sht.cons.program_sdtor  ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 54:                   add, rsp, 32                   
 rex(48)op(83)modR/M(c4)i8(20)
-// 53:                   ret                              
+// 55:                   ret                            
 op(c3)

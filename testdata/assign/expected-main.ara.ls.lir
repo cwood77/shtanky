@@ -12,7 +12,7 @@
 0 <reserveLocal> $a0/24                             ;;; a
 0 <precall>      
 0 call           ~rval2/0, @.assign.A_sctor/0, $a/0 ;;; (call label)
-0 mov            [~a+16]/0, @7/0                    ;;; =
+0 mov            [~a+16]/0, @7/1                    ;;; =
 0 <precall>      
 0 call           ~rval3/0, @.assign.A_sdtor/0, $a/0 ;;; (call label)
 
@@ -27,7 +27,7 @@
 0 <precall>      
 0 call           ~rval6/0, @.assign.A_sctor/0, $wrong/0 ;;; (call label)
 0 mov            ~x0/0, [~wrong+16]/0                   ;;; fieldaccess: owner of x
-0 mov            [~x0+16]/0, @7/0                       ;;; =
+0 mov            [~x0+16]/0, @7/1                       ;;; =
 0 <precall>      
 0 call           ~rval7/0, @.assign.A_sdtor/0, $wrong/0 ;;; (call label)
 

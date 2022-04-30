@@ -16,12 +16,12 @@
 30 <exitFunc>      
 
 ----- start stream .sht.cons.stdout.printLn
-10 <selectSegment> @code/0                            
-20 <enterFunc>     ~rval2/0, $self2/0, $msg0/0        ;;; .sht.cons.stdout.printLn
-30 <precall>       @totalStackSize/32                 
-40 mov             ~/0, @1/0                          ;;; shape:hoist imm from call
-50 call            ~rval3/0, @._osCall/0, ~/0, $msg/0 ;;; (call label)
-60 <postcall>      @totalStackSize/32                 
+10 <selectSegment> @code/0                             
+20 <enterFunc>     ~rval2/0, $self2/0, $msg0/0         ;;; .sht.cons.stdout.printLn
+30 <precall>       @totalStackSize/32                  
+40 mov             ~t/1, @1/1                          ;;; shape:hoist imm from call
+50 call            ~rval3/0, @._osCall/0, ~t/1, $msg/0 ;;; (call label)
+60 <postcall>      @totalStackSize/32                  
 70 <exitFunc>      
 
 ----- start stream .sht.cons.stdout.cctor

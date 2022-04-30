@@ -18,7 +18,7 @@
 40  <precall>        @totalStackSize/32                 
 50  call             ~rval2/0, @.assign.A_sctor/0, $a/0 ;;; (call label)
 60  <postcall>       @totalStackSize/32                 
-70  mov              [~a+16]/0, @7/0                    ;;; =
+70  mov              [~a+16]/0, @7/1                    ;;; =
 80  <precall>        @totalStackSize/32                 
 90  call             ~rval3/0, @.assign.A_sdtor/0, $a/0 ;;; (call label)
 100 <postcall>       @totalStackSize/32                 
@@ -40,7 +40,7 @@
 50  call             ~rval6/0, @.assign.A_sctor/0, $wrong/0 ;;; (call label)
 60  <postcall>       @totalStackSize/32                     
 70  mov              ~x0/0, [~wrong+16]/0                   ;;; fieldaccess: owner of x
-80  mov              [~x0+16]/0, @7/0                       ;;; =
+80  mov              [~x0+16]/0, @7/1                       ;;; =
 90  <precall>        @totalStackSize/32                     
 100 call             ~rval7/0, @.assign.A_sdtor/0, $wrong/0 ;;; (call label)
 110 <postcall>       @totalStackSize/32                     

@@ -130,10 +130,10 @@ std::string lexorBase::getTokenName(size_t t)
       return m_lexemeDict[t];
 }
 
-__int64 lexorBase::getLexemeInt() const
+__int64 lexorBase::getLexemeInt(const std::string& str)
 {
    __int64 v = 0;
-   ::sscanf(m_state.lexeme.c_str(),"%" PRIi64,&v);
+   ::sscanf(str.c_str(),"%" PRIi64,&v);
    return v;
 }
 

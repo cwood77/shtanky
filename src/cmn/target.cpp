@@ -94,7 +94,7 @@ asmArgInfo::asmArgInfo()
 argTypes asmArgInfo::computeArgType()
 {
    if(flags & kLabel)
-      return kI32; // assume a rip-rel offset - TODO should be M64
+      return kM64; // labels are really memory locations
 
    else if(flags & kImm8)
       return kI8;

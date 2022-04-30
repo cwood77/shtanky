@@ -2,6 +2,6 @@
 _intdata(00-00-00-00,00-00-00-00)
 // 5: ._osCall:
 // 6:    call, ._osCall_impl
-op(e8)co32(00-00-00-00)
+op(ff)modR/M(15)co32(00-00-00-00)
 // 7:    ret
 op(c3)

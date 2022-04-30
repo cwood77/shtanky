@@ -32,23 +32,25 @@
 
 .seg code         
 .test.test_sctor: 
-                  sub, rsp, 32                     
-                  call, .sht.cons.program_sctor    ; (call label)
-                  add, rsp, 32                     
-                  mov, [rcx], .test.test_vtbl_inst ; =
-                  sub, rsp, 32                     
-                  call, .test.test.cctor           ; (call label)
-                  add, rsp, 32                     
-                  ret                              
+                  sub, rsp, 32                   
+                  call, .sht.cons.program_sctor  ; (call label)
+                  add, rsp, 32                   
+                  mov, r10, .test.test_vtbl_inst ; codeshape decomp
+                  mov, [rcx], r10                ; =
+                  sub, rsp, 32                   
+                  call, .test.test.cctor         ; (call label)
+                  add, rsp, 32                   
+                  ret                            
 
 .seg code         
 .test.test_sdtor: 
-                  mov, [rcx], .test.test_vtbl_inst ; =
-                  sub, rsp, 32                     
-                  call, .test.test.cdtor           ; (call label)
-                  add, rsp, 32                     
-                  sub, rsp, 32                     
-                  call, .sht.cons.program_sdtor    ; (call label)
-                  add, rsp, 32                     
-                  ret                              
+                  mov, r10, .test.test_vtbl_inst ; codeshape decomp
+                  mov, [rcx], r10                ; =
+                  sub, rsp, 32                   
+                  call, .test.test.cdtor         ; (call label)
+                  add, rsp, 32                   
+                  sub, rsp, 32                   
+                  call, .sht.cons.program_sdtor  ; (call label)
+                  add, rsp, 32                   
+                  ret                            
 

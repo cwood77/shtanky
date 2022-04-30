@@ -88,67 +88,73 @@
 
 .seg code        
 .assign.A_sctor: 
-                 sub, rsp, 32                    
-                 call, .sht.core.object_sctor    ; (call label)
-                 add, rsp, 32                    
-                 mov, [rcx], .assign.A_vtbl_inst ; =
-                 sub, rsp, 32                    
-                 call, .assign.A.cctor           ; (call label)
-                 add, rsp, 32                    
-                 ret                             
+                 sub, rsp, 32                  
+                 call, .sht.core.object_sctor  ; (call label)
+                 add, rsp, 32                  
+                 mov, r10, .assign.A_vtbl_inst ; codeshape decomp
+                 mov, [rcx], r10               ; =
+                 sub, rsp, 32                  
+                 call, .assign.A.cctor         ; (call label)
+                 add, rsp, 32                  
+                 ret                           
 
 .seg code        
 .assign.A_sdtor: 
-                 mov, [rcx], .assign.A_vtbl_inst ; =
-                 sub, rsp, 32                    
-                 call, .assign.A.cdtor           ; (call label)
-                 add, rsp, 32                    
-                 sub, rsp, 32                    
-                 call, .sht.core.object_sdtor    ; (call label)
-                 add, rsp, 32                    
-                 ret                             
+                 mov, r10, .assign.A_vtbl_inst ; codeshape decomp
+                 mov, [rcx], r10               ; =
+                 sub, rsp, 32                  
+                 call, .assign.A.cdtor         ; (call label)
+                 add, rsp, 32                  
+                 sub, rsp, 32                  
+                 call, .sht.core.object_sdtor  ; (call label)
+                 add, rsp, 32                  
+                 ret                           
 
 .seg code        
 .assign.B_sctor: 
-                 sub, rsp, 32                    
-                 call, .sht.core.object_sctor    ; (call label)
-                 add, rsp, 32                    
-                 mov, [rcx], .assign.B_vtbl_inst ; =
-                 sub, rsp, 32                    
-                 call, .assign.B.cctor           ; (call label)
-                 add, rsp, 32                    
-                 ret                             
+                 sub, rsp, 32                  
+                 call, .sht.core.object_sctor  ; (call label)
+                 add, rsp, 32                  
+                 mov, r10, .assign.B_vtbl_inst ; codeshape decomp
+                 mov, [rcx], r10               ; =
+                 sub, rsp, 32                  
+                 call, .assign.B.cctor         ; (call label)
+                 add, rsp, 32                  
+                 ret                           
 
 .seg code        
 .assign.B_sdtor: 
-                 mov, [rcx], .assign.B_vtbl_inst ; =
-                 sub, rsp, 32                    
-                 call, .assign.B.cdtor           ; (call label)
-                 add, rsp, 32                    
-                 sub, rsp, 32                    
-                 call, .sht.core.object_sdtor    ; (call label)
-                 add, rsp, 32                    
-                 ret                             
+                 mov, r10, .assign.B_vtbl_inst ; codeshape decomp
+                 mov, [rcx], r10               ; =
+                 sub, rsp, 32                  
+                 call, .assign.B.cdtor         ; (call label)
+                 add, rsp, 32                  
+                 sub, rsp, 32                  
+                 call, .sht.core.object_sdtor  ; (call label)
+                 add, rsp, 32                  
+                 ret                           
 
 .seg code                   
 .assign.assignTester_sctor: 
-                            sub, rsp, 32                               
-                            call, .sht.cons.program_sctor              ; (call label)
-                            add, rsp, 32                               
-                            mov, [rcx], .assign.assignTester_vtbl_inst ; =
-                            sub, rsp, 32                               
-                            call, .assign.assignTester.cctor           ; (call label)
-                            add, rsp, 32                               
-                            ret                                        
+                            sub, rsp, 32                             
+                            call, .sht.cons.program_sctor            ; (call label)
+                            add, rsp, 32                             
+                            mov, rcx, .assign.assignTester_vtbl_inst ; codeshape decomp
+                            mov, [rcx], rax                          ; =
+                            sub, rsp, 32                             
+                            call, .assign.assignTester.cctor         ; (call label)
+                            add, rsp, 32                             
+                            ret                                      
 
 .seg code                   
 .assign.assignTester_sdtor: 
-                            mov, [rcx], .assign.assignTester_vtbl_inst ; =
-                            sub, rsp, 32                               
-                            call, .assign.assignTester.cdtor           ; (call label)
-                            add, rsp, 32                               
-                            sub, rsp, 32                               
-                            call, .sht.cons.program_sdtor              ; (call label)
-                            add, rsp, 32                               
-                            ret                                        
+                            mov, rax, .assign.assignTester_vtbl_inst ; codeshape decomp
+                            mov, [rcx], r10                          ; =
+                            sub, rsp, 32                             
+                            call, .assign.assignTester.cdtor         ; (call label)
+                            add, rsp, 32                             
+                            sub, rsp, 32                             
+                            call, .sht.cons.program_sdtor            ; (call label)
+                            add, rsp, 32                             
+                            ret                                      
 

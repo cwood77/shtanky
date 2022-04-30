@@ -16,16 +16,19 @@ class lirTransform {
 public:
    virtual ~lirTransform();
    virtual void runStreams(lirStreams& lir);
-   virtual void runStream(lirStream& s);
+   void runStream(lirStream& s);
 
 protected:
    lirTransform() : m_pCurrStream(NULL) {}
+
+   virtual void _runStream(lirStream& s);
    virtual void runInstr(lirInstr& i);
    virtual void runArg(lirInstr& i, lirArg& a) {}
 
    void scheduleInjectBefore(lirInstr& noob, lirInstr& before);
    void scheduleInjectAfter(lirInstr& noob, lirInstr& after);
    void scheduleAppend(lirInstr& noob);
+   void scheduleVarBind(lirInstr& noob, lirArg& arg, varTable& v, size_t storage);
 
    lirStream& getCurrentStream() { return *m_pCurrStream; }
 
@@ -61,6 +64,20 @@ private:
    private:
       lirInstr *m_pNoob;
       lirStream& m_s;
+   };
+
+   class varBindChange : public iChange {
+   public:
+      varBindChange(lirInstr& noob, lirArg& arg, varTable& v, size_t storage)
+      : m_i(noob), m_a(arg), m_v(v), m_stor(storage) {}
+
+      virtual void apply();
+
+   private:
+      lirInstr& m_i;
+      lirArg& m_a;
+      varTable& m_v;
+      size_t m_stor;
    };
 
    void applyChanges();
@@ -104,7 +121,7 @@ private:
 //
 class lirPairedInstrDecomposition : public lirTransform {
 protected:
-   virtual void runStream(lirStream& s);
+   virtual void _runStream(lirStream& s);
    virtual void runInstr(lirInstr& i);
 };
 
@@ -120,7 +137,7 @@ public:
    lirNumberingTransform() : m_next(10) {}
 
 protected:
-   virtual void runStream(lirStream& s);
+   virtual void _runStream(lirStream& s);
    virtual void runInstr(lirInstr& i);
 
 private:
@@ -180,7 +197,7 @@ private:
       std::vector<cmn::tgt::argTypes>& retryArgs,
       std::set<size_t>& changedIndicies);
 
-   bool isWriteOnly(const cmn::tgt::instrInfo& info, size_t idx);
+   bool isReadOnly(const cmn::tgt::instrInfo& info, size_t idx);
    bool isMemory(cmn::tgt::argTypes a);
    cmn::tgt::argTypes makeRegister(cmn::tgt::argTypes a);
    bool isStackFramePtrInUse(

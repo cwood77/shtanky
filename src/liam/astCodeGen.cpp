@@ -1,4 +1,5 @@
 #include "../cmn/fmt.hpp"
+#include "../cmn/lexor.hpp"
 #include "../cmn/obj-fmt.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/throw.hpp"
@@ -243,9 +244,10 @@ void astCodeGen::visit(cmn::boolLiteralNode& n)
 
 void astCodeGen::visit(cmn::intLiteralNode& n)
 {
-   auto pA = new lirArgConst(
-      n.lexeme,
-      cmn::type::gNodeCache->demand(n).getPseudoRefSize());
+   // get the exact size, so codeshape is as accurate as possible
+   size_t size = cmn::lexorBase::getLexemeIntSize(cmn::lexorBase::getLexemeInt(n.lexeme));
+
+   auto pA = new lirArgConst(n.lexeme,size);
 
    m_b.forNode(n)
       .returnToParent(*pA);
