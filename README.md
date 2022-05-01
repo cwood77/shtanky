@@ -79,10 +79,10 @@ By milestone
 - [x] stemu callbacks - stemu side
 - [x] get stemu passing (e.g. study virtual calls)
 - [ ] <enterfunc> is double-allocating stack space
-- [ ] setup an ATS
+- [x] setup an ATS
 
 ### Hello World MVP
-- [O] code shape transform
+- [x] code shape transform
 - [ ] handle volatile regs (i.e. regs must be preserved around calls if in use)
 - [ ] impl frame ptrs
 

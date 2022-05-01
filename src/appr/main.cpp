@@ -30,7 +30,11 @@ int main(int argc, const char *argv[])
       .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
       .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
       .expectLiamOf(".\\testdata\\assign\\.target.ara")
-//      .skipLinkToWorkaroundHacks()
+   ;
+
+   shtasmTest(is,".\\testdata\\shtemu\\basic.asm")
+      .wholeApp(".\\testdata\\shtemu\\basic.app")
+      .emulateAndCheckOutput()
    ;
 
    // ------------------ tests end ------------------

@@ -32,6 +32,7 @@ public:
    std::ostream& stream() { return m_stream; }
    std::string reserveLabel(const std::string& hint) { return m_pState->reserveLabel(hint); }
    void silenceTestExeIf();
+   void captureTestExeOutIf(const std::string& log);
 
    void playback(std::ostream& s) { s << m_stream.str(); }
 
@@ -99,7 +100,10 @@ public:
    doInstr& usingApp(const std::string& path);
    doInstr& withArg(const std::string& arg);
    doInstr& withArgs(const std::list<std::string>& args);
-   doInstr& thenCheckReturnValue(const std::string& errorHint);
+   doInstr& thenCheckReturnValue(const std::string& errorHint)
+   { return thenCheckReturnValueAndCaptureOutput("",errorHint); }
+   doInstr& thenCheckReturnValueAndCaptureOutput(
+      const std::string& log, const std::string& errorHint);
 };
 
 class compareInstr : public instr {

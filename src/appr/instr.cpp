@@ -1,6 +1,7 @@
 #include "../cmn/trace.hpp"
 #include "instr.hpp"
 #include "scriptWriter.hpp"
+#include <fstream>
 
 scriptState::scriptState()
 : m_silenceExes(true)
@@ -32,6 +33,23 @@ void scriptStream::silenceTestExeIf()
       stream() << " >nul 2>&1" << std::endl;
    else
       stream() << std::endl;
+}
+
+void scriptStream::captureTestExeOutIf(const std::string& log)
+{
+   if(m_pState->shouldSilenceExes())
+      stream() << " >" << log << " 2>&1" << std::endl;
+   else
+   {
+      stream() << std::endl;
+
+      // if we aren't capturing the log, then we don't want false positives later
+      // should somebody diff the log and see it's unchanged.
+      // so we'll change it just in case.
+      std::ofstream l(log.c_str());
+      ::srand(::time(NULL));
+      l << "not captured " << ::rand() << std::endl;
+   }
 }
 
 scriptStream& script::get(size_t i)
@@ -76,12 +94,15 @@ doInstr& doInstr::withArgs(const std::list<std::string>& args)
    return *this;
 }
 
-doInstr& doInstr::thenCheckReturnValue(const std::string& errorHint)
+doInstr& doInstr::thenCheckReturnValueAndCaptureOutput(const std::string& log, const std::string& errorHint)
 {
    auto& cmds = s().get(kStreamCmd);
    auto& _s = cmds.stream();
 
-   cmds.silenceTestExeIf();
+   if(log.empty())
+      cmds.silenceTestExeIf();
+   else
+      cmds.captureTestExeOutIf(log);
 
    auto passLbl = cmds.reserveLabel("pass");
    auto failLbl = cmds.reserveLabel("fail");

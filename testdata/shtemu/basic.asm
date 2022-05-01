@@ -1,5 +1,4 @@
 .seg data
-._osCall_impl: .data, <qw> 0
 helloWorld: .data, "hello world" <b> 0
 
 .seg code

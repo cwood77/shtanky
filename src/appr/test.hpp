@@ -12,7 +12,8 @@ class instrStream;
 
 class shlinkTest {
 public:
-   shlinkTest(instrStream& s, const std::string& outFile) : m_stream(s), m_outFile(outFile) {}
+   shlinkTest(instrStream& s, const std::string& outFile)
+   : m_stream(s), m_outFile(outFile) {}
 
    shlinkTest& withObject(const std::string& oFile);
 
@@ -24,36 +25,47 @@ private:
    std::list<std::string> m_objFiles;
 };
 
-class araceliTest {
+class testBase {
 public:
-   araceliTest(instrStream& s, const std::string& folder);
-   ~araceliTest();
+   virtual ~testBase();
 
-   araceliTest& wholeApp();
-   araceliTest& expectLiamOf(const std::string& path);
+protected:
+   explicit testBase(instrStream& s) : m_stream(s) {}
 
-   // because shlink seeds the layout with hardcoded symbols (e.g. .test.test())
-   // while are inappropriate for some tests, skip link until this is fixed
-   araceliTest& skipLinkToWorkaroundHacks();
+   virtual void setupAutoShlink(const std::string& appPath);
+   void emulateAndCheckOutput();
+
+   instrStream& m_stream;
+   std::unique_ptr<shlinkTest> m_pLTest;
 
 private:
-   instrStream& m_stream;
+   std::string m_appPath;
+};
+
+class araceliTest : public testBase {
+public:
+   araceliTest(instrStream& s, const std::string& folder);
+
+   araceliTest& wholeApp() { setupAutoShlink(m_folder + "\\.app"); return *this; }
+   araceliTest& expectLiamOf(const std::string& path);
+
+private:
    const std::string m_folder;
-   std::unique_ptr<shlinkTest> m_pLTest;
 };
 
 // a test that's neither the top (araceli) nor bottom (shlink)
-class intermediateTest {
+class intermediateTest : public testBase {
 public:
    virtual void andLink(shlinkTest& t) = 0;
 
 protected:
-   explicit intermediateTest(instrStream& s) : m_stream(s) {}
+   explicit intermediateTest(instrStream& s) : testBase(s) {}
+
+   virtual void setupAutoShlink(const std::string& appPath)
+   { testBase::setupAutoShlink(appPath); andLink(*m_pLTest.get()); }
 
    void recordFileForNextStage(const std::string& f) { m_filesForNextStage.push_back(f); }
    const std::list<std::string>& getFilesForNextStage() const { return m_filesForNextStage; }
-
-   instrStream& m_stream;
 
 private:
    std::list<std::string> m_filesForNextStage;
@@ -69,6 +81,12 @@ public:
 class shtasmTest : public intermediateTest {
 public:
    shtasmTest(instrStream& s, const std::string& file);
+
+   shtasmTest& wholeApp(const std::string& appPath)
+   { setupAutoShlink(appPath); return *this; }
+
+   shtasmTest& emulateAndCheckOutput()
+   { testBase::emulateAndCheckOutput(); return *this; }
 
    virtual void andLink(shlinkTest& t);
 };
