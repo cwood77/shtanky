@@ -12,6 +12,7 @@ SCRIPTLIB = scriptlib/xcopy-deploy.bat
 debug: \
 	dirs \
 	$(OUT_DIR)/debug/appr.exe \
+	$(OUT_DIR)/debug/philemon.exe \
 	$(OUT_DIR)/debug/araceli.exe \
 	$(OUT_DIR)/debug/liam.exe \
 	$(OUT_DIR)/debug/shtasm.exe \
@@ -22,6 +23,7 @@ debug: \
 all: \
 	debug \
 	$(OUT_DIR)/release/appr.exe \
+	$(OUT_DIR)/release/philemon.exe \
 	$(OUT_DIR)/release/araceli.exe \
 	$(OUT_DIR)/release/liam.exe \
 	$(OUT_DIR)/release/shtasm.exe \
@@ -34,6 +36,7 @@ clean:
 dirs:
 	@mkdir -p $(OUT_DIR)/debug
 	@mkdir -p $(OBJ_DIR)/debug/appr
+	@mkdir -p $(OBJ_DIR)/debug/philemon
 	@mkdir -p $(OBJ_DIR)/debug/araceli
 	@mkdir -p $(OBJ_DIR)/debug/liam
 	@mkdir -p $(OBJ_DIR)/debug/shtasm
@@ -42,6 +45,7 @@ dirs:
 	@mkdir -p $(OBJ_DIR)/debug/cmn
 	@mkdir -p $(OUT_DIR)/release
 	@mkdir -p $(OBJ_DIR)/release/appr
+	@mkdir -p $(OBJ_DIR)/release/philemon
 	@mkdir -p $(OBJ_DIR)/release/araceli
 	@mkdir -p $(OBJ_DIR)/release/liam
 	@mkdir -p $(OBJ_DIR)/release/shtasm
@@ -124,6 +128,32 @@ $(OUT_DIR)/release/appr.exe: $(APPR_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
 	@$(LINK_CMD) -o $@ $(APPR_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
 
 $(APPR_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# philemon
+
+PHILEMON_SRC = \
+	src/philemon/main.cpp \
+
+PHILEMON_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(PHILEMON_SRC)))
+
+$(OUT_DIR)/debug/philemon.exe: $(PHILEMON_DEBUG_OBJ) $(OUT_DIR)/debug/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(PHILEMON_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lcmn
+
+$(PHILEMON_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+PHILEMON_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(PHILEMON_SRC)))
+
+$(OUT_DIR)/release/philemon.exe: $(PHILEMON_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(PHILEMON_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
+
+$(PHILEMON_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
@@ -288,7 +318,7 @@ $(OUT_DIR)/debug/shtemu.exe: $(SHTEMU_DEBUG_OBJ) $(OUT_DIR)/debug/cmn.lib
 
 $(SHTEMU_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
 	$(info $< --> $@)
-	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) -fpermissive $< -o $@
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
 
 SHTEMU_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(SHTEMU_SRC)))
 
@@ -298,4 +328,4 @@ $(OUT_DIR)/release/shtemu.exe: $(SHTEMU_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
 
 $(SHTEMU_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
-	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) -fpermissive $< -o $@
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
