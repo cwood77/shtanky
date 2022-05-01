@@ -1,0 +1,127 @@
+// basic APIs for the OS
+
+// global service locator
+// -------------------------------------------------------------------------------------
+
+interface iService {}
+
+// idea here is to limit (or impersonate) services based on requester
+// this isn't intended to be some defence against malice, rather a reminder to respect
+// architectural boundaries
+class iServiceCreds {
+};
+
+class iServiceProvider {
+
+   generic<T:iService> demandService(creds : iServiceCreds) : T;
+
+}
+
+class serviceProvider : iServiceProvider {
+
+   generic<T:iService> demandService(creds : iServiceCreds) : T
+   {
+      return _table[type<T>:name()];
+   }
+
+   private _table : dict<str,iService>;
+
+}
+
+class mother : iServiceProvider {
+
+   static get() : mother;
+
+}
+
+interface iImmortalServiceRegistrar : iService {
+
+   generic<T:iService> publishImmortal(service : T) : void;
+
+}
+
+interface iTransientServiceRegistrar : iService {
+
+   generic<T:iService> publishTransientService(service : transientServiceProxy<T>) : void;
+
+}
+
+// phased load/unload
+interface iPart { // something that is loaded later, and unloaded early
+}
+
+generic<T>
+class transientServiceProxy : T {
+
+   getSource() : iPart;
+
+   disable() : void;
+
+   _inner : T;
+
+}
+
+// driver management
+// -------------------------------------------------------------------------------------
+
+interface iDriverManager {
+
+   load() : void;
+   unload() : void;
+
+}
+
+class pciDriverManager : iDriverManager {
+
+   observerChanges() : void;
+
+}
+
+// driver connectivity
+// -------------------------------------------------------------------------------------
+
+interface iDriverRegistrarService : iService {
+
+   publish(driver : iDriverFactory, addr : iDeviceAddress) : void
+
+}
+
+class reflectionDriverRegistrar {}
+
+interface iDeviceAddress { // PCIe, etc.
+
+}
+
+interface iDriverFactory {
+
+   identity() : str;
+
+   match(addr : iDeviceAddress) : int;
+
+   bindInstance(mother : iServiceProvider, add : iDeviceAddress) : iDriver;
+
+}
+
+interface iDriver : iPart {
+
+   enable(mode : bool) : void;
+
+   unbind() : void;
+
+   control(code : int, payload : ptr) : void;
+
+}
+
+// display driver
+// -------------------------------------------------------------------------------------
+
+class textDriver {}
+
+interface iTextOut : iService {
+
+   write(text : str, [capture] site : str) : void;
+   writeLn(text : str, [capture] site: str) : void;
+
+}
+
+instantiate transientServiceProxy<iTextOut>;
