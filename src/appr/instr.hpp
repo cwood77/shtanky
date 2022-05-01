@@ -18,9 +18,13 @@ public:
    void setSilentExes(bool v) { m_silenceExes = v; }
    bool shouldSilenceExes() const { return m_silenceExes; }
 
+   void incrementTotalProgress() { m_progressCnt++; }
+   size_t getTotalProgressSize() const { return m_progressCnt; }
+
 private:
    std::set<std::string> m_labels;
    bool m_silenceExes;
+   size_t m_progressCnt;
 };
 
 class scriptStream {
@@ -55,6 +59,8 @@ enum {
 class script {
 public:
    explicit script(bool silentExes) { m_state.setSilentExes(silentExes); }
+
+   size_t getTotalProgressSize() const { return m_state.getTotalProgressSize(); }
 
    scriptStream& get(size_t i);
 

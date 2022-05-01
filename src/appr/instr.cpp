@@ -4,7 +4,7 @@
 #include <fstream>
 
 scriptState::scriptState()
-: m_silenceExes(true)
+: m_silenceExes(true), m_progressCnt(0)
 {
    scriptWriter::populateReservedLabels(*this);
 }
@@ -56,6 +56,7 @@ void scriptStream::updateProgress()
 {
    if(!m_pState->shouldSilenceExes()) return;
    stream() << "echo | set /P=\".\"" << std::endl;
+   m_pState->incrementTotalProgress();
 }
 
 void scriptStream::stopProgressDisplayForOutput()
