@@ -34,6 +34,9 @@ public:
    void silenceTestExeIf();
    void captureTestExeOutIf(const std::string& log);
 
+   void updateProgress();
+   void stopProgressDisplayForOutput();
+
    void playback(std::ostream& s) { s << m_stream.str(); }
 
 private:

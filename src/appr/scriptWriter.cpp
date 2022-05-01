@@ -28,7 +28,10 @@ void scriptWriter::run(script& s, std::ostream& out, bool skipChecks)
    s.get(kStreamClean).playback(out);
    s.get(kStreamCmd).playback(out);
    if(!skipChecks)
+   {
+      s.get(kStreamCheck).stopProgressDisplayForOutput();
       s.get(kStreamCheck).playback(out);
+   }
    out << "echo pass" << std::endl;
    out << "goto end" << std::endl << std::endl;
 

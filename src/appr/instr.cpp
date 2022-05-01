@@ -52,6 +52,18 @@ void scriptStream::captureTestExeOutIf(const std::string& log)
    }
 }
 
+void scriptStream::updateProgress()
+{
+   if(!m_pState->shouldSilenceExes()) return;
+   stream() << "echo | set /P=\".\"" << std::endl;
+}
+
+void scriptStream::stopProgressDisplayForOutput()
+{
+   if(!m_pState->shouldSilenceExes()) return;
+   stream() << "echo." << std::endl;
+}
+
 scriptStream& script::get(size_t i)
 {
    auto& s = m_streams[i];
@@ -76,6 +88,7 @@ instrStream::~instrStream()
 
 doInstr& doInstr::usingApp(const std::string& path)
 {
+   s().get(kStreamCmd).updateProgress();
    s().get(kStreamCmd).stream() << "\"" << path << "\" ";
    return *this;
 }
@@ -110,6 +123,7 @@ doInstr& doInstr::thenCheckReturnValueAndCaptureOutput(const std::string& log, c
    _s << "goto " << passLbl << std::endl;
 
    _s << ":" << failLbl << std::endl;
+   cmds.stopProgressDisplayForOutput();
    _s << "echo FAIL: nonzero exit code doing " << errorHint << std::endl;
    _s << "goto end" << std::endl;
 
@@ -123,6 +137,7 @@ compareInstr& compareInstr::withControl(const std::string& path)
 {
    {
       auto& ss = s().get(kStreamCheck);
+      ss.updateProgress();
       ss.stream() << "fc /b \"" << path << "\" ";
    }
 
@@ -169,6 +184,7 @@ compareInstr& compareInstr::because(const std::string& reason)
       ss.stream() << "goto " << passLbl << std::endl;
 
       ss.stream() << ":" << failLbl << std::endl;
+      ss.stopProgressDisplayForOutput();
       ss.stream() << "echo FAIL: files are different for " << reason << std::endl;
       ss.stream() << "echo       aborting run prematurely" << std::endl;
       ss.stream() << "goto end" << std::endl;
