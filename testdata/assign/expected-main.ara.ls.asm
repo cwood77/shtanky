@@ -140,7 +140,7 @@
                             call, .sht.cons.program_sctor            ; (call label)
                             add, rsp, 32                             
                             mov, r10, .assign.assignTester_vtbl_inst ; codeshape decomp
-                            mov, [rcx], rax                          ; =
+                            mov, [rcx], r10                          ; =
                             sub, rsp, 32                             
                             call, .assign.assignTester.cctor         ; (call label)
                             add, rsp, 32                             

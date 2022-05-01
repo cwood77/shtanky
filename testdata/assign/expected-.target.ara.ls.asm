@@ -60,7 +60,7 @@
                              call, .sht.core.object_sctor              ; (call label)
                              add, rsp, 32                              
                              mov, r10, .assign.consoleTarget_vtbl_inst ; codeshape decomp
-                             mov, [rcx], rax                           ; =
+                             mov, [rcx], r10                           ; =
                              sub, rsp, 32                              
                              call, .assign.consoleTarget.cctor         ; (call label)
                              add, rsp, 32                              

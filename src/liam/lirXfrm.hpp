@@ -162,8 +162,14 @@ private:
 // requirements; they aren't actually passed at a machine code level.  These need to be
 // stripped before asm gen.
 class spuriousVarStripper : public lirTransform {
+public:
+   explicit spuriousVarStripper(varTable& v) : m_v(v) {}
+
 protected:
    virtual void runInstr(lirInstr& i);
+
+private:
+   varTable& m_v;
 };
 
 class codeShapeTransform : public lirTransform {

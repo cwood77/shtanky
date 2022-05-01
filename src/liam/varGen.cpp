@@ -19,10 +19,12 @@ size_t var::getSize()
    return (*refs.begin()->second.begin())->getSize();
 }
 
-void var::unbindArg(lirInstr& i, lirArg& a)
+// remove all references to the argument but keep storage (and orderNums).
+// keeping storage is important for transforms that run after regalloc.
+// otherwise, should you unbind an instruction that dictated storage (e.g. a call)
+// _all_ other usages of the varible would also lose storage
+void var::unbindArgButKeepStorage(lirInstr& i, lirArg& a)
 {
-   size_t stor = getStorageFor(i.orderNum,a);
-
    // refs
    {
       auto& s = refs[i.orderNum];
@@ -39,20 +41,7 @@ void var::unbindArg(lirInstr& i, lirArg& a)
       if(s.size() == 0)
          refs.erase(i.orderNum);
    }
-   // instrToStorage
-   {
-      auto& s = instrToStorageMap[i.orderNum];
-      s.erase(stor);
-      if(s.size() == 0)
-         instrToStorageMap.erase(i.orderNum);
-   }
-   // storageToInstr
-   {
-      auto& s = storageToInstrMap[stor];
-      s.erase(i.orderNum);
-      if(s.size() == 0)
-         storageToInstrMap.erase(stor);
-   }
+
    // disAmbig
    {
       storageDisambiguators.erase(&a);
@@ -100,8 +89,8 @@ size_t var::getStorageFor(size_t orderNum, lirArg& a)
 
    auto stors = getStorageAt(orderNum);
    if(stors.size() != 1)
-      cdwTHROW("insane?  somehow arg %s on instr %lld has no storage?",
-         a.getName().c_str(),orderNum);
+      cdwTHROW("insane?  somehow arg %s on instr %lld has %lld storage(s)?",
+         a.getName().c_str(),orderNum,stors.size());
    return *(stors.begin());
 }
 
@@ -233,13 +222,30 @@ var& varTable::demand(lirArg& a)
 
 var *varTable::fetch(lirArg& a)
 {
+   std::vector<var*> ans;
+
    for(auto it=m_vars.begin();it!=m_vars.end();++it)
       for(auto jit=it->second->refs.begin();jit!=it->second->refs.end();++jit)
          for(auto kit=jit->second.begin();kit!=jit->second.end();++kit)
             if(*kit == &a)
-               return it->second;
+               ans.push_back(it->second);
 
-   return NULL;
+   if(ans.size() == 1)
+      return ans[0];
+   else if(ans.size() == 0)
+      return NULL;
+   else
+   {
+      for(auto it=ans.begin();it!=ans.end();++it)
+      {
+         std::string storage = "???";
+         auto jit=(*it)->storageDisambiguators.find(&a);
+         if(jit!=(*it)->storageDisambiguators.end())
+            storage = cmn::fmt("%lld",jit->second);
+         cdwDEBUG("v = '%s', stor=%lld\n",(*it)->name.c_str(),storage.c_str());
+      }
+      cdwTHROW("INSANITY! lirArg %s has %lld variables associated?!",a.getName().c_str(),ans.size());
+   }
 }
 
 } // namespace liam

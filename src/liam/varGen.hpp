@@ -22,7 +22,9 @@ public:
 
    const lirArg& lastArg();
    size_t getSize();
-   void unbindArg(lirInstr& i, lirArg& a);
+
+   // this unbinds the argument, but keeps the storage assignment
+   void unbindArgButKeepStorage(lirInstr& i, lirArg& a);
 
    std::string getImmediateData() { return lastArg().getName(); }
 

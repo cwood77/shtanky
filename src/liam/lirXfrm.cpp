@@ -294,8 +294,13 @@ void spuriousVarStripper::runInstr(lirInstr& i)
       auto *pKeeper = args[1]; // keep only the call ptr
 
       for(auto it=args.begin();it!=args.end();++it)
+      {
          if(*it != pKeeper)
+         {
+            m_v.demand(**it).unbindArgButKeepStorage(i,**it);
             delete *it;
+         }
+      }
 
       args.clear();
       args.push_back(pKeeper);
@@ -379,7 +384,7 @@ void codeShapeTransform::runInstr(lirInstr& i)
    // modify original instruction
    {
       var& origVar = m_v.demand(origArg);
-      origVar.unbindArg(i,origArg);
+      origVar.unbindArgButKeepStorage(i,origArg);
 
       auto *pUpdatedArg = new lirArgTemp(varName,origArg.getSize());
       i.getArgs()[*regOffsets.begin()] = pUpdatedArg;
