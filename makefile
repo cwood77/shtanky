@@ -34,24 +34,26 @@ clean:
 	rm -rf bin
 
 dirs:
-	@mkdir -p $(OUT_DIR)/debug
+	@mkdir -p $(OBJ_DIR)/debug/syzygy
 	@mkdir -p $(OBJ_DIR)/debug/appr
-	@mkdir -p $(OBJ_DIR)/debug/philemon
 	@mkdir -p $(OBJ_DIR)/debug/araceli
-	@mkdir -p $(OBJ_DIR)/debug/liam
-	@mkdir -p $(OBJ_DIR)/debug/shtasm
-	@mkdir -p $(OBJ_DIR)/debug/shlink
-	@mkdir -p $(OBJ_DIR)/debug/shtemu
 	@mkdir -p $(OBJ_DIR)/debug/cmn
-	@mkdir -p $(OUT_DIR)/release
+	@mkdir -p $(OBJ_DIR)/debug/liam
+	@mkdir -p $(OBJ_DIR)/debug/philemon
+	@mkdir -p $(OBJ_DIR)/debug/shlink
+	@mkdir -p $(OBJ_DIR)/debug/shtasm
+	@mkdir -p $(OBJ_DIR)/debug/shtemu
+	@mkdir -p $(OBJ_DIR)/release/syzygy
 	@mkdir -p $(OBJ_DIR)/release/appr
-	@mkdir -p $(OBJ_DIR)/release/philemon
 	@mkdir -p $(OBJ_DIR)/release/araceli
-	@mkdir -p $(OBJ_DIR)/release/liam
-	@mkdir -p $(OBJ_DIR)/release/shtasm
-	@mkdir -p $(OBJ_DIR)/release/shlink
-	@mkdir -p $(OBJ_DIR)/release/shtemu
 	@mkdir -p $(OBJ_DIR)/release/cmn
+	@mkdir -p $(OBJ_DIR)/release/liam
+	@mkdir -p $(OBJ_DIR)/release/philemon
+	@mkdir -p $(OBJ_DIR)/release/shlink
+	@mkdir -p $(OBJ_DIR)/release/shtasm
+	@mkdir -p $(OBJ_DIR)/release/shtemu
+	@mkdir -p $(OUT_DIR)/debug
+	@mkdir -p $(OUT_DIR)/release
 
 .PHONY: debug all clean dirs
 
@@ -132,6 +134,39 @@ $(APPR_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
 # ----------------------------------------------------------------------
+# syzygy
+
+SYZYGY_SRC = \
+	src/araceli/consoleAppTarget.cpp \
+	src/araceli/lexor.cpp \
+	src/araceli/loader.cpp \
+	src/araceli/metadata.cpp \
+	src/araceli/objectBaser.cpp \
+	src/araceli/projectBuilder.cpp \
+	src/araceli/symbolTable.cpp \
+	src/syzygy/frontend.cpp \
+
+SYZYGY_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SYZYGY_SRC)))
+
+$(OUT_DIR)/debug/syzygy.lib: $(SYZYGY_DEBUG_OBJ)
+	$(info $< --> $@)
+	@ar crs $@ $^
+
+$(SYZYGY_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+SYZYGY_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(SYZYGY_SRC)))
+
+$(OUT_DIR)/release/syzygy.lib: $(SYZYGY_RELEASE_OBJ)
+	$(info $< --> $@)
+	@ar crs $@ $^
+
+$(SYZYGY_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
 # philemon
 
 PHILEMON_SRC = \
@@ -139,9 +174,9 @@ PHILEMON_SRC = \
 
 PHILEMON_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(PHILEMON_SRC)))
 
-$(OUT_DIR)/debug/philemon.exe: $(PHILEMON_DEBUG_OBJ) $(OUT_DIR)/debug/cmn.lib
+$(OUT_DIR)/debug/philemon.exe: $(PHILEMON_DEBUG_OBJ) $(OUT_DIR)/debug/syzygy.lib $(OUT_DIR)/debug/cmn.lib
 	$(info $< --> $@)
-	@$(LINK_CMD) -o $@ $(PHILEMON_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lcmn
+	@$(LINK_CMD) -o $@ $(PHILEMON_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lsyzygy -lcmn
 
 $(PHILEMON_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
 	$(info $< --> $@)
@@ -149,9 +184,9 @@ $(PHILEMON_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
 
 PHILEMON_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(PHILEMON_SRC)))
 
-$(OUT_DIR)/release/philemon.exe: $(PHILEMON_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
+$(OUT_DIR)/release/philemon.exe: $(PHILEMON_RELEASE_OBJ) $(OUT_DIR)/release/syzygy.lib $(OUT_DIR)/release/cmn.lib
 	$(info $< --> $@)
-	@$(LINK_CMD) -o $@ $(PHILEMON_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
+	@$(LINK_CMD) -o $@ $(PHILEMON_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lsyzygy -lcmn
 
 $(PHILEMON_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
@@ -165,28 +200,21 @@ ARACELI_SRC = \
 	src/araceli/batGen.cpp \
 	src/araceli/classInfo.cpp \
 	src/araceli/codegen.cpp \
-	src/araceli/consoleAppTarget.cpp \
 	src/araceli/constHoister.cpp \
 	src/araceli/ctorDtorGenerator.cpp \
 	src/araceli/inheritImplementor.cpp \
-	src/araceli/lexor.cpp \
-	src/araceli/loader.cpp \
 	src/araceli/main.cpp \
 	src/araceli/matryoshkaDecomp.cpp \
-	src/araceli/metadata.cpp \
 	src/araceli/methodMover.cpp \
-	src/araceli/objectBaser.cpp \
-	src/araceli/projectBuilder.cpp \
 	src/araceli/selfDecomposition.cpp \
 	src/araceli/stackClassDecomposition.cpp \
-	src/araceli/symbolTable.cpp \
 	src/araceli/vtableGenerator.cpp \
 
 ARACELI_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(ARACELI_SRC)))
 
-$(OUT_DIR)/debug/araceli.exe: $(ARACELI_DEBUG_OBJ) $(OUT_DIR)/debug/cmn.lib
+$(OUT_DIR)/debug/araceli.exe: $(ARACELI_DEBUG_OBJ) $(OUT_DIR)/debug/syzygy.lib $(OUT_DIR)/debug/cmn.lib
 	$(info $< --> $@)
-	@$(LINK_CMD) -o $@ $(ARACELI_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lcmn
+	@$(LINK_CMD) -o $@ $(ARACELI_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lsyzygy -lcmn
 
 $(ARACELI_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
 	$(info $< --> $@)
@@ -194,9 +222,9 @@ $(ARACELI_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
 
 ARACELI_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(ARACELI_SRC)))
 
-$(OUT_DIR)/release/araceli.exe: $(ARACELI_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
+$(OUT_DIR)/release/araceli.exe: $(ARACELI_RELEASE_OBJ) $(OUT_DIR)/release/syzygy.lib $(OUT_DIR)/release/cmn.lib
 	$(info $< --> $@)
-	@$(LINK_CMD) -o $@ $(ARACELI_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
+	@$(LINK_CMD) -o $@ $(ARACELI_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lsyzygy -lcmn
 
 $(ARACELI_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)

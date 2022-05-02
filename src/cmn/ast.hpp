@@ -46,6 +46,9 @@ class stringLiteralNode;
 class boolLiteralNode;
 class intLiteralNode;
 class structLiteralNode;
+class genericNode;
+class constraintNode;
+class instantiateNode;
 
 class iNodeVisitor {
 public:

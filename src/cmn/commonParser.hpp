@@ -19,7 +19,7 @@ class lexorBase;
 //           | e
 //
 // ------------------------- class
-// <class> ::== <attributes> 'class' <name> <class-bases> '{' <class-members> '}'
+// <class> ::== <generic> <attributes> 'class' <name> <class-bases> '{' <class-members> '}'
 // <class-bases> ::== ':' <name>
 //                  | e
 // <class-members> ::== <method> <class-members>
@@ -28,11 +28,17 @@ class lexorBase;
 // <member-keywords> ::== 'override' <member-keywords>
 //                      | 'private' <member-keywords>
 //                      | e
-// <method> ::== <member-keywords> <name> '(' <name> ':' <type> ')' ':' <type> <body>
+// <method> ::== <generic> <member-keywords> <name> '(' <name> ':' <type> ')' ':' <type> <body>
 //             | e
 // <field> ::== <member-keywords> <name> ':' <type> <field-init> ';'
 // <field-init> ::== '=' <rvalue>
 //                 | e
+//      ** NEW (unimpl'd) **
+// <generic> ::== 'generic<' <constraints> '>'
+//              | e
+// <constraints> ::== <name> ':' <name> <constraints'>
+// <constraints'> ::== ',' <constraints>
+//                   | e
 //
 // ------------------------- global funcs (liam)
 // <const> ::== <name> ':' <type> <field-init> ';'

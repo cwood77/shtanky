@@ -83,10 +83,16 @@ public:
       kSingleQuote,
       kBackslash,
       kForwardslash,
+#endif
       kLessThan,
       kGreaterThan,
+#if 0
       kQuestion,
 #endif
+
+      kGeneric,
+      kInstantiate,
+      kType,
    };
 
    enum {

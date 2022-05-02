@@ -6,19 +6,16 @@
 #include "../cmn/cmdline.hpp"
 #include "../cmn/out.hpp"
 #include "../cmn/trace.hpp"
+#include "../syzygy/frontend.hpp"
 #include "abstractGenerator.hpp"
 #include "batGen.hpp"
 #include "classInfo.hpp"
 #include "codegen.hpp"
-#include "consoleAppTarget.hpp"
 #include "constHoister.hpp"
 #include "ctorDtorGenerator.hpp"
 #include "inheritImplementor.hpp"
 #include "matryoshkaDecomp.hpp"
-#include "metadata.hpp"
 #include "methodMover.hpp"
-#include "objectBaser.hpp"
-#include "projectBuilder.hpp"
 #include "selfDecomposition.hpp"
 #include "stackClassDecomposition.hpp"
 #include "symbolTable.hpp"
@@ -33,37 +30,10 @@ int main(int argc, const char *argv[])
    std::string projectDir = cl.getNextArg(".\\testdata\\test");
    std::string batchBuild = projectDir + "\\.build.bat";
 
-   // setup project / target
-   std::unique_ptr<cmn::araceliProjectNode> pPrj = projectBuilder::create("ca");
-   projectBuilder::addScope(*pPrj.get(),projectDir,/*inProject*/true);
-   consoleAppTarget tgt;
-   tgt.addAraceliStandardLibrary(*pPrj.get());
-   tgt.populateIntrinsics(*pPrj.get());
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
-
-   // initial link to discover and load everything
-   araceli::nodeLinker().linkGraph(*pPrj);
-   cdwVERBOSE("graph after linking ----\n");
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
-
-   // gather metadata
-   metadata md;
-   {
-      nodeMetadataBuilder inner(md);
-      cmn::treeVisitor outer(inner);
-      pPrj->acceptVisitor(outer);
-   }
-
-   // use metadata to generate the target
-   tgt.araceliCodegen(*pPrj,md);
-
-   // inject implied base class
-   { objectBaser v; pPrj->acceptVisitor(v); }
-
-   // subsequent link to update with new target and load more
-   araceli::nodeLinker().linkGraph(*pPrj);
-   cdwVERBOSE("graph after linking ----\n");
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+   // setup project, target, AST; load & link
+   std::unique_ptr<cmn::araceliProjectNode> pPrj;
+   std::unique_ptr<araceli::iTarget> pTgt;
+   syzygy::frontend::run(projectDir,pPrj,pTgt);
 
    // capture class info
    classCatalog cc;
@@ -104,8 +74,8 @@ int main(int argc, const char *argv[])
    // codegen
    araceli::nodeLinker().linkGraph(*pPrj); // relink so codegen makes more fileRefs
    cmn::outBundle out;
-   { codeGen v(tgt,out); pPrj->acceptVisitor(v); }
-   { batGen v(tgt,out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
+   { codeGen v(*pTgt.get(),out); pPrj->acceptVisitor(v); }
+   { batGen v(*pTgt.get(),out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
    out.updateDisk(wr);
 
    return 0;
