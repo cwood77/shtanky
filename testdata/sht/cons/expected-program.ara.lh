@@ -1,35 +1,73 @@
-class .sht.cons.iStream.vtbl {
-   printLn : ptr;
-}
-
 class .sht.cons.iStream {
-   _vtbl : .sht.cons.iStream.vtbl;
-}
-
-func .sht.cons.iStream.ctor() : .sht.cons.iStream;
-
-class .sht.cons.stdout.vtbl {
-   printLn : ptr;
+   _vtbl : .sht.cons.iStream_vtbl;
 }
 
 class .sht.cons.stdout {
-   _vtbl : .sht.cons.stdout.vtbl;
+   _vtbl : .sht.cons.stdout_vtbl;
 }
 
-func .sht.cons.stdout.ctor() : .sht.cons.stdout;
+class .sht.cons.program {
+   _vtbl : .sht.cons.program_vtbl;
+   _out : .sht.cons.iStream;
+}
+
+func .sht.cons.iStream.printLn(
+   self : .sht.cons.iStream,
+   msg : str) : void;
+
+func .sht.cons.iStream.cctor(
+   self : .sht.cons.iStream) : .sht.cons.iStream;
+
+func .sht.cons.iStream.cdtor(
+   self : .sht.cons.iStream) : .sht.cons.iStream;
 
 func .sht.cons.stdout.printLn(
    self : .sht.cons.stdout,
    msg : str) : void;
 
-class .sht.cons.program.vtbl {
+func .sht.cons.stdout.cctor(
+   self : .sht.cons.stdout) : .sht.cons.stdout;
+
+func .sht.cons.stdout.cdtor(
+   self : .sht.cons.stdout) : .sht.cons.stdout;
+
+func .sht.cons.program.run(
+   self : .sht.cons.program,
+   args : str[]) : void;
+
+func .sht.cons.program.cctor(
+   self : .sht.cons.program) : .sht.cons.program;
+
+func .sht.cons.program.cdtor(
+   self : .sht.cons.program) : .sht.cons.program;
+
+class .sht.cons.iStream_vtbl {
+   printLn : ptr;
+}
+
+class .sht.cons.program_vtbl {
    run : ptr;
 }
 
-class .sht.cons.program {
-   _vtbl : .sht.cons.program.vtbl;
-   _out : .sht.cons.iStream;
+class .sht.cons.stdout_vtbl {
+   printLn : ptr;
 }
 
-func .sht.cons.program.ctor() : .sht.cons.program;
+func .sht.cons.iStream_sctor(
+   self : .sht.cons.iStream) : void;
+
+func .sht.cons.iStream_sdtor(
+   self : .sht.cons.iStream) : void;
+
+func .sht.cons.program_sctor(
+   self : .sht.cons.program) : void;
+
+func .sht.cons.program_sdtor(
+   self : .sht.cons.program) : void;
+
+func .sht.cons.stdout_sctor(
+   self : .sht.cons.stdout) : void;
+
+func .sht.cons.stdout_sdtor(
+   self : .sht.cons.stdout) : void;
 

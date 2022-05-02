@@ -1,6 +1,8 @@
+#include "../cmn/trace.hpp"
 #include "../cmn/unique.hpp"
 #include "lir.hpp"
 #include "lirXfrm.hpp"
+#include "varFinder.hpp"
 #include "varGen.hpp"
 
 namespace liam {
@@ -16,7 +18,7 @@ void lirTransform::runStreams(lirStreams& lir)
    for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
    {
       m_pCurrStream = &*it;
-      runStream(*it);
+      _runStream(*it);
    }
 
    m_pCurrStream = NULL;
@@ -24,6 +26,16 @@ void lirTransform::runStreams(lirStreams& lir)
 }
 
 void lirTransform::runStream(lirStream& s)
+{
+   m_pCurrStream = &s;
+
+   _runStream(s);
+
+   m_pCurrStream = NULL;
+   applyChanges();
+}
+
+void lirTransform::_runStream(lirStream& s)
 {
    auto *pInstr = &s.pTail->head();
    while(true)
@@ -44,17 +56,22 @@ void lirTransform::runInstr(lirInstr& i)
 
 void lirTransform::scheduleInjectBefore(lirInstr& noob, lirInstr& before)
 {
-   m_changes.push_back(new injectChange(noob,before,true));
+   m_changes.push_back(new injectChange(noob,before,true,getCurrentStream()));
 }
 
 void lirTransform::scheduleInjectAfter(lirInstr& noob, lirInstr& after)
 {
-   m_changes.push_back(new injectChange(noob,after,false));
+   m_changes.push_back(new injectChange(noob,after,false,getCurrentStream()));
 }
 
 void lirTransform::scheduleAppend(lirInstr& noob)
 {
    m_changes.push_back(new appendChange(noob,getCurrentStream()));
+}
+
+void lirTransform::scheduleVarBind(lirInstr& noob, lirArg& arg, varTable& v, size_t storage)
+{
+   m_changes.push_back(new varBindChange(noob,arg,v,storage));
 }
 
 void lirTransform::injectChange::apply()
@@ -69,12 +86,24 @@ void lirTransform::injectChange::apply()
       m_antecedent.injectAfter(*m_pNoob);
       m_pNoob = NULL;
    }
+
+   // sure-up the tail if I injected after it
+   m_s.pTail = &m_s.pTail->tail();
 }
 
 void lirTransform::appendChange::apply()
 {
    m_s.pTail->append(*m_pNoob);
    m_pNoob = NULL;
+}
+
+void lirTransform::varBindChange::apply()
+{
+   var& v = m_v.create(m_a.getName());
+   v.refs[m_i.orderNum].push_back(&m_a);
+   v.instrToStorageMap[m_i.orderNum].insert(m_stor);
+   v.storageToInstrMap[m_stor].insert(m_i.orderNum);
+   v.storageDisambiguators[&m_a] = m_stor;
 }
 
 void lirTransform::applyChanges()
@@ -86,6 +115,7 @@ void lirTransform::applyChanges()
 void lirNameCollector::runArg(lirInstr& i, lirArg& a)
 {
    m_u.seed(a.getName());
+   lirTransform::runArg(i,a);
 }
 
 void lirCallVirtualStackCalculation::runInstr(lirInstr& i)
@@ -117,14 +147,14 @@ void lirCallVirtualStackCalculation::runArg(lirInstr& i, lirArg& a)
    lirTransform::runArg(i,a);
 }
 
-void lirPairedInstrDecomposition::runStream(lirStream& s)
+void lirPairedInstrDecomposition::_runStream(lirStream& s)
 {
    // inject kSelectSegment at the start of each stream
    auto i = new lirInstr(cmn::tgt::kSelectSegment);
    i->addArg<lirArgConst>(s.segment,0);
    scheduleInjectBefore(*i,s.pTail->head());
 
-   lirTransform::runStream(s);
+   lirTransform::_runStream(s);
 }
 
 void lirPairedInstrDecomposition::runInstr(lirInstr& i)
@@ -157,10 +187,10 @@ void lirPairedInstrDecomposition::runInstr(lirInstr& i)
    lirTransform::runInstr(i);
 }
 
-void lirNumberingTransform::runStream(lirStream& s)
+void lirNumberingTransform::_runStream(lirStream& s)
 {
    m_next = 10;
-   lirTransform::runStream(s);
+   lirTransform::_runStream(s);
 }
 
 void lirNumberingTransform::runInstr(lirInstr& i)
@@ -191,7 +221,7 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
          cmn::uniquifier u;
          lirNameCollector(u).runStream(getCurrentStream());
 
-         auto pTmp = new lirArgTemp(u.makeUnique(""),pImm->getSize());
+         auto pTmp = new lirArgTemp(u.makeUnique("t"),pImm->getSize());
 
          auto pMov = new lirInstr(cmn::tgt::kMov);
          pMov->addArg(*pTmp);
@@ -219,7 +249,7 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
          cmn::uniquifier u;
          lirNameCollector(u).runStream(getCurrentStream());
 
-         auto pTmp = new lirArgTemp(u.makeUnique(""),pArg->getSize());
+         auto pTmp = new lirArgTemp(u.makeUnique("t"),pArg->getSize());
 
          auto pMov = new lirInstr(cmn::tgt::kMov);
          pMov->addArg(*pTmp);
@@ -252,6 +282,335 @@ void lirVarGen::runArg(lirInstr& i, lirArg& a)
 
    if(dynamic_cast<lirArgConst*>(&a))
       v.requireStorage(i.orderNum,cmn::tgt::kStorageImmediate);
+
+   lirTransform::runArg(i,a);
+}
+
+void spuriousVarStripper::runInstr(lirInstr& i)
+{
+   if(i.instrId == cmn::tgt::kCall)
+   {
+      auto& args = i.getArgs();
+      auto *pKeeper = args[1]; // keep only the call ptr
+
+      for(auto it=args.begin();it!=args.end();++it)
+      {
+         if(*it != pKeeper)
+         {
+            m_v.demand(**it).unbindArgButKeepStorage(i,**it);
+            delete *it;
+         }
+      }
+
+      args.clear();
+      args.push_back(pKeeper);
+   }
+
+   lirTransform::runInstr(i);
+}
+
+void codeShapeTransform::runInstr(lirInstr& i)
+{
+   cdwDEBUG("checking codeshape for instr #%lld instrId=%lld\n",i.orderNum,i.instrId);
+
+   // convert lirArgs into the target's argTypes
+   std::vector<cmn::tgt::argTypes> at;
+   categorizeArgs(i,at);
+
+   // see if a compatible format exists
+   const cmn::tgt::instrInfo *pIInfo = NULL;
+   bool needsReshaping;
+   getInstrInfo(i,at,pIInfo,needsReshaping);
+   if(!needsReshaping)
+   {
+      lirTransform::runInstr(i);
+      return;
+   }
+
+   // well, crap; let's try to spill
+
+   // change write operands into registers and try again
+   std::vector<cmn::tgt::argTypes> retryArgs;
+   std::set<size_t> regOffsets;
+   findWorkingInstrFmt(*pIInfo,at,retryArgs,regOffsets);
+   if(regOffsets.size() != 1)
+      cdwTHROW("unimpled");
+
+   // choose registers to use
+   bool needsSpill;
+   size_t altStor = chooseRegister(needsSpill);
+   if(needsSpill && (pIInfo->stackSensitive || isStackFramePtrInUse(i,*pIInfo,at)))
+      cdwTHROW("can't spill, but must spill... arrgh!");
+
+   // prep for lir gen
+   cmn::uniquifier u;
+   lirNameCollector(u).runStream(getCurrentStream());
+   std::string varName = u.makeUnique("t");
+   lirArg& origArg = *i.getArgs()[*regOffsets.begin()];
+   size_t origStor = m_v.demand(origArg).getStorageFor(i.orderNum,origArg);
+
+   // inject save
+   if(needsSpill)
+   {
+      auto& push = *new lirInstr(cmn::tgt::kPush);
+      auto& arg = push.addArg<lirArgTemp>(varName,origArg.getSize());
+      push.comment = "codeshape spill";
+
+      scheduleInjectBefore(push,i);
+      scheduleVarBind(push,arg,m_v,altStor);
+   }
+
+   // mov [memA] [memB]
+   //
+   //    changes to
+   //
+   // push RX
+   // mov RX [memB]
+   // mov [memA] Rx
+   // pop RX
+
+   // inject move
+   {
+      auto& mov = *new lirInstr(cmn::tgt::kMov);
+      auto& dest = mov.addArg<lirArgTemp>(varName,origArg.getSize());
+      auto& src = mov.addArg(origArg.clone());
+      mov.comment = "codeshape decomp";
+
+      scheduleInjectBefore(mov,i);
+      scheduleVarBind(mov,dest,m_v,altStor);
+      scheduleVarBind(mov,src,m_v,origStor);
+   }
+
+   // modify original instruction
+   {
+      var& origVar = m_v.demand(origArg);
+      origVar.unbindArgButKeepStorage(i,origArg);
+
+      auto *pUpdatedArg = new lirArgTemp(varName,origArg.getSize());
+      i.getArgs()[*regOffsets.begin()] = pUpdatedArg;
+
+      scheduleVarBind(i,*pUpdatedArg,m_v,altStor);
+   }
+
+   // inject restore
+   if(needsSpill)
+   {
+      auto& pop = *new lirInstr(cmn::tgt::kPop);
+      auto& arg = pop.addArg<lirArgTemp>(varName,origArg.getSize());
+      pop.comment = "codeshape restore";
+
+      scheduleInjectBefore(pop,i);
+      scheduleVarBind(pop,arg,m_v,altStor);
+   }
+
+   delete &origArg;
+
+   lirTransform::runInstr(i);
+}
+
+void codeShapeTransform::categorizeArgs(lirInstr& i, std::vector<cmn::tgt::argTypes>& at)
+{
+   for(auto it=i.getArgs().begin();it!=i.getArgs().end();++it)
+   {
+      if((*it)->addrOf)
+      {
+         cdwDEBUG("   m\n");
+         markMem(**it,at);
+      }
+      else
+      {
+         size_t stor = m_v.demand(**it).getStorageFor(i.orderNum,**it);
+         if(cmn::tgt::isVStack(stor) || cmn::tgt::isStackStorage(stor))
+         {
+            cdwDEBUG("   m\n");
+            markMem(**it,at);
+         }
+         else if(stor == cmn::tgt::kStorageImmediate)
+         {
+            bool isNumeric = ::isdigit((*it)->getName().c_str()[0]);
+            if(isNumeric)
+            {
+               cdwDEBUG("   i\n");
+               markImm(**it,at);
+            }
+            else
+            {
+               cdwDEBUG("   m (l)\n");
+               at.push_back(cmn::tgt::kM64);
+            }
+         }
+         else
+         {
+            cdwDEBUG("   r\n");
+            markReg(**it,at);
+         }
+      }
+   }
+}
+
+void codeShapeTransform::markReg(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
+{
+   size_t size = m_t.getRealSize(a.getSize());
+   if(size > 4)
+      at.push_back(cmn::tgt::kR64);
+   else if(size > 2)
+      at.push_back(cmn::tgt::kR32);
+   else if(size > 1)
+      at.push_back(cmn::tgt::kR16);
+   else
+      at.push_back(cmn::tgt::kR8);
+}
+
+void codeShapeTransform::markImm(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
+{
+   size_t size = m_t.getRealSize(a.getSize());
+   if(size > 4)
+      at.push_back(cmn::tgt::kI64);
+   else if(size > 2)
+      at.push_back(cmn::tgt::kI32);
+   else if(size > 1)
+      at.push_back(cmn::tgt::kI16);
+   else
+      at.push_back(cmn::tgt::kI8);
+}
+
+void codeShapeTransform::markMem(lirArg& a, std::vector<cmn::tgt::argTypes>& at)
+{
+   size_t size = m_t.getRealSize(a.getSize());
+   if(size > 4)
+      at.push_back(cmn::tgt::kM64);
+   else if(size > 2)
+      at.push_back(cmn::tgt::kM32);
+   else if(size > 1)
+      at.push_back(cmn::tgt::kM16);
+   else
+      at.push_back(cmn::tgt::kM8);
+}
+
+void codeShapeTransform::getInstrInfo(lirInstr& i, const std::vector<cmn::tgt::argTypes>& at, const cmn::tgt::instrInfo*& pIInfo, bool& needsReshaping)
+{
+   pIInfo = m_t.getProc().getInstr(i.instrId);
+   if(pIInfo->fmts == NULL)
+   {
+      cdwDEBUG("not checking magic instruction\n");
+      needsReshaping = false;
+      return;
+   }
+   auto *pFmt = pIInfo->findFmt(at);
+   if(pFmt)
+   {
+      cdwDEBUG("ok\n");
+      needsReshaping = false;
+   }
+   else
+      needsReshaping = true;
+}
+
+void codeShapeTransform::findWorkingInstrFmt(const cmn::tgt::instrInfo& iInfo, const std::vector<cmn::tgt::argTypes>& args, std::vector<cmn::tgt::argTypes>& retryArgs, std::set<size_t>& changedIndicies)
+{
+   do
+   {
+      bool didWork = mutateInstrFmt(iInfo,args,retryArgs,changedIndicies);
+      if(!didWork)
+         cdwTHROW("can't find any valid mutated instr fmt");
+
+      auto *pFmt = iInfo.findFmt(retryArgs);
+      if(pFmt)
+         return;
+
+   } while(true);
+}
+
+bool codeShapeTransform::mutateInstrFmt(const cmn::tgt::instrInfo& iInfo, const std::vector<cmn::tgt::argTypes>& args, std::vector<cmn::tgt::argTypes>& retryArgs, std::set<size_t>& changedIndicies)
+{
+   size_t origCnt = changedIndicies.size();
+   retryArgs.clear();
+   retryArgs.reserve(args.size());
+   bool makeChanges = true;
+
+   size_t idx=0;
+   for(auto it=args.begin();it!=args.end();++it,idx++)
+   {
+      if(makeChanges && isMemory(*it) && isReadOnly(iInfo,idx))
+      {
+         retryArgs.push_back(makeRegister(*it));
+         changedIndicies.insert(idx);
+         if(changedIndicies.size() > origCnt)
+            makeChanges = false;
+      }
+      else
+      {
+         retryArgs.push_back(*it);
+      }
+   }
+
+   return !makeChanges;
+}
+
+bool codeShapeTransform::isReadOnly(const cmn::tgt::instrInfo& info, size_t idx)
+{
+   return info.argIo[idx] == 'r';
+}
+
+bool codeShapeTransform::isMemory(cmn::tgt::argTypes a)
+{
+   return (
+      a == cmn::tgt::kM8 ||
+      a == cmn::tgt::kM16 ||
+      a == cmn::tgt::kM32 ||
+      a == cmn::tgt::kM64
+   );
+}
+
+cmn::tgt::argTypes codeShapeTransform::makeRegister(cmn::tgt::argTypes a)
+{
+   switch(a)
+   {
+      case cmn::tgt::kM8:  return cmn::tgt::kR8;
+      case cmn::tgt::kM16: return cmn::tgt::kR16;
+      case cmn::tgt::kM32: return cmn::tgt::kR32;
+      case cmn::tgt::kM64: return cmn::tgt::kR64;
+      default:
+         cdwTHROW("ISE");
+   }
+}
+
+bool codeShapeTransform::isStackFramePtrInUse(lirInstr& i, const cmn::tgt::instrInfo& iInfo, std::vector<cmn::tgt::argTypes> origArgs)
+{
+   bool stackFramePtrInUse = false;
+
+   size_t idx=0;
+   for(auto it=origArgs.begin();it!=origArgs.end();++it,idx++)
+   {
+      if(isMemory(*it) && isReadOnly(iInfo,idx))
+         ;
+      else
+      {
+         lirArg& arg = *i.getArgs()[idx];
+         size_t stor = m_v.demand(arg).getStorageFor(i.orderNum,arg);
+         stackFramePtrInUse = cmn::tgt::isVStack(stor);
+         if(stackFramePtrInUse)
+            break;
+      }
+   }
+
+   return stackFramePtrInUse;
+}
+
+size_t codeShapeTransform::chooseRegister(bool& needsSpill)
+{
+   std::vector<size_t> bank;
+   m_t.getCallConvention().createScratchRegisterBank(bank);
+   for(auto it=bank.begin();it!=bank.end();++it)
+   {
+      if(m_f.getUsedRegs().find(*it)==m_f.getUsedRegs().end())
+      {
+         needsSpill = false;
+         return *it;
+      }
+   }
+   needsSpill = true;
+   return *bank.begin();
 }
 
 } // namespace liam

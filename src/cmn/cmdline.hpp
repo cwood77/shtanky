@@ -1,18 +1,23 @@
 #pragma once
 #include <string>
+#include <vector>
 
 namespace cmn {
 
 class cmdLine {
 public:
-   cmdLine(int argc, const char *argv[]) : m_argc(argc), m_i(1), m_pArgv(argv) {}
+   cmdLine(int argc, const char *argv[]);
 
-   std::string getArg(const std::string& defValue);
+   bool getSwitch(const std::string& on, const std::string& off, bool defValue);
+
+   std::string getOption(const std::string& tag, const std::string& defValue);
+
+   // always handle switches and options FIRST before using this method
+   std::string getNextArg(const std::string& defValue);
 
 private:
-   const int m_argc;
-   int m_i;
-   const char **m_pArgv;
+   std::vector<std::string> m_args;
+   size_t m_i;
 };
 
 } // namespace cmn

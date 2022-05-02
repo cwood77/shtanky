@@ -14,14 +14,16 @@ namespace appfmt {
 
 class header {
 public:
-   header() : version(0), tocEntryCnt(0), osCallOffset(0)
+   header() : version(0), tocEntryCnt(0), entrypointOffset(0), osCallOffset(0)
    { ::strcpy(thumbprint,"cdwe appfmt"); }
    char          thumbprint[11];
    unsigned long version;
    char          tocEntryCnt;
+   unsigned long entrypointOffset;
    unsigned long osCallOffset;
 };
 
+// TODO this is cut for now.  Need this eventually for page permissions.
 class tocEntry {
 public:
    tocEntry() : flags(0), size(0) {}

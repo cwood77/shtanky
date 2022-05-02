@@ -1,23 +1,25 @@
-#include "../cmn/binWriter.hpp"
 #include "../cmn/cmdline.hpp"
-#include "../cmn/pathUtil.hpp"
 #include "../cmn/trace.hpp"
-#include "formatter.hpp"
+#include "iTarget.hpp"
 #include "layout.hpp"
 #include "objdir.hpp"
+#include <memory>
 
 using namespace shlink;
 
 int main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   std::string outFile = cl.getArg(".\\testdata\\test\\test.ara.ls.asm.o.app");
+
+   // determine the target
+   std::unique_ptr<iTarget> pTgt(createTarget(cl));
+   std::unique_ptr<iSymbolIndex> pIndx(pTgt->createIndex());
 
    // load all object files indicated on command-line
    objectDirectory oDir;
    for(size_t i=0;;i++)
    {
-      auto path = cl.getArg(i==0 ? ".\\testdata\\test\\test.ara.ls.asm.o" : "");
+      auto path = cl.getNextArg(i==0 ? ".\\testdata\\test\\test.ara.ls.asm.o" : "");
       if(path.empty())
          break;
 
@@ -29,8 +31,7 @@ int main(int argc, const char *argv[])
    {
       objectProviderRecorder oDirWrapper(oDir);
       layoutProgress lProg;
-      lProg.seedRequiredObject(".test.test.run"); // TODO HACK should be entrypoint
-      lProg.seedRequiredObject(".sht.cons.stdout.printLn"); // TODO HACK keep this lame-o hacks until linker is totally working (i.e. no symbols are pruned inadvertently)
+      pTgt->seedRequirements(lProg);
 
       while(!lProg.isDone())
       {
@@ -44,19 +45,16 @@ int main(int argc, const char *argv[])
       l.markDonePlacing();
 
       oDir.determinePruneList(oDirWrapper.demanded);
+      l.reportSymbols(oDirWrapper.demanded,oDir,*pIndx.get());
    }
 
    // link objects together
    l.link(oDir);
 
    // write
-   {
-      cdwVERBOSE("writing...\n");
-      cmn::compositeObjWriter w;
-      w.sinkNewFileWithListing(outFile);
-      formatter(w).write(l);
-      cdwVERBOSE("done writing\n");
-   }
+   cdwVERBOSE("writing...\n");
+   pTgt->write(l,*pIndx.get());
+   cdwVERBOSE("done writing\n");
 
    return 0;
 }

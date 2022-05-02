@@ -37,7 +37,7 @@ static const genInfo kGenInfo[] = {
    },
    { genInfo::kModRmRm, genInfo::kModRmReg, genInfo::kNa, genInfo::kNa } },
 
-   { "MOV{REX.W + 8B /r}", (unsigned char[]){
+   { "MOV{REX.W + 8B /r}", (unsigned char[]){ // TODO - IP
       genInfo::kOpcode1, 0x8B,
       genInfo::kArgFmtBytes,
       genInfo::kEndOfInstr,
@@ -169,9 +169,15 @@ void modRm::encodeOpcodeArg(unsigned char opcode, unsigned char& rex, unsigned c
    modRmByte |= (opcode << 3);
 }
 
-void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize)
+void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize, bool& dispOrCodeOffset)
 {
-   if(ai.flags == (asmArgInfo::kMem64 | asmArgInfo::kReg64))
+   dispOrCodeOffset = true;
+   if(ai.flags == asmArgInfo::kLabel)
+   {
+      dispOrCodeOffset = false;
+      encodeModRmArg_Label(ai,rex,modRmByte,dispSize);
+   }
+   else if(ai.flags == (asmArgInfo::kMem64 | asmArgInfo::kReg64))
       encodeModRmArg_MemDisp(ai,rex,modRmByte,dispSize);
    else if(ai.flags == asmArgInfo::kReg64)
    {
@@ -182,6 +188,18 @@ void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned ch
       cdwTHROW("don't know how to encode argument type %lld",ai.flags);
 }
 
+void modRm::encodeModRmArg_Label(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize)
+{
+   // encodes as disp32
+   unsigned char mod = 0;
+   unsigned char rm = 5;
+
+   dispSize = 4;
+
+   modRmByte |= (mod << 6);
+   modRmByte |= rm;
+}
+
 void modRm::encodeModRmArg_MemDisp(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize)
 {
    unsigned char mod = 0;
@@ -189,7 +207,10 @@ void modRm::encodeModRmArg_MemDisp(const asmArgInfo& ai, unsigned char& rex, uns
 
    // now pick a mod value to show memory access
    if(!ai.disp)
+   {
+      dispSize = 0;
       mod = 0;
+   }
    else
    {
       dispSize = lexorBase::getLexemeIntSize(ai.disp);
@@ -361,19 +382,23 @@ void argFmtBytes::encodeArgModRmReg(asmArgInfo& a, bool regOrRm)
 {
    unsigned char rex = 0;
    unsigned char _modRm = 0;
+   char dispSize = 0;
+   bool dispOrCodeOffset = true;
    gather(rex,_modRm);
 
    if(regOrRm)
       modRm::encodeRegArg(a,rex,_modRm);
    else
-   {
-      char dispSize;
-      modRm::encodeModRmArg(a,rex,_modRm,dispSize);
-      if(dispSize)
-         setDisp(dispSize,a.disp);
-   }
+      modRm::encodeModRmArg(a,rex,_modRm,dispSize,dispOrCodeOffset);
 
    release(rex,_modRm);
+   if(dispSize)
+   {
+      if(dispOrCodeOffset)
+         setDisp(dispSize,a.disp);
+      else
+         setCodeOffset(dispSize);
+   }
 }
 
 void argFmtBytes::encodeFixedOp(unsigned char op)
@@ -503,6 +528,18 @@ void argFmtBytes::setDisp(char size, __int64 value)
       m_argFmtByteStream[arrayIdx] = genInfo::kDisp8;
       m_argFmtByteStream[arrayIdx+1] = static_cast<signed char>(value);
    }
+}
+
+void argFmtBytes::setCodeOffset(char size)
+{
+   if(size != 4)
+      cdwTHROW("unimplemented");
+
+   size_t arrayIdx = m_argFmtByteStream.size();
+   m_argFmtByteStream.resize(arrayIdx + 1 /*+ size*/);
+
+   m_argFmtByteStream[arrayIdx] = genInfo::kCodeOffset32;
+//   *reinterpret_cast<long*>(&m_argFmtByteStream[arrayIdx+1]) = 0;
 }
 
 } // namespace i64

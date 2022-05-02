@@ -1,6 +1,7 @@
 #pragma once
 
 #include "throw.hpp"
+#include <functional>
 #include <list>
 #include <memory>
 #include <set>
@@ -24,6 +25,7 @@ class methodNode;
 class fieldNode;
 class constNode;
 class funcNode;
+class intrinsicNode;
 class argNode;
 class typeNode;
 class strTypeNode;
@@ -43,6 +45,7 @@ class bopNode;
 class stringLiteralNode;
 class boolLiteralNode;
 class intLiteralNode;
+class structLiteralNode;
 
 class iNodeVisitor {
 public:
@@ -60,6 +63,7 @@ public:
    virtual void visit(fieldNode& n) = 0;
    virtual void visit(constNode& n) = 0;
    virtual void visit(funcNode& n) = 0;
+   virtual void visit(intrinsicNode& n) = 0;
    virtual void visit(argNode& n) = 0;
    virtual void visit(typeNode& n) = 0;
    virtual void visit(strTypeNode& n) = 0;
@@ -79,6 +83,7 @@ public:
    virtual void visit(stringLiteralNode& n) = 0;
    virtual void visit(boolLiteralNode& n) = 0;
    virtual void visit(intLiteralNode& n) = 0;
+   virtual void visit(structLiteralNode& n) = 0;
 
 protected:
    virtual void _implementLanguage() = 0;
@@ -96,16 +101,20 @@ protected:
 
 namespace nodeFlags {
    enum {
-      kOverride            = 1 << 0,
-      kAbstract            = 1 << 1,
-      kStatic              = 1 << 2,
-      kInterface           = 1 << 3,
+      kVirtual             = 1 << 0,
+      kOverride            = 1 << 1,
+      kAbstract            = 1 << 2,
+      kDynDispatchMask     = (kVirtual | kOverride),
 
-      kPublic              = 1 << 4,
-      kProtected           = 1 << 5,
-      kPrivate             = 1 << 6,
+      kStatic              = 1 << 3,
+      kInterface           = 1 << 4,
 
-      kAddressableForWrite = 1 << 7, // used in codegen
+      kPublic              = 1 << 5,
+      kProtected           = 1 << 6,
+      kPrivate             = 1 << 7,
+      kAccessSpecifierMask = (kPublic | kProtected | kPrivate),
+
+      kAddressableForWrite = 1 << 8, // used in codegen
    };
 };
 
@@ -122,6 +131,7 @@ public:
    void injectAbove(node& n);
    void appendChild(node& n);
    void insertChild(size_t i, node& n);
+   void insertChildAfter(node& noob, node& antecedent);
    node *replaceChild(node& old, node& nu); // caller responsible for delete
    void removeChild(node& n);
 
@@ -199,13 +209,23 @@ class link : public linkBase {
 public:
    virtual void bind(node& dest)
    {
-      m_pRefee = dynamic_cast<T*>(&dest);
-      if(!m_pRefee)
+      auto *p = dynamic_cast<T*>(&dest);
+      if(!p)
          cdwTHROW(
             std::string("link expected node type ") + typeid(T).name());
+      m_pRefee = &dest;
    }
 
    T *getRefee() { return dynamic_cast<T*>(m_pRefee); }
+};
+
+// ----------------------- interfaces -----------------------
+
+// anything that can be referred to by a varRef: e.g. fields, methods, functions, locals,
+// arguments, globals, etc.
+class iVarSourceNode {
+public:
+   virtual const std::string& getNameForVarRefee() const = 0;
 };
 
 // ----------------------- project -----------------------
@@ -268,11 +288,12 @@ private:
    void computeLineage(std::list<classNode*>& l);
 };
 
-class memberNode : public node {
+class memberNode : public node, public iVarSourceNode {
 public:
    std::string name;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+   virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
 class methodNode : public memberNode {
@@ -287,25 +308,33 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
-class constNode : public node {
+class constNode : public node, public iVarSourceNode {
 public:
    std::string name;
 
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+   virtual const std::string& getNameForVarRefee() const { return name; }
+};
+
+class funcNode : public node, public iVarSourceNode {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+   virtual const std::string& getNameForVarRefee() const { return name; }
+};
+
+class intrinsicNode : public funcNode {
+public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
-class funcNode : public node {
+class argNode : public node, public iVarSourceNode {
 public:
    std::string name;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
-};
-
-class argNode : public node {
-public:
-   std::string name;
-
-   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+   virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
 // ----------------------- types -----------------------
@@ -352,6 +381,8 @@ public:
 class invokeNode : public node {
 public:
    link<methodNode> proto; // the _ONLY_ unimpled link
+                           // TODO I need this for araceli compile--to tell dynamic vs.
+                           // static dispatch!
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
@@ -370,21 +401,22 @@ public:
 
 class callNode : public node {
 public:
-   std::string name;
+   link<funcNode> pTarget;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
-class localDeclNode : public node {
+class localDeclNode : public node, public iVarSourceNode {
 public:
    std::string name;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+   virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
 class varRefNode : public node {
 public:
-   link<typeNode> pDef;
+   link<iVarSourceNode> pSrc;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
@@ -427,6 +459,11 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class structLiteralNode : public node {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 // ----------------------- language visitors -----------------------
 
 class hNodeVisitor : public iNodeVisitor {
@@ -443,6 +480,7 @@ public:
    virtual void visit(fieldNode& n) { visit(static_cast<memberNode&>(n)); }
    virtual void visit(constNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(funcNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(intrinsicNode& n) { visit(static_cast<funcNode&>(n)); }
    virtual void visit(argNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(typeNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(strTypeNode& n) { visit(static_cast<typeNode&>(n)); }
@@ -462,6 +500,7 @@ public:
    virtual void visit(stringLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(boolLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(intLiteralNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(structLiteralNode& n) { visit(static_cast<node&>(n)); }
 };
 
 class diagVisitor : public hNodeVisitor {
@@ -480,6 +519,7 @@ public:
    virtual void visit(fieldNode& n);
    virtual void visit(constNode& n);
    virtual void visit(funcNode& n);
+   virtual void visit(intrinsicNode& n);
    virtual void visit(argNode& n);
    virtual void visit(strTypeNode& n);
    virtual void visit(arrayTypeNode& n);
@@ -498,6 +538,7 @@ public:
    virtual void visit(stringLiteralNode& n);
    virtual void visit(boolLiteralNode& n);
    virtual void visit(intLiteralNode& n);
+   virtual void visit(structLiteralNode& n);
 
    virtual void _implementLanguage() {} // all
 
@@ -521,9 +562,6 @@ class araceliVisitor : public T {
 public:
    virtual void visit(liamProjectNode& n) { T::unexpected(n); }
    virtual void visit(fileRefNode& n) { T::unexpected(n); }
-   virtual void visit(funcNode& n) { T::unexpected(n); }
-   virtual void visit(ptrTypeNode& n) { T::unexpected(n); }
-   virtual void visit(invokeFuncPtrNode& n) { T::unexpected(n); }
 
    virtual void _implementLanguage() {} // araceli
 };
@@ -572,6 +610,134 @@ public:
 
 private:
    iNodeVisitor& m_inner;
+};
+
+class creatingNodeVisitor : public iNodeVisitor {
+public:
+   virtual void visit(node&) { inst.reset(new node()); }
+   virtual void visit(araceliProjectNode&) { inst.reset(new araceliProjectNode()); }
+   virtual void visit(liamProjectNode&) { inst.reset(new liamProjectNode()); }
+   virtual void visit(scopeNode&) { inst.reset(new scopeNode()); }
+   virtual void visit(fileNode&) { inst.reset(new fileNode()); }
+   virtual void visit(fileRefNode&) { inst.reset(new fileRefNode()); }
+   virtual void visit(classNode&) { inst.reset(new classNode()); }
+   virtual void visit(memberNode&) { inst.reset(new memberNode()); }
+   virtual void visit(methodNode&) { inst.reset(new methodNode()); }
+   virtual void visit(fieldNode&) { inst.reset(new fieldNode()); }
+   virtual void visit(constNode&) { inst.reset(new constNode()); }
+   virtual void visit(funcNode&) { inst.reset(new funcNode()); }
+   virtual void visit(intrinsicNode&) { inst.reset(new intrinsicNode()); }
+   virtual void visit(argNode&) { inst.reset(new argNode()); }
+   virtual void visit(typeNode&) { inst.reset(new typeNode()); }
+   virtual void visit(strTypeNode&) { inst.reset(new strTypeNode()); }
+   virtual void visit(arrayTypeNode&) { inst.reset(new arrayTypeNode()); }
+   virtual void visit(voidTypeNode&) { inst.reset(new voidTypeNode()); }
+   virtual void visit(userTypeNode&) { inst.reset(new userTypeNode()); }
+   virtual void visit(ptrTypeNode&) { inst.reset(new ptrTypeNode()); }
+   virtual void visit(sequenceNode&) { inst.reset(new sequenceNode()); }
+   virtual void visit(invokeNode&) { inst.reset(new invokeNode()); }
+   virtual void visit(invokeFuncPtrNode&) { inst.reset(new invokeFuncPtrNode()); }
+   virtual void visit(fieldAccessNode&) { inst.reset(new fieldAccessNode()); }
+   virtual void visit(callNode&) { inst.reset(new callNode()); }
+   virtual void visit(localDeclNode&) { inst.reset(new localDeclNode()); }
+   virtual void visit(varRefNode&) { inst.reset(new varRefNode()); }
+   virtual void visit(assignmentNode&) { inst.reset(new assignmentNode()); }
+   virtual void visit(bopNode&) { inst.reset(new bopNode()); }
+   virtual void visit(stringLiteralNode&) { inst.reset(new stringLiteralNode()); }
+   virtual void visit(boolLiteralNode&) { inst.reset(new boolLiteralNode()); }
+   virtual void visit(intLiteralNode&) { inst.reset(new intLiteralNode()); }
+   virtual void visit(structLiteralNode&) { inst.reset(new structLiteralNode()); }
+
+   virtual void _implementLanguage() {} // all
+
+   std::unique_ptr<cmn::node> inst;
+};
+
+// Out of laziness, I implement these only when needed
+class cloningNodeVisitor : public hNodeVisitor {
+public:
+   explicit cloningNodeVisitor(node& n) : m_n(n) {}
+
+   virtual void visit(node& n);
+   virtual void visit(araceliProjectNode& n) { unexpected(n); }
+   virtual void visit(liamProjectNode& n) { unexpected(n); }
+   virtual void visit(scopeNode& n) { unexpected(n); }
+   virtual void visit(fileNode& n) { unexpected(n); }
+   virtual void visit(fileRefNode& n) { unexpected(n); }
+   virtual void visit(classNode& n) { unexpected(n); }
+   virtual void visit(memberNode& n);
+   virtual void visit(methodNode& n);
+   virtual void visit(fieldNode& n);
+   virtual void visit(constNode& n) { unexpected(n); }
+   virtual void visit(funcNode& n) { unexpected(n); }
+   virtual void visit(intrinsicNode& n) { unexpected(n); }
+   virtual void visit(argNode& n);
+   virtual void visit(typeNode& n);
+   virtual void visit(strTypeNode& n);
+   virtual void visit(arrayTypeNode& n);
+   virtual void visit(voidTypeNode& n);
+   virtual void visit(userTypeNode& n);
+   virtual void visit(ptrTypeNode& n);
+   virtual void visit(sequenceNode& n) { unexpected(n); }
+   virtual void visit(invokeNode& n) { unexpected(n); }
+   virtual void visit(invokeFuncPtrNode& n) { unexpected(n); }
+   virtual void visit(fieldAccessNode& n) { unexpected(n); }
+   virtual void visit(callNode& n) { unexpected(n); }
+   virtual void visit(localDeclNode& n) { unexpected(n); }
+   virtual void visit(varRefNode& n);
+   virtual void visit(assignmentNode& n) { unexpected(n); }
+   virtual void visit(bopNode& n) { unexpected(n); }
+   virtual void visit(stringLiteralNode& n) { unexpected(n); }
+   virtual void visit(boolLiteralNode& n) { unexpected(n); }
+   virtual void visit(intLiteralNode& n) { unexpected(n); }
+   virtual void visit(structLiteralNode& n) { unexpected(n); }
+
+   virtual void _implementLanguage() {} // all
+
+private:
+   template<class T> T& as() { return dynamic_cast<T&>(m_n); }
+
+   node& m_n;
+};
+
+node& cloneTree(node& n);
+
+// ----------------------- transform aids -----------------------
+
+class treeWriter {
+public:
+   explicit treeWriter(cmn::node& n) : m_pNode(&n) {}
+
+   template<class T>
+   treeWriter& append(std::function<void(T&)> initializer = [](T& n){})
+   {
+      std::unique_ptr<T> pNode(new T());
+      initializer(*pNode.get());
+      m_pNode->appendChild(*pNode.release());
+      m_pNode = m_pNode->lastChild();
+      return *this;
+   }
+
+   template<class T>
+   treeWriter& backTo(std::function<bool(const T&)> pred = [](const T&){ return true; })
+   {
+      while(true)
+      {
+         if(T* pDerived = dynamic_cast<T*>(m_pNode))
+            if(pred(*pDerived))
+               return *this;
+
+         parent();
+      }
+   }
+
+   treeWriter& parent() { m_pNode = m_pNode->getParent(); return *this; }
+
+   void set(cmn::node& n);
+   cmn::node& get() { return *m_pNode; }
+
+private:
+   cmn::node *m_pNode;
 };
 
 } // namespace cmn

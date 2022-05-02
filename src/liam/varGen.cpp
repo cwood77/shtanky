@@ -19,6 +19,35 @@ size_t var::getSize()
    return (*refs.begin()->second.begin())->getSize();
 }
 
+// remove all references to the argument but keep storage (and orderNums).
+// keeping storage is important for transforms that run after regalloc.
+// otherwise, should you unbind an instruction that dictated storage (e.g. a call)
+// _all_ other usages of the varible would also lose storage
+void var::unbindArgButKeepStorage(lirInstr& i, lirArg& a)
+{
+   // refs
+   {
+      auto& s = refs[i.orderNum];
+      {
+         for(auto it=s.begin();it!=s.end();++it)
+         {
+            if(*it == &a)
+            {
+               s.erase(it);
+               break;
+            }
+         }
+      }
+      if(s.size() == 0)
+         refs.erase(i.orderNum);
+   }
+
+   // disAmbig
+   {
+      storageDisambiguators.erase(&a);
+   }
+}
+
 bool var::isAlive(size_t orderNum)
 {
    return refs.begin()->first <= orderNum && orderNum <= (--(refs.end()))->first;
@@ -29,8 +58,6 @@ bool var::isAlive(size_t start, size_t end)
    return isAlive(start) || isAlive(end) ||
       (start < refs.begin()->first && (--(refs.end()))->first < end);
 }
-
-// TODO - this table makes sense but this code DOES NOT implement it?
 
 // ans    req
 //  b  0
@@ -62,19 +89,19 @@ size_t var::getStorageFor(size_t orderNum, lirArg& a)
 
    auto stors = getStorageAt(orderNum);
    if(stors.size() != 1)
-      cdwTHROW("insane?  somehow arg %s on instr %lld has no storage?",
-         a.getName().c_str(),orderNum);
+      cdwTHROW("insane?  somehow arg %s on instr %lld has %lld storage(s)?",
+         a.getName().c_str(),orderNum,stors.size());
    return *(stors.begin());
 }
 
-bool var::requiresStorageLater(size_t orderNum, size_t storage)
+size_t var::requiresStorageNext(size_t orderNum, size_t storage)
 {
    for(auto it=instrToStorageMap.begin();it!=instrToStorageMap.end();++it)
       if(it->first > orderNum)
          if(it->second.find(storage) != it->second.end())
-            return true;
+            return it->first;
 
-   return false;
+   return 0;
 }
 
 void var::requireStorage(size_t orderNum, size_t s)
@@ -108,6 +135,7 @@ void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
       if(it!=instrToStorageMap.end() && it->second.find(old)!=it->second.end())
       {
          cdwDEBUG("   hit\n");
+#if 0
          it->second.erase(old);
          it->second.insert(nu);
 
@@ -123,6 +151,7 @@ void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
             if(kit != storageDisambiguators.end() && kit->second == old)
                kit->second = nu;
          }
+#endif
       }
       else
       {
@@ -193,13 +222,30 @@ var& varTable::demand(lirArg& a)
 
 var *varTable::fetch(lirArg& a)
 {
+   std::vector<var*> ans;
+
    for(auto it=m_vars.begin();it!=m_vars.end();++it)
       for(auto jit=it->second->refs.begin();jit!=it->second->refs.end();++jit)
          for(auto kit=jit->second.begin();kit!=jit->second.end();++kit)
             if(*kit == &a)
-               return it->second;
+               ans.push_back(it->second);
 
-   return NULL;
+   if(ans.size() == 1)
+      return ans[0];
+   else if(ans.size() == 0)
+      return NULL;
+   else
+   {
+      for(auto it=ans.begin();it!=ans.end();++it)
+      {
+         std::string storage = "???";
+         auto jit=(*it)->storageDisambiguators.find(&a);
+         if(jit!=(*it)->storageDisambiguators.end())
+            storage = cmn::fmt("%lld",jit->second);
+         cdwDEBUG("v = '%s', stor=%lld\n",(*it)->name.c_str(),storage.c_str());
+      }
+      cdwTHROW("INSANITY! lirArg %s has %lld variables associated?!",a.getName().c_str(),ans.size());
+   }
 }
 
 } // namespace liam

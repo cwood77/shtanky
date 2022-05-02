@@ -22,7 +22,7 @@ std::string nameUtil::append(const std::string& prefix, const std::string& n)
    return base;
 }
 
-std::string nameUtil::stripLast(const std::string& n)
+std::string nameUtil::stripLast(const std::string& n, std::string& last)
 {
    const char *pLastDot = ::strrchr(n.c_str(),'.');
    if(*pLastDot != '.')
@@ -31,6 +31,7 @@ std::string nameUtil::stripLast(const std::string& n)
    std::string ans(n.c_str(),pLastDot-n.c_str());
    if(ans.empty())
       ans = ".";
+   last = pLastDot+1;
    return ans;
 }
 

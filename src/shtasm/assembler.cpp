@@ -1,7 +1,6 @@
 #include "../cmn/binWriter.hpp"
-#include "../cmn/fmt.hpp"
+#include "../cmn/throw.hpp"
 #include "assembler.hpp"
-#include <stdexcept>
 
 namespace shtasm {
 
@@ -10,7 +9,7 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
    // look up genInfo
    auto *pInfo = m_genInfos[f.guid];
    if(!pInfo)
-      throw std::runtime_error(cmn::fmt("no known instr for '%s'",f.guid));
+      cdwTHROW("no known instr for '%s'",f.guid);
 
    // build args
    std::string label;
@@ -28,9 +27,13 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
 
          case cmn::tgt::i64::genInfo::kModRmRm:
             argBytes.encodeArgModRmReg(ai[i],false);
+            if(!ai[i].label.empty())
+               label = ai[i].label;
             break;
 
          case cmn::tgt::i64::genInfo::kRipRelCO:
+            if(!label.empty())
+               cdwTHROW("ISE");
             label = ai[i].label;
             break;
 
@@ -55,6 +58,8 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
       }
       else if(*pByte == cmn::tgt::i64::genInfo::kCodeOffset32)
       {
+         if(label.empty())
+            cdwTHROW("emitting co32 but no label??");
          patches[w.tell()] = label;
          unsigned long patch = 0;
          w.write("co32",&patch,sizeof(unsigned long));
@@ -89,7 +94,7 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
          pByte += (1+4-1);
       }
       else
-         throw std::runtime_error(cmn::fmt("don't know how to write byte %d",(int)*pByte));
+         cdwTHROW("don't know how to write byte %d",(int)*pByte);
    }
 
    w.nextPart();

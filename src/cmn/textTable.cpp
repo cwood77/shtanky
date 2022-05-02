@@ -38,7 +38,7 @@ void textTable::compiledCells::compile(const std::map<size_t,std::map<size_t,std
 
          auto width = s.length();
          auto& maxW = m_colWidths[cell->first];
-         if(width > maxW)
+         if((width+1) > maxW)
             maxW = width + 1; // add one so columns have a 'border'
 
          if(cell->first > m_lastCol)

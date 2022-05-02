@@ -1,6 +1,7 @@
 #include "../cmn/out.hpp"
 #include "../cmn/pathUtil.hpp"
 #include "batGen.hpp"
+#include "iTarget.hpp"
 
 namespace araceli {
 
@@ -18,30 +19,37 @@ void batGen::visit(cmn::araceliProjectNode& n)
       << "echo ***   liam    ***" << std::endl
       << "echo *****************" << std::endl
    ;
-   for(auto it=m_files.begin();it!=m_files.end();++it)
-      m_s.stream()
-         << "bin\\out\\debug\\liam"
-            << " \""
-            << cmn::pathUtil::addExt(*it,cmn::pathUtil::kExtLiamSource)
-            << "\""
-         << std::endl
-      ;
+   {
+      std::list<std::string> f = m_files;
+      adjustFiles(iTarget::kLiamPhase,cmn::pathUtil::kExtLiamSource,f);
+      for(auto it=f.begin();it!=f.end();++it)
+         m_s.stream()
+            << "bin\\out\\debug\\liam"
+               << " \""
+               << *it
+               << "\""
+            << std::endl
+         ;
+   }
 
    m_s.stream()
       << std::endl
       << "echo *******************" << std::endl
       << "echo ***   shtasm    ***" << std::endl
       << "echo *******************" << std::endl
-      << "bin\\out\\debug\\shtasm \"testdata\\sht\\oscall.asm\"" << std::endl
    ;
-   for(auto it=m_files.begin();it!=m_files.end();++it)
-      m_s.stream()
-         << "bin\\out\\debug\\shtasm"
-            << " \""
-            << cmn::pathUtil::addExt(*it,"ls.asm")
-            << "\""
-         << std::endl
-      ;
+   {
+      std::list<std::string> f = m_files;
+      adjustFiles(iTarget::kShtasmPhase,"ls.asm",f);
+      for(auto it=f.begin();it!=f.end();++it)
+         m_s.stream()
+            << "bin\\out\\debug\\shtasm"
+               << " \""
+               << *it
+               << "\""
+            << std::endl
+         ;
+   }
 
    m_s.stream()
       << std::endl
@@ -50,21 +58,35 @@ void batGen::visit(cmn::araceliProjectNode& n)
       << "echo *******************" << std::endl
       << "bin\\out\\debug\\shlink \".\\testdata\\test\\.app\""
    ;
-   for(auto it=m_files.begin();it!=m_files.end();++it)
-      m_s.stream()
-         << " \""
-         << cmn::pathUtil::addExt(*it,"ls.asm.o")
-         << "\""
-      ;
-   m_s.stream()
-      << " \"testdata\\sht\\oscall.asm.o\""
-      << std::endl
-   ;
+   {
+      std::list<std::string> f = m_files;
+      adjustFiles(iTarget::kShlinkPhase,"ls.asm.o",f);
+      for(auto it=f.begin();it!=f.end();++it)
+         m_s.stream()
+            << " \""
+            << *it
+            << "\""
+         ;
+   }
+
+   m_s.stream() << std::endl;
 }
 
 void batGen::visit(cmn::fileNode& n)
 {
    m_files.push_back(n.fullPath);
+}
+
+void batGen::adjustFiles(iTarget::phase p, const std::string ext, std::list<std::string>& l)
+{
+   std::list<std::string> result;
+
+   for(auto it=l.begin();it!=l.end();++it)
+      result.push_back(cmn::pathUtil::addExt(*it,ext));
+
+   m_tgt.adjustBatchFileFiles(p,result);
+
+   l = result;
 }
 
 } // namespace araceli

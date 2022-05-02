@@ -6,14 +6,23 @@
 #include "../cmn/cmdline.hpp"
 #include "../cmn/out.hpp"
 #include "../cmn/trace.hpp"
+#include "abstractGenerator.hpp"
 #include "batGen.hpp"
+#include "classInfo.hpp"
 #include "codegen.hpp"
 #include "consoleAppTarget.hpp"
 #include "constHoister.hpp"
-#include "declasser.hpp"
+#include "ctorDtorGenerator.hpp"
+#include "inheritImplementor.hpp"
+#include "matryoshkaDecomp.hpp"
 #include "metadata.hpp"
+#include "methodMover.hpp"
+#include "objectBaser.hpp"
 #include "projectBuilder.hpp"
+#include "selfDecomposition.hpp"
+#include "stackClassDecomposition.hpp"
 #include "symbolTable.hpp"
+#include "vtableGenerator.hpp"
 #include <string.h>
 
 using namespace araceli;
@@ -21,12 +30,15 @@ using namespace araceli;
 int main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   std::string projectDir = cl.getArg(".\\testdata\\test");
+   std::string projectDir = cl.getNextArg(".\\testdata\\test");
    std::string batchBuild = projectDir + "\\.build.bat";
 
+   // setup project / target
    std::unique_ptr<cmn::araceliProjectNode> pPrj = projectBuilder::create("ca");
    projectBuilder::addScope(*pPrj.get(),projectDir,/*inProject*/true);
-   projectBuilder::addScope(*pPrj.get(),".\\testdata\\sht",/*inProject*/false);
+   consoleAppTarget tgt;
+   tgt.addAraceliStandardLibrary(*pPrj.get());
+   tgt.populateIntrinsics(*pPrj.get());
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // initial link to discover and load everything
@@ -43,12 +55,27 @@ int main(int argc, const char *argv[])
    }
 
    // use metadata to generate the target
-   consoleAppTarget().codegen(*pPrj,md);
+   tgt.araceliCodegen(*pPrj,md);
 
-   // subsequent link to update with new target
+   // inject implied base class
+   { objectBaser v; pPrj->acceptVisitor(v); }
+
+   // subsequent link to update with new target and load more
    araceli::nodeLinker().linkGraph(*pPrj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+
+   // capture class info
+   classCatalog cc;
+   { classInfoBuilder v(cc); pPrj->acceptVisitor(v); }
+   cmn::outBundle dbgOut;
+   cmn::unconditionalWriter wr;
+   dbgOut.scheduleAutoUpdate(wr);
+   {
+      classInfoFormatter fmt(dbgOut.get<cmn::outStream>(
+         projectDir + "\\.classInfo"));
+      fmt.format(cc);
+   }
 
    // ---------------- lowering transforms ----------------
 
@@ -57,19 +84,28 @@ int main(int argc, const char *argv[])
    cdwVERBOSE("graph after const hoist ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
-   // compile-away classes
-   { declasser v; pPrj->acceptVisitor(v); }
-   cdwVERBOSE("graph after transforms ----\n");
+   // --- compile-away classes ---
+   { ctorDtorGenerator v; pPrj->acceptVisitor(v); }  // write cctor/cdtor
+   { abstractGenerator::generate(cc); }              // implement pure virtual functions
+   { selfDecomposition v; pPrj->acceptVisitor(v); }  // add self param, scope self fields,
+                                                     //   invoke decomp
+   // basecall decomp
+   { methodMover v(cc); pPrj->acceptVisitor(v); }    // make methods functions
+   { vtableGenerator().generate(cc); }               // add vtable class and global instance
+   { inheritImplementor().generate(cc); }            // inject fields into derived classes
+   { matryoshkaDecomposition(cc).run(); }            // write sctor/sdtor
+   { stackClassDecomposition v;                      // inject sctor/sdtor calls for stack
+     pPrj->acceptVisitor(v); v.inject(); }           //   allocated classes
+   cdwVERBOSE("graph after declassing transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // -----------------------------------------------------
 
    // codegen
+   araceli::nodeLinker().linkGraph(*pPrj); // relink so codegen makes more fileRefs
    cmn::outBundle out;
-   codeGen v(out);
-   pPrj->acceptVisitor(v);
-   { batGen v(out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
-   cmn::unconditionalWriter wr;
+   { codeGen v(tgt,out); pPrj->acceptVisitor(v); }
+   { batGen v(tgt,out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
    out.updateDisk(wr);
 
    return 0;

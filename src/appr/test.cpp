@@ -30,8 +30,43 @@ shlinkTest& shlinkTest::test()
    return *this;
 }
 
+testBase::~testBase()
+{
+   if(m_pLTest)
+      m_pLTest->test();
+}
+
+void testBase::setupAutoShlink(const std::string& appPath)
+{
+   m_appPath = appPath;
+   m_pLTest.reset(new shlinkTest(m_stream,appPath));
+
+   shtasmTest(m_stream,".\\testdata\\sht\\oscall.asm").andLink(*m_pLTest.get());
+}
+
+void testBase::emulateAndCheckOutput()
+{
+   if(m_pLTest)
+   {
+      m_pLTest->test();
+      m_pLTest.reset(NULL);
+   }
+
+   auto log = cmn::pathUtil::addExt(m_appPath,"log");
+
+   m_stream.appendNew<doInstr>()
+      .usingApp("bin\\out\\debug\\shtemu.exe")
+      .withArg(m_appPath)
+      .thenCheckReturnValueAndCaptureOutput(log,"Win64 emulation");
+
+   m_stream.appendNew<compareInstr>()
+      .withControl(cmn::pathUtil::addPrefixToFilePart(log,"expected-"))
+      .withVariable(log)
+      .because("execution output");
+}
+
 araceliTest::araceliTest(instrStream& s, const std::string& folder)
-: m_stream(s), m_folder(folder)
+: testBase(s), m_folder(folder)
 {
    m_stream.appendNew<doInstr>()
       .usingApp("bin\\out\\debug\\araceli.exe")
@@ -42,27 +77,6 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
       .withControl(folder + "\\expected-.build.bat")
       .withVariable(folder + "\\.build.bat")
       .because("generated batch file");
-}
-
-araceliTest::~araceliTest()
-{
-   if(m_pLTest)
-      m_pLTest->test();
-}
-
-araceliTest& araceliTest::wholeApp()
-{
-   m_pLTest.reset(new shlinkTest(m_stream,m_folder + "\\.app"));
-
-   shtasmTest(m_stream,".\\testdata\\sht\\oscall.asm").andLink(*m_pLTest.get());
-
-   return *this;
-}
-
-araceliTest& araceliTest::skipLinkToWorkaroundHacks()
-{
-   m_pLTest.reset(NULL);
-   return *this;
 }
 
 araceliTest& araceliTest::expectLiamOf(const std::string& path)

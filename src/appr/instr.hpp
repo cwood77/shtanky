@@ -18,9 +18,13 @@ public:
    void setSilentExes(bool v) { m_silenceExes = v; }
    bool shouldSilenceExes() const { return m_silenceExes; }
 
+   void incrementTotalProgress() { m_progressCnt++; }
+   size_t getTotalProgressSize() const { return m_progressCnt; }
+
 private:
    std::set<std::string> m_labels;
    bool m_silenceExes;
+   size_t m_progressCnt;
 };
 
 class scriptStream {
@@ -32,6 +36,10 @@ public:
    std::ostream& stream() { return m_stream; }
    std::string reserveLabel(const std::string& hint) { return m_pState->reserveLabel(hint); }
    void silenceTestExeIf();
+   void captureTestExeOutIf(const std::string& log);
+
+   void updateProgress();
+   void stopProgressDisplayForOutput();
 
    void playback(std::ostream& s) { s << m_stream.str(); }
 
@@ -51,6 +59,8 @@ enum {
 class script {
 public:
    explicit script(bool silentExes) { m_state.setSilentExes(silentExes); }
+
+   size_t getTotalProgressSize() const { return m_state.getTotalProgressSize(); }
 
    scriptStream& get(size_t i);
 
@@ -99,7 +109,10 @@ public:
    doInstr& usingApp(const std::string& path);
    doInstr& withArg(const std::string& arg);
    doInstr& withArgs(const std::list<std::string>& args);
-   doInstr& thenCheckReturnValue(const std::string& errorHint);
+   doInstr& thenCheckReturnValue(const std::string& errorHint)
+   { return thenCheckReturnValueAndCaptureOutput("",errorHint); }
+   doInstr& thenCheckReturnValueAndCaptureOutput(
+      const std::string& log, const std::string& errorHint);
 };
 
 class compareInstr : public instr {

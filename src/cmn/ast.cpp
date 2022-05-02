@@ -36,6 +36,21 @@ void node::insertChild(size_t i, node& n)
    n.m_pParent = this;
 }
 
+void node::insertChildAfter(node& noob, node& antecedent)
+{
+   for(auto it=m_children.begin();it!=m_children.end();++it)
+   {
+      if(*it == &antecedent)
+      {
+         m_children.insert(it+1,&noob);
+         noob.m_pParent = this;
+         return;
+      }
+   }
+
+   cdwTHROW("can't find antecedent in insert");
+}
+
 node *node::replaceChild(node& old, node& nu)
 {
    int i=0;
@@ -44,11 +59,12 @@ node *node::replaceChild(node& old, node& nu)
       if(*it == &old)
       {
          m_children[i] = &nu;
+         nu.m_pParent = this;
          return &old;
       }
    }
 
-   throw std::runtime_error("can't find child to replace");
+   cdwTHROW("can't find child to replace");
 }
 
 void node::removeChild(node& n)
@@ -195,6 +211,16 @@ void diagVisitor::visit(funcNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(intrinsicNode& n)
+{
+   cdwDEBUG("%sintrinsic; name=%s\n",
+      getIndent().c_str(),
+      n.name.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 void diagVisitor::visit(argNode& n)
 {
    cdwDEBUG("%sarg; name=%s\n",
@@ -288,9 +314,10 @@ void diagVisitor::visit(fieldAccessNode& n)
 
 void diagVisitor::visit(callNode& n)
 {
-   cdwDEBUG("%scall; name=%s\n",
+   cdwDEBUG("%scall; name=%s; linked?=%d\n",
       getIndent().c_str(),
-      n.name.c_str());
+      n.pTarget.ref.c_str(),
+      n.pTarget.getRefee() ? 1 : 0);
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);
@@ -310,8 +337,8 @@ void diagVisitor::visit(varRefNode& n)
 {
    cdwDEBUG("%svarRef; name=%s; linked?=%d\n",
       getIndent().c_str(),
-      n.pDef.ref.c_str(),
-      n.pDef.getRefee() ? 1 : 0);
+      n.pSrc.ref.c_str(),
+      n.pSrc.getRefee() ? 1 : 0);
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);
@@ -361,6 +388,15 @@ void diagVisitor::visit(intLiteralNode& n)
    cdwDEBUG("%sintLit; value=%s\n",
       getIndent().c_str(),
       n.lexeme.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(structLiteralNode& n)
+{
+   cdwDEBUG("%sstructLit\n",
+      getIndent().c_str());
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);
@@ -426,6 +462,89 @@ void fullyQualifiedName::prepend(const std::string& n)
    makeAbsolute();
 
    m_fqn = n + m_fqn;
+}
+
+void cloningNodeVisitor::visit(node& n)
+{
+   as<node>().lineNumber = n.lineNumber;
+   as<node>().attributes = n.attributes;
+   as<node>().flags = n.flags;
+}
+
+void cloningNodeVisitor::visit(memberNode& n)
+{
+   as<memberNode>().name = n.name;
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(methodNode& n)
+{
+   as<methodNode>().baseImpl.ref = n.baseImpl.ref;
+   if(n.baseImpl.getRefee())
+      as<methodNode>().baseImpl.bind(*n.baseImpl.getRefee());
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(fieldNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(argNode& n)
+{
+   as<argNode>().name = n.name;
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(typeNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(strTypeNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(arrayTypeNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(voidTypeNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(userTypeNode& n)
+{
+   as<userTypeNode>().pDef.ref = n.pDef.ref;
+   as<userTypeNode>().pDef.bind(*n.pDef.getRefee());
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(ptrTypeNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(varRefNode& n)
+{
+   hNodeVisitor::visit(n);
+   as<varRefNode>().pSrc.ref = n.pSrc.ref;
+   as<varRefNode>().pSrc.bind(*n.pSrc._getRefee());
+}
+
+node& cloneTree(node& n)
+{
+   creatingNodeVisitor creator;
+   n.acceptVisitor(creator);
+   { cloningNodeVisitor v(*creator.inst.get()); n.acceptVisitor(v); }
+
+   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+      creator.inst->appendChild(cloneTree(**it));
+
+   return *creator.inst.release();
 }
 
 } // namespace cmn

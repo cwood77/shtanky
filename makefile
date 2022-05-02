@@ -12,19 +12,23 @@ SCRIPTLIB = scriptlib/xcopy-deploy.bat
 debug: \
 	dirs \
 	$(OUT_DIR)/debug/appr.exe \
+	$(OUT_DIR)/debug/philemon.exe \
 	$(OUT_DIR)/debug/araceli.exe \
 	$(OUT_DIR)/debug/liam.exe \
 	$(OUT_DIR)/debug/shtasm.exe \
-	$(OUT_DIR)/debug/shlink.exe
+	$(OUT_DIR)/debug/shlink.exe \
+	$(OUT_DIR)/debug/shtemu.exe
 	@cmd /c appr.bat
 
 all: \
 	debug \
 	$(OUT_DIR)/release/appr.exe \
+	$(OUT_DIR)/release/philemon.exe \
 	$(OUT_DIR)/release/araceli.exe \
 	$(OUT_DIR)/release/liam.exe \
 	$(OUT_DIR)/release/shtasm.exe \
 	$(OUT_DIR)/release/shlink.exe \
+	$(OUT_DIR)/release/shtemu.exe \
 
 clean:
 	rm -rf bin
@@ -32,17 +36,21 @@ clean:
 dirs:
 	@mkdir -p $(OUT_DIR)/debug
 	@mkdir -p $(OBJ_DIR)/debug/appr
+	@mkdir -p $(OBJ_DIR)/debug/philemon
 	@mkdir -p $(OBJ_DIR)/debug/araceli
 	@mkdir -p $(OBJ_DIR)/debug/liam
 	@mkdir -p $(OBJ_DIR)/debug/shtasm
 	@mkdir -p $(OBJ_DIR)/debug/shlink
+	@mkdir -p $(OBJ_DIR)/debug/shtemu
 	@mkdir -p $(OBJ_DIR)/debug/cmn
 	@mkdir -p $(OUT_DIR)/release
 	@mkdir -p $(OBJ_DIR)/release/appr
+	@mkdir -p $(OBJ_DIR)/release/philemon
 	@mkdir -p $(OBJ_DIR)/release/araceli
 	@mkdir -p $(OBJ_DIR)/release/liam
 	@mkdir -p $(OBJ_DIR)/release/shtasm
 	@mkdir -p $(OBJ_DIR)/release/shlink
+	@mkdir -p $(OBJ_DIR)/release/shtemu
 	@mkdir -p $(OBJ_DIR)/release/cmn
 
 .PHONY: debug all clean dirs
@@ -124,20 +132,55 @@ $(APPR_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
 # ----------------------------------------------------------------------
+# philemon
+
+PHILEMON_SRC = \
+	src/philemon/main.cpp \
+
+PHILEMON_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(PHILEMON_SRC)))
+
+$(OUT_DIR)/debug/philemon.exe: $(PHILEMON_DEBUG_OBJ) $(OUT_DIR)/debug/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(PHILEMON_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lcmn
+
+$(PHILEMON_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+PHILEMON_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(PHILEMON_SRC)))
+
+$(OUT_DIR)/release/philemon.exe: $(PHILEMON_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(PHILEMON_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
+
+$(PHILEMON_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
 # araceli
 
 ARACELI_SRC = \
+	src/araceli/abstractGenerator.cpp \
 	src/araceli/batGen.cpp \
+	src/araceli/classInfo.cpp \
 	src/araceli/codegen.cpp \
 	src/araceli/consoleAppTarget.cpp \
 	src/araceli/constHoister.cpp \
-	src/araceli/declasser.cpp \
+	src/araceli/ctorDtorGenerator.cpp \
+	src/araceli/inheritImplementor.cpp \
 	src/araceli/lexor.cpp \
 	src/araceli/loader.cpp \
 	src/araceli/main.cpp \
+	src/araceli/matryoshkaDecomp.cpp \
 	src/araceli/metadata.cpp \
+	src/araceli/methodMover.cpp \
+	src/araceli/objectBaser.cpp \
 	src/araceli/projectBuilder.cpp \
+	src/araceli/selfDecomposition.cpp \
+	src/araceli/stackClassDecomposition.cpp \
 	src/araceli/symbolTable.cpp \
+	src/araceli/vtableGenerator.cpp \
 
 ARACELI_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(ARACELI_SRC)))
 
@@ -232,9 +275,11 @@ $(SHTASM_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 
 SHLINK_SRC = \
 	src/shlink/formatter.cpp \
+	src/shlink/iTarget.cpp \
 	src/shlink/layout.cpp \
 	src/shlink/main.cpp \
 	src/shlink/objdir.cpp \
+	src/shlink/shtankyAppTarget.cpp \
 
 SHLINK_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SHLINK_SRC)))
 
@@ -253,5 +298,34 @@ $(OUT_DIR)/release/shlink.exe: $(SHLINK_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
 	@$(LINK_CMD) -o $@ $(SHLINK_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
 
 $(SHLINK_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# shtemu
+
+# I'm using -fpermissive here to allow some ptr math; I don't understand
+# why that's an error in the first place.
+
+SHTEMU_SRC = \
+	src/shtemu/stemu.cpp \
+
+SHTEMU_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SHTEMU_SRC)))
+
+$(OUT_DIR)/debug/shtemu.exe: $(SHTEMU_DEBUG_OBJ) $(OUT_DIR)/debug/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(SHTEMU_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lcmn
+
+$(SHTEMU_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+SHTEMU_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(SHTEMU_SRC)))
+
+$(OUT_DIR)/release/shtemu.exe: $(SHTEMU_RELEASE_OBJ) $(OUT_DIR)/release/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(SHTEMU_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lcmn
+
+$(SHTEMU_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@

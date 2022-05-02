@@ -1,9 +1,10 @@
 #include "../cmn/trace.hpp"
 #include "instr.hpp"
 #include "scriptWriter.hpp"
+#include <fstream>
 
 scriptState::scriptState()
-: m_silenceExes(true)
+: m_silenceExes(true), m_progressCnt(0)
 {
    scriptWriter::populateReservedLabels(*this);
 }
@@ -34,6 +35,36 @@ void scriptStream::silenceTestExeIf()
       stream() << std::endl;
 }
 
+void scriptStream::captureTestExeOutIf(const std::string& log)
+{
+   if(m_pState->shouldSilenceExes())
+      stream() << " >" << log << " 2>&1" << std::endl;
+   else
+   {
+      stream() << std::endl;
+
+      // if we aren't capturing the log, then we don't want false positives later
+      // should somebody diff the log and see it's unchanged.
+      // so we'll change it just in case.
+      std::ofstream l(log.c_str());
+      ::srand(::time(NULL));
+      l << "not captured " << ::rand() << std::endl;
+   }
+}
+
+void scriptStream::updateProgress()
+{
+   if(!m_pState->shouldSilenceExes()) return;
+   stream() << "echo | set /P=\".\"" << std::endl;
+   m_pState->incrementTotalProgress();
+}
+
+void scriptStream::stopProgressDisplayForOutput()
+{
+   if(!m_pState->shouldSilenceExes()) return;
+   stream() << "echo." << std::endl;
+}
+
 scriptStream& script::get(size_t i)
 {
    auto& s = m_streams[i];
@@ -58,6 +89,7 @@ instrStream::~instrStream()
 
 doInstr& doInstr::usingApp(const std::string& path)
 {
+   s().get(kStreamCmd).updateProgress();
    s().get(kStreamCmd).stream() << "\"" << path << "\" ";
    return *this;
 }
@@ -76,12 +108,15 @@ doInstr& doInstr::withArgs(const std::list<std::string>& args)
    return *this;
 }
 
-doInstr& doInstr::thenCheckReturnValue(const std::string& errorHint)
+doInstr& doInstr::thenCheckReturnValueAndCaptureOutput(const std::string& log, const std::string& errorHint)
 {
    auto& cmds = s().get(kStreamCmd);
    auto& _s = cmds.stream();
 
-   cmds.silenceTestExeIf();
+   if(log.empty())
+      cmds.silenceTestExeIf();
+   else
+      cmds.captureTestExeOutIf(log);
 
    auto passLbl = cmds.reserveLabel("pass");
    auto failLbl = cmds.reserveLabel("fail");
@@ -89,6 +124,7 @@ doInstr& doInstr::thenCheckReturnValue(const std::string& errorHint)
    _s << "goto " << passLbl << std::endl;
 
    _s << ":" << failLbl << std::endl;
+   cmds.stopProgressDisplayForOutput();
    _s << "echo FAIL: nonzero exit code doing " << errorHint << std::endl;
    _s << "goto end" << std::endl;
 
@@ -102,6 +138,7 @@ compareInstr& compareInstr::withControl(const std::string& path)
 {
    {
       auto& ss = s().get(kStreamCheck);
+      ss.updateProgress();
       ss.stream() << "fc /b \"" << path << "\" ";
    }
 
@@ -148,6 +185,7 @@ compareInstr& compareInstr::because(const std::string& reason)
       ss.stream() << "goto " << passLbl << std::endl;
 
       ss.stream() << ":" << failLbl << std::endl;
+      ss.stopProgressDisplayForOutput();
       ss.stream() << "echo FAIL: files are different for " << reason << std::endl;
       ss.stream() << "echo       aborting run prematurely" << std::endl;
       ss.stream() << "goto end" << std::endl;

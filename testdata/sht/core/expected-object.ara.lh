@@ -1,0 +1,19 @@
+class .sht.core.object {
+   _vtbl : .sht.core.object_vtbl;
+}
+
+func .sht.core.object.cctor(
+   self : .sht.core.object) : .sht.core.object;
+
+func .sht.core.object.cdtor(
+   self : .sht.core.object) : .sht.core.object;
+
+class .sht.core.object_vtbl {
+}
+
+func .sht.core.object_sctor(
+   self : .sht.core.object) : void;
+
+func .sht.core.object_sdtor(
+   self : .sht.core.object) : void;
+

@@ -23,13 +23,16 @@ public:
    const lirArg& lastArg();
    size_t getSize();
 
+   // this unbinds the argument, but keeps the storage assignment
+   void unbindArgButKeepStorage(lirInstr& i, lirArg& a);
+
    std::string getImmediateData() { return lastArg().getName(); }
 
    bool isAlive(size_t orderNum);
    bool isAlive(size_t start, size_t end);
    std::set<size_t> getStorageAt(size_t orderNum);
    size_t getStorageFor(size_t orderNum, lirArg& a);
-   bool requiresStorageLater(size_t orderNum, size_t storage);
+   size_t requiresStorageNext(size_t orderNum, size_t storage);
 
    void requireStorage(size_t orderNum, size_t s);
    void changeStorage(size_t orderNum, size_t old, size_t nu);

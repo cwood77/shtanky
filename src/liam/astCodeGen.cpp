@@ -1,4 +1,5 @@
 #include "../cmn/fmt.hpp"
+#include "../cmn/lexor.hpp"
 #include "../cmn/obj-fmt.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/throw.hpp"
@@ -9,10 +10,15 @@
 
 namespace liam {
 
+void dataFormatter::visit(cmn::varRefNode& n)
+{
+   m_o << n.pSrc.ref << " ";
+}
+
 void dataFormatter::visit(cmn::stringLiteralNode& n)
 {
    // provide NULL-termination
-   m_o << "\"" << n.value << "\" <b> 0";
+   m_o << "\"" << n.value << "\" <b> 0 ";
 }
 
 void astCodeGen::visit(cmn::constNode& n)
@@ -167,7 +173,7 @@ void astCodeGen::visit(cmn::callNode& n)
       .append(cmn::tgt::kCall)
          .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
          .returnToParent(0)
-         .withArg<lirArgConst>(n.name,/*n*/ 0) // label
+         .withArg<lirArgConst>(n.pTarget.ref,/*n*/ 0) // label
          .withComment("(call label)");
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
@@ -176,15 +182,15 @@ void astCodeGen::visit(cmn::callNode& n)
 
 void astCodeGen::visit(cmn::varRefNode& n)
 {
-   cmn::node& declSite = *n.pDef.getRefee()->getParent();
+   cmn::iVarSourceNode& declSite = *n.pSrc.getRefee();
    if(dynamic_cast<cmn::constNode*>(&declSite))
    {
       // references to another stream, like a global, are patched
       // patches are immediate data
 
       auto pA = new lirArgConst(
-         n.pDef.ref,
-         cmn::type::gNodeCache->demand(*n.pDef.getRefee()).getPseudoRefSize());
+         n.pSrc.ref,
+         cmn::type::gNodeCache->demand(*n.pSrc._getRefee()).getPseudoRefSize());
 
       m_b.forNode(n)
          .returnToParent(*pA);
@@ -192,8 +198,8 @@ void astCodeGen::visit(cmn::varRefNode& n)
    else
    {
       auto pA = new lirArgVar(
-         n.pDef.ref,
-         cmn::type::gNodeCache->demand(*n.pDef.getRefee()).getPseudoRefSize());
+         n.pSrc.ref,
+         cmn::type::gNodeCache->demand(*n.pSrc._getRefee()).getPseudoRefSize());
 
       m_b.forNode(n)
          .returnToParent(*pA);
@@ -238,9 +244,10 @@ void astCodeGen::visit(cmn::boolLiteralNode& n)
 
 void astCodeGen::visit(cmn::intLiteralNode& n)
 {
-   auto pA = new lirArgConst(
-      n.lexeme,
-      cmn::type::gNodeCache->demand(n).getPseudoRefSize());
+   // get the exact size, so codeshape is as accurate as possible
+   size_t size = cmn::lexorBase::getLexemeIntSize(cmn::lexorBase::getLexemeInt(n.lexeme));
+
+   auto pA = new lirArgConst(n.lexeme,size);
 
    m_b.forNode(n)
       .returnToParent(*pA);

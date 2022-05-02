@@ -3,8 +3,6 @@
 #include <map>
 #include <set>
 
-// TODO HACK - this whole component needs to be reworked
-
 namespace cmn {
 
 // the exhaustive list of linkages between AST nodes
@@ -57,14 +55,14 @@ private:
    std::map<std::string,node*>& m_table;
 };
 
-// knows all the scopes of a given node
+// knows how to bind different kinds of links
 class linkResolver : public hNodeVisitor {
 public:
    enum {
       kContainingScopes = 0x1,
       kOwnClass         = 0x2,
       kBaseClasses      = 0x4,
-      kLocalsAndFields  = 0x8,
+      kArgs             = 0x8,
    };
 
    linkResolver(symbolTable& st, linkBase& l, size_t mode);
@@ -83,9 +81,9 @@ private:
    symbolTable& m_sTable;
    linkBase& m_l;
    size_t m_mode;
+   bool m_checkedScope;
 };
 
-// knows all the links in a given node
 class nodePublisher : public hNodeVisitor {
 public:
    explicit nodePublisher(symbolTable& st) : m_sTable(st) {}
@@ -93,6 +91,7 @@ public:
    virtual void visit(classNode& n);
    virtual void visit(memberNode& n);
    virtual void visit(constNode& n);
+   virtual void visit(funcNode& n);
 
    virtual void _implementLanguage() {} // all
 
@@ -109,6 +108,7 @@ public:
    virtual void visit(methodNode& n);
    virtual void visit(userTypeNode& n);
    //virtual void visit(invokeNode& n);
+   virtual void visit(callNode& n);
    virtual void visit(varRefNode& n);
 
    virtual void _implementLanguage() {} // all

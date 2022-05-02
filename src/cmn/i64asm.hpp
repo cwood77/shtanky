@@ -70,9 +70,10 @@ class modRm {
 public:
    static void encodeRegArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte);
    static void encodeOpcodeArg(unsigned char opcode, unsigned char& rex, unsigned char& modRmByte);
-   static void encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize);
+   static void encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize, bool& dispOrCodeOffset);
 
 private:
+   static void encodeModRmArg_Label(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize);
    static void encodeModRmArg_MemDisp(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize);
    static void encodeModRmArg_RegOnly(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte);
    static unsigned char lookupRegRm(const asmArgInfo& ai, unsigned char& rex);
@@ -107,6 +108,7 @@ private:
    void gather(unsigned char& rex, unsigned char& modRm);
    void release(const unsigned char& rex, const unsigned char& modRm);
    void setDisp(char size, __int64 value);
+   void setCodeOffset(char size);
 
    unsigned char *m_pInstrByteStream;
    std::vector<unsigned char> m_prefixByteStream;

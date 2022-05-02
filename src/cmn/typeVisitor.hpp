@@ -61,6 +61,18 @@ private:
    std::unique_ptr<type::typeBuilder> m_pBuilder;
 };
 
+// populate types for globals
+// (this is separate because all types for iVarSourceNodes
+//  must be known before any varRefs are type proped)
+class globalTypePropagator : public hNodeVisitor {
+public:
+   virtual void visit(node& n) { visitChildren(n); }
+   virtual void visit(fieldNode& n);
+   virtual void visit(constNode& n);
+
+   virtual void _implementLanguage() {} // all
+};
+
 // slide types around on the wires
 class typePropagator : public hNodeVisitor {
 public:
@@ -70,6 +82,7 @@ public:
    virtual void visit(invokeFuncPtrNode& n);
    virtual void visit(fieldAccessNode& n);
    virtual void visit(callNode& n);
+   virtual void visit(localDeclNode& n);
    virtual void visit(varRefNode& n);
    virtual void visit(bopNode& n);
 

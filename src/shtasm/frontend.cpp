@@ -339,9 +339,9 @@ void dataParser::parseData(cmn::iObjWriter& w)
    {
       // TODO I hate absolute!  How do function pointers work in C++?
       cmn::objfmt::patch p;
-      p.type = cmn::objfmt::patch::kAbs;
+      p.type = cmn::objfmt::patch::kRelToNextInstr;
       p.offset = w.tell();
-      p.fromOffsetToEndOfInstr = 0;
+      p.fromOffsetToEndOfInstr = sizeof(unsigned __int64);
 
       unsigned __int64 lbl = 0;
       w.write("_lbldata",lbl);

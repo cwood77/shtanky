@@ -26,9 +26,21 @@ void scriptWriter::run(script& s, std::ostream& out, bool skipChecks)
 
    out << ":run" << std::endl;
    s.get(kStreamClean).playback(out);
+   if(!skipChecks && s.getTotalProgressSize())
+   {
+      std::string label = "[ -- testing -- ";
+      if(s.getTotalProgressSize() >= (label.length()+1))
+      {
+         label += std::string(s.getTotalProgressSize()-label.length()-1,' ');
+         out << "echo " << label << "]" << std::endl;
+      }
+   }
    s.get(kStreamCmd).playback(out);
    if(!skipChecks)
+   {
+      s.get(kStreamCheck).stopProgressDisplayForOutput();
       s.get(kStreamCheck).playback(out);
+   }
    out << "echo pass" << std::endl;
    out << "goto end" << std::endl << std::endl;
 

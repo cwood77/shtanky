@@ -9,12 +9,13 @@ namespace liam {
 
 class lirBuilder;
 
-// data uses weirdo syntax like .data, "foo" <b> 0 to it's special
+// data uses weirdo syntax like .data, "foo" <b> 0 so it's special
 class dataFormatter : public cmn::liamVisitor<> {
 public:
    explicit dataFormatter(std::ostream& o) : m_o(o) {}
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
+   virtual void visit(cmn::varRefNode& n);
    virtual void visit(cmn::stringLiteralNode& n);
 
 private:

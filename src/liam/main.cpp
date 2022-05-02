@@ -3,6 +3,7 @@
 #include "../cmn/global.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/main.hpp"
+#include "../cmn/obj-fmt.hpp"
 #include "../cmn/out.hpp"
 #include "../cmn/symbolTable.hpp"
 #include "../cmn/trace.hpp"
@@ -29,7 +30,7 @@ int _main(int argc,const char *argv[])
 
    // load
    cmn::liamProjectNode prj;
-   prj.sourceFullPath = cl.getArg("testdata\\test\\test.ara.ls");
+   prj.sourceFullPath = cl.getNextArg("testdata\\test\\test.ara.ls");
    projectBuilder::build(prj);
    cdwVERBOSE("graph after loading ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
@@ -63,24 +64,54 @@ int _main(int argc,const char *argv[])
 
    // ---------------- register allocation ----------------
 
-   for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
+   try
    {
-      cdwVERBOSE("backend passes on %s\n",it->name.c_str());
+      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-postreg");
+        lirIncrementalFormatter(sp,t).start(lir); }
+      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-preasm");
+        lirIncrementalFormatter(sp,t).start(lir); }
+      for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
+      {
+         cdwVERBOSE("backend passes on %s\n",it->name.c_str());
 
-      varTable vTbl;
-      lirVarGen(vTbl).runStream(*it);
+         varTable vTbl;
+         lirVarGen(vTbl).runStream(*it);
 
-      instrPrefs::publishRequirements(*it,vTbl,t);
+         instrPrefs::publishRequirements(*it,vTbl,t);
 
-      varSplitter::split(*it,vTbl,t);
+         varSplitter::split(*it,vTbl,t);
 
-      varFinder f(t);
-      { varCombiner p(*it,vTbl,t,f); p.run(); }
+         varFinder f(t);
+         { varCombiner p(*it,vTbl,t,f); p.run(); }
 
-      stackAllocator().run(vTbl,f);
-      varAllocator(t).run(vTbl,f);
+         stackAllocator().run(vTbl,f);
+         varAllocator(t).run(vTbl,f);
 
-      asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
+         { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-postreg");
+           lirIncrementalFormatter(sp,t).format(*it); }
+
+         if(it->segment == cmn::objfmt::obj::kLexCode)
+         {
+            spuriousVarStripper(vTbl).runStream(*it);
+            codeShapeTransform(vTbl,f,t).runStream(*it);
+         }
+
+         { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-preasm");
+           lirIncrementalFormatter(sp,t).format(*it); }
+
+         asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
+      }
+      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-postreg");
+        lirIncrementalFormatter(sp,t).end(); }
+      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-preasm");
+        lirIncrementalFormatter(sp,t).end(); }
+   }
+   catch(std::exception&)
+   {
+      cdwINFO("handling exception; writing lir-crash file\n");
+      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-crash");
+        lirFormatter(sp,t).format(lir); }
+      throw;
    }
 
    _t.dump();

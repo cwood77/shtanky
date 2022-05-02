@@ -40,65 +40,107 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
    {
       // for each storage
 
-      if(it->second.size() > 1 && !isInfiniteStorage(it->first))
+      if(it->second.size() <= 1 || isInfiniteStorage(it->first))
+         continue;
+
+      // two or more variables claimed this spot!
+      cdwDEBUG("%d>1 variables claimed storage %lld!\n",it->second.size(),it->first);
+      cdwDEBUG("   when handling instr %llu\n",i.orderNum);
+
+      // categorize all clients as winners or losers; winners require
+      // this storage later whereas losers do not
+      std::set<var*> winners;
+      std::map<size_t,var*> winnerMap;
+      std::set<var*> losers;
+      for(auto jit=it->second.begin();jit!=it->second.end();++jit)
       {
-         // two or more variables claimed this spot!
-         cdwDEBUG("%d variables claimed storage %lld!\n",it->second.size(),it->first);
-         cdwDEBUG("   when handling instr %llu\n",i.orderNum);
+         size_t priority = (*jit)->requiresStorageNext(i.orderNum,it->first);
 
-         // pick one to be the winner
-         //
-         // a winner is the _only_ variable that has a storage requirement _after_ this
-         // instr
-         std::set<var*> losers = it->second;
-         var *pWinner = NULL;
-         for(auto jit=losers.begin();jit!=losers.end();++jit)
+         cdwDEBUG("   %s requires storage %lld after instr #%lld at #%lld\n",
+            (*jit)->name.c_str(),
+            it->first,
+            i.orderNum,
+            priority);
+
+         if(priority)
          {
-            if((*jit)->requiresStorageLater(i.orderNum,it->first))
-            {
-               if(pWinner)
-                  throw std::runtime_error("varCombined failed: multiple winners");
-               pWinner = *jit;
-            }
+            winnerMap[priority] = *jit;
+            winners.insert(*jit);
          }
-         losers.erase(pWinner);
-
-         // the winner gets to keep the storage
-         cdwDEBUG("   winner is %s\n",pWinner->name.c_str());
-
-         for(auto jit=losers.begin();jit!=losers.end();++jit)
-         {
-            // for each loser
-
-            cdwDEBUG("   handling loser %s\n",(*jit)->name.c_str());
-
-            // stash loser to a free storage loc and fixup subsequent refs
-            size_t altStorage = m_f.chooseFreeStorage((*jit)->getSize());
-            (*jit)->updateStorageHereAndAfter(i,it->first,altStorage);
-            cdwDEBUG("      evicting to %lld\n",altStorage);
-
-            // emit a move to implement this
-            {
-               auto& mov = i.injectBefore(*new lirInstr(cmn::tgt::kMov));
-               mov.comment =  cmn::fmt("      (preserve) [combiner]");
-               auto& dest = mov.addArg<lirArgVar>(":combDest",0);
-               auto& src = mov.addArg<lirArgVar>(":combSrc",0);
-
-               (*jit)->refs[mov.orderNum].push_back(&dest);
-               (*jit)->refs[mov.orderNum].push_back(&src);
-
-               (*jit)->requireStorage(mov.orderNum,it->first);
-               (*jit)->requireStorage(mov.orderNum,altStorage);
-
-               (*jit)->storageDisambiguators[&dest] = altStorage;
-               (*jit)->storageDisambiguators[&src] = it->first;
-            }
-         }
-
-         // restart algorithm
-         restart();
+         else
+            losers.insert(*jit);
       }
+      if(winnerMap.size() != winners.size())
+         cdwTHROW("insanity!  multiple winners with same priority?");
+
+      // the winner gets to keep the storage
+      // pick the winner that needs the storage soonest
+      if(!winnerMap.size())
+         cdwTHROW("insanity!");
+      var *pWinner = winnerMap.begin()->second;
+      cdwDEBUG("   winner is %s\n",pWinner->name.c_str());
+
+      // move the runners-up to losers
+      for(auto jit=winners.begin();jit!=winners.end();++jit)
+         if(*jit != pWinner)
+            losers.insert(*jit);
+
+      // evict all the losers (and runners-up)
+      std::map<var*,size_t> altStorageMap;
+      for(auto jit=losers.begin();jit!=losers.end();++jit)
+      {
+         // for each loser
+
+         cdwDEBUG("   handling loser %s\n",(*jit)->name.c_str());
+
+         // stash loser to a free storage loc and fixup subsequent refs
+         size_t altStorage = m_f.chooseFreeStorage((*jit)->getSize());
+         (*jit)->updateStorageHereAndAfter(i,it->first,altStorage);
+         cdwDEBUG("      evicting to %lld\n",altStorage);
+
+         // emit a move to implement this
+         emitMoveBefore(i,**jit,"(preserve) [combiner]",it->first,altStorage);
+         altStorageMap[*jit] = altStorage;
+      }
+
+      // placate runners-up
+      // for runners up, I just hosed them by evicting them elsewhere
+      // un-evict them before their storage requirement is needed again
+      for(auto jit=winnerMap.begin();jit!=winnerMap.end();++jit)
+      {
+         if(jit->second == pWinner)
+            continue;
+
+         // emit a move back
+         lirInstr& antecedent = i.tail().searchUp([&](auto& i)
+            { return i.orderNum == jit->first; });
+
+         emitMoveBefore(
+            antecedent,*jit->second,
+            "(restore [combiner])",
+            altStorageMap[jit->second],it->first);
+      }
+
+      // restart algorithm
+      restart();
    }
+}
+
+void varCombiner::emitMoveBefore(lirInstr& antecedent, var& v, const std::string& comment, size_t srcStorage, size_t destStorage)
+{
+   auto& mov = antecedent.injectBefore(*new lirInstr(cmn::tgt::kMov));
+   mov.comment =  comment;
+   auto& dest = mov.addArg<lirArgVar>(":combDest",0);
+   auto& src = mov.addArg<lirArgVar>(":combSrc",0);
+
+   v.refs[mov.orderNum].push_back(&src);
+   v.refs[mov.orderNum].push_back(&dest);
+
+   v.requireStorage(mov.orderNum,srcStorage);
+   v.requireStorage(mov.orderNum,destStorage);
+
+   v.storageDisambiguators[&src] = srcStorage;
+   v.storageDisambiguators[&dest] = destStorage;
 }
 
 } // namespace liam

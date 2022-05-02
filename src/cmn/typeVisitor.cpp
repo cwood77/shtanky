@@ -107,7 +107,6 @@ void functionVisitor::visit(funcNode& n)
 {
    m_pBuilder.reset(type::typeBuilder::createFunction(fullyQualifiedName::build(n,n.name)));
    m_pBuilder->setStatic(true);
-   m_pBuilder->setReturnType(type::gNodeCache->demand(n.demandSoleChild<typeNode>()));
 
    m_pBuilder->setReturnType(type::gNodeCache->demand(n.demandSoleChild<typeNode>()));
    hNodeVisitor::visit(n);
@@ -122,17 +121,29 @@ void functionVisitor::visit(argNode& n)
       type::gNodeCache->demand(n.demandSoleChild<typeNode>()));
 }
 
-void typePropagator::visit(invokeNode& n)
+void globalTypePropagator::visit(fieldNode& n)
 {
-   // TODO need function types for this... do I need this?   YES! at least, eventually
-   // defer this until method linking is done in the symbol table
    hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,type::gNodeCache->demand(n.demandSoleChild<typeNode>()));
+}
+
+void globalTypePropagator::visit(constNode& n)
+{
+   hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,type::gNodeCache->demand(n.demandSoleChild<typeNode>()));
 }
 
 void typePropagator::visit(argNode& n)
 {
    hNodeVisitor::visit(n);
    type::gNodeCache->publish(n,type::gNodeCache->demand(*n.getChildren()[0]));
+}
+
+void typePropagator::visit(invokeNode& n)
+{
+   // TODO need function types for this... do I need this?   YES! at least, eventually
+   // defer this until method linking is done in the symbol table
+   hNodeVisitor::visit(n);
 }
 
 void typePropagator::visit(invokeFuncPtrNode& n)
@@ -162,17 +173,23 @@ void typePropagator::visit(callNode& n)
 {
    hNodeVisitor::visit(n);
 
-   auto fqn = fullyQualifiedName::build(n,n.name);
+   auto fqn = fullyQualifiedName::build(n,n.pTarget.ref);
    auto& rVal = type::gTable->fetch(fqn).as<type::iFunctionType>().getReturnType();
    type::gNodeCache->publish(n,rVal);
+}
+
+void typePropagator::visit(localDeclNode& n)
+{
+   hNodeVisitor::visit(n);
+
+   type::gNodeCache->publish(n,type::gNodeCache->demand(n.demandSoleChild<typeNode>()));
 }
 
 void typePropagator::visit(varRefNode& n)
 {
    hNodeVisitor::visit(n);
 
-   typeNode *pTy = n.pDef.getRefee();
-   type::gNodeCache->publish(n,type::gNodeCache->demand(*pTy));
+   type::gNodeCache->publish(n,type::gNodeCache->demand(*n.pSrc._getRefee()));
 }
 
 void typePropagator::visit(bopNode& n)
@@ -185,6 +202,7 @@ void propagateTypes(cmn::node& root)
    { builtInTypeVisitor v; root.acceptVisitor(v); }
    { userTypeVisitor v; root.acceptVisitor(v); }
    { functionVisitor v; root.acceptVisitor(v); }
+   { globalTypePropagator v; root.acceptVisitor(v); }
    { typePropagator v; root.acceptVisitor(v); }
 }
 

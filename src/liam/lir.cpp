@@ -40,6 +40,8 @@ lirInstr& lirInstr::injectBefore(lirInstr& noob)
    noob.m_pNext = this;
    m_pPrev = &noob;
 
+   noob.pickOrderNumForNewLocation();
+
    return noob;
 }
 
@@ -56,6 +58,7 @@ lirInstr& lirInstr::append(lirInstr& noob)
    lirInstr& _tail = tail();
    _tail.m_pNext = &noob;
    noob.m_pPrev = &_tail;
+   noob.pickOrderNumForNewLocation();
    return noob;
 }
 
@@ -87,6 +90,37 @@ lirInstr& lirInstr::searchUp(std::function<bool(const lirInstr&)> pred)
    cdwTHROW("searchUp failed to find match");
 }
 
+void lirInstr::pickOrderNumForNewLocation()
+{
+   size_t before = m_pPrev ? m_pPrev->orderNum : 0;
+   size_t after = m_pNext ? m_pNext->orderNum : 0;
+
+   if(before == after && before == 0)
+   {
+      // unordered chain; no worries
+      orderNum = 0;
+      return;
+   }
+
+   if(before >= after)
+      cdwTHROW("insane LIR chain with numder %lld, then %lld",before,after);
+
+   auto distance = after-before;
+   size_t candidate = before + (distance / 2.0);
+
+   // integer division truncation means 1/2 = 0;
+   if(candidate == before)
+      candidate++;
+
+   if(candidate == before || candidate == after)
+      cdwTHROW("insanity picking new order num; b=%lld,c=%lld,a=%lld",
+         before,candidate,after);
+
+   cdwVERBOSE("changing order of instr w/ instrId=%lld: %lld -> %lld\n",
+      instrId,orderNum,candidate);
+   orderNum = candidate;
+}
+
 lirStream::~lirStream()
 {
    delete pTail;
@@ -101,21 +135,26 @@ lirStream& lirStreams::addNewObject(const std::string& name, const std::string& 
    return last;
 }
 
-void lirFormatter::format(lirStreams& s)
+void lirIncrementalFormatter::start(lirStreams& s)
 {
    m_s.stream() << "=== LIR bundle has " << s.objects.size() << " objects(s) ===   (hint: $=var, ~=temp, @=immediate)" << std::endl;
-   for(auto it=s.objects.begin();it!=s.objects.end();++it)
-   {
-      m_s.stream() << std::endl;
-      m_s.stream() << "----- start stream " << it->name << std::endl;
-      format(*it);
-   }
+}
+
+void lirIncrementalFormatter::format(lirStream& s)
+{
+   m_s.stream() << std::endl;
+   m_s.stream() << "----- start stream " << s.name << std::endl;
+   _format(s);
+}
+
+void lirIncrementalFormatter::end()
+{
    m_s.stream() << std::endl;
    m_s.stream() << "=== end of LIR bundle dump ===" << std::endl;
    appendTargetHints();
 }
 
-void lirFormatter::format(lirStream& s)
+void lirIncrementalFormatter::_format(lirStream& s)
 {
    cmn::textTable t;
    cmn::textTableLineWriter w(t);
@@ -134,7 +173,7 @@ void lirFormatter::format(lirStream& s)
    m_s.stream() << std::endl;
 }
 
-void lirFormatter::format(lirInstr& i, cmn::textTableLineWriter& t)
+void lirIncrementalFormatter::format(lirInstr& i, cmn::textTableLineWriter& t)
 {
    t[0] << i.orderNum;
    t[1] << m_t.getProc().getInstr(i.instrId)->name;
@@ -150,7 +189,7 @@ void lirFormatter::format(lirInstr& i, cmn::textTableLineWriter& t)
    t[3] << ";;; " << i.comment;
 }
 
-void lirFormatter::format(lirArg& a, cmn::textTableLineWriter& t)
+void lirIncrementalFormatter::format(lirArg& a, cmn::textTableLineWriter& t)
 {
    const char *pType = "$";
    if(dynamic_cast<lirArgConst*>(&a))
@@ -174,7 +213,7 @@ void lirFormatter::format(lirArg& a, cmn::textTableLineWriter& t)
    t[2] << "/" << a.getSize();
 }
 
-void lirFormatter::appendTargetHints()
+void lirIncrementalFormatter::appendTargetHints()
 {
    m_s.stream() << std::endl;
 
@@ -228,6 +267,17 @@ void lirFormatter::appendTargetHints()
 
    m_s.stream() << "cc shadow space = " << m_t.getCallConvention().getShadowSpace()
       << std::endl;
+}
+
+void lirFormatter::format(lirStreams& s)
+{
+   lirIncrementalFormatter fmt(m_s,m_t);
+   fmt.start(s);
+
+   for(auto it=s.objects.begin();it!=s.objects.end();++it)
+      fmt.format(*it);
+
+   fmt.end();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

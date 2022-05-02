@@ -27,6 +27,13 @@ public:
    virtual void onInstrWithAvailVar(lirInstr& i);
 
 private:
+   void emitMoveBefore(
+      lirInstr& antecedent,
+      var& v,
+      const std::string& comment,
+      size_t srcStorage,
+      size_t destStorage);
+
    std::map<size_t,std::set<var*> > m_clients;
 };
 

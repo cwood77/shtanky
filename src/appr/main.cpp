@@ -8,8 +8,8 @@
 int main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   bool skipChecks = (cl.getArg("") == "-skipchecks"); // used for bootstrapping new tests
-   bool verbose = (cl.getArg("") == "-verbose"); // include prog output in script
+   bool skipChecks = (cl.getNextArg("") == "-skipchecks"); // used for bootstrapping new tests
+   bool verbose = (cl.getNextArg("") == "-verbose"); // include prog output in script
 
    script s(/*silentExes*/ !verbose);
    instrStream is(s);
@@ -20,6 +20,7 @@ int main(int argc, const char *argv[])
       .wholeApp()
       .expectLiamOf(".\\testdata\\test\\test.ara")
       .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+      .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
       .expectLiamOf(".\\testdata\\test\\.target.ara")
    ;
 
@@ -27,8 +28,13 @@ int main(int argc, const char *argv[])
       .wholeApp()
       .expectLiamOf(".\\testdata\\assign\\main.ara")
       .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+      .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
       .expectLiamOf(".\\testdata\\assign\\.target.ara")
-      .skipLinkToWorkaroundHacks()
+   ;
+
+   shtasmTest(is,".\\testdata\\shtemu\\basic.asm")
+      .wholeApp(".\\testdata\\shtemu\\basic.app")
+      .emulateAndCheckOutput()
    ;
 
    // ------------------ tests end ------------------

@@ -5,6 +5,11 @@
 namespace cmn {
 namespace tgt {
 
+instrFmt::instrFmt(const char *g, size_t a1, size_t a2, size_t a3, size_t a4, const char *io, bool ss)
+: guid(g), argIo(io), stackSensitive(ss), a1(a1), a2(a2), a3(a3), a4(a4)
+{
+}
+
 size_t getMatchPattern(argTypes a)
 {
    size_t rVal = 0;
@@ -49,6 +54,14 @@ size_t getMatchPattern(argTypes a)
 
 const instrFmt& instrInfo::demandFmt(const std::vector<argTypes> a) const
 {
+   const instrFmt *f = findFmt(a);
+   if(!f)
+      cdwTHROW("instr format not found");
+   return *f;
+}
+
+const instrFmt *instrInfo::findFmt(const std::vector<argTypes> a) const
+{
    argTypes a1 = a.size() > 0 ? a[0] : kArgTypeNone;
    argTypes a2 = a.size() > 1 ? a[1] : kArgTypeNone;
    argTypes a3 = a.size() > 2 ? a[2] : kArgTypeNone;
@@ -60,13 +73,13 @@ const instrFmt& instrInfo::demandFmt(const std::vector<argTypes> a) const
    while(true)
    {
       if(!pFmt || pFmt->guid == NULL)
-         cdwTHROW("instr format not found");
+         return NULL;
 
       if((pFmt->a1 & getMatchPattern(a1)) &&
          (pFmt->a2 & getMatchPattern(a2)) &&
          (pFmt->a3 & getMatchPattern(a3)) &&
          (pFmt->a4 & getMatchPattern(a4)))
-         return *pFmt;
+         return pFmt;
 
       pFmt++;
    }
@@ -81,7 +94,7 @@ asmArgInfo::asmArgInfo()
 argTypes asmArgInfo::computeArgType()
 {
    if(flags & kLabel)
-      return kI32; // assume a rip-rel offset
+      return kM64; // labels are really memory locations
 
    else if(flags & kImm8)
       return kI8;

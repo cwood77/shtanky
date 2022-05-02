@@ -69,34 +69,83 @@ Technical ideas and decisions thus far:
     - call variable
     - global var refs (`LEA REX.W + 8D /r`)
 
+### Generic programming
+
+The most natural application of the existing boundary philosophy would be to create a seperate template language/app that compiles into araceli, in the same way araceli compiles down to liam, etc.  This language would generate specific code from generic code allowing lower levels to be generic-ignorant.  Even more flexible code generation could exist in a layer above this generic implementor.
+
+A big problem with this approach is that, generally, all the necessary specific instances of a generic are not obviously enumeratable.  I could:
+1. pregenerate all possible cases (NOPE! - see below),
+1. require constraints that allow explicit enumeration, or
+1. implement some sort of iterative communication between apps that allows a template to be instantiated as needed.
+
+What if I made type compile into a cookie that's passed into generic methods?
+What if I made generic classes generate instances based simply on the presence of instances?
+Would those two together be enought?
+
+Combining the two strategies would lead to prolems; i.e. if a generic method instantiated a generic class.
+
+More generally, I'm not sure pre-enumeration of all possible instances is possible, as this set seems unbounded.  E.g for types A<T>, isn't an instance A<A<A<bool>>>, etc.?
+
+Let's consider contraints.  Even just supporting the base class constraint would make the set bounded... true or false?  False.  Consider transientServiceProxy<transientServiceProxy<something>>.  What if I just didn't support that?  Would that be a problem?  Potentially.  I could envision scenarios were this is deserable.
+
+There are
+1. generic classes
+1. generic methods (in non-generic classes)
+1. generic functions
+
+Probably you'd generate classes first, then the other two.  This would mean classes couldn't derive from themselves (reasonable), but also couldn't reference themselves (maybe unreasonable).
+
+Coming back to the boundedness.  Is that really a potentially desirable scenario?  Let's push on that.  What about transientServiceProxy<cancellingService<driverService<iText>>> as a decorator chain?
+
+What if rather than all this stuff I did some basic enumeration guesses but then required users to list instance combinations, a la early C++ template implementations 'export' requirements?  Only for classes.  That sould allow step 1 above prettily readily.  Using baseclass contraints would them enable steps 2 and 3.
+
+Remainging problems:
+1. how to implement `type`
+2. how to locate all the files participating in enumeration
+
+`type` is purely dependent, and thus could be generated as needed.  The other problem is real though.  Hm.  Perhaps it's just an input.
+
+AST nodes: generic(and args), type, instantiate, that's it?
+Also need to worry about lexical analysis of < and >.
+
 ## todo
+By milestone
+
+### Stemu can callback itself and survive
+- [x] stemu callbacks - shlink side
+- [x] are linker TOCs working?
+- [x] stemu impl
+- [x] stemu callbacks - stemu side
+- [x] get stemu passing (e.g. study virtual calls)
+- [ ] <enterfunc> is double-allocating stack space
+- [x] setup an ATS
+
+### Hello World MVP
+- [x] code shape transform
 - [ ] handle volatile regs (i.e. regs must be preserved around calls if in use)
-- [x] handle nonvolitile regs (i.e. must be preserved in pro/epilog if used)
-- [ ] use shadow space for spilling 4 regs
-- [x] change 'storage' to allow for stack vars
-~~- [ ] more codegen tests~~
-- [ ] codegen test that exercises stack
-- [ ] stack locals
-- [x] subcall locals
-- [ ] exercise splitter
-- [ ] immediate ops
-- [ ] patchable ops
-- [x] func labels
-- [x] instr overload selection
-- [x] call decomposition
 - [ ] impl frame ptrs
 
---- multi file compile ---
-- [ ] batch build file generation
-- [ ] compiler args
-
---- other file compile req's ---
-- [ ] hoist strings
-- [x] too many call arg
-- [ ] segment directives
-- [ ] call nodes (not just invoke)
+### Must, but Later
 - [ ] int literals
+- [ ] invoke is sometimes a nonvirtual call
+- [ ] shlink should inflate segments to page boundaries
 
-- [ ] araceli bootstrap codegen
+### Could, Someday
+- [ ] use shadow space for spilling 4 regs
+- [ ] more codegen tests
+- [ ] codegen test that exercises stack
+- [ ] exercise splitter
+- [ ] stemu could implement page protection modes on different segmente (e.g. const)
+- [ ] generate windows PE from shlink
+
+### Big, Hairy
+- [ ] templ
+- [ ] gempl
+- [ ] cop
+- [ ] array class?
+- [ ] passing args into stemu
+- [ ] heap class allocation (actually needs a heap in stemu/stanky)
+- [ ] DLLs
+- [ ] maybe a 'grep' tool that understand the languages--i.e. can skip comments, etc.
 
 [^1]: The name "shtanky" was suggested by my son, Ethan (age 11).  I selected the first of his suggestions that didn't include "my dad's butt" somewhere in the title.

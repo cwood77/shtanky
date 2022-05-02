@@ -7,94 +7,95 @@ namespace tgt {
 static const instrFmt pushFmts[] = {
    { "PUSH{FF /6}",
       kR64 | kM64,
-      kArgTypeNone, kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, "r", true },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt popFmts[] = {
    { "POP{8F /0}",
       kR64 | kM64,
-      kArgTypeNone, kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, "w", true },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt subFmts[] = {
    { "SUB{REX.W + 83 /5 ib}",
       kR64 | kM64,
       kI8,
-      kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, "br", false },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt addFmts[] = {
    { "ADD{REX.W + 83 /0 ib}",
       kR64 | kM64,
       kI8,
-      kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, "br", false },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt movFmts[] = {
    { "MOV{REX.W + 89 /r}",
       kR64 | kM64,
       kR64,
-      kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, "wr", false },
    { "MOV{REX.W + 8B /r}",
       kR64,
-      kR64 | kM64,
-      kArgTypeNone, kArgTypeNone },
+      kR64 | kM64, // TODO anybody who takes a memory could theoretically emit a displacment
+                   //      and a patch!
+      kArgTypeNone, kArgTypeNone, "wr", false },
    { "MOV{REX.W + B8+ rd io}",
       kR64,
       kI64,
-      kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, "wr", false },
    { "MOV{REX.W + C7 /0 id}",
       kR64 | kM64,
       kI32,
-      kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, "wr", false },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt callFmts[] = {
    { "CALL{E8 cd}",
       kI32,
-      kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, "r", false },
    { "CALL{FF /2}",
       kR64 | kM64,
-      kArgTypeNone, kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, "r", false },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt retFmts[] = {
    { "RET{C3}",
-      kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
-   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone },
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrInfo kInstrs[] = {
-   { "<selectSegment>",   NULL     },
-   { "<enterFunc>",       NULL     },
-   { "<exitFunc>",        NULL     },
+   { "<selectSegment>",   NULL, false, NULL     },
+   { "<enterFunc>",       NULL, false, NULL     },
+   { "<exitFunc>",        NULL, false, NULL     },
 
-   { "<reserveLocal>",    NULL     },
-   { "<unreserveLocal>",  NULL     },
+   { "<reserveLocal>",    NULL, false, NULL     },
+   { "<unreserveLocal>",  NULL, false, NULL     },
 
-   { "<globalConstData>", NULL     },
+   { "<globalConstData>", NULL, false, NULL     },
 
-   { "push",              (const instrFmt*)&pushFmts },
-   { "pop",               (const instrFmt*)&popFmts },
+   { "push",              "r",  true,  (const instrFmt*)&pushFmts },
+   { "pop",               "w",  true,  (const instrFmt*)&popFmts },
 
-   { "sub",               (const instrFmt*)&subFmts },
-   { "add",               (const instrFmt*)&addFmts },
+   { "sub",               "br", false, (const instrFmt*)&subFmts },
+   { "add",               "br", false, (const instrFmt*)&addFmts },
 
-   { "mov",               (const instrFmt*)&movFmts },
+   { "mov",               "wr", false, (const instrFmt*)&movFmts },
 
-   { "<precall>",         NULL     },
-   { "call",              (const instrFmt*)&callFmts },
-   { "<postcall>",        NULL     },
+   { "<precall>",         NULL, false, NULL     },
+   { "call",              "x",  true,  (const instrFmt*)&callFmts },
+   { "<postcall>",        NULL, false, NULL     },
 
-   { "ret",               (const instrFmt*)&retFmts },
+   { "ret",               "r",  true, (const instrFmt*)&retFmts },
 
-   { "system",            NULL     },
+   { "system",            "x",  true, NULL     },
 };
 
 void x8664Processor::createRegisterMap(std::map<size_t,size_t>& m) const
@@ -261,6 +262,12 @@ void w64CallingConvention::createRegisterBankInPreferredOrder(std::vector<size_t
    v.push_back(i64::kReg11);
 }
 
+void w64CallingConvention::createScratchRegisterBank(std::vector<size_t>& v) const
+{
+   // volatile - saved around subcalls and not in the calling conventions
+   v.push_back(i64::kReg10);
+   v.push_back(i64::kReg11);
+}
 
 const iSyscallConvention& w64EmuTargetInfo::getSyscallConvention() const
 {
