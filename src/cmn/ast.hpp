@@ -87,6 +87,9 @@ public:
    virtual void visit(boolLiteralNode& n) = 0;
    virtual void visit(intLiteralNode& n) = 0;
    virtual void visit(structLiteralNode& n) = 0;
+   virtual void visit(genericNode& n) = 0;
+   virtual void visit(constraintNode& n) = 0;
+   virtual void visit(instantiateNode& n) = 0;
 
 protected:
    virtual void _implementLanguage() = 0;
@@ -467,6 +470,30 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+// ----------------------- generics -----------------------
+
+class genericNode : public node {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class constraintNode : public node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class instantiateNode : public node {
+public:
+   instantiateNode() : impled(false) {}
+
+   bool impled;
+   std::string text;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 // ----------------------- language visitors -----------------------
 
 class hNodeVisitor : public iNodeVisitor {
@@ -504,6 +531,9 @@ public:
    virtual void visit(boolLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(intLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(structLiteralNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(genericNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(constraintNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(instantiateNode& n) { visit(static_cast<node&>(n)); }
 };
 
 class diagVisitor : public hNodeVisitor {
@@ -542,6 +572,9 @@ public:
    virtual void visit(boolLiteralNode& n);
    virtual void visit(intLiteralNode& n);
    virtual void visit(structLiteralNode& n);
+   virtual void visit(genericNode& n);
+   virtual void visit(constraintNode& n);
+   virtual void visit(instantiateNode& n);
 
    virtual void _implementLanguage() {} // all
 
@@ -650,6 +683,9 @@ public:
    virtual void visit(boolLiteralNode&) { inst.reset(new boolLiteralNode()); }
    virtual void visit(intLiteralNode&) { inst.reset(new intLiteralNode()); }
    virtual void visit(structLiteralNode&) { inst.reset(new structLiteralNode()); }
+   virtual void visit(genericNode&) { inst.reset(new genericNode()); }
+   virtual void visit(constraintNode&) { inst.reset(new constraintNode()); }
+   virtual void visit(instantiateNode&) { inst.reset(new instantiateNode()); }
 
    virtual void _implementLanguage() {} // all
 
@@ -667,7 +703,7 @@ public:
    virtual void visit(scopeNode& n) { unexpected(n); }
    virtual void visit(fileNode& n) { unexpected(n); }
    virtual void visit(fileRefNode& n) { unexpected(n); }
-   virtual void visit(classNode& n) { unexpected(n); }
+   virtual void visit(classNode& n);
    virtual void visit(memberNode& n);
    virtual void visit(methodNode& n);
    virtual void visit(fieldNode& n);
@@ -694,6 +730,9 @@ public:
    virtual void visit(boolLiteralNode& n) { unexpected(n); }
    virtual void visit(intLiteralNode& n) { unexpected(n); }
    virtual void visit(structLiteralNode& n) { unexpected(n); }
+   virtual void visit(genericNode& n) { unexpected(n); }
+   virtual void visit(constraintNode& n) { unexpected(n); }
+   virtual void visit(instantiateNode& n) { unexpected(n); }
 
    virtual void _implementLanguage() {} // all
 

@@ -7,6 +7,7 @@
 namespace cmn {
 
 class commonLexor;
+class genericTypeExprLexor;
 class lexorBase;
 
 // eBNF
@@ -16,10 +17,11 @@ class lexorBase;
 //           | <const> <file>
 //           | <func> <file>
 //           | <ref> <strlit>
+//           | 'instantiate' <text> ';'
 //           | e
 //
 // ------------------------- class
-// <class> ::== <generic> <attributes> 'class' <name> <class-bases> '{' <class-members> '}'
+// <class> ::== <attributes> <generic> 'class' <name> <class-bases> '{' <class-members> '}'
 // <class-bases> ::== ':' <name>
 //                  | e
 // <class-members> ::== <method> <class-members>
@@ -33,16 +35,10 @@ class lexorBase;
 // <field> ::== <member-keywords> <name> ':' <type> <field-init> ';'
 // <field-init> ::== '=' <rvalue>
 //                 | e
-//      ** NEW (unimpl'd) **
-// <generic> ::== 'generic<' <constraints> '>'
-//              | e
-// <constraints> ::== <name> ':' <name> <constraints'>
-// <constraints'> ::== ',' <constraints>
-//                   | e
 //
 // ------------------------- global funcs (liam)
 // <const> ::== <name> ':' <type> <field-init> ';'
-// <func> ::== <attributes> 'func' <name> '(' <name> ':' <type> ')' ';'
+// <func> ::== <generic> <attributes> 'func' <name> '(' <name> ':' <type> ')' ';'
 //
 // ------------------------- procedural
 // <body> ::== '{' <statements> '}'
@@ -56,12 +52,15 @@ class lexorBase;
 // <var>       ::== <name> ':' <type>
 //                | <name> ':' <type> '=' <rvalue>
 //                | <name> '=' <rvalue>
-// <invoke>     ::== <lvalue> '->' <name> '(' <passedArgList> ')'
-// <call>       ::== <lvalue> '(' <passedArgList> ')'
+// <invoke>     ::== <lvalue> '->' <name**> '(' <passedArgList> ')'
+// <call>       ::== <lvalue**> '(' <passedArgList> ')'
 // <assignment> ::== <lvalue> '=' <rvalue>
 // <passedArgList> ::== <rvalue> ',' <passedArgList>
 //                    | <rvalue>
 //                    | e
+//
+// ** denote things that should allow type-paramed names in a generic class/method/func
+//    otherwise are type-opaque and treat <> in names as any other character
 //
 // ------------------------- rval/lval   <-- TODO left off here
 // <lvalue> ::== <name>
@@ -100,7 +99,7 @@ class lexorBase;
 // ------------------------- type
 // <type> ::== 'str' '[' ']'
 //           | 'void'
-//           | <name> // user defined type
+//           | <name**> // user defined type
 //
 // ------------------------- attributes
 // <attributes> ::== '[' <name> ']' <attributes>
@@ -142,7 +141,7 @@ public:
 
 private:
    void parseFile(fileNode& f);
-   void parseClass(fileNode& f);
+   void parseClass(fileNode& f, const std::string& genericTypeExpr);
    void parseClassBases(classNode& c);
    void parseClassMembers(classNode& c);
    void parseMemberKeywords(size_t& flags);
@@ -173,9 +172,38 @@ private:
    void parseType(node& owner);
 
    void parseAttributes();
+   void parseGeneric(node& n, const std::string& genericTypeExpr);
 
    nodeFactory m_nFac;
    commonLexor& m_l;
+};
+
+// <generic> ::== 'generic' '<' <constraints> '>'
+//              | e
+// <constraints> ::== <constraint> <constraints'>
+// <constraints'> ::== ',' <constraints>
+//                   | e
+// <constraint> ::== <name> ':' <name>
+//                 | <name>
+//
+// <type-paramed> ::== <name> '<' arg> '>'
+// <arg> ::== <name> <args'>
+//          | <type-paramed> <args'>
+// <args'> :== ',' <arg>
+//           | e
+//
+class genericTypeExprParser {
+public:
+   explicit genericTypeExprParser(genericTypeExprLexor& l) : m_l(l) {}
+
+   void parseGeneric(genericNode& n);
+   void parseConstraints(genericNode& n);
+   void parseConstraint(genericNode& n);
+
+   void parseTypeParamed(std::string& base, std::list<std::string>& args);
+
+private:
+   genericTypeExprLexor& m_l;
 };
 
 } // namespace cmn

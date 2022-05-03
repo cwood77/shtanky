@@ -10,10 +10,19 @@ class iTarget;
 
 class frontend {
 public:
-   static void run(
+   frontend(
       const std::string& projectDir,
       std::unique_ptr<cmn::araceliProjectNode>& pPrj,
       std::unique_ptr<araceli::iTarget>& pTgt);
+
+   void run();
+
+protected:
+   virtual void linkGraph();
+
+   const std::string& m_projectDir;
+   std::unique_ptr<cmn::araceliProjectNode>& m_pPrj;
+   std::unique_ptr<araceli::iTarget>& m_pTgt;
 };
 
 } // namespace syzygy

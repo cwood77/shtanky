@@ -33,7 +33,7 @@ int main(int argc, const char *argv[])
    // setup project, target, AST; load & link
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
    std::unique_ptr<araceli::iTarget> pTgt;
-   syzygy::frontend::run(projectDir,pPrj,pTgt);
+   syzygy::frontend(projectDir,pPrj,pTgt).run();
 
    // capture class info
    classCatalog cc;

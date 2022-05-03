@@ -170,7 +170,9 @@ $(SYZYGY_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # philemon
 
 PHILEMON_SRC = \
+	src/philemon/genericClassInstantiator.cpp \
 	src/philemon/main.cpp \
+	src/philemon/symbolTable.cpp \
 
 PHILEMON_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(PHILEMON_SRC)))
 

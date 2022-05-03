@@ -11,39 +11,49 @@
 
 namespace syzygy {
 
-void frontend::run(const std::string& projectDir, std::unique_ptr<cmn::araceliProjectNode>& pPrj, std::unique_ptr<araceli::iTarget>& pTgt)
+frontend::frontend(const std::string& projectDir, std::unique_ptr<cmn::araceliProjectNode>& pPrj, std::unique_ptr<araceli::iTarget>& pTgt)
+: m_projectDir(projectDir), m_pPrj(pPrj), m_pTgt(pTgt)
+{
+}
+
+void frontend::run()
 {
    // setup project / target
-   pPrj = araceli::projectBuilder::create("ca");
-   araceli::projectBuilder::addScope(*pPrj.get(),projectDir,/*inProject*/true);
-   pTgt.reset(new araceli::consoleAppTarget());
-   pTgt->addAraceliStandardLibrary(*pPrj.get());
-   pTgt->populateIntrinsics(*pPrj.get());
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+   m_pPrj = araceli::projectBuilder::create("ca");
+   araceli::projectBuilder::addScope(*m_pPrj.get(),m_projectDir,/*inProject*/true);
+   m_pTgt.reset(new araceli::consoleAppTarget());
+   m_pTgt->addAraceliStandardLibrary(*m_pPrj.get());
+   m_pTgt->populateIntrinsics(*m_pPrj.get());
+   { cmn::diagVisitor v; m_pPrj->acceptVisitor(v); }
 
    // initial link to discover and load everything
-   araceli::nodeLinker().linkGraph(*pPrj);
+   linkGraph();
    cdwVERBOSE("graph after linking ----\n");
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+   { cmn::diagVisitor v; m_pPrj->acceptVisitor(v); }
 
    // gather metadata
    araceli::metadata md;
    {
       araceli::nodeMetadataBuilder inner(md);
       cmn::treeVisitor outer(inner);
-      pPrj->acceptVisitor(outer);
+      m_pPrj->acceptVisitor(outer);
    }
 
    // use metadata to generate the target
-   pTgt->araceliCodegen(*pPrj,md);
+   m_pTgt->araceliCodegen(*m_pPrj,md);
 
    // inject implied base class
-   { araceli::objectBaser v; pPrj->acceptVisitor(v); }
+   { araceli::objectBaser v; m_pPrj->acceptVisitor(v); }
 
    // subsequent link to update with new target and load more
-   araceli::nodeLinker().linkGraph(*pPrj);
+   linkGraph();
    cdwVERBOSE("graph after linking ----\n");
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+   { cmn::diagVisitor v; m_pPrj->acceptVisitor(v); }
+}
+
+void frontend::linkGraph()
+{
+   araceli::nodeLinker().linkGraph(*m_pPrj);
 }
 
 } // namespace syzygy

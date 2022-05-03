@@ -358,10 +358,11 @@ void nodeResolver::visit(varRefNode& n)
 void nodeLinker::linkGraph(node& root)
 {
    cdwVERBOSE("entering link/load loop ----\n");
-   symbolTable sTable;
    size_t missingLastTime = 0;
    while(true)
    {
+      symbolTable sTable;
+
       { nodePublisher p(sTable); treeVisitor t(p); root.acceptVisitor(t); }
       { nodeResolver r(sTable); treeVisitor t(r); root.acceptVisitor(t); }
       cdwVERBOSE("%lld published; %lld unresolved\n",

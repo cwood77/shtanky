@@ -100,7 +100,13 @@ public:
    };
 
 protected:
-   commonLexor(const char *buffer, const size_t *pUnsupported);
+   commonLexor(const char *buffer,
+      const size_t *pUnsupported, bool useGenericExprPhase = true);
+};
+
+class genericTypeExprLexor : public commonLexor {
+public:
+   explicit genericTypeExprLexor(const char *buffer);
 };
 
 } // namespace cmn

@@ -42,14 +42,25 @@ static const lexemeInfo scanTable[] = {
 
    { lexemeInfo::kSymbolic,     commonLexor::kPlus,        "+",          "plus"            },
 
-   // N.B. these are treated as alphanumeric because I distinguish between templates and
-   //      operators using spaces
-   { lexemeInfo::kAlphanumeric, commonLexor::kLessThan,    "<",          "less than"       },
-   { lexemeInfo::kAlphanumeric, commonLexor::kGreaterThan, ">",          "greater than"    },
-
    { lexemeInfo::kAlphanumeric, commonLexor::kGeneric,     "generic",    "generic"         },
    { lexemeInfo::kAlphanumeric, commonLexor::kInstantiate, "instantiate","instantiate"     },
    { lexemeInfo::kAlphanumeric, commonLexor::kType,        "type",       "type"            },
+
+   { lexemeInfo::kEndOfTable,   0,                         NULL,         NULL              }
+};
+
+// N.B. these are treated as alphanumeric because I distinguish between templates and
+//      operators using spaces
+static const lexemeInfo genericOpsAlpha[] = {
+   { lexemeInfo::kAlphanumeric, commonLexor::kLessThan,    "<",          "less than"       },
+   { lexemeInfo::kAlphanumeric, commonLexor::kGreaterThan, ">",          "greater than"    },
+
+   { lexemeInfo::kEndOfTable,   0,                         NULL,         NULL              }
+};
+
+static const lexemeInfo genericOpsSymbolic[] = {
+   { lexemeInfo::kSymbolic,     commonLexor::kLessThan,    "<",          "less than"       },
+   { lexemeInfo::kSymbolic,     commonLexor::kGreaterThan, ">",          "greater than"    },
 
    { lexemeInfo::kEndOfTable,   0,                         NULL,         NULL              }
 };
@@ -65,14 +76,26 @@ static const lexemeClassInfo classTable[] = {
    { commonLexor::kNoClass, NULL, NULL },
 };
 
-commonLexor::commonLexor(const char *buffer, const size_t *pUnsupported)
+commonLexor::commonLexor(const char *buffer, const size_t *pUnsupported, bool useGenericExprPhase)
 : lexorBase(buffer)
 {
    addPhase(*new stringLiteralReader());
    addPhase(*new intLiteralReader());
+   if(useGenericExprPhase)
+      addPhase(*new genericTypeReader());
    addPhase(*new whitespaceEater());
    addTable(scanTable,pUnsupported);
+   if(useGenericExprPhase)
+      addTable(genericOpsAlpha,pUnsupported);
+   else
+      addTable(genericOpsSymbolic,pUnsupported);
    addClasses(classTable);
+}
+
+genericTypeExprLexor::genericTypeExprLexor(const char *buffer)
+: commonLexor(buffer,NULL,/*useGenericExprPhase*/false)
+{
+   advance();
 }
 
 } // namespace cmn
