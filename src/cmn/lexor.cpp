@@ -50,6 +50,27 @@ void intLiteralReader::advance(lexorState& s) const
    s.token = lexorBase::kIntLiteral;
 }
 
+void genericTypeReader::advance(lexorState& s) const
+{
+   const char *pThumb = s.pThumb;
+   for(;::isalnum(*pThumb);++pThumb);
+   if(pThumb == s.pThumb) return; // must have alphanumeric prefix
+   if(*pThumb != '<') return; // open <
+   const char *pPayload = ++pThumb;
+   for(;*pThumb&&*pThumb!='>';++pThumb); // anything, then >
+   if(*pThumb != '>') return;
+   std::string payload(pPayload,pThumb-pPayload);
+   bool hasComma = (payload.find(',')!=std::string::npos);
+   bool hasSpaces = (payload.find(' ')!=std::string::npos);
+
+   if(hasComma || !hasSpaces)
+   {
+      s.lexeme = std::string(s.pThumb,pThumb + 1 - s.pThumb);
+      s.token = lexorBase::kGenericTypeExpr;
+      s.pThumb = pThumb + 1;
+   }
+}
+
 void whitespaceEater::collectTerminators(std::string& t) const
 {
    t += " \t\r\n";
@@ -126,6 +147,8 @@ std::string lexorBase::getTokenName(size_t t)
       return "string literal";
    else if(t == kIntLiteral)
       return "int literal";
+   else if(t == kGenericTypeExpr)
+      return "generic type expression";
    else
       return m_lexemeDict[t];
 }
@@ -196,7 +219,8 @@ void lexorBase::error(const char *f, unsigned long l, const std::string& msg)
    std::stringstream fullMsg;
    fullMsg << msg << " near line " << m_state.lineNumber
       << ( m_state.fileName.empty() ? "" : fileAppendage )
-      << " {in parser " << f << ", " << l << "}";
+      << " {in parser " << f << ", " << l << "}"
+      << " [lexeme=" << m_state.lexeme << "]";
 
    throw std::runtime_error(fullMsg.str());
 }

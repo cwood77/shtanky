@@ -83,10 +83,16 @@ public:
       kSingleQuote,
       kBackslash,
       kForwardslash,
+#endif
       kLessThan,
       kGreaterThan,
+#if 0
       kQuestion,
 #endif
+
+      kGeneric,
+      kInstantiate,
+      kType,
    };
 
    enum {
@@ -94,7 +100,13 @@ public:
    };
 
 protected:
-   commonLexor(const char *buffer, const size_t *pUnsupported);
+   commonLexor(const char *buffer,
+      const size_t *pUnsupported, bool genericAware = false);
+};
+
+class genericTypeExprLexor : public commonLexor {
+public:
+   explicit genericTypeExprLexor(const char *buffer);
 };
 
 } // namespace cmn

@@ -10,6 +10,8 @@
 
 namespace araceli {
 
+cmn::timedGlobal<loaderPrefs> gLoaderPrefs;
+
 void loader::loadFolder(cmn::scopeNode& s)
 {
    if(s.loaded)
@@ -23,7 +25,7 @@ void loader::loadFolder(cmn::scopeNode& s)
          loadFolder(*pSubScope);
    }
 
-   // load files
+   // discover files
    std::string pattern = s.path + "\\*";
    WIN32_FIND_DATA fData;
    HANDLE hFind = ::FindFirstFile(pattern.c_str(),&fData);
@@ -37,9 +39,9 @@ void loader::loadFolder(cmn::scopeNode& s)
 
       if(fData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
          ;
-      else if(cmn::pathUtil::getExt(fullPath) == "ara")
+      else if(cmn::pathUtil::getExt(fullPath) == gLoaderPrefs->ext)
       {
-         if(cmn::pathUtil::getLastPart(fullPath) == ".target.ara")
+         if(cmn::pathUtil::getLastPart(fullPath) == gLoaderPrefs->ignoredFileName)
             cdwVERBOSE("skipping load of %s\n",fullPath.c_str());
          else
             loadFile(s,fullPath);
@@ -63,6 +65,43 @@ void loader::loadFile(cmn::scopeNode& s, const std::string& fullPath)
    auto file = p.parseFile();
    file->fullPath = fullPath;
    s.appendChild(*file.release());
+}
+
+void loader::findScopeAndLoadFile(cmn::araceliProjectNode& s, const std::string& fullPath)
+{
+   std::string fileName = cmn::pathUtil::getLastPart(fullPath);
+   std::string folderName(fullPath.c_str(),fullPath.length() - fileName.length() - 1);
+   cdwDEBUG("searching for scope '%s'\n",folderName.c_str());
+
+   auto& scope = findScope(s,folderName);
+   loadFile(scope,fullPath);
+}
+
+bool startsWith(const std::string& thing, const std::string& prefix)
+{
+   if(prefix.length() >= thing.length()) return false;
+
+   return ::strncmp(prefix.c_str(),thing.c_str(),prefix.length()) == 0;
+}
+
+cmn::scopeNode& loader::findScope(cmn::node& n, const std::string& folder)
+{
+   auto scopes = n.getChildrenOf<cmn::scopeNode>();
+   for(auto it=scopes.begin();it!=scopes.end();++it)
+   {
+      cdwDEBUG("checking scope '%s'\n",(*it)->path.c_str());
+
+      if((*it)->path == folder)
+         return **it;
+
+      if(startsWith(folder,(*it)->path))
+      {
+         cdwDEBUG("descend\n");
+         return findScope(**it,folder);
+      }
+   }
+
+   cdwTHROW("can't find scope for %s\n",folder.c_str());
 }
 
 } // namespace araceli

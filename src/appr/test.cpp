@@ -79,10 +79,20 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
       .because("generated batch file");
 }
 
-araceliTest& araceliTest::expectLiamOf(const std::string& path)
+araceliTest& araceliTest::expectLiamOf(const std::string& path, bool hasPhilemon)
 {
+   auto philemon = cmn::pathUtil::addExt(path,"ph");
    auto header = cmn::pathUtil::addExt(path,cmn::pathUtil::kExtLiamHeader);
    auto source = cmn::pathUtil::addExt(path,cmn::pathUtil::kExtLiamSource);
+
+   if(hasPhilemon)
+      m_stream.appendNew<compareInstr>()
+         // philemon files will get sucked in by araceli, so make sure these
+         // aren't philemon files
+         .withControl(cmn::pathUtil::addExt(
+            cmn::pathUtil::addPrefixToFilePart(philemon,"expected-"),"txt"))
+         .withVariable(philemon)
+         .because("generated philemon");
 
    m_stream.appendNew<compareInstr>()
       .withControl(cmn::pathUtil::addPrefixToFilePart(header,"expected-"))

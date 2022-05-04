@@ -82,7 +82,7 @@ void batGen::adjustFiles(iTarget::phase p, const std::string ext, std::list<std:
    std::list<std::string> result;
 
    for(auto it=l.begin();it!=l.end();++it)
-      result.push_back(cmn::pathUtil::addExt(*it,ext));
+      result.push_back(cmn::pathUtil::replaceOrAddExt(*it,"ph",ext));
 
    m_tgt.adjustBatchFileFiles(p,result);
 

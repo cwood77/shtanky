@@ -1,5 +1,6 @@
 #pragma once
 #include <list>
+#include <map>
 #include <string>
 
 namespace cmn {
@@ -19,6 +20,8 @@ public:
 
    static std::string addExt(const std::string& path, const std::string& ext);
    static std::string getExt(const std::string& path);
+   static std::string replaceOrAddExt(
+      const std::string& path, const std::string& old, const std::string& ext);
    static std::string getLastPart(const std::string& path);
    static std::string addPrefixToFilePart(const std::string& path, const std::string& prefix);
 
@@ -28,8 +31,10 @@ public:
    static void loadFileContents(const std::string& path, std::string& contents);
 
 private:
-   static void splitPath(const std::string& path, std::list<std::string>& list);
+   static void splitPath(const std::string& path, std::list<std::string>& list, bool removeDots);
    static std::string combinePath(const std::list<std::string>& list);
+   static void splitName(const std::string& path, std::list<std::string>& list);
+   static std::string combineName(const std::list<std::string>& list);
 
    pathUtil();
    pathUtil(const pathUtil&);

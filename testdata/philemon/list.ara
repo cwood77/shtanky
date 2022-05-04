@@ -1,0 +1,18 @@
+generic<T>
+class list {
+
+   private _field : T;
+
+}
+
+[program]
+class bootstrap : .sht.cons.program {
+
+   override run(args : str[]) : void
+   {
+      var L : list<str>;
+   }
+
+}
+
+instantiate list<str>;

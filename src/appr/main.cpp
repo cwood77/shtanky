@@ -21,7 +21,7 @@ int main(int argc, const char *argv[])
       .expectLiamOf(".\\testdata\\test\\test.ara")
       .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
       .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
-      .expectLiamOf(".\\testdata\\test\\.target.ara")
+      .expectLiamOf(".\\testdata\\test\\.target.ara",false) // no philemon
    ;
 
    araceliTest(is,".\\testdata\\assign")
@@ -29,7 +29,7 @@ int main(int argc, const char *argv[])
       .expectLiamOf(".\\testdata\\assign\\main.ara")
       .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
       .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
-      .expectLiamOf(".\\testdata\\assign\\.target.ara")
+      .expectLiamOf(".\\testdata\\assign\\.target.ara",false)
    ;
 
    shtasmTest(is,".\\testdata\\shtemu\\basic.asm")

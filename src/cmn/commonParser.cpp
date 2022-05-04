@@ -23,13 +23,22 @@ void commonParser::parseFile(fileNode& f)
    {
       parseAttributes();
 
-      m_l.demandOneOf(cdwLoc,6,
+      std::string genericExpr;
+      if(m_l.getToken() == commonLexor::kGenericTypeExpr)
+      {
+         genericExpr = m_l.getLexeme();
+         m_l.advance();
+         m_l.demand(cdwLoc,commonLexor::kClass); // temp
+      }
+
+      m_l.demandOneOf(cdwLoc,7,
          commonLexor::kClass,
          commonLexor::kInterface,
          commonLexor::kAbstract,
          commonLexor::kConst,
          commonLexor::kFunc,
-         commonLexor::kRef);
+         commonLexor::kRef,
+         commonLexor::kInstantiate);
 
       if(m_l.getToken() == commonLexor::kConst)
          parseGlobalConst(f);
@@ -46,12 +55,23 @@ void commonParser::parseFile(fileNode& f)
 
          m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
       }
+      else if(m_l.getToken() == commonLexor::kInstantiate)
+      {
+         m_l.advance();
+
+         m_l.demand(cdwLoc,commonLexor::kGenericTypeExpr);
+         auto& i = m_nFac.appendNewChild<instantiateNode>(f);
+         i.text = m_l.getLexeme();
+         m_l.advance();
+
+         m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
+      }
       else
-         parseClass(f);
+         parseClass(f,genericExpr);
    }
 }
 
-void commonParser::parseClass(fileNode& f)
+void commonParser::parseClass(fileNode& f, const std::string& genericTypeExpr)
 {
    classNode& c = m_nFac.appendNewChild<classNode>(f);
    if(m_l.getToken() == commonLexor::kClass)
@@ -66,6 +86,9 @@ void commonParser::parseClass(fileNode& f)
          commonLexor::kInterface,
          commonLexor::kAbstract);
    m_l.advance();
+
+   if(!genericTypeExpr.empty())
+      parseGeneric(c,genericTypeExpr);
 
    m_l.demand(cdwLoc,commonLexor::kName);
    c.name = m_l.getLexeme();
@@ -542,14 +565,20 @@ void commonParser::parseType(node& owner)
       m_nFac.appendNewChild<ptrTypeNode>(owner);
       m_l.advance();
    }
-   else if(m_l.getToken() == commonLexor::kName)
+   else if(m_l.getToken() == commonLexor::kName ||
+           m_l.getToken() == commonLexor::kGenericTypeExpr)
    {
       auto& t = m_nFac.appendNewChild<userTypeNode>(owner);
       t.pDef.ref = m_l.getLexeme();
       m_l.advance();
    }
    else
-      m_l.demandOneOf(cdwLoc,3,commonLexor::kStr,commonLexor::kVoid,commonLexor::kName);
+      m_l.demandOneOf(cdwLoc,5,
+         commonLexor::kStr,
+         commonLexor::kVoid,
+         commonLexor::kPtr,
+         commonLexor::kName,
+         commonLexor::kGenericTypeExpr);
 }
 
 void commonParser::parseAttributes()
@@ -564,6 +593,73 @@ void commonParser::parseAttributes()
 
       m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
    }
+}
+
+void commonParser::parseGeneric(node& n, const std::string& genericTypeExpr)
+{
+   std::unique_ptr<genericNode> pNode(new genericNode());
+
+   genericTypeExprLexor gtL(genericTypeExpr.c_str());
+   genericTypeExprParser(gtL).parseGeneric(*pNode.get());
+
+   n.injectAbove(*pNode.release());
+}
+
+void genericTypeExprParser::parseGeneric(genericNode& n)
+{
+   m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kGeneric);
+   m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kLessThan);
+
+   parseConstraints(n);
+
+   m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kGreaterThan);
+}
+
+void genericTypeExprParser::parseConstraints(genericNode& n)
+{
+   parseConstraint(n);
+
+   if(m_l.getToken() == genericTypeExprLexor::kComma)
+   {
+      m_l.advance();
+      parseConstraints(n);
+   }
+}
+
+void genericTypeExprParser::parseConstraint(genericNode& n)
+{
+   std::unique_ptr<constraintNode> pCons(new constraintNode());
+
+   m_l.demand(cdwLoc,genericTypeExprLexor::kName);
+   pCons->name = m_l.getLexeme();
+   m_l.advance();
+
+   // handle types here eventually
+
+   n.appendChild(*pCons.release());
+}
+
+void genericTypeExprParser::parseTypeParamed(std::string& base, std::list<std::string>& args)
+{
+   m_l.demand(cdwLoc,genericTypeExprLexor::kName);
+   base = m_l.getLexeme();
+   m_l.advance();
+
+   m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kLessThan);
+
+   while(true)
+   {
+      m_l.demandOneOf(cdwLoc,2,genericTypeExprLexor::kName,genericTypeExprLexor::kStr);
+      args.push_back(m_l.getLexeme());
+      m_l.advance();
+
+      if(m_l.getToken() != genericTypeExprLexor::kComma)
+         break;
+   }
+
+   m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kGreaterThan);
+
+   m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kEOI);
 }
 
 } // namespace cmn

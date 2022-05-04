@@ -402,6 +402,36 @@ void diagVisitor::visit(structLiteralNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(genericNode& n)
+{
+   cdwDEBUG("%sgenericNode\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(constraintNode& n)
+{
+   cdwDEBUG("%sconstraintNode; name=\n",
+      getIndent().c_str(),
+      n.name.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(instantiateNode& n)
+{
+   cdwDEBUG("%sinstantiateNode; text=%s, impled?=%d\n",
+      getIndent().c_str(),
+      n.text.c_str(),
+      n.impled ? 1 : 0);
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 diagVisitor::autoIndent::autoIndent(diagVisitor& v)
 : m_v(v)
 {
@@ -471,6 +501,15 @@ void cloningNodeVisitor::visit(node& n)
    as<node>().flags = n.flags;
 }
 
+void cloningNodeVisitor::visit(classNode& n)
+{
+   as<classNode>().name = n.name;
+   as<classNode>().baseClasses.resize(n.baseClasses.size());
+   for(size_t i=0;i<n.baseClasses.size();i++)
+      as<classNode>().baseClasses[i].ref = n.baseClasses[i].ref;
+   hNodeVisitor::visit(n);
+}
+
 void cloningNodeVisitor::visit(memberNode& n)
 {
    as<memberNode>().name = n.name;
@@ -519,7 +558,8 @@ void cloningNodeVisitor::visit(voidTypeNode& n)
 void cloningNodeVisitor::visit(userTypeNode& n)
 {
    as<userTypeNode>().pDef.ref = n.pDef.ref;
-   as<userTypeNode>().pDef.bind(*n.pDef.getRefee());
+   if(n.pDef.getRefee())
+      as<userTypeNode>().pDef.bind(*n.pDef.getRefee());
    hNodeVisitor::visit(n);
 }
 

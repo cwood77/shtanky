@@ -32,6 +32,25 @@ std::string pathUtil::getExt(const std::string& path)
    return pDot+1;
 }
 
+std::string pathUtil::replaceOrAddExt(const std::string& path, const std::string& old, const std::string& ext)
+{
+   std::list<std::string> l;
+   splitPath(path,l,false);
+
+   auto& name = l.back();
+   std::list<std::string> l2;
+   splitName(name,l2);
+
+   if(l2.back() == old)
+      l2.back() = ext;
+   else
+      l2.push_back(ext);
+
+   name = combineName(l2);
+   l.back() = name;
+   return combinePath(l);
+}
+
 std::string pathUtil::getLastPart(const std::string& path)
 {
    const char *pSlash = ::strrchr(path.c_str(),'\\');
@@ -43,7 +62,7 @@ std::string pathUtil::getLastPart(const std::string& path)
 std::string pathUtil::addPrefixToFilePart(const std::string& path, const std::string& prefix)
 {
    std::list<std::string> l;
-   splitPath(path,l);
+   splitPath(path,l,false);
    std::string revised = prefix + l.back();
    l.back() = revised;
    return combinePath(l);
@@ -57,8 +76,8 @@ std::string pathUtil::computeRefPath(const std::string& refer, const std::string
    std::list<std::string> referL, refeeL, ans;
 
    // convert to lists (and ignore '.')
-   splitPath(refer,referL);
-   splitPath(refee,refeeL);
+   splitPath(refer,referL,true);
+   splitPath(refee,refeeL,true);
 
    // remove common prefixes off both
    while(referL.size() > 1 && refeeL.size() > 1 && *referL.begin() == *refeeL.begin())
@@ -82,7 +101,7 @@ std::string pathUtil::absolutize(const std::string& refer, const std::string& re
 {
    std::string x = refer + "\\..\\" + refee;
    std::list<std::string> l;
-   splitPath(x,l);
+   splitPath(x,l,true);
    return combinePath(l);
 }
 
@@ -101,7 +120,7 @@ void pathUtil::loadFileContents(const std::string& path, std::string& contents)
    contents = stream.str();
 }
 
-void pathUtil::splitPath(const std::string& path, std::list<std::string>& list)
+void pathUtil::splitPath(const std::string& path, std::list<std::string>& list, bool removeDots)
 {
    const char *pStart = path.c_str();
    const char *pThumb = path.c_str();
@@ -114,11 +133,11 @@ void pathUtil::splitPath(const std::string& path, std::list<std::string>& list)
          pStart = pThumb + 1;
          pThumb = pStart;
 
-         if(word == ".." && list.size())
+         if(word == ".." && list.size() && removeDots)
          {
             list.erase(--list.end());
          }
-         else if(word != ".")
+         else if(word != "." || !removeDots)
          {
             list.push_back(word);
          }
@@ -136,6 +155,38 @@ std::string pathUtil::combinePath(const std::list<std::string>& list)
    {
       if(it!=list.begin())
          stream << "\\";
+      stream << *it;
+   }
+   return stream.str();
+}
+
+void pathUtil::splitName(const std::string& path, std::list<std::string>& list)
+{
+   const char *pStart = path.c_str();
+   const char *pThumb = path.c_str();
+
+   for(;*pThumb;pThumb++)
+   {
+      if(*pThumb=='.')
+      {
+         std::string word(pStart,pThumb-pStart);
+         pStart = pThumb + 1;
+         pThumb = pStart;
+         list.push_back(word);
+      }
+   }
+
+   std::string word(pStart,pThumb-pStart);
+   list.push_back(word);
+}
+
+std::string pathUtil::combineName(const std::list<std::string>& list)
+{
+   std::stringstream stream;
+   for(auto it=list.begin();it!=list.end();++it)
+   {
+      if(it!=list.begin())
+         stream << ".";
       stream << *it;
    }
    return stream.str();

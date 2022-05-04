@@ -69,6 +69,12 @@ public:
    virtual void advance(lexorState& s) const;
 };
 
+class genericTypeReader : public iLexorPhase {
+public:
+   virtual void collectTerminators(std::string& t) const {}
+   virtual void advance(lexorState& s) const;
+};
+
 class whitespaceEater : public iLexorPhase {
 public:
    virtual void collectTerminators(std::string& t) const;
@@ -83,6 +89,7 @@ public:
       kName,
       kStringLiteral,
       kIntLiteral,
+      kGenericTypeExpr,
       _kFirstDerivedToken,
       kNoClass            = (size_t)1<<20, // also, first class
    };

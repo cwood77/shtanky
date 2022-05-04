@@ -4,61 +4,80 @@
 #endif
 
 #include "../cmn/cmdline.hpp"
+#include "../cmn/main.hpp"
 #include "../cmn/out.hpp"
 #include "../cmn/trace.hpp"
+#include "../syzygy/frontend.hpp"
 #include "abstractGenerator.hpp"
 #include "batGen.hpp"
 #include "classInfo.hpp"
 #include "codegen.hpp"
-#include "consoleAppTarget.hpp"
 #include "constHoister.hpp"
 #include "ctorDtorGenerator.hpp"
 #include "inheritImplementor.hpp"
+#include "loader.hpp"
 #include "matryoshkaDecomp.hpp"
-#include "metadata.hpp"
 #include "methodMover.hpp"
-#include "objectBaser.hpp"
-#include "projectBuilder.hpp"
 #include "selfDecomposition.hpp"
 #include "stackClassDecomposition.hpp"
 #include "symbolTable.hpp"
 #include "vtableGenerator.hpp"
 #include <string.h>
 
+#include "metadata.hpp"
+#include "objectBaser.hpp"
+
 using namespace araceli;
 
-int main(int argc, const char *argv[])
+int _main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
    std::string projectDir = cl.getNextArg(".\\testdata\\test");
    std::string batchBuild = projectDir + "\\.build.bat";
 
-   // setup project / target
-   std::unique_ptr<cmn::araceliProjectNode> pPrj = projectBuilder::create("ca");
-   projectBuilder::addScope(*pPrj.get(),projectDir,/*inProject*/true);
-   consoleAppTarget tgt;
-   tgt.addAraceliStandardLibrary(*pPrj.get());
-   tgt.populateIntrinsics(*pPrj.get());
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+   // invoke philemon
+   {
+      std::stringstream childStream;
+      childStream << "bin\\out\\debug\\philemon.exe ";
+      childStream << projectDir;
+      childStream << " ara";
+      childStream << " .\\testdata\\sht\\core\\object.ara";
+      cdwVERBOSE("calling: %s\n",childStream.str().c_str());
+      ::_flushall();
+      int rval = ::system(childStream.str().c_str());
+      cdwDEBUG("*************************************************\n");
+      cdwDEBUG("**   returned to araceli\n");
+      cdwDEBUG("*************************************************\n");
+      cdwVERBOSE("rval = %d\n",rval);
+      if(rval != 0)
+      {
+         cdwINFO("philemon failed with code %d; aborting\n",rval);
+         cdwTHROW("child process failed");
+      }
+   }
 
-   // initial link to discover and load everything
-   araceli::nodeLinker().linkGraph(*pPrj);
-   cdwVERBOSE("graph after linking ----\n");
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+   // I convert ph -> ara.lh/ls
+   loaderPrefs lPrefs = { "ph", "" };
+   cmn::globalPublishTo<loaderPrefs> _lPrefs(lPrefs,gLoaderPrefs);
+
+   // setup project, target, AST; load & link
+   std::unique_ptr<cmn::araceliProjectNode> pPrj;
+   std::unique_ptr<araceli::iTarget> pTgt;
+   syzygy::frontend(projectDir,pPrj,pTgt).run();
 
    // gather metadata
-   metadata md;
+   araceli::metadata md;
    {
-      nodeMetadataBuilder inner(md);
+      araceli::nodeMetadataBuilder inner(md);
       cmn::treeVisitor outer(inner);
       pPrj->acceptVisitor(outer);
    }
 
    // use metadata to generate the target
-   tgt.araceliCodegen(*pPrj,md);
+   pTgt->araceliCodegen(*pPrj,md);
 
    // inject implied base class
-   { objectBaser v; pPrj->acceptVisitor(v); }
+   { araceli::objectBaser v; pPrj->acceptVisitor(v); }
 
    // subsequent link to update with new target and load more
    araceli::nodeLinker().linkGraph(*pPrj);
@@ -104,9 +123,11 @@ int main(int argc, const char *argv[])
    // codegen
    araceli::nodeLinker().linkGraph(*pPrj); // relink so codegen makes more fileRefs
    cmn::outBundle out;
-   { codeGen v(tgt,out); pPrj->acceptVisitor(v); }
-   { batGen v(tgt,out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
+   { codeGen v(*pTgt.get(),out); pPrj->acceptVisitor(v); }
+   { batGen v(*pTgt.get(),out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
    out.updateDisk(wr);
 
    return 0;
 }
+
+cdwImplMain()
