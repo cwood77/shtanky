@@ -1,4 +1,5 @@
 #pragma once
+#include "../cmn/global.hpp"
 #include <string>
 
 namespace cmn { class scopeNode; }
@@ -17,5 +18,7 @@ private:
    loader(const loader&);
    loader& operator=(const loader&);
 };
+
+extern cmn::timedGlobal<std::string> gLastSupportedInfix;
 
 } // namespace araceli

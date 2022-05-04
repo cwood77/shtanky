@@ -1,7 +1,4 @@
 #include "../araceli/consoleAppTarget.hpp"
-#include "../araceli/loader.hpp"
-#include "../araceli/metadata.hpp"
-#include "../araceli/objectBaser.hpp"
 #include "../araceli/projectBuilder.hpp"
 #include "../araceli/symbolTable.hpp"
 #include "../cmn/cmdline.hpp"
@@ -27,25 +24,6 @@ void frontend::run()
    { cmn::diagVisitor v; m_pPrj->acceptVisitor(v); }
 
    // initial link to discover and load everything
-   linkGraph();
-   cdwVERBOSE("graph after linking ----\n");
-   { cmn::diagVisitor v; m_pPrj->acceptVisitor(v); }
-
-   // gather metadata
-   araceli::metadata md;
-   {
-      araceli::nodeMetadataBuilder inner(md);
-      cmn::treeVisitor outer(inner);
-      m_pPrj->acceptVisitor(outer);
-   }
-
-   // use metadata to generate the target
-   m_pTgt->araceliCodegen(*m_pPrj,md);
-
-   // inject implied base class
-   { araceli::objectBaser v; m_pPrj->acceptVisitor(v); }
-
-   // subsequent link to update with new target and load more
    linkGraph();
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; m_pPrj->acceptVisitor(v); }

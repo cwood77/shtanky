@@ -10,6 +10,8 @@
 
 namespace araceli {
 
+cmn::timedGlobal<std::string> gLastSupportedInfix;
+
 void loader::loadFolder(cmn::scopeNode& s)
 {
    if(s.loaded)
@@ -23,7 +25,9 @@ void loader::loadFolder(cmn::scopeNode& s)
          loadFolder(*pSubScope);
    }
 
-   // load files
+   cmn::sourceFileGroup grp(*gLastSupportedInfix,"ara");
+
+   // discover files
    std::string pattern = s.path + "\\*";
    WIN32_FIND_DATA fData;
    HANDLE hFind = ::FindFirstFile(pattern.c_str(),&fData);
@@ -39,14 +43,25 @@ void loader::loadFolder(cmn::scopeNode& s)
          ;
       else if(cmn::pathUtil::getExt(fullPath) == "ara")
       {
+         grp.add(fullPath);
+#if 0
          if(cmn::pathUtil::getLastPart(fullPath) == ".target.ara")
             cdwVERBOSE("skipping load of %s\n",fullPath.c_str());
          else
             loadFile(s,fullPath);
+#endif
       }
 
    } while(::FindNextFile(hFind,&fData));
    ::FindClose(hFind);
+
+   // load files
+   grp.except(".target");
+   {
+      auto l = grp.getLatest();
+      for(auto it=l.begin();it!=l.end();++it)
+         loadFile(s,s.path + "\\" + *it);
+   }
 
    // mark loaded
    s.loaded = true;

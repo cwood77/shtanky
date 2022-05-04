@@ -144,6 +144,7 @@ SYZYGY_SRC = \
 	src/araceli/objectBaser.cpp \
 	src/araceli/projectBuilder.cpp \
 	src/araceli/symbolTable.cpp \
+	src/syzygy/codegen.cpp \
 	src/syzygy/frontend.cpp \
 
 SYZYGY_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SYZYGY_SRC)))
