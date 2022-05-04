@@ -86,7 +86,10 @@ araceliTest& araceliTest::expectLiamOf(const std::string& path)
    auto source = cmn::pathUtil::addExt(path,cmn::pathUtil::kExtLiamSource);
 
    m_stream.appendNew<compareInstr>()
-      .withControl(cmn::pathUtil::addPrefixToFilePart(philemon,"expected-"))
+      // philemon files will get sucked in by araceli, so make sure these
+      // aren't philemon files
+      .withControl(cmn::pathUtil::addExt(
+         cmn::pathUtil::addPrefixToFilePart(philemon,"expected-"),"txt"))
       .withVariable(philemon)
       .because("generated philemon");
 
