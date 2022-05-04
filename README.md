@@ -148,4 +148,19 @@ By milestone
 - [ ] DLLs
 - [ ] maybe a 'grep' tool that understand the languages--i.e. can skip comments, etc.
 
+### Nostromo
+Start building the OS and fill out the language as you go
+- [ ] while loop, with names, and break
+- [ ] peek/poke
+- [ ] register codegen
+- [ ] if
+- [ ] not
+- [ ] strings?  length, index
+- [ ] no size for int types means lots of funcs with 8
+
+What is a string?
+- it's a type that compiles down to an array and and a set of shtasm intrinsics
+- I think I can still get away with widening chars to 64-bits as long as the actual
+  array is 8-bit...?  What would an index be?  a move8.  then with an xor?  maybe it's easier to just support 8-bit
+
 [^1]: The name "shtanky" was suggested by my son, Ethan (age 11).  I selected the first of his suggestions that didn't include "my dad's butt" somewhere in the title.

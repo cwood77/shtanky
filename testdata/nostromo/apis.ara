@@ -115,8 +115,6 @@ interface iDriver : iPart {
 // display driver
 // -------------------------------------------------------------------------------------
 
-class textDriver {}
-
 interface iTextOut : iService {
 
    write(text : str, [capture] site : str) : void;
@@ -125,3 +123,44 @@ interface iTextOut : iService {
 }
 
 instantiate transientServiceProxy<iTextOut>;
+
+class lsrReg : stationaryRegister {
+public:
+   read() : void;
+   isTxReady() : bool;
+};
+
+class uart16550 {
+
+   init() : void
+   {
+   }
+
+   write8(v : int) : void
+   {
+      waitUntilReady();
+      .poke8(0x3F8,v);
+   }
+
+   private waitUntilReady() : void
+   {
+      while(true) : waitUntilReady
+      {
+         var lsr = .peek8(0x3F8 + 0x5);
+         if(!.hasFlag8(lsr,0x20))
+            waitUntilReady->exit();
+      }
+
+      // ---- and/or ----
+
+      while(true) : waitUntilReady
+      {
+         lsr->read();
+         if(!lsr->isTxReady())
+            waitUntilReady->exit();
+      }
+   }
+
+   private lsr : lsrReg;
+
+}
