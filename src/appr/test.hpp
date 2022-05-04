@@ -47,7 +47,7 @@ public:
    araceliTest(instrStream& s, const std::string& folder);
 
    araceliTest& wholeApp() { setupAutoShlink(m_folder + "\\.app"); return *this; }
-   araceliTest& expectLiamOf(const std::string& path);
+   araceliTest& expectLiamOf(const std::string& path, bool hasPhilemon = true);
 
 private:
    const std::string m_folder;

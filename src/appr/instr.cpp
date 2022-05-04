@@ -187,7 +187,7 @@ compareInstr& compareInstr::because(const std::string& reason)
       ss.stream() << ":" << failLbl << std::endl;
       ss.stopProgressDisplayForOutput();
       ss.stream() << "echo FAIL: files are different for " << reason << std::endl;
-      ss.stream() << "echo       aborting run prematurely" << std::endl;
+      ss.stream() << "echo       aborting run prematurely [" << failLbl << "]" << std::endl;
       ss.stream() << "goto end" << std::endl;
       ss.stream() << ":" << passLbl << std::endl;
    }

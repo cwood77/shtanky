@@ -40,7 +40,8 @@ testdata/**/.build.bat
 testdata/**/*.ara.*
 testdata/**/*.asm.*
 testdata/**/.target.ara
-testdata/**/.app
-testdata/**/.app.list
+testdata/**/*.app
+testdata/**/*.app.list
+testdata/**/*.app.log
 testdata/**/.classInfo
 !testdata/**/expected-*
