@@ -236,7 +236,7 @@ void codegen::visit(cmn::assignmentNode& n)
 void codegen::visit(cmn::stringLiteralNode& n)
 {
    auto& s = getOutStream();
-   s.stream() << n.value;
+   s.stream() << "\"" << n.value << "\"";
 }
 
 void codegen::visit(cmn::intLiteralNode& n)
@@ -249,7 +249,7 @@ cmn::outStream& codegen::getOutStream()
 {
    if(m_pCurrStream == NULL)
    {
-      auto outPath = cmn::pathUtil::setInfix(m_pCurrFile->fullPath,m_infix);
+      auto outPath = cmn::pathUtil::addExt(m_pCurrFile->fullPath,m_infix);
       cdwDEBUG("infixed path w/ '%s' yields [%s] -> [%s]\n",
          m_infix.c_str(),
          m_pCurrFile->fullPath.c_str(),

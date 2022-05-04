@@ -50,7 +50,7 @@ void fileRefCollector::onLink(cmn::linkBase& l)
    if(f.fullPath.empty())
       throw std::runtime_error("missing file path during collect");
 
-   auto adjF = cmn::pathUtil::addExt(f.fullPath,cmn::pathUtil::kExtLiamHeader);
+   auto adjF = cmn::pathUtil::replaceOrAddExt(f.fullPath,"ph",cmn::pathUtil::kExtLiamHeader);
    m_pRefs->addRef(adjF);
 
    cdwDEBUG("adding ref from %s to '%s' b/c of link w/ ref '%s' to node '%s'\n",
@@ -333,8 +333,8 @@ void sourceCodeGen::generateCommaDelimitedChildren(cmn::node& n, bool skipFirst)
 
 void codeGen::visit(cmn::fileNode& n)
 {
-   auto header = cmn::pathUtil::addExt(n.fullPath,cmn::pathUtil::kExtLiamHeader);
-   auto source = cmn::pathUtil::addExt(n.fullPath,cmn::pathUtil::kExtLiamSource);
+   auto header = cmn::pathUtil::replaceOrAddExt(n.fullPath,"ph",cmn::pathUtil::kExtLiamHeader);
+   auto source = cmn::pathUtil::replaceOrAddExt(n.fullPath,"ph",cmn::pathUtil::kExtLiamSource);
 
    { headerCodeGen v(m_out,header); n.acceptVisitor(v); }
    { sourceCodeGen v(m_out,header,source,m_tgt); n.acceptVisitor(v); }

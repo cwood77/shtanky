@@ -4,6 +4,7 @@
 #endif
 
 #include "../cmn/cmdline.hpp"
+#include "../cmn/main.hpp"
 #include "../cmn/out.hpp"
 #include "../cmn/trace.hpp"
 #include "../syzygy/frontend.hpp"
@@ -28,29 +29,40 @@
 
 using namespace araceli;
 
-int main(int argc, const char *argv[])
+int _main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
    std::string projectDir = cl.getNextArg(".\\testdata\\test");
    std::string batchBuild = projectDir + "\\.build.bat";
 
    // invoke philemon
-#if 0
    {
       std::stringstream childStream;
       childStream << "bin\\out\\debug\\philemon.exe ";
       childStream << projectDir;
-      childStream << "ara"
+      childStream << " ara";
+      childStream << " .\\testdata\\sht\\core\\object.ara";
+      cdwVERBOSE("calling: %s\n",childStream.str().c_str());
       ::_flushall();
       int rval = ::system(childStream.str().c_str());
+      cdwDEBUG("*************************************************\n");
+      cdwDEBUG("**   returned to araceli\n");
+      cdwDEBUG("*************************************************\n");
       cdwVERBOSE("rval = %d\n",rval);
-      return 0;
+      if(rval != 0)
+      {
+         cdwINFO("philemon failed with code %d; aborting\n",rval);
+         cdwTHROW("child process failed");
+      }
    }
-#endif
+
+   // declare files I read
+   loaderPrefs lPrefs = { "ph", "" };
+   cmn::globalPublishTo<loaderPrefs> _lPrefs(lPrefs,gLoaderPrefs);
 
    // setup load infix
-   std::string infix = "2-ph"; // TODO HACK - disable reading philemon output until philemon is stable/trustworthy
-   cmn::globalPublishTo<std::string> _infix(infix,gLastSupportedInfix);
+ //  std::string infix = "2-ph"; // TODO HACK - disable reading philemon output until philemon is stable/trustworthy
+//   cmn::globalPublishTo<std::string> _infix(infix,gLastSupportedInfix);
 
    // setup project, target, AST; load & link
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
@@ -121,3 +133,5 @@ int main(int argc, const char *argv[])
 
    return 0;
 }
+
+cdwImplMain()
