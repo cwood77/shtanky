@@ -49,8 +49,18 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kEndOfTable,   0,                         NULL,         NULL              }
 };
 
-// N.B. these are treated as alphanumeric because I distinguish between templates and
-//      operators using spaces
+// lexors can be "generic aware" or "generic unaware".  Aware lexors see into generic
+// expressions, while unaware ones see only a opaque blob.  Unaware lexors require spacing
+// around < and > to see them (i.e. they are alphanumeric tokens)
+//
+// for example
+//      return type<foo>;
+//
+// unaware:
+//      kReturn kGenericTypeExpr kSemiColon
+// aware
+//      kReturn kName kLessThan kName kGreaterThan kSemiColon
+//
 static const lexemeInfo genericOpsAlpha[] = {
    { lexemeInfo::kAlphanumeric, commonLexor::kLessThan,    "<",          "less than"       },
    { lexemeInfo::kAlphanumeric, commonLexor::kGreaterThan, ">",          "greater than"    },
@@ -76,16 +86,16 @@ static const lexemeClassInfo classTable[] = {
    { commonLexor::kNoClass, NULL, NULL },
 };
 
-commonLexor::commonLexor(const char *buffer, const size_t *pUnsupported, bool useGenericExprPhase)
+commonLexor::commonLexor(const char *buffer, const size_t *pUnsupported, bool genericAware)
 : lexorBase(buffer)
 {
    addPhase(*new stringLiteralReader());
    addPhase(*new intLiteralReader());
-   if(useGenericExprPhase)
+   if(!genericAware)
       addPhase(*new genericTypeReader());
    addPhase(*new whitespaceEater());
    addTable(scanTable,pUnsupported);
-   if(useGenericExprPhase)
+   if(!genericAware)
       addTable(genericOpsAlpha,pUnsupported);
    else
       addTable(genericOpsSymbolic,pUnsupported);
@@ -93,7 +103,7 @@ commonLexor::commonLexor(const char *buffer, const size_t *pUnsupported, bool us
 }
 
 genericTypeExprLexor::genericTypeExprLexor(const char *buffer)
-: commonLexor(buffer,NULL,/*useGenericExprPhase*/false)
+: commonLexor(buffer,NULL,/*genericAware*/true)
 {
    advance();
 }

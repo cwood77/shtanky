@@ -56,37 +56,33 @@ int _main(int argc, const char *argv[])
       }
    }
 
-   // declare files I read
+   // I convert ph -> ara.lh/ls
    loaderPrefs lPrefs = { "ph", "" };
    cmn::globalPublishTo<loaderPrefs> _lPrefs(lPrefs,gLoaderPrefs);
-
-   // setup load infix
- //  std::string infix = "2-ph"; // TODO HACK - disable reading philemon output until philemon is stable/trustworthy
-//   cmn::globalPublishTo<std::string> _infix(infix,gLastSupportedInfix);
 
    // setup project, target, AST; load & link
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
    std::unique_ptr<araceli::iTarget> pTgt;
    syzygy::frontend(projectDir,pPrj,pTgt).run();
 
-            // gather metadata
-            araceli::metadata md;
-            {
-               araceli::nodeMetadataBuilder inner(md);
-               cmn::treeVisitor outer(inner);
-               pPrj->acceptVisitor(outer);
-            }
+   // gather metadata
+   araceli::metadata md;
+   {
+      araceli::nodeMetadataBuilder inner(md);
+      cmn::treeVisitor outer(inner);
+      pPrj->acceptVisitor(outer);
+   }
 
-            // use metadata to generate the target
-            pTgt->araceliCodegen(*pPrj,md);
+   // use metadata to generate the target
+   pTgt->araceliCodegen(*pPrj,md);
 
-            // inject implied base class
-            { araceli::objectBaser v; pPrj->acceptVisitor(v); }
+   // inject implied base class
+   { araceli::objectBaser v; pPrj->acceptVisitor(v); }
 
-            // subsequent link to update with new target and load more
-            araceli::nodeLinker().linkGraph(*pPrj);
-            cdwVERBOSE("graph after linking ----\n");
-            { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+   // subsequent link to update with new target and load more
+   araceli::nodeLinker().linkGraph(*pPrj);
+   cdwVERBOSE("graph after linking ----\n");
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // capture class info
    classCatalog cc;

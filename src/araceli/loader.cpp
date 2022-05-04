@@ -10,7 +10,6 @@
 
 namespace araceli {
 
-cmn::timedGlobal<std::string> gLastSupportedInfix;
 cmn::timedGlobal<loaderPrefs> gLoaderPrefs;
 
 void loader::loadFolder(cmn::scopeNode& s)

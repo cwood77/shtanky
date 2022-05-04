@@ -31,7 +31,6 @@ private:
    loader& operator=(const loader&);
 };
 
-extern cmn::timedGlobal<std::string> gLastSupportedInfix;
 extern cmn::timedGlobal<loaderPrefs> gLoaderPrefs;
 
 } // namespace araceli

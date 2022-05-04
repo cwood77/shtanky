@@ -68,51 +68,6 @@ std::string pathUtil::addPrefixToFilePart(const std::string& path, const std::st
    return combinePath(l);
 }
 
-std::string pathUtil::setInfix(const std::string& fullPath, const std::string& infix)
-{
-   std::list<std::string> l;
-   splitPath(fullPath,l,true);
-
-   auto& name = l.back();
-   std::list<std::string> l2;
-   splitName(name,l2);
-
-   if(l2.size() < 2)
-      cdwTHROW("insanity");
-   if(l2.size() == 2 || (l2.size() == 3 && l2.begin()->empty()))
-      l2.insert(--(l2.end()),"-tbd-");
-
-   *(--(--(l2.end()))) = infix;
-
-   name = combineName(l2);
-   return combinePath(l);
-}
-
-std::string pathUtil::getInfix(const std::string& fullPath, std::string& prefix)
-{
-   std::list<std::string> l;
-   splitPath(fullPath,l,true);
-
-   auto& name = l.back();
-   std::list<std::string> l2;
-   splitName(name,l2);
-
-   std::string infix;
-   l2.erase(--l2.end()); // shave off ext
-   if(l2.size() == 1)
-      ; // no infix
-   else if(l2.size() == 2 && l2.begin()->empty())
-      ; // no infix
-   else
-   {
-      infix = l2.back();
-      l2.erase(--l2.end());
-   }
-
-   prefix = combineName(l2);
-   return infix;
-}
-
 // include .\testdata\sht\cons\program.ara.lh
 //    from .\testdata\test\test.ara.ls
 //              translates to -> ..\sht\cons\program.ara.lh
@@ -235,48 +190,6 @@ std::string pathUtil::combineName(const std::list<std::string>& list)
       stream << *it;
    }
    return stream.str();
-}
-
-void sourceFileGroup::add(const std::string& filename)
-{
-   std::string prefix;
-   std::string infix = pathUtil::getInfix(filename,prefix);
-   cdwDEBUG("split '%s' => [%s][%s]\n",
-      filename.c_str(),
-      prefix.c_str(),
-      infix.c_str());
-   if(infix > m_lastInfix)
-   {
-      cdwDEBUG("discarding as too new\n");
-      return;
-   }
-
-   std::string& current = m_prefixToInfix[prefix];
-   if(infix > current)
-   {
-      cdwDEBUG("new record ('%s' > '%s'\n",infix.c_str(),current.c_str());
-      current = infix;
-   }
-}
-
-void sourceFileGroup::except(const std::string& prefix)
-{
-   m_prefixToInfix.erase(prefix);
-}
-
-std::list<std::string> sourceFileGroup::getLatest()
-{
-   std::list<std::string> rval;
-
-   for(auto it=m_prefixToInfix.begin();it!=m_prefixToInfix.end();++it)
-   {
-      std::string x = pathUtil::addExt(it->first,m_ext);
-      if(!it->second.empty())
-         x = pathUtil::setInfix(x,it->second);
-      rval.push_back(x);
-   }
-
-   return rval;
 }
 
 } // namespace cmn

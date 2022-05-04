@@ -14,14 +14,11 @@ int _main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
    std::string projectDir = cl.getNextArg(".\\testdata\\philemon");
-   std::string inExt = cl.getNextArg("");
+   std::string inExt = cl.getNextArg("ara");
 
+   // I convert * (arg) -> ph
    araceli::loaderPrefs lPrefs = { inExt, ".target.ara" };
    cmn::globalPublishTo<araceli::loaderPrefs> _lPrefs(lPrefs,araceli::gLoaderPrefs);
-
-   // setup load infix
-  // std::string infix = "1-sa";
-  // cmn::globalPublishTo<std::string> _infix(infix,araceli::gLastSupportedInfix);
 
    // setup project, target, AST; load & link
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
@@ -43,7 +40,7 @@ int _main(int argc, const char *argv[])
    classInstantiator().run(*pPrj.get());
    { genericStripper v; pPrj->acceptVisitor(v); }
 
-   // write
+   // codegen
    cmn::outBundle b;
    { syzygy::codegen v(b,"ph"); pPrj->acceptVisitor(v); }
    { cmn::unconditionalWriter f; b.updateDisk(f); }

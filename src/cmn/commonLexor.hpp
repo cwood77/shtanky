@@ -101,7 +101,7 @@ public:
 
 protected:
    commonLexor(const char *buffer,
-      const size_t *pUnsupported, bool useGenericExprPhase = true);
+      const size_t *pUnsupported, bool genericAware = false);
 };
 
 class genericTypeExprLexor : public commonLexor {

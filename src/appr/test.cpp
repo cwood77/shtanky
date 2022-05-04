@@ -81,8 +81,14 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
 
 araceliTest& araceliTest::expectLiamOf(const std::string& path)
 {
+   auto philemon = cmn::pathUtil::addExt(path,"ph");
    auto header = cmn::pathUtil::addExt(path,cmn::pathUtil::kExtLiamHeader);
    auto source = cmn::pathUtil::addExt(path,cmn::pathUtil::kExtLiamSource);
+
+   m_stream.appendNew<compareInstr>()
+      .withControl(cmn::pathUtil::addPrefixToFilePart(philemon,"expected-"))
+      .withVariable(philemon)
+      .because("generated philemon");
 
    m_stream.appendNew<compareInstr>()
       .withControl(cmn::pathUtil::addPrefixToFilePart(header,"expected-"))
