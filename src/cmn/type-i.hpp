@@ -75,9 +75,13 @@ public:
    virtual iType& getField(const std::string& name);
    virtual size_t getOffsetOfField(const std::string& name, const tgt::iTargetInfo& t) const;
 
+   void addBase(iType& b) { m_bases.push_back(&b); }
    void addField(const std::string& name, iType& f);
 
 private:
+   iType *tryGetField(const std::string& name);
+
+   std::list<iType*> m_bases;
    std::list<std::string> m_order;
    std::map<std::string,iType*> m_members;
 };

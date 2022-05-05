@@ -289,6 +289,11 @@ void diagVisitor::visit(userTypeNode& n)
 
 void diagVisitor::visit(ptrTypeNode& n)
 {
+   cdwDEBUG("%sptrType\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
 }
 
 void diagVisitor::visit(sequenceNode& n)

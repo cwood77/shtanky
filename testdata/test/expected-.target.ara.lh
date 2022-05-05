@@ -4,7 +4,7 @@ class .test.consoleTarget {
 
 [entrypoint]
 func .test.consoleTarget.main(
-   args : str[]) : void;
+   args : .sht.core.string[]) : void;
 
 func .test.consoleTarget.cctor(
    self : .test.consoleTarget) : .test.consoleTarget;
@@ -21,3 +21,4 @@ func .test.consoleTarget_sctor(
 func .test.consoleTarget_sdtor(
    self : .test.consoleTarget) : void;
 
+ref "..\sht\core\string.ara.lh";

@@ -85,6 +85,7 @@ public:
    typeBuilder& array();
 
    // classes
+   typeBuilder& addBase(iType& ty);
    typeBuilder& addMember(const std::string& name, iType& ty);
 
    // function/methods

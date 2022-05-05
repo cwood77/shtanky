@@ -32,6 +32,16 @@ const size_t staticallySizedType::getRealAllocSize(const tgt::iTargetInfo& t) co
    return t.getRealSize(m_size);
 }
 
+const size_t userClassType::getRealAllocSize(const tgt::iTargetInfo& t) const
+{
+   size_t totalSize = 0;
+   for(auto it=m_bases.begin();it!=m_bases.end();++it)
+      totalSize += (*it)->getRealAllocSize(t);
+   for(auto it=m_order.begin();it!=m_order.end();++it)
+      totalSize += t.getRealSize(m_members.find(*it)->second->getPseudoRefSize());
+   return totalSize;
+}
+
 bool userClassType::_is(const std::string& name) const
 {
    if(name == typeid(iStructType).name())
@@ -48,24 +58,19 @@ void *userClassType::_as(const std::string& name)
       return typeBase::_as(name);
 }
 
-const size_t userClassType::getRealAllocSize(const tgt::iTargetInfo& t) const
-{
-   size_t totalSize = 0;
-   for(auto it=m_order.begin();it!=m_order.end();++it)
-      totalSize += t.getRealSize(m_members.find(*it)->second->getPseudoRefSize());
-   return totalSize;
-}
-
 iType& userClassType::getField(const std::string& name)
 {
-   auto it = m_members.find(name);
-   if(it == m_members.end())
-      cdwTHROW("type '%s' does note have field '%s'\n",getName().c_str(),name.c_str());
-   return *it->second;
+   auto *pAns = tryGetField(name);
+   if(!pAns)
+      cdwTHROW("type '%s' does not have field '%s'\n",getName().c_str(),name.c_str());
+   return *pAns;
 }
 
 size_t userClassType::getOffsetOfField(const std::string& name, const tgt::iTargetInfo& t) const
 {
+   if(m_bases.size())
+      cdwTHROW("computing offsets not supported with base classes");
+
    size_t offset = 0;
    for(auto it=m_order.begin();it!=m_order.end();++it)
    {
@@ -82,6 +87,23 @@ void userClassType::addField(const std::string& name, iType& f)
 {
    m_order.push_back(name);
    m_members[name] = &f;
+}
+
+iType *userClassType::tryGetField(const std::string& name)
+{
+   auto it = m_members.find(name);
+   if(it != m_members.end())
+      return it->second;
+
+   for(auto it=m_bases.begin();it!=m_bases.end();++it)
+   {
+      auto& base = dynamic_cast<userClassType&>((*it)->as<iStructType>());
+      auto *pAns = base.tryGetField(name);
+      if(pAns)
+         return pAns;
+   }
+
+   return NULL;
 }
 
 bool functionType::_is(const std::string& name) const
@@ -212,6 +234,13 @@ typeBuilder& typeBuilder::array()
 {
    m_pType = new arrayOfType(finish());
    m_own = true;
+   return *this;
+}
+
+typeBuilder& typeBuilder::addBase(iType& ty)
+{
+   auto& cl = dynamic_cast<userClassType&>(*m_pType);
+   cl.addBase(ty);
    return *this;
 }
 

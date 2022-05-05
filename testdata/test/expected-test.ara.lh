@@ -5,7 +5,7 @@ class .test.test {
 
 func .test.test.run(
    self : .test.test,
-   args : str[]) : void;
+   args : .sht.core.string[]) : void;
 
 func .test.test.cctor(
    self : .test.test) : .test.test;
@@ -24,3 +24,4 @@ func .test.test_sdtor(
    self : .test.test) : void;
 
 ref "..\sht\cons\program.ara.lh";
+ref "..\sht\core\string.ara.lh";

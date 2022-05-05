@@ -211,6 +211,7 @@ ARACELI_SRC = \
 	src/araceli/methodMover.cpp \
 	src/araceli/selfDecomposition.cpp \
 	src/araceli/stackClassDecomposition.cpp \
+	src/araceli/stringDecomposition.cpp \
 	src/araceli/vtableGenerator.cpp \
 
 ARACELI_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(ARACELI_SRC)))

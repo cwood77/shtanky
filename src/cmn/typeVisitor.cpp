@@ -11,6 +11,14 @@ void builtInTypeVisitor::visit(strTypeNode& n)
    m_pBuilder.reset(NULL);
 }
 
+void builtInTypeVisitor::visit(intTypeNode& n)
+{
+   m_pBuilder.reset(type::typeBuilder::createInt());
+   hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
+}
+
 void builtInTypeVisitor::visit(arrayTypeNode& n)
 {
    m_pBuilder->array();
@@ -25,10 +33,22 @@ void builtInTypeVisitor::visit(voidTypeNode& n)
    m_pBuilder.reset(NULL);
 }
 
-// a word on user types:
 // here, you are guaranteed to get a stub (userTypeVisitor hasn't run yet)
-// but that's ok (and required) b/c otherwise nobody creates types for
-// userTypeNodes
+// that allows transforms later to demand a type
+void builtInTypeVisitor::visit(classNode& n)
+{
+   m_pBuilder.reset(
+      type::typeBuilder::open(
+         type::gTable->fetch(
+            fullyQualifiedName::build(n))));
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
+
+   hNodeVisitor::visit(n);
+}
+
+// here, you are guaranteed to get a stub (userTypeVisitor hasn't run yet)
+// that allows transforms later to demand a type
 void builtInTypeVisitor::visit(userTypeNode& n)
 {
    m_pBuilder.reset(
@@ -56,11 +76,6 @@ void builtInTypeVisitor::visit(stringLiteralNode& n)
    m_pBuilder.reset(NULL);
 }
 
-void builtInTypeVisitor::visit(boolLiteralNode& n)
-{
-   cdwTHROW("unimpled");
-}
-
 void builtInTypeVisitor::visit(intLiteralNode& n)
 {
    m_pBuilder.reset(type::typeBuilder::createInt());
@@ -71,10 +86,12 @@ void builtInTypeVisitor::visit(intLiteralNode& n)
 
 void userTypeVisitor::visit(classNode& n)
 {
-   m_pBuilder.reset(type::typeBuilder::createClass(n.name));
+   m_pBuilder.reset(type::typeBuilder::createClass(fullyQualifiedName::build(n)));
+   for(auto it=n.baseClasses.begin();it!=n.baseClasses.end();++it)
+      m_pBuilder->addBase(type::gNodeCache->demand(*it->getRefee()));
    hNodeVisitor::visit(n);
-   auto& t = m_pBuilder->finish();
-   type::gNodeCache->publish(n,t);
+   m_pBuilder->finish();
+   // this type was published earlier in the gNodeCache (in builtInTypeVisitor)
    m_pBuilder.reset();
 }
 
@@ -173,7 +190,7 @@ void typePropagator::visit(callNode& n)
 {
    hNodeVisitor::visit(n);
 
-   auto fqn = fullyQualifiedName::build(n,n.pTarget.ref);
+   auto fqn = fullyQualifiedName::build(*n.pTarget.getRefee(),n.pTarget.ref);
    auto& rVal = type::gTable->fetch(fqn).as<type::iFunctionType>().getReturnType();
    type::gNodeCache->publish(n,rVal);
 }

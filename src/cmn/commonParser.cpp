@@ -540,33 +540,28 @@ void commonParser::parseBop(node& owner, node *pExprRoot)
 
 void commonParser::parseType(node& owner)
 {
+   typeNode *pType = NULL;
+
    if(m_l.getToken() == commonLexor::kStr)
    {
-      auto& t = m_nFac.appendNewChild<strTypeNode>(owner);
+      pType = &m_nFac.appendNewChild<strTypeNode>(owner);
       m_l.advance();
-
-      if(m_l.getToken() == commonLexor::kLBracket)
-      {
-         m_l.advance();
-         m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
-         m_nFac.appendNewChild<arrayTypeNode>(t);
-      }
    }
    else if(m_l.getToken() == commonLexor::kVoid)
    {
-      m_nFac.appendNewChild<voidTypeNode>(owner);
+      pType = &m_nFac.appendNewChild<voidTypeNode>(owner);
       m_l.advance();
    }
    else if(m_l.getToken() == commonLexor::kPtr)
    {
-      m_nFac.appendNewChild<ptrTypeNode>(owner);
+      pType = &m_nFac.appendNewChild<ptrTypeNode>(owner);
       m_l.advance();
    }
    else if(m_l.getToken() == commonLexor::kName ||
            m_l.getToken() == commonLexor::kGenericTypeExpr)
    {
-      auto& t = m_nFac.appendNewChild<userTypeNode>(owner);
-      t.pDef.ref = m_l.getLexeme();
+      pType = &m_nFac.appendNewChild<userTypeNode>(owner);
+      dynamic_cast<userTypeNode*>(pType)->pDef.ref = m_l.getLexeme();
       m_l.advance();
    }
    else
@@ -576,6 +571,13 @@ void commonParser::parseType(node& owner)
          commonLexor::kPtr,
          commonLexor::kName,
          commonLexor::kGenericTypeExpr);
+
+   while(m_l.getToken() == commonLexor::kLBracket)
+   {
+      m_l.advance();
+      m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
+      pType = &m_nFac.appendNewChild<arrayTypeNode>(*pType);
+   }
 }
 
 void commonParser::parseAttributes()

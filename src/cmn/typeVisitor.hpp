@@ -14,15 +14,19 @@ class builtInTypeVisitor : public hNodeVisitor {
 public:
    virtual void visit(node& n) { visitChildren(n); }
 
+   virtual void visit(classNode& n);
    virtual void visit(strTypeNode& n);
+   //virtual void visit(boolTypeNode& n);
+   virtual void visit(intTypeNode& n);
    virtual void visit(arrayTypeNode& n);
    virtual void visit(voidTypeNode& n);
    virtual void visit(userTypeNode& n);
    virtual void visit(ptrTypeNode& n);
 
    virtual void visit(stringLiteralNode& n);
-   virtual void visit(boolLiteralNode& n);
+   //virtual void visit(boolLiteralNode& n);
    virtual void visit(intLiteralNode& n);
+   //virtual void visit(structLiteralNode& n);
 
    virtual void _implementLanguage() {} // all
 

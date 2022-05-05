@@ -15,9 +15,16 @@ void consoleAppTarget::addAraceliStandardLibrary(cmn::araceliProjectNode& root)
 
 void consoleAppTarget::populateIntrinsics(cmn::araceliProjectNode& root)
 {
-   auto *pNode = new cmn::intrinsicNode();
-   pNode->name = "._osCall";
-   root.appendChild(*pNode);
+   cmn::treeWriter(root)
+      .append<cmn::intrinsicNode>([](auto& i){ i.name = "._osCall"; })
+         .append<cmn::argNode>([](auto& a){ a.name = "code"; })
+            .append<cmn::intTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::argNode>([](auto& a){ a.name = "payload"; })
+            .append<cmn::ptrTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::voidTypeNode>()
+   ;
 }
 
 void consoleAppTarget::araceliCodegen(cmn::araceliProjectNode& root, metadata& md)

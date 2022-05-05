@@ -103,7 +103,7 @@ void astCodeGen::visit(cmn::fieldAccessNode& n)
       a.getName(),
       cmn::type::gNodeCache->demand(n).getPseudoRefSize());
 
-   if(!a.addrOf)// || n.flags & cmn::nodeFlags::kAddressableForWrite)
+   if(!a.addrOf)
    {
       // I can just deref the existing arg, no need for a mov
       pA->addrOf = true;
@@ -208,8 +208,6 @@ void astCodeGen::visit(cmn::varRefNode& n)
 
 void astCodeGen::visit(cmn::assignmentNode& n)
 {
-   n.getChildren()[0]->flags |= cmn::nodeFlags::kAddressableForWrite;
-
    n.getChildren()[1]->acceptVisitor(*this);
    n.getChildren()[0]->acceptVisitor(*this);
 
@@ -224,7 +222,6 @@ void astCodeGen::visit(cmn::bopNode& n)
 {
    // TODO HACK - bops aren't really implemented yet
    //             mainly a copy of assignment for now
-   n.getChildren()[0]->flags |= cmn::nodeFlags::kAddressableForWrite;
 
    n.getChildren()[1]->acceptVisitor(*this);
    n.getChildren()[0]->acceptVisitor(*this);
@@ -234,7 +231,8 @@ void astCodeGen::visit(cmn::bopNode& n)
          .inheritArgFromChild(*n.getChildren()[0])
          .inheritArgFromChild(*n.getChildren()[1])
          .withComment("BOP , but not really - HACK!!")
-         .returnToParent(0);
+         .returnToParent(0); // can't do this, or you're giving your parent a literal
+                             // can't rely on a transform to fix this for you
 }
 
 // all literals are nearly identical (just 'value' different) - share this?

@@ -8,6 +8,7 @@
 #include "../cmn/out.hpp"
 #include "../cmn/pathUtil.hpp"
 #include "../cmn/trace.hpp"
+#include "../cmn/typeVisitor.hpp"
 #include "../syzygy/frontend.hpp"
 #include "abstractGenerator.hpp"
 #include "batGen.hpp"
@@ -18,15 +19,15 @@
 #include "inheritImplementor.hpp"
 #include "loader.hpp"
 #include "matryoshkaDecomp.hpp"
+#include "metadata.hpp"
 #include "methodMover.hpp"
+#include "objectBaser.hpp"
 #include "selfDecomposition.hpp"
 #include "stackClassDecomposition.hpp"
+#include "stringDecomposition.hpp"
 #include "symbolTable.hpp"
 #include "vtableGenerator.hpp"
 #include <string.h>
-
-#include "metadata.hpp"
-#include "objectBaser.hpp"
 
 using namespace araceli;
 
@@ -43,6 +44,7 @@ int _main(int argc, const char *argv[])
       childStream << projectDir;
       childStream << " ara";
       childStream << " .\\testdata\\sht\\core\\object.ara";
+      childStream << " .\\testdata\\sht\\core\\string.ara";
       cdwVERBOSE("calling: %s\n",childStream.str().c_str());
       ::_flushall();
       int rval = ::system(childStream.str().c_str());
@@ -67,9 +69,9 @@ int _main(int argc, const char *argv[])
    syzygy::frontend(projectDir,pPrj,pTgt).run();
 
    // gather metadata
-   araceli::metadata md;
+   metadata md;
    {
-      araceli::nodeMetadataBuilder inner(md);
+      nodeMetadataBuilder inner(md);
       cmn::treeVisitor outer(inner);
       pPrj->acceptVisitor(outer);
    }
@@ -78,10 +80,13 @@ int _main(int argc, const char *argv[])
    pTgt->araceliCodegen(*pPrj,md);
 
    // inject implied base class
-   { araceli::objectBaser v; pPrj->acceptVisitor(v); }
+   { objectBaser v; pPrj->acceptVisitor(v); }
+
+   // transform native string type to class
+   { stringDecomposition v; pPrj->acceptVisitor(v); v.run(); }
 
    // subsequent link to update with new target and load more
-   araceli::nodeLinker().linkGraph(*pPrj);
+   nodeLinker().linkGraph(*pPrj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
@@ -99,8 +104,21 @@ int _main(int argc, const char *argv[])
 
    // ---------------- lowering transforms ----------------
 
+   {
+      // type prop
+      cmn::type::table                           _t;
+      cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
+      cmn::type::nodeCache                       _c;
+      cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
+      cmn::propagateTypes(*pPrj.get());
+
+      // writer marker
+
+      // op overloader
+   }
+
    // hoist out constants
-   { araceli::constHoister v; pPrj->acceptVisitor(v); }
+   { constHoister v; pPrj->acceptVisitor(v); }
    cdwVERBOSE("graph after const hoist ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
@@ -122,7 +140,7 @@ int _main(int argc, const char *argv[])
    // -----------------------------------------------------
 
    // codegen
-   araceli::nodeLinker().linkGraph(*pPrj); // relink so codegen makes more fileRefs
+   nodeLinker().linkGraph(*pPrj); // relink so codegen makes more fileRefs
    cmn::outBundle out;
    { codeGen v(*pTgt.get(),out); pPrj->acceptVisitor(v); }
    { batGen v(*pTgt.get(),out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
