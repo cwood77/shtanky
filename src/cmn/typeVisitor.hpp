@@ -39,6 +39,7 @@ class userTypeVisitor : public hNodeVisitor {
 public:
    virtual void visit(node& n) { visitChildren(n); }
    virtual void visit(classNode& n);
+   virtual void visit(methodNode& n);
    virtual void visit(fieldNode& n);
 
    virtual void _implementLanguage() {} // all
@@ -89,6 +90,7 @@ public:
    virtual void visit(localDeclNode& n);
    virtual void visit(varRefNode& n);
    virtual void visit(bopNode& n);
+   virtual void visit(indexNode& n);
 
    virtual void _implementLanguage() {} // all
 };

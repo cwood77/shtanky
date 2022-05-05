@@ -1,0 +1,48 @@
+class .nostromo.uart16550.fakeBase {
+   _vtbl : .nostromo.uart16550.fakeBase_vtbl;
+}
+
+class .nostromo.uart16550.driver {
+   _vtbl : .nostromo.uart16550.driver_vtbl;
+}
+
+func .nostromo.uart16550.fakeBase.write8(
+   self : .nostromo.uart16550.fakeBase,
+   byte : ptr) : void;
+
+func .nostromo.uart16550.fakeBase.cctor(
+   self : .nostromo.uart16550.fakeBase) : .nostromo.uart16550.fakeBase;
+
+func .nostromo.uart16550.fakeBase.cdtor(
+   self : .nostromo.uart16550.fakeBase) : .nostromo.uart16550.fakeBase;
+
+func .nostromo.uart16550.driver.write8(
+   self : .nostromo.uart16550.driver,
+   byte : ptr) : void;
+
+func .nostromo.uart16550.driver.cctor(
+   self : .nostromo.uart16550.driver) : .nostromo.uart16550.driver;
+
+func .nostromo.uart16550.driver.cdtor(
+   self : .nostromo.uart16550.driver) : .nostromo.uart16550.driver;
+
+class .nostromo.uart16550.driver_vtbl {
+   write8 : ptr;
+}
+
+class .nostromo.uart16550.fakeBase_vtbl {
+   write8 : ptr;
+}
+
+func .nostromo.uart16550.driver_sctor(
+   self : .nostromo.uart16550.driver) : void;
+
+func .nostromo.uart16550.driver_sdtor(
+   self : .nostromo.uart16550.driver) : void;
+
+func .nostromo.uart16550.fakeBase_sctor(
+   self : .nostromo.uart16550.fakeBase) : void;
+
+func .nostromo.uart16550.fakeBase_sdtor(
+   self : .nostromo.uart16550.fakeBase) : void;
+

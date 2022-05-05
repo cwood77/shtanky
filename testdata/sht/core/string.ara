@@ -1,1 +1,11 @@
-class string {}
+class string {
+
+   public indexOpGet(i : ptr) : ptr
+   {
+   }
+
+   public indexOpSet(i : ptr, val : ptr) : void
+   {
+   }
+
+}

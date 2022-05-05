@@ -1,0 +1,26 @@
+class .nostromo.debugOut {
+   _vtbl : .nostromo.debugOut_vtbl;
+   _uart : .nostromo.uart16550.driver;
+}
+
+func .nostromo.debugOut.write(
+   self : .nostromo.debugOut,
+   msg : .sht.core.string) : void;
+
+func .nostromo.debugOut.cctor(
+   self : .nostromo.debugOut) : .nostromo.debugOut;
+
+func .nostromo.debugOut.cdtor(
+   self : .nostromo.debugOut) : .nostromo.debugOut;
+
+class .nostromo.debugOut_vtbl {
+}
+
+func .nostromo.debugOut_sctor(
+   self : .nostromo.debugOut) : void;
+
+func .nostromo.debugOut_sdtor(
+   self : .nostromo.debugOut) : void;
+
+ref "uart16550\driver.ara.lh";
+ref "..\sht\core\string.ara.lh";

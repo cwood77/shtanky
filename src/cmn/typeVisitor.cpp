@@ -21,7 +21,7 @@ void builtInTypeVisitor::visit(intTypeNode& n)
 
 void builtInTypeVisitor::visit(arrayTypeNode& n)
 {
-   m_pBuilder->array();
+   m_pBuilder->wrapArray();
    hNodeVisitor::visit(n);
 }
 
@@ -93,6 +93,11 @@ void userTypeVisitor::visit(classNode& n)
    m_pBuilder->finish();
    // this type was published earlier in the gNodeCache (in builtInTypeVisitor)
    m_pBuilder.reset();
+}
+
+void userTypeVisitor::visit(methodNode& n)
+{
+   m_pBuilder->addMethod(n.name);
 }
 
 void userTypeVisitor::visit(fieldNode& n)
@@ -214,6 +219,17 @@ void typePropagator::visit(bopNode& n)
    hNodeVisitor::visit(n);
 
    type::gNodeCache->publish(n,type::gNodeCache->demand(*n.getChildren()[0]));
+}
+
+void typePropagator::visit(indexNode& n)
+{
+   hNodeVisitor::visit(n);
+
+   auto& lhs = type::gNodeCache->demand(*n.getChildren()[0]);
+   std::unique_ptr<type::typeBuilder> pBuilder(type::typeBuilder::open(lhs));
+   pBuilder->unwrapArray();
+
+   type::gNodeCache->publish(n,pBuilder->finish());
 }
 
 void propagateTypes(cmn::node& root)

@@ -41,6 +41,7 @@ class iStructType {
 public:
    virtual iType& getField(const std::string& name) = 0;
    virtual size_t getOffsetOfField(const std::string& name, const tgt::iTargetInfo& t) const = 0;
+   virtual bool hasMethod(const std::string& name) const = 0;
 };
 
 class iFunctionType {
@@ -82,11 +83,13 @@ public:
 
    ~typeBuilder();
 
-   typeBuilder& array();
+   typeBuilder& wrapArray();
+   typeBuilder& unwrapArray();
 
    // classes
    typeBuilder& addBase(iType& ty);
    typeBuilder& addMember(const std::string& name, iType& ty);
+   typeBuilder& addMethod(const std::string& name);
 
    // function/methods
    typeBuilder& setClassType(iType& ty);

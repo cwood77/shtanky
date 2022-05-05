@@ -1,0 +1,100 @@
+// 2: .nostromo.uart16550.fakeBase.write8: 
+// 3:                                      ret
+op(c3)
+// 6: .nostromo.uart16550.fakeBase.cctor: 
+// 7:                                     ret
+op(c3)
+// 10: .nostromo.uart16550.fakeBase.cdtor: 
+// 11:                                     ret
+op(c3)
+// 14: .nostromo.uart16550.driver.write8: 
+// 15:                                    ret
+op(c3)
+// 18: .nostromo.uart16550.driver.cctor: 
+// 19:                                   ret
+op(c3)
+// 22: .nostromo.uart16550.driver.cdtor: 
+// 23:                                   ret
+op(c3)
+// 26: .nostromo.uart16550.driver_vtbl_inst:
+// 27: .data, .nostromo.uart16550.driver.write8 
+_lbldata(00-00-00-00,00-00-00-00)
+// 30: .nostromo.uart16550.fakeBase_vtbl_inst:
+// 31: .data, .nostromo.uart16550.fakeBase.write8 
+_lbldata(00-00-00-00,00-00-00-00)
+// 34: .nostromo.uart16550.driver_sctor: 
+// 35:                                   sub, rsp, 32                                   
+rex(48)op(83)modR/M(ec)i8(20)
+// 36:                                   call, .nostromo.uart16550.fakeBase_sctor       ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 37:                                   add, rsp, 32                                   
+rex(48)op(83)modR/M(c4)i8(20)
+// 38:                                   mov, r10, .nostromo.uart16550.driver_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
+// 39:                                   mov, [rcx], r10                                ; =
+rex(4c)op(89)modR/M(11)
+// 40:                                   sub, rsp, 32                                   
+rex(48)op(83)modR/M(ec)i8(20)
+// 41:                                   call, .nostromo.uart16550.driver.cctor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 42:                                   add, rsp, 32                                   
+rex(48)op(83)modR/M(c4)i8(20)
+// 43:                                   ret                                            
+op(c3)
+// 46: .nostromo.uart16550.driver_sdtor: 
+// 47:                                   mov, r10, .nostromo.uart16550.driver_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
+// 48:                                   mov, [rcx], r10                                ; =
+rex(4c)op(89)modR/M(11)
+// 49:                                   sub, rsp, 32                                   
+rex(48)op(83)modR/M(ec)i8(20)
+// 50:                                   call, .nostromo.uart16550.driver.cdtor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 51:                                   add, rsp, 32                                   
+rex(48)op(83)modR/M(c4)i8(20)
+// 52:                                   sub, rsp, 32                                   
+rex(48)op(83)modR/M(ec)i8(20)
+// 53:                                   call, .nostromo.uart16550.fakeBase_sdtor       ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 54:                                   add, rsp, 32                                   
+rex(48)op(83)modR/M(c4)i8(20)
+// 55:                                   ret                                            
+op(c3)
+// 58: .nostromo.uart16550.fakeBase_sctor: 
+// 59:                                     sub, rsp, 32                                     
+rex(48)op(83)modR/M(ec)i8(20)
+// 60:                                     call, .sht.core.object_sctor                     ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 61:                                     add, rsp, 32                                     
+rex(48)op(83)modR/M(c4)i8(20)
+// 62:                                     mov, r10, .nostromo.uart16550.fakeBase_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
+// 63:                                     mov, [rcx], r10                                  ; =
+rex(4c)op(89)modR/M(11)
+// 64:                                     sub, rsp, 32                                     
+rex(48)op(83)modR/M(ec)i8(20)
+// 65:                                     call, .nostromo.uart16550.fakeBase.cctor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 66:                                     add, rsp, 32                                     
+rex(48)op(83)modR/M(c4)i8(20)
+// 67:                                     ret                                              
+op(c3)
+// 70: .nostromo.uart16550.fakeBase_sdtor: 
+// 71:                                     mov, r10, .nostromo.uart16550.fakeBase_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
+// 72:                                     mov, [rcx], r10                                  ; =
+rex(4c)op(89)modR/M(11)
+// 73:                                     sub, rsp, 32                                     
+rex(48)op(83)modR/M(ec)i8(20)
+// 74:                                     call, .nostromo.uart16550.fakeBase.cdtor         ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 75:                                     add, rsp, 32                                     
+rex(48)op(83)modR/M(c4)i8(20)
+// 76:                                     sub, rsp, 32                                     
+rex(48)op(83)modR/M(ec)i8(20)
+// 77:                                     call, .sht.core.object_sdtor                     ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 78:                                     add, rsp, 32                                     
+rex(48)op(83)modR/M(c4)i8(20)
+// 79:                                     ret                                              
+op(c3)

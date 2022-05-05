@@ -1,0 +1,24 @@
+class .nostromo.consoleTarget {
+   _vtbl : .nostromo.consoleTarget_vtbl;
+}
+
+[entrypoint]
+func .nostromo.consoleTarget.main(
+   args : .sht.core.string[]) : void;
+
+func .nostromo.consoleTarget.cctor(
+   self : .nostromo.consoleTarget) : .nostromo.consoleTarget;
+
+func .nostromo.consoleTarget.cdtor(
+   self : .nostromo.consoleTarget) : .nostromo.consoleTarget;
+
+class .nostromo.consoleTarget_vtbl {
+}
+
+func .nostromo.consoleTarget_sctor(
+   self : .nostromo.consoleTarget) : void;
+
+func .nostromo.consoleTarget_sdtor(
+   self : .nostromo.consoleTarget) : void;
+
+ref "..\sht\core\string.ara.lh";

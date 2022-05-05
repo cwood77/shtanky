@@ -22,6 +22,7 @@
 #include "metadata.hpp"
 #include "methodMover.hpp"
 #include "objectBaser.hpp"
+#include "opOverloadDecomp.hpp"
 #include "selfDecomposition.hpp"
 #include "stackClassDecomposition.hpp"
 #include "stringDecomposition.hpp"
@@ -112,9 +113,8 @@ int _main(int argc, const char *argv[])
       cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
       cmn::propagateTypes(*pPrj.get());
 
-      // writer marker
-
       // op overloader
+      { opOverloadDecomp v; pPrj->acceptVisitor(v); }
    }
 
    // hoist out constants
