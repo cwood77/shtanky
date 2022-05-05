@@ -125,7 +125,7 @@ doInstr& doInstr::thenCheckReturnValueAndCaptureOutput(const std::string& log, c
 
    _s << ":" << failLbl << std::endl;
    cmds.stopProgressDisplayForOutput();
-   _s << "echo FAIL: nonzero exit code doing " << errorHint << std::endl;
+   _s << "echo FAIL: nonzero exit code doing " << errorHint << " [" << failLbl << "]" << std::endl;
    _s << "goto end" << std::endl;
 
    _s << ":" << passLbl << std::endl;

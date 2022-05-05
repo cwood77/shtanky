@@ -6,6 +6,7 @@
 #include "../cmn/cmdline.hpp"
 #include "../cmn/main.hpp"
 #include "../cmn/out.hpp"
+#include "../cmn/pathUtil.hpp"
 #include "../cmn/trace.hpp"
 #include "../syzygy/frontend.hpp"
 #include "abstractGenerator.hpp"
@@ -32,7 +33,7 @@ using namespace araceli;
 int _main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   std::string projectDir = cl.getNextArg(".\\testdata\\test");
+   std::string projectDir = cmn::pathUtil::toWindows(cl.getNextArg(".\\testdata\\test"));
    std::string batchBuild = projectDir + "\\.build.bat";
 
    // invoke philemon

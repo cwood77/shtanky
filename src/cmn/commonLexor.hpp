@@ -21,6 +21,7 @@ public:
       kComma,
 
       kInterface,
+      kVirtual,
       kOverride,
       kAbstract,
       kStatic,
@@ -33,6 +34,8 @@ public:
       kVar,
 
       kStr,
+      kBool,
+      kInt,
       kVoid,
       kPtr,
 
@@ -42,30 +45,42 @@ public:
 
       kBoolLiteral,
 
-#if 0
-      // missing
+      kPlus,
+
+      kGeneric,
+      kInstantiate,
+      kType,
+
+      kIf,
+      kWhile,
+
+      k_Reserved,
+
+      kLessThan,
+      kGreaterThan,
+
+/* these are all modeled as reserved keywords for now
+      // reserved - likely use later?
       kBase,
-      kSelf,
+      kSelf, - allowed; araceli uses this to lower to liam
       kThrow,
       kCatch,
-      kIf,
-      kFor,
-      kDo,
-      kWhile,
-      kBreak,
-      kContinue,
       kUsing,
       kNamespace,
       kScope,
       kPragma,
       kNew,
       kDelete,
-      kVirtual,
-
       kOut,
-      //kRef,
-
-      // reserved
+      // reserved - maybe use later?
+      kBreak,
+      kContinue,
+      kFor,
+      kDo,
+      kInternal,
+      kComponent,
+      kLibrary,
+      kPackage,
       kTilde,
       kBacktick,
       kBang,
@@ -77,22 +92,11 @@ public:
       kAmpersand,
       kAsterisk,
       kHyphen,
-#endif
-      kPlus,
-#if 0
       kSingleQuote,
       kBackslash,
       kForwardslash,
-#endif
-      kLessThan,
-      kGreaterThan,
-#if 0
       kQuestion,
-#endif
-
-      kGeneric,
-      kInstantiate,
-      kType,
+*/
    };
 
    enum {

@@ -107,7 +107,13 @@ void codegen::visit(cmn::fieldNode& n)
 
 void codegen::visit(cmn::constNode& n)
 {
-   visitNameTypePair(n,n.name);
+   auto& s = getOutStream();
+
+   s.stream() << "const " << n.name << " : ";
+   n.getChildren()[0]->acceptVisitor(*this);
+   s.stream() << " = ";
+   n.getChildren()[1]->acceptVisitor(*this);
+   s.stream() << ";";
 }
 
 void codegen::visit(cmn::funcNode& n)
@@ -243,6 +249,14 @@ void codegen::visit(cmn::intLiteralNode& n)
 {
    auto& s = getOutStream();
    s.stream() << n.lexeme;
+}
+
+void codegen::visit(cmn::structLiteralNode& n)
+{
+   auto& s = getOutStream();
+   s.stream() << "{ ";
+   hNodeVisitor::visit(n);
+   s.stream() << " }";
 }
 
 cmn::outStream& codegen::getOutStream()

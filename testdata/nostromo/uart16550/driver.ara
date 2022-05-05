@@ -1,0 +1,7 @@
+class driver {
+
+   public write8(byte : int) : void
+   {
+   }
+
+}

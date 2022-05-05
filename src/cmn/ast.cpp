@@ -240,6 +240,24 @@ void diagVisitor::visit(strTypeNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(boolTypeNode& n)
+{
+   cdwDEBUG("%sboolType\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(intTypeNode& n)
+{
+   cdwDEBUG("%sintType\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 void diagVisitor::visit(arrayTypeNode& n)
 {
    cdwDEBUG("%sarrayType\n",
@@ -358,6 +376,24 @@ void diagVisitor::visit(bopNode& n)
    cdwDEBUG("%sbop %s\n",
       getIndent().c_str(),
       n.op.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(indexNode& n)
+{
+   cdwDEBUG("%sindex\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(ifNode& n)
+{
+   cdwDEBUG("%sif\n",
+      getIndent().c_str());
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);
@@ -541,6 +577,16 @@ void cloningNodeVisitor::visit(typeNode& n)
 }
 
 void cloningNodeVisitor::visit(strTypeNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(boolTypeNode& n)
+{
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(intTypeNode& n)
 {
    hNodeVisitor::visit(n);
 }

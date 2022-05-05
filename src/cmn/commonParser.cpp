@@ -190,41 +190,6 @@ void commonParser::parseField(fieldNode& n)
       m_l.demandOneOf(cdwLoc,2,commonLexor::kEquals,commonLexor::kSemiColon);
 }
 
-void commonParser::parseGlobalConst(fileNode& f)
-{
-   m_l.demandAndEat(cdwLoc,commonLexor::kConst);
-
-   auto& n = m_nFac.appendNewChild<constNode>(f);
-
-   m_l.demand(cdwLoc,commonLexor::kName);
-   n.name = m_l.getLexeme();
-   m_l.advance();
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kColon);
-
-   parseType(n);
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kEquals);
-
-   parseRValue(n);
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
-}
-
-// TODO !!!!! lame; nearly identical to methods
-void commonParser::parseGlobalFunc(fileNode& f)
-{
-   m_l.demandAndEat(cdwLoc,commonLexor::kFunc);
-
-   auto& n = m_nFac.appendNewChild<funcNode>(f);
-
-   m_l.demand(cdwLoc,commonLexor::kName);
-   n.name = m_l.getLexeme();
-   m_l.advance();
-
-   parseMethodOrGlobalFuncFromOpenParen(n);
-}
-
 void commonParser::parseMethodOrGlobalFuncFromOpenParen(node& n)
 {
    m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
@@ -263,6 +228,40 @@ void commonParser::parseDecledArgList(node& owner)
       if(m_l.getToken() == commonLexor::kComma)
          m_l.advance();
    }
+}
+
+void commonParser::parseGlobalConst(fileNode& f)
+{
+   m_l.demandAndEat(cdwLoc,commonLexor::kConst);
+
+   auto& n = m_nFac.appendNewChild<constNode>(f);
+
+   m_l.demand(cdwLoc,commonLexor::kName);
+   n.name = m_l.getLexeme();
+   m_l.advance();
+
+   m_l.demandAndEat(cdwLoc,commonLexor::kColon);
+
+   parseType(n);
+
+   m_l.demandAndEat(cdwLoc,commonLexor::kEquals);
+
+   parseRValue(n);
+
+   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
+}
+
+void commonParser::parseGlobalFunc(fileNode& f)
+{
+   m_l.demandAndEat(cdwLoc,commonLexor::kFunc);
+
+   auto& n = m_nFac.appendNewChild<funcNode>(f);
+
+   m_l.demand(cdwLoc,commonLexor::kName);
+   n.name = m_l.getLexeme();
+   m_l.advance();
+
+   parseMethodOrGlobalFuncFromOpenParen(n);
 }
 
 void commonParser::parseSequence(node& owner)
@@ -440,21 +439,6 @@ node& commonParser::parseLValuePrime(node& n)
 
       return parseLValuePrime(*i);
    }
-#if 0
-   else if(m_l.getToken() == commonLexor::kArrowParen)
-   {
-      m_l.advance();
-
-      auto c = m_nFac.create<invokeFuncPtrNode>();
-      c->appendChild(n);
-
-      parsePassedArgList(*c);
-      m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
-      m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
-      //parseMethodOrGlobalFuncFromAfterOpenParen(*c);
-      return *c;
-   }
-#endif
 
    return n;
 }

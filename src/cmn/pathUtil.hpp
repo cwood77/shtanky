@@ -18,12 +18,15 @@ public:
    static const char *kExtMcList;
    static const char *kExtMcOdaList;
 
+   static std::string toWindows(const std::string& path);
+
    static std::string addExt(const std::string& path, const std::string& ext);
    static std::string getExt(const std::string& path);
    static std::string replaceOrAddExt(
       const std::string& path, const std::string& old, const std::string& ext);
    static std::string getLastPart(const std::string& path);
-   static std::string addPrefixToFilePart(const std::string& path, const std::string& prefix);
+   static std::string addPrefixToFilePart(
+      const std::string& path, const std::string& prefix);
 
    static std::string computeRefPath(const std::string& refer, const std::string& refee);
    static std::string absolutize(const std::string& refer, const std::string& refee);

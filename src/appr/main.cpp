@@ -37,6 +37,17 @@ int main(int argc, const char *argv[])
       .emulateAndCheckOutput()
    ;
 
+#if 0
+   araceliTest(is,".\\testdata\\nostromo")
+      .wholeApp()
+      .expectLiamOf(".\\testdata\\nostromo\\stringout.ara")
+      .expectLiamOf(".\\testdata\\nostromo\\uart16550\\driver.ara")
+      .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+      .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
+      .expectLiamOf(".\\testdata\\nostromo\\.target.ara",false) // no philemon
+   ;
+#endif
+
    // ------------------ tests end ------------------
 
    std::ofstream wrapper(".\\bin\\.appr.bat");

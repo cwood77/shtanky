@@ -29,6 +29,8 @@ class intrinsicNode;
 class argNode;
 class typeNode;
 class strTypeNode;
+class boolTypeNode;
+class intTypeNode;
 class arrayTypeNode;
 class voidTypeNode;
 class userTypeNode;
@@ -42,6 +44,8 @@ class localDeclNode;
 class varRefNode;
 class assignmentNode;
 class bopNode;
+class indexNode;
+class ifNode;
 class stringLiteralNode;
 class boolLiteralNode;
 class intLiteralNode;
@@ -70,6 +74,8 @@ public:
    virtual void visit(argNode& n) = 0;
    virtual void visit(typeNode& n) = 0;
    virtual void visit(strTypeNode& n) = 0;
+   virtual void visit(boolTypeNode& n) = 0;
+   virtual void visit(intTypeNode& n) = 0;
    virtual void visit(arrayTypeNode& n) = 0;
    virtual void visit(voidTypeNode& n) = 0;
    virtual void visit(userTypeNode& n) = 0;
@@ -83,6 +89,8 @@ public:
    virtual void visit(varRefNode& n) = 0;
    virtual void visit(assignmentNode& n) = 0;
    virtual void visit(bopNode& n) = 0;
+   virtual void visit(indexNode& n) = 0;
+   virtual void visit(ifNode& n) = 0;
    virtual void visit(stringLiteralNode& n) = 0;
    virtual void visit(boolLiteralNode& n) = 0;
    virtual void visit(intLiteralNode& n) = 0;
@@ -355,6 +363,16 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class boolTypeNode : public typeNode {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class intTypeNode : public typeNode {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 class arrayTypeNode : public typeNode {
 public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
@@ -440,6 +458,18 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class indexNode : public node {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+// ----------------------- flow control -----------------------
+
+class ifNode : public node {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 // ----------------------- literals -----------------------
 
 class stringLiteralNode : public node {
@@ -514,6 +544,8 @@ public:
    virtual void visit(argNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(typeNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(strTypeNode& n) { visit(static_cast<typeNode&>(n)); }
+   virtual void visit(boolTypeNode& n) { visit(static_cast<typeNode&>(n)); }
+   virtual void visit(intTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(arrayTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(voidTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(userTypeNode& n) { visit(static_cast<typeNode&>(n)); }
@@ -527,6 +559,8 @@ public:
    virtual void visit(varRefNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(assignmentNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(bopNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(indexNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(ifNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(stringLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(boolLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(intLiteralNode& n) { visit(static_cast<node&>(n)); }
@@ -555,6 +589,8 @@ public:
    virtual void visit(intrinsicNode& n);
    virtual void visit(argNode& n);
    virtual void visit(strTypeNode& n);
+   virtual void visit(boolTypeNode& n);
+   virtual void visit(intTypeNode& n);
    virtual void visit(arrayTypeNode& n);
    virtual void visit(voidTypeNode& n);
    virtual void visit(userTypeNode& n);
@@ -568,6 +604,8 @@ public:
    virtual void visit(varRefNode& n);
    virtual void visit(assignmentNode& n);
    virtual void visit(bopNode& n);
+   virtual void visit(indexNode& n);
+   virtual void visit(ifNode& n);
    virtual void visit(stringLiteralNode& n);
    virtual void visit(boolLiteralNode& n);
    virtual void visit(intLiteralNode& n);
@@ -666,6 +704,8 @@ public:
    virtual void visit(argNode&) { inst.reset(new argNode()); }
    virtual void visit(typeNode&) { inst.reset(new typeNode()); }
    virtual void visit(strTypeNode&) { inst.reset(new strTypeNode()); }
+   virtual void visit(boolTypeNode&) { inst.reset(new boolTypeNode()); }
+   virtual void visit(intTypeNode&) { inst.reset(new intTypeNode()); }
    virtual void visit(arrayTypeNode&) { inst.reset(new arrayTypeNode()); }
    virtual void visit(voidTypeNode&) { inst.reset(new voidTypeNode()); }
    virtual void visit(userTypeNode&) { inst.reset(new userTypeNode()); }
@@ -679,6 +719,8 @@ public:
    virtual void visit(varRefNode&) { inst.reset(new varRefNode()); }
    virtual void visit(assignmentNode&) { inst.reset(new assignmentNode()); }
    virtual void visit(bopNode&) { inst.reset(new bopNode()); }
+   virtual void visit(indexNode&) { inst.reset(new indexNode()); }
+   virtual void visit(ifNode&) { inst.reset(new ifNode()); }
    virtual void visit(stringLiteralNode&) { inst.reset(new stringLiteralNode()); }
    virtual void visit(boolLiteralNode&) { inst.reset(new boolLiteralNode()); }
    virtual void visit(intLiteralNode&) { inst.reset(new intLiteralNode()); }
@@ -713,6 +755,8 @@ public:
    virtual void visit(argNode& n);
    virtual void visit(typeNode& n);
    virtual void visit(strTypeNode& n);
+   virtual void visit(boolTypeNode& n);
+   virtual void visit(intTypeNode& n);
    virtual void visit(arrayTypeNode& n);
    virtual void visit(voidTypeNode& n);
    virtual void visit(userTypeNode& n);
@@ -726,6 +770,8 @@ public:
    virtual void visit(varRefNode& n);
    virtual void visit(assignmentNode& n) { unexpected(n); }
    virtual void visit(bopNode& n) { unexpected(n); }
+   virtual void visit(indexNode& n) { unexpected(n); }
+   virtual void visit(ifNode& n) { unexpected(n); }
    virtual void visit(stringLiteralNode& n) { unexpected(n); }
    virtual void visit(boolLiteralNode& n) { unexpected(n); }
    virtual void visit(intLiteralNode& n) { unexpected(n); }
