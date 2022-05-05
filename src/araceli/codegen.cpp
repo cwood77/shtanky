@@ -278,6 +278,13 @@ void sourceCodeGen::visit(cmn::assignmentNode& n)
    n.getChildren()[1]->acceptVisitor(*this);
 }
 
+void sourceCodeGen::visit(cmn::bopNode& n)
+{
+   n.getChildren()[0]->acceptVisitor(*this);
+   m_pOut->stream() << " " << n.op << " ";
+   n.getChildren()[1]->acceptVisitor(*this);
+}
+
 void sourceCodeGen::visit(cmn::stringLiteralNode& n)
 {
    m_pOut->stream() << "\"" << n.value << "\"";

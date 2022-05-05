@@ -220,6 +220,23 @@ void astCodeGen::visit(cmn::assignmentNode& n)
          .withComment("=");
 }
 
+void astCodeGen::visit(cmn::bopNode& n)
+{
+   // TODO HACK - bops aren't really implemented yet
+   //             mainly a copy of assignment for now
+   n.getChildren()[0]->flags |= cmn::nodeFlags::kAddressableForWrite;
+
+   n.getChildren()[1]->acceptVisitor(*this);
+   n.getChildren()[0]->acceptVisitor(*this);
+
+   m_b.forNode(n)
+      .append(cmn::tgt::kMov)
+         .inheritArgFromChild(*n.getChildren()[0])
+         .inheritArgFromChild(*n.getChildren()[1])
+         .withComment("BOP , but not really - HACK!!")
+         .returnToParent(0);
+}
+
 // all literals are nearly identical (just 'value' different) - share this?
 
 void astCodeGen::visit(cmn::stringLiteralNode& n)

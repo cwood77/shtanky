@@ -439,6 +439,19 @@ node& commonParser::parseLValuePrime(node& n)
 
       return parseLValuePrime(*i);
    }
+   else if(m_l.getToken() == commonLexor::kLBracket)
+   {
+      m_l.advance();
+
+      auto i = m_nFac.create<indexNode>();
+      i->appendChild(n);
+
+      parseRValue(*i);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
+
+      return parseLValuePrime(*i);
+   }
 
    return n;
 }

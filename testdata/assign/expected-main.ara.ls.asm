@@ -50,6 +50,21 @@
                                             pop, rbx              
                                             ret                   
 
+.seg code                              
+.assign.assignTester.bopAssociativity: 
+                                       push, rbx   
+                                       sub, rsp, 8 
+                                       sub, rsp, 8 
+                                       mov, rbx, 1 ; shape:hoist const from mov lhs
+                                       mov, rbx, 2 ; BOP , but not really - HACK!!
+                                       mov, rbx, 1 ; shape:hoist const from mov lhs
+                                       mov, rbx, 3 ; BOP , but not really - HACK!!
+                                       mov, rbx, 1 ; =
+                                       add, rsp, 8 
+                                       add, rsp, 8 
+                                       pop, rbx    
+                                       ret         
+
 .seg code                   
 .assign.assignTester.cctor: 
                             ret

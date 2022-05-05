@@ -38,6 +38,13 @@ func .assign.assignTester.writeIntoSubSubObject(
    .assign.A_sdtor(wrong);
 }
 
+func .assign.assignTester.bopAssociativity(
+   self : .assign.assignTester) : void
+{
+   var v : void;
+   v = 1 + 2 + 3;
+}
+
 func .assign.assignTester.cctor(
    self : .assign.assignTester) : .assign.assignTester
 {

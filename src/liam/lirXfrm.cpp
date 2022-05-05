@@ -264,6 +264,32 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
       }
    }
 
+   // temp hack for bops masquarading as =
+   if(i.instrId == cmn::tgt::kMov)
+   {
+      auto *pArg = dynamic_cast<lirArgConst*>(i.getArgs()[0]);
+      if(pArg)
+      {
+         // obviously you can't mov into a literal
+
+         cmn::uniquifier u;
+         lirNameCollector(u).runStream(getCurrentStream());
+
+         auto pTmp = new lirArgTemp(u.makeUnique("t"),pArg->getSize());
+
+         auto pMov = new lirInstr(cmn::tgt::kMov);
+         pMov->addArg(*pTmp);
+         pMov->addArg(*pArg);
+         pMov->comment = "shape:hoist const from mov lhs";
+
+         scheduleInjectBefore(*pMov,i);
+
+         // go ahead and swap out the arg directly; this is safe b/c I haven't
+         // traversed it yet
+         i.getArgs()[0] = &pTmp->clone();
+      }
+   }
+
    lirTransform::runInstr(i);
 }
 

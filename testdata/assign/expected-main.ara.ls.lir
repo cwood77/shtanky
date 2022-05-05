@@ -1,4 +1,4 @@
-=== LIR bundle has 20 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 21 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
 
 ----- start stream .assign.assignTester.run
 0 <enterFunc> ~rval/0, $self/0, $args/0 ;;; .assign.assignTester.run
@@ -31,23 +31,30 @@
 0 <precall>      
 0 call           ~rval7/0, @.assign.A_sdtor/0, $wrong/0 ;;; (call label)
 
+----- start stream .assign.assignTester.bopAssociativity
+0 <enterFunc>    ~rval8/0, $self4/0 ;;; .assign.assignTester.bopAssociativity
+0 <reserveLocal> $v0/8              ;;; v
+0 mov            @1/1, @2/1         ;;; BOP , but not really - HACK!!
+0 mov            @1/1, @3/1         ;;; BOP , but not really - HACK!!
+0 mov            $v/0, @1/1         ;;; =
+
 ----- start stream .assign.assignTester.cctor
-0 <enterFunc> ~rval8/0, $self4/0 ;;; .assign.assignTester.cctor
+0 <enterFunc> ~rval9/0, $self5/0 ;;; .assign.assignTester.cctor
 
 ----- start stream .assign.assignTester.cdtor
-0 <enterFunc> ~rval9/0, $self5/0 ;;; .assign.assignTester.cdtor
+0 <enterFunc> ~rval10/0, $self6/0 ;;; .assign.assignTester.cdtor
 
 ----- start stream .assign.A.cctor
-0 <enterFunc> ~rval10/0, $self6/0 ;;; .assign.A.cctor
+0 <enterFunc> ~rval11/0, $self7/0 ;;; .assign.A.cctor
 
 ----- start stream .assign.A.cdtor
-0 <enterFunc> ~rval11/0, $self7/0 ;;; .assign.A.cdtor
+0 <enterFunc> ~rval12/0, $self8/0 ;;; .assign.A.cdtor
 
 ----- start stream .assign.B.cctor
-0 <enterFunc> ~rval12/0, $self8/0 ;;; .assign.B.cctor
+0 <enterFunc> ~rval13/0, $self9/0 ;;; .assign.B.cctor
 
 ----- start stream .assign.B.cdtor
-0 <enterFunc> ~rval13/0, $self9/0 ;;; .assign.B.cdtor
+0 <enterFunc> ~rval14/0, $self10/0 ;;; .assign.B.cdtor
 
 ----- start stream .assign.A_vtbl_inst
 0 <globalConstData> @/0 ;;; .assign.A_vtbl_inst
@@ -59,52 +66,52 @@
 0 <globalConstData> @.assign.assignTester.run /0 ;;; .assign.assignTester_vtbl_inst
 
 ----- start stream .assign.A_sctor
-0 <enterFunc> ~rval14/0, $self10/0                          ;;; .assign.A_sctor
+0 <enterFunc> ~rval15/0, $self11/0                          ;;; .assign.A_sctor
 0 <precall>   
-0 call        ~rval15/0, @.sht.core.object_sctor/0, $self/0 ;;; (call label)
+0 call        ~rval16/0, @.sht.core.object_sctor/0, $self/0 ;;; (call label)
 0 mov         [~self]/0, @.assign.A_vtbl_inst/0             ;;; =
 0 <precall>   
-0 call        ~rval16/0, @.assign.A.cctor/0, $self/0        ;;; (call label)
+0 call        ~rval17/0, @.assign.A.cctor/0, $self/0        ;;; (call label)
 
 ----- start stream .assign.A_sdtor
-0 <enterFunc> ~rval17/0, $self11/0                          ;;; .assign.A_sdtor
+0 <enterFunc> ~rval18/0, $self12/0                          ;;; .assign.A_sdtor
 0 mov         [~self]/0, @.assign.A_vtbl_inst/0             ;;; =
 0 <precall>   
-0 call        ~rval18/0, @.assign.A.cdtor/0, $self/0        ;;; (call label)
+0 call        ~rval19/0, @.assign.A.cdtor/0, $self/0        ;;; (call label)
 0 <precall>   
-0 call        ~rval19/0, @.sht.core.object_sdtor/0, $self/0 ;;; (call label)
+0 call        ~rval20/0, @.sht.core.object_sdtor/0, $self/0 ;;; (call label)
 
 ----- start stream .assign.B_sctor
-0 <enterFunc> ~rval20/0, $self12/0                          ;;; .assign.B_sctor
+0 <enterFunc> ~rval21/0, $self13/0                          ;;; .assign.B_sctor
 0 <precall>   
-0 call        ~rval21/0, @.sht.core.object_sctor/0, $self/0 ;;; (call label)
+0 call        ~rval22/0, @.sht.core.object_sctor/0, $self/0 ;;; (call label)
 0 mov         [~self]/0, @.assign.B_vtbl_inst/0             ;;; =
 0 <precall>   
-0 call        ~rval22/0, @.assign.B.cctor/0, $self/0        ;;; (call label)
+0 call        ~rval23/0, @.assign.B.cctor/0, $self/0        ;;; (call label)
 
 ----- start stream .assign.B_sdtor
-0 <enterFunc> ~rval23/0, $self13/0                          ;;; .assign.B_sdtor
+0 <enterFunc> ~rval24/0, $self14/0                          ;;; .assign.B_sdtor
 0 mov         [~self]/0, @.assign.B_vtbl_inst/0             ;;; =
 0 <precall>   
-0 call        ~rval24/0, @.assign.B.cdtor/0, $self/0        ;;; (call label)
+0 call        ~rval25/0, @.assign.B.cdtor/0, $self/0        ;;; (call label)
 0 <precall>   
-0 call        ~rval25/0, @.sht.core.object_sdtor/0, $self/0 ;;; (call label)
+0 call        ~rval26/0, @.sht.core.object_sdtor/0, $self/0 ;;; (call label)
 
 ----- start stream .assign.assignTester_sctor
-0 <enterFunc> ~rval26/0, $self14/0                              ;;; .assign.assignTester_sctor
+0 <enterFunc> ~rval27/0, $self15/0                              ;;; .assign.assignTester_sctor
 0 <precall>   
-0 call        ~rval27/0, @.sht.cons.program_sctor/0, $self/0    ;;; (call label)
+0 call        ~rval28/0, @.sht.cons.program_sctor/0, $self/0    ;;; (call label)
 0 mov         [~self]/0, @.assign.assignTester_vtbl_inst/0      ;;; =
 0 <precall>   
-0 call        ~rval28/0, @.assign.assignTester.cctor/0, $self/0 ;;; (call label)
+0 call        ~rval29/0, @.assign.assignTester.cctor/0, $self/0 ;;; (call label)
 
 ----- start stream .assign.assignTester_sdtor
-0 <enterFunc> ~rval29/0, $self15/0                              ;;; .assign.assignTester_sdtor
+0 <enterFunc> ~rval30/0, $self16/0                              ;;; .assign.assignTester_sdtor
 0 mov         [~self]/0, @.assign.assignTester_vtbl_inst/0      ;;; =
 0 <precall>   
-0 call        ~rval30/0, @.assign.assignTester.cdtor/0, $self/0 ;;; (call label)
+0 call        ~rval31/0, @.assign.assignTester.cdtor/0, $self/0 ;;; (call label)
 0 <precall>   
-0 call        ~rval31/0, @.sht.cons.program_sdtor/0, $self/0    ;;; (call label)
+0 call        ~rval32/0, @.sht.cons.program_sdtor/0, $self/0    ;;; (call label)
 
 === end of LIR bundle dump ===
 

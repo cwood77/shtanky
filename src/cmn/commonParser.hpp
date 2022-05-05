@@ -70,7 +70,8 @@ class lexorBase;
                                              //             | <invoke>
                                              //             | <faccess>
                                              //             | <index-op>
-// <lvalue'> ::== ':' <name> <lvalue'> [fieldaccess]
+// <lvalue'> ::== ':' <name> <lvalue'>         [fieldaccess]
+//              | '[' <rvalue> ']' <lvaue'>    [index]
 //              | e
 //
 // <rvalue> ::== <literal>

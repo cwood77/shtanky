@@ -194,7 +194,9 @@ void typePropagator::visit(varRefNode& n)
 
 void typePropagator::visit(bopNode& n)
 {
-   cdwTHROW("unimpled");
+   hNodeVisitor::visit(n);
+
+   type::gNodeCache->publish(n,type::gNodeCache->demand(*n.getChildren()[0]));
 }
 
 void propagateTypes(cmn::node& root)

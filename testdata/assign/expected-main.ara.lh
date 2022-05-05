@@ -35,6 +35,9 @@ func .assign.assignTester.readFromSubSubObject(
 func .assign.assignTester.writeIntoSubSubObject(
    self : .assign.assignTester) : void;
 
+func .assign.assignTester.bopAssociativity(
+   self : .assign.assignTester) : void;
+
 func .assign.assignTester.cctor(
    self : .assign.assignTester) : .assign.assignTester;
 

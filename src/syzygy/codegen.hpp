@@ -13,13 +13,10 @@ public:
    codegen(cmn::outBundle& b, const std::string& infix) : m_b(b), m_infix(infix) {}
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
-   //virtual void visit(cmn::araceliProjectNode& n);
    virtual void visit(cmn::liamProjectNode& n) { unexpected(n); }
-   //virtual void visit(cmn::scopeNode& n);
    virtual void visit(cmn::fileNode& n);
    virtual void visit(cmn::fileRefNode& n) { unexpected(n); }
    virtual void visit(cmn::classNode& n);
-   //virtual void visit(cmn::memberNode& n);
    virtual void visit(cmn::methodNode& n);
    virtual void visit(cmn::fieldNode& n);
    virtual void visit(cmn::constNode& n);
@@ -39,7 +36,7 @@ public:
    virtual void visit(cmn::localDeclNode& n);
    virtual void visit(cmn::varRefNode& n);
    virtual void visit(cmn::assignmentNode& n);
-   virtual void visit(cmn::bopNode& n) { unexpected(n); }
+   virtual void visit(cmn::bopNode& n);
    virtual void visit(cmn::stringLiteralNode& n);
    virtual void visit(cmn::boolLiteralNode& n) { unexpected(n); }
    virtual void visit(cmn::intLiteralNode& n);
