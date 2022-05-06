@@ -116,6 +116,8 @@ int _main(int argc, const char *argv[])
       // op overloader
       { opOverloadDecomp v; pPrj->acceptVisitor(v); }
    }
+   cdwVERBOSE("graph after op overloading decomp ----\n");
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // hoist out constants
    { constHoister v; pPrj->acceptVisitor(v); }

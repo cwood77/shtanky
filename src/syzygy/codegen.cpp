@@ -251,6 +251,19 @@ void codegen::visit(cmn::bopNode& n)
    n.getChildren()[1]->acceptVisitor(*this);
 }
 
+void codegen::visit(cmn::indexNode& n)
+{
+   auto& s = getOutStream();
+
+   if(n.getChildren().size() != 2)
+      cdwTHROW("insanity");
+
+   n.getChildren()[0]->acceptVisitor(*this);
+   s.stream() << "[";
+   n.getChildren()[1]->acceptVisitor(*this);
+   s.stream() << "]";
+}
+
 void codegen::visit(cmn::stringLiteralNode& n)
 {
    auto& s = getOutStream();

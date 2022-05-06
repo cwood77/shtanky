@@ -226,6 +226,21 @@ void typePropagator::visit(indexNode& n)
    hNodeVisitor::visit(n);
 
    auto& lhs = type::gNodeCache->demand(*n.getChildren()[0]);
+
+   // maybe operator overloading will kick in?
+   if(lhs.is<type::iStructType>())
+   {
+      auto& asStruct = lhs.as<type::iStructType>();
+      if(asStruct.hasMethod("indexOpGet"))
+      {
+         std::string funcFqn = lhs.getName() + ".indexOpGet";
+         auto& func = type::gTable->fetch(funcFqn).as<type::iFunctionType>();
+         type::gNodeCache->publish(n,func.getReturnType());
+         return;
+      }
+   }
+
+   // otherwise, it's just an erray
    std::unique_ptr<type::typeBuilder> pBuilder(type::typeBuilder::open(lhs));
    pBuilder->unwrapArray();
 

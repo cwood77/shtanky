@@ -249,8 +249,16 @@ typeBuilder& typeBuilder::wrapArray()
 
 typeBuilder& typeBuilder::unwrapArray()
 {
-   auto& ar = dynamic_cast<arrayOfType&>(finish());
-   m_pType = &ar.inner();
+   iType& t = finish();
+   if(dynamic_cast<stringType*>(&t))
+   {
+      m_pType = new intType();
+   }
+   else
+   {
+      auto& ar = dynamic_cast<arrayOfType&>(t);
+      m_pType = &ar.inner();
+   }
    m_own = true;
    return *this;
 }

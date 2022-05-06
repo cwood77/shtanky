@@ -37,6 +37,7 @@ public:
    virtual void visit(cmn::varRefNode& n);
    virtual void visit(cmn::assignmentNode& n);
    virtual void visit(cmn::bopNode& n);
+   virtual void visit(cmn::indexNode& n);
    virtual void visit(cmn::stringLiteralNode& n);
    virtual void visit(cmn::boolLiteralNode& n) { unexpected(n); }
    virtual void visit(cmn::intLiteralNode& n);
