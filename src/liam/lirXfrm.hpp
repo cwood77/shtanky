@@ -101,7 +101,7 @@ private:
 class lirCallVirtualStackCalculation : public lirTransform {
 public:
    explicit lirCallVirtualStackCalculation(cmn::tgt::iTargetInfo& t)
-   : m_t(t), m_pPreCall(NULL) {}
+   : m_t(t) {}
 
 protected:
    virtual void runInstr(lirInstr& i);
@@ -109,7 +109,7 @@ protected:
 
 private:
    cmn::tgt::iTargetInfo& m_t;
-   lirInstr *m_pPreCall;
+   std::list<lirInstr*> m_preCalls;
    std::vector<size_t> m_argRealSizes;
 };
 

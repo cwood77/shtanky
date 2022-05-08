@@ -292,30 +292,12 @@ bool commonParser::tryParseStatement(node& owner)
    else
    {
       std::unique_ptr<node> pInst(&parseLValue());
-      if(m_l.getToken() == commonLexor::kArrow)
-         parseInvoke(pInst,owner);
-      else if(m_l.getToken() == commonLexor::kArrowParen)
-      {
-         m_l.advance();
-
-         auto& i = m_nFac.appendNewChild<cmn::invokeFuncPtrNode>(owner);
-         i.appendChild(*pInst.release());
-
-         parsePassedArgList(i);
-         m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
-         m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
-      }
-      else if(m_l.getToken() == commonLexor::kLParen)
-         parseCall(pInst,owner);
-      else if(m_l.getToken() == commonLexor::kEquals)
+      if(m_l.getToken() == commonLexor::kEquals)
          parseAssignment(pInst,owner);
       else
-         m_l.demandOneOf(cdwLoc,5,
-            commonLexor::kVar,
-            commonLexor::kArrow,
-            commonLexor::kArrowParen,
-            commonLexor::kLParen,
-            commonLexor::kEquals);
+         parseCallAndFriends(pInst,owner,/*require*/true);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
    }
 
    return true;
@@ -352,6 +334,33 @@ void commonParser::parseVar(node& owner)
    m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
+bool commonParser::parseCallAndFriends(std::unique_ptr<node>& inst, node& owner, bool require)
+{
+   if(m_l.getToken() == commonLexor::kArrow)
+      parseInvoke(inst,owner);
+   else if(m_l.getToken() == commonLexor::kArrowParen)
+   {
+      m_l.advance();
+
+      auto& i = m_nFac.appendNewChild<cmn::invokeFuncPtrNode>(owner);
+      i.appendChild(*inst.release());
+
+      parsePassedArgList(i);
+      m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+   }
+   else if(m_l.getToken() == commonLexor::kLParen)
+      parseCall(inst,owner);
+   else if(require)
+      m_l.demandOneOf(cdwLoc,4,
+         commonLexor::kEquals,
+         commonLexor::kArrow,
+         commonLexor::kArrowParen,
+         commonLexor::kLParen);
+   else
+      return false;
+   return true;
+}
+
 void commonParser::parseInvoke(std::unique_ptr<node>& inst, node& owner)
 {
    m_l.demandAndEat(cdwLoc,commonLexor::kArrow);
@@ -369,8 +378,6 @@ void commonParser::parseInvoke(std::unique_ptr<node>& inst, node& owner)
    parsePassedArgList(i);
 
    m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
 void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
@@ -385,8 +392,6 @@ void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
    parsePassedArgList(c);
 
    m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
 void commonParser::parseAssignment(std::unique_ptr<node>& inst, node& owner)
@@ -397,8 +402,6 @@ void commonParser::parseAssignment(std::unique_ptr<node>& inst, node& owner)
    a.appendChild(*inst.release());
 
    parseRValue(a);
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
 void commonParser::parsePassedArgList(node& owner)
@@ -459,7 +462,11 @@ node& commonParser::parseLValuePrime(node& n)
 void commonParser::parseRValue(node& owner, node *pExprRoot)
 {
    if(!parseLiteral(owner))
-      owner.appendChild(parseLValue());
+   {
+      std::unique_ptr<node> pInst(&parseLValue());
+      if(!parseCallAndFriends(pInst,owner,false))
+         owner.appendChild(*pInst.release());
+   }
 
    if(m_l.getTokenClass() & commonLexor::kClassBop)
       parseBop(owner,pExprRoot);

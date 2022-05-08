@@ -121,7 +121,7 @@ void lirNameCollector::runArg(lirInstr& i, lirArg& a)
 void lirCallVirtualStackCalculation::runInstr(lirInstr& i)
 {
    if(i.instrId == cmn::tgt::kPreCallStackAlloc)
-      m_pPreCall = &i;
+      m_preCalls.push_back(&i);
 
    lirTransform::runInstr(i);
 
@@ -130,12 +130,13 @@ void lirCallVirtualStackCalculation::runInstr(lirInstr& i)
       // ignore the calladdr/instptr for calls/invokes
       m_argRealSizes.erase(m_argRealSizes.begin());
 
+      lirInstr& precall = *m_preCalls.back();
       size_t subcallStackSize = m_t.getCallConvention().getShadowSpace();
       subcallStackSize += m_t.getCallConvention().getArgumentStackSpace(m_argRealSizes);
-      m_pPreCall->addArg<lirArgConst>("totalStackSize",subcallStackSize);
+      precall.addArg<lirArgConst>("totalStackSize",subcallStackSize);
 
-      m_pPreCall = NULL;
       m_argRealSizes.clear();
+      m_preCalls.pop_back();
    }
 }
 

@@ -51,10 +51,8 @@ class lexorBase;
 // <statements> ::== <statement>
 //                 | e
 // <statement> ::== 'var' <var>
-//                | <lvalue> '->' <invoke>
-//                | <lvalue> '->(' <passed-arg-list> ')' ';'
-//                | <lvalue> '(' <call> ';'
-//                | <lvalue> '=' <assignment>
+//                | <lvalue> '=' <assignment> ';'
+//                | <lvalue> <call-end-friends> ';'
 // <var>       ::== <name> ':' <type> ';'
 //                | <name> ':' <type> '=' <rvalue> ';'
 //                | <name> '=' <rvalue> ';'
@@ -66,18 +64,19 @@ class lexorBase;
 //                      | e
 //
 // <lvalue> ::== <name> <lvalue'>
-                                             //             | <call>
-                                             //             | <invoke>
-                                             //             | <faccess>
-                                             //             | <index-op>
 // <lvalue'> ::== ':' <name> <lvalue'>         [fieldaccess]
 //              | '[' <rvalue> ']' <lvaue'>    [index]
 //              | e
 //
 // <rvalue> ::== <literal>
 //             | <lvalue>
+//             | <lvalue> <call-and-friends>
 //             | <literal> <bop>
 //             | <lvalue> <bop>
+//
+// <call-and-friends> ::== '->' <invoke>
+//                       | '->(' <passed-arg-list> ')'
+//                       | '(' <call>
 //
 // <literal> ::== <string-literal>
 //              | <bool-literal>
@@ -157,6 +156,7 @@ private:
    void parseStatements(node& owner);
    bool tryParseStatement(node& owner);
    void parseVar(node& owner);
+   bool parseCallAndFriends(std::unique_ptr<node>& inst, node& owner, bool require);
    void parseInvoke(std::unique_ptr<node>& inst, node& owner);
    void parseCall(std::unique_ptr<node>& inst, node& owner);
    void parseAssignment(std::unique_ptr<node>& inst, node& owner);

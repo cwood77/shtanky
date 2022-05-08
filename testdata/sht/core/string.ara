@@ -1,10 +1,15 @@
-class string {
+interface lameBase {
+   abstract indexOpGet(i : ptr) : ptr;
+   abstract indexOpSet(i : ptr, val : ptr) : void;
+}
 
-   public indexOpGet(i : ptr) : ptr
+class string : lameBase {
+
+   override indexOpGet(i : ptr) : ptr
    {
    }
 
-   public indexOpSet(i : ptr, val : ptr) : void
+   override indexOpSet(i : ptr, val : ptr) : void
    {
    }
 
