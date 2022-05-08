@@ -104,6 +104,26 @@ size_t var::requiresStorageNext(size_t orderNum, size_t storage)
    return 0;
 }
 
+// did this variable already require this storage _before_ this instr?
+bool var::alreadyWantedStorage(size_t orderNum, size_t storage)
+{
+#if 0
+   for(auto it=instrToStorageMap.begin();it!=instrToStorageMap.end();++it)
+      if(it->first < orderNum)
+         if(it->second.find(storage) != it->second.end())
+            return true;
+
+   return false;
+#endif
+// was this variables most previous storage this storage?
+   std::set<size_t> lastStorage;
+   for(auto it=instrToStorageMap.begin();it!=instrToStorageMap.end();++it)
+      if(it->first < orderNum)
+         lastStorage = it->second;
+
+   return lastStorage.find(storage)!=lastStorage.end();
+}
+
 void var::requireStorage(size_t orderNum, size_t s)
 {
    instrToStorageMap[orderNum].insert(s);

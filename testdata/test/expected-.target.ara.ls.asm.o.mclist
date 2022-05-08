@@ -1,129 +1,117 @@
 // 2: .entrypoint: 
 // 3:              push, rbx                    
 rex(48)op(ff)modR/M(f3)
-// 4:              push, rsi                    
-rex(48)op(ff)modR/M(f6)
-// 5:              push, rdi                    
+// 4:              push, rdi                    
 rex(48)op(ff)modR/M(f7)
-// 6:              sub, rsp, 24                 
+// 5:              sub, rsp, 24                 
 rex(48)op(83)modR/M(ec)i8(18)
-// 7:              sub, rsp, 8                  
+// 6:              sub, rsp, 8                  
 rex(48)op(83)modR/M(ec)i8(08)
-// 8:              sub, rsp, 32                 
+// 7:              sub, rsp, 32                 
 rex(48)op(83)modR/M(ec)i8(20)
-// 9:              mov, rbx, rcx                ; (preserve) [combiner]
+// 8:              mov, rbx, rcx                ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
-// 10:              mov, rcx, [rbp-8]            ;       (cout req for rcx) [splitter]
+// 9:              mov, rcx, [rbp-8]            ;       (cout req for rcx) [splitter]
 rex(48)op(8b)modR/M(4d)d8(f8)
-// 11:              call, .sht.cons.stdout_sctor ; (call label)
+// 10:              call, .sht.cons.stdout_sctor ; (call label)
 op(ff)modR/M(15)co32(00-00-00-00)
-// 12:              add, rsp, 32                 
+// 11:              add, rsp, 32                 
 rex(48)op(83)modR/M(c4)i8(20)
-// 13:              sub, rsp, 16                 
+// 12:              sub, rsp, 16                 
 rex(48)op(83)modR/M(ec)i8(10)
-// 14:              sub, rsp, 32                 
+// 13:              sub, rsp, 32                 
 rex(48)op(83)modR/M(ec)i8(20)
-// 15:              mov, rdi, rcx                ; (preserve) [combiner]
+// 14:              mov, rdi, rcx                ; (preserve) [combiner]
 rex(48)op(89)modR/M(cf)
-// 16:              mov, rcx, [rbp-8]            ;       (obj0 req for rcx) [splitter]
+// 15:              mov, rcx, [rbp-8]            ;       (obj0 req for rcx) [splitter]
 rex(48)op(8b)modR/M(4d)d8(f8)
-// 17:              call, .test.test_sctor       ; (call label)
+// 16:              call, .test.test_sctor       ; (call label)
 op(ff)modR/M(15)co32(00-00-00-00)
-// 18:              add, rsp, 32                 
+// 17:              add, rsp, 32                 
 rex(48)op(83)modR/M(c4)i8(20)
-// 19:              mov, [rcx+8], rdi            ; =
+// 18:              mov, [rcx+8], rdi            ; =
 rex(48)op(89)modR/M(79)d8(08)
-// 20:              sub, rsp, 32                 
+// 19:              sub, rsp, 32                 
 rex(48)op(83)modR/M(ec)i8(20)
-// 21:              mov, rdi, [rcx]              ; fieldaccess: owner of run
-rex(48)op(8b)modR/M(39)
-// 22:              mov, rsi, rcx                ; (preserve) [combiner]
-rex(48)op(89)modR/M(ce)
-// 23:              mov, rcx, rbx                ; (restore [combiner])
-rex(48)op(89)modR/M(d9)
-// 24:              mov, rdx, rcx                ;       (args req for rdx) [splitter]
-rex(48)op(89)modR/M(ca)
-// 25:              mov, rbx, rcx                ; (preserve) [combiner]
-rex(48)op(89)modR/M(cb)
-// 26:              mov, rcx, rsi                ; (restore [combiner])
-rex(48)op(89)modR/M(f1)
-// 27:              call, [rdi]                  ; (call ptr)
-rex(48)op(ff)modR/M(17)
-// 28:              add, rsp, 32                 
+// 20:              mov, rbx, [rcx]              ; fieldaccess: owner of run
+rex(48)op(8b)modR/M(19)
+// 21:              mov, rdx, rbx                ;       (args req for rdx) [splitter]
+rex(48)op(89)modR/M(da)
+// 22:              call, [rbx]                  ; (call ptr)
+rex(48)op(ff)modR/M(13)
+// 23:              add, rsp, 32                 
 rex(48)op(83)modR/M(c4)i8(20)
-// 29:              sub, rsp, 32                 
+// 24:              sub, rsp, 32                 
 rex(48)op(83)modR/M(ec)i8(20)
-// 30:              call, .test.test_sdtor       ; (call label)
+// 25:              call, .test.test_sdtor       ; (call label)
+op(ff)modR/M(15)co32(00-00-00-00)
+// 26:              add, rsp, 32                 
+rex(48)op(83)modR/M(c4)i8(20)
+// 27:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 28:              mov, rbx, rcx                ; (preserve) [combiner]
+rex(48)op(89)modR/M(cb)
+// 29:              mov, rcx, rdi                ; (restore [combiner])
+rex(48)op(89)modR/M(f9)
+// 30:              call, .sht.cons.stdout_sdtor ; (call label)
 op(ff)modR/M(15)co32(00-00-00-00)
 // 31:              add, rsp, 32                 
 rex(48)op(83)modR/M(c4)i8(20)
-// 32:              sub, rsp, 32                 
-rex(48)op(83)modR/M(ec)i8(20)
-// 33:              mov, rbx, rcx                ; (preserve) [combiner]
-rex(48)op(89)modR/M(cb)
-// 34:              mov, rcx, rdi                ; (restore [combiner])
-rex(48)op(89)modR/M(f9)
-// 35:              call, .sht.cons.stdout_sdtor ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
-// 36:              add, rsp, 32                 
-rex(48)op(83)modR/M(c4)i8(20)
-// 37:              add, rsp, 16                 
+// 32:              add, rsp, 16                 
 rex(48)op(83)modR/M(c4)i8(10)
-// 38:              add, rsp, 8                  
+// 33:              add, rsp, 8                  
 rex(48)op(83)modR/M(c4)i8(08)
-// 39:              add, rsp, 24                 
+// 34:              add, rsp, 24                 
 rex(48)op(83)modR/M(c4)i8(18)
-// 40:              pop, rdi                     
+// 35:              pop, rdi                     
 rex(48)op(8f)modR/M(c7)
-// 41:              pop, rsi                     
-rex(48)op(8f)modR/M(c6)
-// 42:              pop, rbx                     
+// 36:              pop, rbx                     
 rex(48)op(8f)modR/M(c3)
-// 43:              ret                          
+// 37:              ret                          
 op(c3)
-// 46: .test.consoleTarget.cctor: 
-// 47:                            ret
+// 40: .test.consoleTarget.cctor: 
+// 41:                            ret
 op(c3)
-// 50: .test.consoleTarget.cdtor: 
-// 51:                            ret
+// 44: .test.consoleTarget.cdtor: 
+// 45:                            ret
 op(c3)
-// 54: .test.consoleTarget_vtbl_inst:
-// 55: .data, 
-// 58: .test.consoleTarget_sctor: 
-// 59:                            sub, rsp, 32                            
+// 48: .test.consoleTarget_vtbl_inst:
+// 49: .data, 
+// 52: .test.consoleTarget_sctor: 
+// 53:                            sub, rsp, 32                            
 rex(48)op(83)modR/M(ec)i8(20)
-// 60:                            call, .sht.core.object_sctor            ; (call label)
+// 54:                            call, .sht.core.object_sctor            ; (call label)
 op(ff)modR/M(15)co32(00-00-00-00)
-// 61:                            add, rsp, 32                            
+// 55:                            add, rsp, 32                            
 rex(48)op(83)modR/M(c4)i8(20)
-// 62:                            mov, r10, .test.consoleTarget_vtbl_inst ; codeshape decomp
+// 56:                            mov, r10, .test.consoleTarget_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
-// 63:                            mov, [rcx], r10                         ; =
+// 57:                            mov, [rcx], r10                         ; =
 rex(4c)op(89)modR/M(11)
-// 64:                            sub, rsp, 32                            
+// 58:                            sub, rsp, 32                            
 rex(48)op(83)modR/M(ec)i8(20)
-// 65:                            call, .test.consoleTarget.cctor         ; (call label)
+// 59:                            call, .test.consoleTarget.cctor         ; (call label)
 op(ff)modR/M(15)co32(00-00-00-00)
-// 66:                            add, rsp, 32                            
+// 60:                            add, rsp, 32                            
 rex(48)op(83)modR/M(c4)i8(20)
-// 67:                            ret                                     
+// 61:                            ret                                     
 op(c3)
-// 70: .test.consoleTarget_sdtor: 
-// 71:                            mov, r10, .test.consoleTarget_vtbl_inst ; codeshape decomp
+// 64: .test.consoleTarget_sdtor: 
+// 65:                            mov, r10, .test.consoleTarget_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
-// 72:                            mov, [rcx], r10                         ; =
+// 66:                            mov, [rcx], r10                         ; =
 rex(4c)op(89)modR/M(11)
-// 73:                            sub, rsp, 32                            
+// 67:                            sub, rsp, 32                            
 rex(48)op(83)modR/M(ec)i8(20)
-// 74:                            call, .test.consoleTarget.cdtor         ; (call label)
+// 68:                            call, .test.consoleTarget.cdtor         ; (call label)
 op(ff)modR/M(15)co32(00-00-00-00)
-// 75:                            add, rsp, 32                            
+// 69:                            add, rsp, 32                            
 rex(48)op(83)modR/M(c4)i8(20)
-// 76:                            sub, rsp, 32                            
+// 70:                            sub, rsp, 32                            
 rex(48)op(83)modR/M(ec)i8(20)
-// 77:                            call, .sht.core.object_sdtor            ; (call label)
+// 71:                            call, .sht.core.object_sdtor            ; (call label)
 op(ff)modR/M(15)co32(00-00-00-00)
-// 78:                            add, rsp, 32                            
+// 72:                            add, rsp, 32                            
 rex(48)op(83)modR/M(c4)i8(20)
-// 79:                            ret                                     
+// 73:                            ret                                     
 op(c3)

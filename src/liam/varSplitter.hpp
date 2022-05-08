@@ -33,4 +33,15 @@ private:
    std::list<std::pair<lirInstr*,size_t> > m_newInstrs;
 };
 
+class splitResolver {
+public:
+   splitResolver(lirStream& s, varTable& v) : m_s(s), m_v(v) {}
+
+   void run();
+
+private:
+   lirStream& m_s;
+   varTable& m_v;
+};
+
 } // namespace liam

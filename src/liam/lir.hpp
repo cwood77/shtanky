@@ -88,7 +88,7 @@ public:
    lirInstr& searchUp(std::function<bool(const lirInstr&)> pred);
 
    size_t orderNum;
-   const cmn::tgt::instrIds instrId;
+   cmn::tgt::instrIds instrId;
    std::string comment;
    std::vector<lirArg*>& getArgs() { return m_args; }
 

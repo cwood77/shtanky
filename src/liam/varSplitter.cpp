@@ -74,7 +74,7 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
 
    auto& mov = m_s.pTail
       ->searchUp([=](auto& i){ return i.orderNum == orderNum; })
-         .injectBefore(*new lirInstr(cmn::tgt::kMov));
+         .injectBefore(*new lirInstr(cmn::tgt::kSplit));
    mov.comment = cmn::fmt("      (%s req for %s) [splitter]",
       v.name.c_str(),
       m_t.getProc().getRegName(destStor));
@@ -90,11 +90,43 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
    v.refs[mov.orderNum].push_back(&dest);
    v.refs[mov.orderNum].push_back(pSrc);
 
-   m_newInstrs.push_back(std::make_pair<lirInstr*,size_t>(&mov,(size_t)srcStor));
+//   m_newInstrs.push_back(std::make_pair<lirInstr*,size_t>(&mov,(size_t)srcStor));
    m_newInstrs.push_back(std::make_pair<lirInstr*,size_t>(&mov,(size_t)destStor));
 
-   v.storageDisambiguators[pSrc] = srcStor;
+//   v.storageDisambiguators[pSrc] = srcStor;
    v.storageDisambiguators[&dest] = destStor;
+}
+
+void splitResolver::run()
+{
+   lirInstr *pInstr = &m_s.pTail->head();
+   while(true)
+   {
+      if(pInstr->instrId == cmn::tgt::kSplit)
+      {
+         var& src = m_v.demand(*pInstr->getArgs()[1]);
+
+/*         if(src.instrToStorageMap.find(pInstr->orderNum)!=src.instrToStorageMap.end())
+         {
+            // source already has storage set?
+            cdwTHROW("storage should not be set for split sources");
+         }
+         else*/
+         {
+            auto prev = src.getStorageAt(pInstr->orderNum-1);
+            if(prev.size() != 1)
+               cdwTHROW("insane!  to many previous storages!");
+            src.requireStorage(pInstr->orderNum,*prev.begin());
+            src.storageDisambiguators[pInstr->getArgs()[1]] = *prev.begin();
+         }
+
+         pInstr->instrId = cmn::tgt::kMov;
+      }
+
+      if(pInstr->isLast())
+         break;
+      pInstr = &pInstr->next();
+   }
 }
 
 } // namespace liam
