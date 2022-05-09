@@ -171,8 +171,10 @@ $(SYZYGY_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # philemon
 
 PHILEMON_SRC = \
+	src/philemon/frontend.cpp \
 	src/philemon/genericClassInstantiator.cpp \
 	src/philemon/main.cpp \
+	src/philemon/stringDecomposition.cpp \
 	src/philemon/symbolTable.cpp \
 
 PHILEMON_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(PHILEMON_SRC)))
@@ -212,7 +214,6 @@ ARACELI_SRC = \
 	src/araceli/opOverloadDecomp.cpp \
 	src/araceli/selfDecomposition.cpp \
 	src/araceli/stackClassDecomposition.cpp \
-	src/araceli/stringDecomposition.cpp \
 	src/araceli/vtableGenerator.cpp \
 
 ARACELI_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(ARACELI_SRC)))

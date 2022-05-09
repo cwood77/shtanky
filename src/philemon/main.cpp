@@ -7,6 +7,8 @@
 #include "../syzygy/codegen.hpp"
 #include "frontend.hpp"
 #include "genericClassInstantiator.hpp"
+#include "stringDecomposition.hpp"
+#include "symbolTable.hpp"
 
 using namespace philemon;
 
@@ -35,6 +37,14 @@ int _main(int argc, const char *argv[])
       cdwVERBOSE("loading explicit file '%s'\n",path.c_str());
       araceli::loader::findScopeAndLoadFile(*pPrj.get(),path);
    }
+
+   // transform native string type to class
+   { stringDecomposition v; pPrj->acceptVisitor(v); v.run(); }
+
+   // subsequent link to load more
+   nodeLinker().linkGraph(*pPrj);
+   cdwVERBOSE("graph after linking ----\n");
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // run the instantiator, so it's guaranteed at least one run
    classInstantiator().run(*pPrj.get());

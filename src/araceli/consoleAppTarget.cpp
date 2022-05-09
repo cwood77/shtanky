@@ -27,6 +27,10 @@ void consoleAppTarget::populateIntrinsics(cmn::araceliProjectNode& root)
    ;
 }
 
+void consoleAppTarget::populateInstantiates(cmn::araceliProjectNode& root)
+{
+}
+
 void consoleAppTarget::araceliCodegen(cmn::araceliProjectNode& root, metadata& md)
 {
    std::list<cmn::node*> topLevels;
@@ -44,7 +48,7 @@ void consoleAppTarget::araceliCodegen(cmn::araceliProjectNode& root, metadata& m
       << "class consoleTarget {" << std::endl
       << std::endl
       << "   [entrypoint]" << std::endl
-      << "   static main(args : str[]) : void" << std::endl
+      << "   static main(args : .sht.core.string[]) : void" << std::endl
       << "   {" << std::endl
       << "      var cout : .sht.cons.stdout;" << std::endl
       << std::endl

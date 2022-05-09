@@ -1,6 +1,6 @@
 #include "stringDecomposition.hpp"
 
-namespace araceli {
+namespace philemon {
 
 void stringDecomposition::visit(cmn::strTypeNode& n)
 {
@@ -22,4 +22,4 @@ void stringDecomposition::run()
    }
 }
 
-} // namespace araceli
+} // namespace philemon

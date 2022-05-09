@@ -1,12 +1,12 @@
 interface iStream {
 
-   abstract printLn(msg : str) : void;
+   abstract printLn(msg : .sht.core.string) : void;
 
 }
 
 class stdout : iStream {
 
-   override printLn(msg : str) : void
+   override printLn(msg : .sht.core.string) : void
    {
       ._osCall(1,msg);
    }
@@ -16,7 +16,7 @@ class stdout : iStream {
 abstract program {
 
    public _out : iStream;
-   abstract run(args : str[]) : void;
+   abstract run(args : .sht.core.string[]) : void;
 
 }
 

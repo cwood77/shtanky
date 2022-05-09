@@ -1,7 +1,7 @@
 [program] 
 class assignTester : .sht.cons.program {
 
-   override run(args : str[]) : void
+   override run(args : .sht.core.string[]) : void
    {
    }
    private readFromSubObject(a : A, v : void) : void

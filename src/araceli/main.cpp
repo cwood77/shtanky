@@ -25,7 +25,6 @@
 #include "opOverloadDecomp.hpp"
 #include "selfDecomposition.hpp"
 #include "stackClassDecomposition.hpp"
-#include "stringDecomposition.hpp"
 #include "symbolTable.hpp"
 #include "vtableGenerator.hpp"
 #include <string.h>
@@ -82,9 +81,6 @@ int _main(int argc, const char *argv[])
 
    // inject implied base class
    { objectBaser v; pPrj->acceptVisitor(v); }
-
-   // transform native string type to class
-   { stringDecomposition v; pPrj->acceptVisitor(v); v.run(); }
 
    // subsequent link to update with new target and load more
    nodeLinker().linkGraph(*pPrj);
