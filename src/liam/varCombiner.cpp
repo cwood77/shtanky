@@ -85,6 +85,7 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
          pWinner = *winners.begin();
       else if(winners.size() == 0)
       {
+         cdwTHROW("does this ever get hit??");
          // then just pick the one who needs it soonest
          if(runnerUpMap.size() == 0)
             cdwTHROW("insanity!  can't pick a winner");

@@ -90,10 +90,10 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
    v.refs[mov.orderNum].push_back(&dest);
    v.refs[mov.orderNum].push_back(pSrc);
 
-//   m_newInstrs.push_back(std::make_pair<lirInstr*,size_t>(&mov,(size_t)srcStor));
+   // n.b. the source is _not_ a requirement.  I care where it's going, but not
+   //      really where it's coming from.  This gives more flexibility to the combiner.
    m_newInstrs.push_back(std::make_pair<lirInstr*,size_t>(&mov,(size_t)destStor));
 
-//   v.storageDisambiguators[pSrc] = srcStor;
    v.storageDisambiguators[&dest] = destStor;
 }
 
@@ -106,19 +106,12 @@ void splitResolver::run()
       {
          var& src = m_v.demand(*pInstr->getArgs()[1]);
 
-/*         if(src.instrToStorageMap.find(pInstr->orderNum)!=src.instrToStorageMap.end())
-         {
-            // source already has storage set?
-            cdwTHROW("storage should not be set for split sources");
-         }
-         else*/
-         {
-            auto prev = src.getStorageAt(pInstr->orderNum-1);
-            if(prev.size() != 1)
-               cdwTHROW("insane!  to many previous storages!");
-            src.requireStorage(pInstr->orderNum,*prev.begin());
-            src.storageDisambiguators[pInstr->getArgs()[1]] = *prev.begin();
-         }
+         auto prev = src.getStorageAt(pInstr->orderNum-1);
+         if(prev.size() != 1)
+            cdwTHROW("insane!  to many previous storages!");
+
+         src.requireStorage(pInstr->orderNum,*prev.begin());
+         src.storageDisambiguators[pInstr->getArgs()[1]] = *prev.begin();
 
          pInstr->instrId = cmn::tgt::kMov;
       }
