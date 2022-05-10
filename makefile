@@ -171,6 +171,7 @@ $(SYZYGY_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # philemon
 
 PHILEMON_SRC = \
+	src/philemon/arrayDecomposition.cpp \
 	src/philemon/frontend.cpp \
 	src/philemon/genericClassInstantiator.cpp \
 	src/philemon/main.cpp \

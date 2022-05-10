@@ -1,0 +1,12 @@
+generic<T>
+class array : lameBase {
+
+   override indexOpGet(i : ptr) : T
+   {
+   }
+
+   override indexOpSet(i : ptr, val : T) : void
+   {
+   }
+
+}

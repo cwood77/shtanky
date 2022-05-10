@@ -454,7 +454,7 @@ void diagVisitor::visit(genericNode& n)
 
 void diagVisitor::visit(constraintNode& n)
 {
-   cdwDEBUG("%sconstraintNode; name=\n",
+   cdwDEBUG("%sconstraintNode; name=%s\n",
       getIndent().c_str(),
       n.name.c_str());
 
@@ -565,44 +565,9 @@ void cloningNodeVisitor::visit(methodNode& n)
    hNodeVisitor::visit(n);
 }
 
-void cloningNodeVisitor::visit(fieldNode& n)
-{
-   hNodeVisitor::visit(n);
-}
-
 void cloningNodeVisitor::visit(argNode& n)
 {
    as<argNode>().name = n.name;
-   hNodeVisitor::visit(n);
-}
-
-void cloningNodeVisitor::visit(typeNode& n)
-{
-   hNodeVisitor::visit(n);
-}
-
-void cloningNodeVisitor::visit(strTypeNode& n)
-{
-   hNodeVisitor::visit(n);
-}
-
-void cloningNodeVisitor::visit(boolTypeNode& n)
-{
-   hNodeVisitor::visit(n);
-}
-
-void cloningNodeVisitor::visit(intTypeNode& n)
-{
-   hNodeVisitor::visit(n);
-}
-
-void cloningNodeVisitor::visit(arrayTypeNode& n)
-{
-   hNodeVisitor::visit(n);
-}
-
-void cloningNodeVisitor::visit(voidTypeNode& n)
-{
    hNodeVisitor::visit(n);
 }
 
@@ -611,11 +576,6 @@ void cloningNodeVisitor::visit(userTypeNode& n)
    as<userTypeNode>().pDef.ref = n.pDef.ref;
    if(n.pDef.getRefee())
       as<userTypeNode>().pDef.bind(*n.pDef.getRefee());
-   hNodeVisitor::visit(n);
-}
-
-void cloningNodeVisitor::visit(ptrTypeNode& n)
-{
    hNodeVisitor::visit(n);
 }
 

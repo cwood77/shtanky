@@ -57,6 +57,14 @@ void loader::loadFolder(cmn::scopeNode& s)
 void loader::loadFile(cmn::scopeNode& s, const std::string& fullPath)
 {
    cdwVERBOSE("loading file %s\n",fullPath.c_str());
+
+   if(s.filterChildren<cmn::fileNode>([&](auto& f)
+      { return f.fullPath == fullPath; }).size() != 0)
+   {
+      cdwDEBUG("file already loaded (ignoring)\n");
+      return;
+   }
+
    std::string contents;
    cmn::pathUtil::loadFileContents(fullPath,contents);
    lexor l(contents.c_str());

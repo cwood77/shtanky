@@ -1,5 +1,6 @@
 #include "../cmn/commonLexor.hpp"
 #include "../cmn/commonParser.hpp"
+#include "../cmn/nameUtil.hpp"
 #include "../cmn/stlutil.hpp"
 #include "../cmn/trace.hpp"
 #include "genericClassInstantiator.hpp"
@@ -9,6 +10,8 @@ namespace philemon {
 
 void typeParamedNameResolver::visit(cmn::classNode& n)
 {
+   resolveText(n.name);
+
    for(auto it=n.baseClasses.begin();it!=n.baseClasses.end();++it)
       resolveText(it->ref);
 
@@ -113,7 +116,7 @@ void instantiationFinder::visit(cmn::fileNode& n)
    for(auto it=gs.begin();it!=gs.end();++it)
    {
       auto& rClass = (*it)->demandSoleChild<cmn::classNode>();
-      cmn::addUnique(genericsByName,rClass.name,*it);
+      cmn::addUnique(genericsByName,cmn::fullyQualifiedName::build(rClass),*it);
    }
 
    // note instantiate statements
@@ -147,6 +150,8 @@ size_t classInstantiator::run(cmn::node& n)
 void classInstantiator::makeInstance(cmn::instantiateNode& n)
 {
    cdwVERBOSE("instantiating '%s'\n",n.text.c_str());
+   std::string shortName;
+   cmn::nameUtil::stripLast(n.text,shortName);
 
    // determine arguments
    std::string base;
@@ -172,7 +177,8 @@ void classInstantiator::makeInstance(cmn::instantiateNode& n)
    // clone & rename
    std::unique_ptr<cmn::node> pInstance(
       &cmn::cloneTree(pTemplate->demandSoleChild<cmn::classNode>()));
-   dynamic_cast<cmn::classNode&>(*pInstance.get()).name = n.text;
+   dynamic_cast<cmn::classNode&>(*pInstance.get()).name
+      = buildInstancePseudoName(base,args);
 
    // substitute args
    { typeParamedNameResolver v(dict); pInstance->acceptVisitor(v); v.finish(); }
@@ -196,6 +202,26 @@ void classInstantiator::buildBinding(std::list<std::string>& args, cmn::genericN
       cdwVERBOSE("  binding '%s' = '%s'\n",(*cit)->name.c_str(),ait->c_str());
       cmn::addUnique(dict,(*cit)->name,*ait);
    }
+}
+
+std::string classInstantiator::buildInstancePseudoName(const std::string& base, const std::list<std::string>& args)
+{
+   // we're inject the instance in the same file as the generic, so it already has the
+   // name scope.  Don't repeat it by using a FQN.
+   std::string shortName;
+   cmn::nameUtil::stripLast(base,shortName);
+
+   std::stringstream stream;
+   stream << shortName << "<";
+   for(auto it=args.begin();it!=args.end();++it)
+   {
+      if(it!=args.begin())
+         stream << ",";
+      stream << *it;
+   }
+   stream << ">";
+
+   return stream.str();
 }
 
 void genericStripper::visit(cmn::fileNode& n)

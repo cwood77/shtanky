@@ -2,7 +2,7 @@ const .test.const0 : str = "hello world!";
 
 func .test.test.run(
    self : .test.test,
-   args : .sht.core.string[]) : void
+   args : .sht.core.array<.sht.core.string>) : void
 {
    self:_out:_vtbl:printLn->(self:_out,.test.const0);
 }
@@ -39,5 +39,5 @@ func .test.test_sdtor(
 func ._osCall(code : str, payload : str) : void;
 
 ref "..\sht\cons\program.ara.lh";
-ref "..\sht\core\string.ara.lh";
+ref "..\sht\core\array.ara.lh";
 ref "test.ara.lh";

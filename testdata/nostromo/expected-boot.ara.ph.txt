@@ -1,7 +1,7 @@
 [program] 
 class bootstrapper : .sht.cons.program {
 
-   override run(args : .sht.core.string[]) : void
+   override run(args : .sht.core.array<.sht.core.string>) : void
    {
    }
 

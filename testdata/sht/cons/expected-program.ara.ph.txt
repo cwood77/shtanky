@@ -16,7 +16,7 @@ class stdout : iStream {
 abstract program {
 
    public _out : iStream;
-   abstract run(args : .sht.core.string[]) : void;
+   abstract run(args : .sht.core.array<.sht.core.string>) : void;
 
 }
 

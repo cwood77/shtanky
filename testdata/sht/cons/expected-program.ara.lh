@@ -33,7 +33,7 @@ func .sht.cons.stdout.cdtor(
 
 func .sht.cons.program.run(
    self : .sht.cons.program,
-   args : .sht.core.string[]) : void;
+   args : .sht.core.array<.sht.core.string>) : void;
 
 func .sht.cons.program.cctor(
    self : .sht.cons.program) : .sht.cons.program;
@@ -71,4 +71,5 @@ func .sht.cons.stdout_sctor(
 func .sht.cons.stdout_sdtor(
    self : .sht.cons.stdout) : void;
 
+ref "..\core\array.ara.lh";
 ref "..\core\string.ara.lh";

@@ -33,7 +33,7 @@ func .sht.cons.stdout.cdtor(
 
 func .sht.cons.program.run(
    self : .sht.cons.program,
-   args : .sht.core.string[]) : void
+   args : .sht.core.array<.sht.core.string>) : void
 {
 }
 
@@ -105,5 +105,6 @@ func .sht.cons.stdout_sdtor(
 func ._osCall(code : str, payload : str) : void;
 
 ref "program.ara.lh";
+ref "..\core\array.ara.lh";
 ref "..\core\object.ara.lh";
 ref "..\core\string.ara.lh";

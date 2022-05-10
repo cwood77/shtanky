@@ -50,6 +50,10 @@ private:
    void buildBinding(std::list<std::string>& args,
       cmn::genericNode& n, std::map<std::string,std::string>& dict);
 
+   // e.g. list<T>.  The 'pseudo' refers to the fact that T is unbound
+   static std::string buildInstancePseudoName(const std::string& base,
+      const std::list<std::string>& args);
+
    std::map<std::string,cmn::genericNode*> m_genericsByName;
 };
 

@@ -90,7 +90,7 @@ void commonParser::parseClass(fileNode& f, const std::string& genericTypeExpr)
    if(!genericTypeExpr.empty())
       parseGeneric(c,genericTypeExpr);
 
-   m_l.demand(cdwLoc,commonLexor::kName);
+   m_l.demandOneOf(cdwLoc,2,commonLexor::kName,commonLexor::kGenericTypeExpr);
    c.name = m_l.getLexeme();
    m_l.advance();
 

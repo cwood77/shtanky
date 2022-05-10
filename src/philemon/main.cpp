@@ -5,6 +5,7 @@
 #include "../cmn/out.hpp"
 #include "../cmn/trace.hpp"
 #include "../syzygy/codegen.hpp"
+#include "arrayDecomposition.hpp"
 #include "frontend.hpp"
 #include "genericClassInstantiator.hpp"
 #include "stringDecomposition.hpp"
@@ -40,6 +41,9 @@ int _main(int argc, const char *argv[])
 
    // transform native string type to class
    { stringDecomposition v; pPrj->acceptVisitor(v); v.run(); }
+
+   // transform native array type to class
+   { arrayDecomposition v; pPrj->acceptVisitor(v); v.run(*pPrj.get()); }
 
    // subsequent link to load more
    nodeLinker().linkGraph(*pPrj);

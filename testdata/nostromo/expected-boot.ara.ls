@@ -1,6 +1,6 @@
 func .nostromo.bootstrapper.run(
    self : .nostromo.bootstrapper,
-   args : .sht.core.string[]) : void
+   args : .sht.core.array<.sht.core.string>) : void
 {
 }
 
@@ -37,4 +37,4 @@ func ._osCall(code : str, payload : str) : void;
 
 ref "boot.ara.lh";
 ref "..\sht\cons\program.ara.lh";
-ref "..\sht\core\string.ara.lh";
+ref "..\sht\core\array.ara.lh";

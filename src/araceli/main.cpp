@@ -45,6 +45,7 @@ int _main(int argc, const char *argv[])
       childStream << " ara";
       childStream << " .\\testdata\\sht\\core\\object.ara";
       childStream << " .\\testdata\\sht\\core\\string.ara";
+      childStream << " .\\testdata\\sht\\core\\array.ara";
       cdwVERBOSE("calling: %s\n",childStream.str().c_str());
       ::_flushall();
       int rval = ::system(childStream.str().c_str());

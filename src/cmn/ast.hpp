@@ -196,6 +196,30 @@ public:
       return **candidates.begin();
    }
 
+   template<class T>
+   std::vector<T*> filterChildren(std::function<bool(T&)> filter = [](T& n){ return true; })
+   {
+      std::vector<T*> rval;
+
+      for(auto it=m_children.begin();it!=m_children.end();++it)
+      {
+         auto candidate = dynamic_cast<T*>(*it);
+         if(candidate && filter(*candidate))
+            rval.push_back(candidate);
+      }
+
+      return rval;
+   }
+
+   template<class T>
+   T& filterSoleChild(std::function<bool(T&)> filter = [](T& n){ return true; })
+   {
+      std::vector<T*> candidates = filterChildren<T>(filter);
+      if(candidates.size() != 1)
+         cdwTHROW("expected single child");
+      return **candidates.begin();
+   }
+
 private:
    node *m_pParent;
    std::vector<node*> m_children;
@@ -748,35 +772,35 @@ public:
    virtual void visit(classNode& n);
    virtual void visit(memberNode& n);
    virtual void visit(methodNode& n);
-   virtual void visit(fieldNode& n);
+   //virtual void visit(fieldNode& n);
    virtual void visit(constNode& n) { unexpected(n); }
    virtual void visit(funcNode& n) { unexpected(n); }
-   virtual void visit(intrinsicNode& n) { unexpected(n); }
+   //virtual void visit(intrinsicNode& n) { unexpected(n); }
    virtual void visit(argNode& n);
-   virtual void visit(typeNode& n);
-   virtual void visit(strTypeNode& n);
-   virtual void visit(boolTypeNode& n);
-   virtual void visit(intTypeNode& n);
-   virtual void visit(arrayTypeNode& n);
-   virtual void visit(voidTypeNode& n);
+   //virtual void visit(typeNode& n);
+   //virtual void visit(strTypeNode& n);
+   //virtual void visit(boolTypeNode& n);
+   //virtual void visit(intTypeNode& n);
+   //virtual void visit(arrayTypeNode& n);
+   //virtual void visit(voidTypeNode& n);
    virtual void visit(userTypeNode& n);
-   virtual void visit(ptrTypeNode& n);
-   virtual void visit(sequenceNode& n) { unexpected(n); }
+   //virtual void visit(ptrTypeNode& n);
+   //virtual void visit(sequenceNode& n) { unexpected(n); }
    virtual void visit(invokeNode& n) { unexpected(n); }
-   virtual void visit(invokeFuncPtrNode& n) { unexpected(n); }
+   //virtual void visit(invokeFuncPtrNode& n) { unexpected(n); }
    virtual void visit(fieldAccessNode& n) { unexpected(n); }
    virtual void visit(callNode& n) { unexpected(n); }
    virtual void visit(localDeclNode& n) { unexpected(n); }
    virtual void visit(varRefNode& n);
-   virtual void visit(assignmentNode& n) { unexpected(n); }
+   //virtual void visit(assignmentNode& n) { unexpected(n); }
    virtual void visit(bopNode& n) { unexpected(n); }
-   virtual void visit(indexNode& n) { unexpected(n); }
-   virtual void visit(ifNode& n) { unexpected(n); }
+   //virtual void visit(indexNode& n) { unexpected(n); }
+   //virtual void visit(ifNode& n) { unexpected(n); }
    virtual void visit(stringLiteralNode& n) { unexpected(n); }
    virtual void visit(boolLiteralNode& n) { unexpected(n); }
    virtual void visit(intLiteralNode& n) { unexpected(n); }
-   virtual void visit(structLiteralNode& n) { unexpected(n); }
-   virtual void visit(genericNode& n) { unexpected(n); }
+   //virtual void visit(structLiteralNode& n) { unexpected(n); }
+   //virtual void visit(genericNode& n) { unexpected(n); }
    virtual void visit(constraintNode& n) { unexpected(n); }
    virtual void visit(instantiateNode& n) { unexpected(n); }
 

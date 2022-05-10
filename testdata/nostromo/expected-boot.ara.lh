@@ -5,7 +5,7 @@ class .nostromo.bootstrapper {
 
 func .nostromo.bootstrapper.run(
    self : .nostromo.bootstrapper,
-   args : .sht.core.string[]) : void;
+   args : .sht.core.array<.sht.core.string>) : void;
 
 func .nostromo.bootstrapper.cctor(
    self : .nostromo.bootstrapper) : .nostromo.bootstrapper;
@@ -24,4 +24,4 @@ func .nostromo.bootstrapper_sdtor(
    self : .nostromo.bootstrapper) : void;
 
 ref "..\sht\cons\program.ara.lh";
-ref "..\sht\core\string.ara.lh";
+ref "..\sht\core\array.ara.lh";
