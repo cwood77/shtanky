@@ -491,6 +491,10 @@ std::string diagVisitor::getIndent() const
 
 std::string fullyQualifiedName::build(cmn::node& n, const std::string& start)
 {
+   if(!start.empty() && start.c_str()[0] == '.')
+      // if it's already a FQN, just return it
+      return start;
+
    fullyQualifiedName self;
    self.m_fqn = start;
    n.acceptVisitor(self);

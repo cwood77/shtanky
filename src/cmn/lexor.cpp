@@ -53,21 +53,24 @@ void intLiteralReader::advance(lexorState& s) const
 void genericTypeReader::advance(lexorState& s) const
 {
    const char *pThumb = s.pThumb;
-   for(;::isalnum(*pThumb);++pThumb);
-   if(pThumb == s.pThumb) return; // must have alphanumeric prefix
+   for(;::isalnum(*pThumb)||*pThumb=='.'||*pThumb=='_';++pThumb);
+   if(pThumb == s.pThumb) return; // must have alphanumeric prefix (. is allowed for FQNs)
    if(*pThumb != '<') return; // open <
    const char *pPayload = ++pThumb;
    for(;*pThumb&&*pThumb!='>';++pThumb); // anything, then >
    if(*pThumb != '>') return;
+   ++pThumb;
+   // suffixes are allowed for things like list<bool>_vtbl (i.e. derived type names)
+   for(;::isalnum(*pThumb)||*pThumb=='.'||*pThumb=='_';++pThumb);
    std::string payload(pPayload,pThumb-pPayload);
    bool hasComma = (payload.find(',')!=std::string::npos);
    bool hasSpaces = (payload.find(' ')!=std::string::npos);
 
    if(hasComma || !hasSpaces)
    {
-      s.lexeme = std::string(s.pThumb,pThumb + 1 - s.pThumb);
+      s.lexeme = std::string(s.pThumb,pThumb - s.pThumb);
       s.token = lexorBase::kGenericTypeExpr;
-      s.pThumb = pThumb + 1;
+      s.pThumb = pThumb;
    }
 }
 

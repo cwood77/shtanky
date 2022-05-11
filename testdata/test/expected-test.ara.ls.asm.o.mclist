@@ -1,32 +1,32 @@
-// 2: .test.const0:
+// 2: .const0:
 // 3: .data, "hello world!" <b> 0 
 _strdata(68-65-6c-6c,6f-20-77-6f,72-6c-64-21)_intdata(00)
 // 6: .test.test.run: 
-// 7:                 push, rbx              
+// 7:                 push, rbx         
 rex(48)op(ff)modR/M(f3)
-// 8:                 push, rdi              
+// 8:                 push, rdi         
 rex(48)op(ff)modR/M(f7)
-// 9:                 sub, rsp, 32           
+// 9:                 sub, rsp, 32      
 rex(48)op(83)modR/M(ec)i8(20)
-// 10:                 mov, rbx, [rcx+8]      ; fieldaccess: owner of _vtbl
+// 10:                 mov, rbx, [rcx+8] ; fieldaccess: owner of _vtbl
 rex(48)op(8b)modR/M(59)d8(08)
-// 11:                 mov, rdi, [rbx]        ; fieldaccess: owner of printLn
+// 11:                 mov, rdi, [rbx]   ; fieldaccess: owner of printLn
 rex(48)op(8b)modR/M(3b)
-// 12:                 mov, rdx, .test.const0 ; shape:hoist imm from call
+// 12:                 mov, rdx, .const0 ; shape:hoist imm from call
 rex(48)op(8b)modR/M(15)co32(00-00-00-00)
-// 13:                 mov, rbx, rcx          ; (preserve) [combiner]
+// 13:                 mov, rbx, rcx     ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
-// 14:                 mov, rcx, [rbx+8]      ; shape:hoist addrOf from call
+// 14:                 mov, rcx, [rbx+8] ; shape:hoist addrOf from call
 rex(48)op(8b)modR/M(4b)d8(08)
-// 15:                 call, [rdi]            ; (call ptr)
+// 15:                 call, [rdi]       ; (call ptr)
 rex(48)op(ff)modR/M(17)
-// 16:                 add, rsp, 32           
+// 16:                 add, rsp, 32      
 rex(48)op(83)modR/M(c4)i8(20)
-// 17:                 pop, rdi               
+// 17:                 pop, rdi          
 rex(48)op(8f)modR/M(c7)
-// 18:                 pop, rbx               
+// 18:                 pop, rbx          
 rex(48)op(8f)modR/M(c3)
-// 19:                 ret                    
+// 19:                 ret               
 op(c3)
 // 22: .test.test.cctor: 
 // 23:                   ret

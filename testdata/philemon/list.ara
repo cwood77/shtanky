@@ -15,4 +15,4 @@ class bootstrap : .sht.cons.program {
 
 }
 
-instantiate list<str>;
+instantiate .philemon.list<str>;

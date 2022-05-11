@@ -16,25 +16,12 @@ int main(int argc, const char *argv[])
 
    // ------------------ tests start ------------------
 
-   araceliTest(is,".\\testdata\\test")
-      .wholeApp()
-      .expectLiamOf(".\\testdata\\test\\test.ara")
-      .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
-      .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
-      .expectLiamOf(".\\testdata\\test\\.target.ara",false) // no philemon
-   ;
-
    araceliTest(is,".\\testdata\\assign")
       .wholeApp()
       .expectLiamOf(".\\testdata\\assign\\main.ara")
       .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
       .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
       .expectLiamOf(".\\testdata\\assign\\.target.ara",false)
-   ;
-
-   shtasmTest(is,".\\testdata\\shtemu\\basic.asm")
-      .wholeApp(".\\testdata\\shtemu\\basic.app")
-      .emulateAndCheckOutput()
    ;
 
    araceliTest(is,".\\testdata\\nostromo")
@@ -44,7 +31,24 @@ int main(int argc, const char *argv[])
       .expectLiamOf(".\\testdata\\nostromo\\uart16550\\driver.ara")
       .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
       .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
-      .expectLiamOf(".\\testdata\\nostromo\\.target.ara",false) // no philemon
+      .expectLiamOf(".\\testdata\\nostromo\\.target.ara",false) // false = no philemon
+   ;
+
+   araceliTest(is,".\\testdata\\philemon")
+      .expectLiamOf(".\\testdata\\philemon\\list.ara")
+   ;
+
+   shtasmTest(is,".\\testdata\\shtemu\\basic.asm")
+      .wholeApp(".\\testdata\\shtemu\\basic.app")
+      .emulateAndCheckOutput()
+   ;
+
+   araceliTest(is,".\\testdata\\test")
+      .wholeApp()
+      .expectLiamOf(".\\testdata\\test\\test.ara")
+      .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+      .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
+      .expectLiamOf(".\\testdata\\test\\.target.ara",false) // false = no philemon
    ;
 
    // ------------------ tests end ------------------

@@ -257,7 +257,7 @@ void commonParser::parseGlobalFunc(fileNode& f)
 
    auto& n = m_nFac.appendNewChild<funcNode>(f);
 
-   m_l.demand(cdwLoc,commonLexor::kName);
+   m_l.demandOneOf(cdwLoc,2,commonLexor::kName,commonLexor::kGenericTypeExpr);
    n.name = m_l.getLexeme();
    m_l.advance();
 
