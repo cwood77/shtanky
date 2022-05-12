@@ -10,7 +10,9 @@ class bootstrap : .sht.cons.program {
 
    override run(args : str[]) : void
    {
-      var L : list<str>;
+      var L : .philemon.list<str>;
+      var A2 : str[][];
+      var L2 : .philemon.list<str>[];
    }
 
 }

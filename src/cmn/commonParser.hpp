@@ -187,8 +187,10 @@ private:
 // <constraint> ::== <name> ':' <name>
 //                 | <name>
 //
-// <type-paramed> ::== <name> '<' arg> '>'
-// <arg> ::== <name> <args'>
+//               --------
+//
+// <type-paramed> ::== <name> '<' <arg> '>'
+// <arg> ::== <type> <args'>
 //          | <type-paramed> <args'>
 // <args'> :== ',' <arg>
 //           | e
@@ -204,6 +206,9 @@ public:
    void parseTypeParamed(std::string& base, std::list<std::string>& args);
 
 private:
+   void parseTypeParamArgList(std::list<std::string>& args);
+   void parseTypeParamArg(std::list<std::string>& args);
+
    genericTypeExprLexor& m_l;
 };
 

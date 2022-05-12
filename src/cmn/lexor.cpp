@@ -57,7 +57,16 @@ void genericTypeReader::advance(lexorState& s) const
    if(pThumb == s.pThumb) return; // must have alphanumeric prefix (. is allowed for FQNs)
    if(*pThumb != '<') return; // open <
    const char *pPayload = ++pThumb;
-   for(;*pThumb&&*pThumb!='>';++pThumb); // anything, then >
+   for(int depth=0;;++pThumb) // anything, then > (but allow nesting)
+   {
+      if(*pThumb == 0) return;
+      if(*pThumb == '<') depth++;
+      if(*pThumb == '>')
+      {
+         if(depth==0) break;
+         depth--;
+      }
+   }
    if(*pThumb != '>') return;
    ++pThumb;
    // suffixes are allowed for things like list<bool>_vtbl (i.e. derived type names)

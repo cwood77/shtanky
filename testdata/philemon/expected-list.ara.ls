@@ -4,6 +4,12 @@ func .philemon.bootstrap.run(
 {
    var L : .philemon.list<str>;
    .philemon.list<str>_sctor(L);
+   var A2 : .sht.core.array<.sht.core.array<.sht.core.string>>;
+   .sht.core.array<.sht.core.array<.sht.core.string>>_sctor(A2);
+   var L2 : .sht.core.array<.philemon.list<str>>;
+   .sht.core.array<.philemon.list<str>>_sctor(L2);
+   .sht.core.array<.philemon.list<str>>_sdtor(L2);
+   .sht.core.array<.sht.core.array<.sht.core.string>>_sdtor(A2);
    .philemon.list<str>_sdtor(L);
 }
 

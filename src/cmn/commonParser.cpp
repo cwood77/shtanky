@@ -651,21 +651,63 @@ void genericTypeExprParser::parseTypeParamed(std::string& base, std::list<std::s
    base = m_l.getLexeme();
    m_l.advance();
 
+   parseTypeParamArgList(args);
+
+   m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kEOI);
+}
+
+void genericTypeExprParser::parseTypeParamArgList(std::list<std::string>& args)
+{
    m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kLessThan);
 
    while(true)
    {
-      m_l.demandOneOf(cdwLoc,2,genericTypeExprLexor::kName,genericTypeExprLexor::kStr);
-      args.push_back(m_l.getLexeme());
-      m_l.advance();
+      parseTypeParamArg(args);
 
       if(m_l.getToken() != genericTypeExprLexor::kComma)
          break;
    }
 
    m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kGreaterThan);
+}
 
-   m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kEOI);
+void genericTypeExprParser::parseTypeParamArg(std::list<std::string>& args)
+{
+   m_l.demandOneOf(cdwLoc,4,
+      genericTypeExprLexor::kStr,
+      genericTypeExprLexor::kVoid,
+      genericTypeExprLexor::kPtr,
+      genericTypeExprLexor::kName
+   );
+
+   std::string word = m_l.getLexeme();
+   bool checkForNestedGeneric = (m_l.getToken() == genericTypeExprLexor::kName);
+   m_l.advance();
+
+   if(checkForNestedGeneric && m_l.getToken() == genericTypeExprLexor::kLessThan)
+   {
+      std::list<std::string> sublist;
+      parseTypeParamArgList(sublist);
+      std::stringstream stream;
+      stream << word << "<";
+      for(auto it=sublist.begin();it!=sublist.end();++it)
+      {
+         if(it!=sublist.begin())
+            stream << ",";
+         stream << *it;
+      }
+      stream << ">";
+      word = stream.str();
+   }
+
+   if(m_l.getToken() == commonLexor::kLBracket)
+   {
+      m_l.advance();
+      m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
+      word += "[]";
+   }
+
+   args.push_back(word);
 }
 
 } // namespace cmn
