@@ -29,6 +29,11 @@ int _main(int argc, const char *argv[])
    frontend(projectDir,pPrj,pTgt).run();
 
    // load any additional files indicated on the command line
+   cl.addNextArgDefaultsIfNoneLeft(3,
+      ".\\testdata\\sht\\core\\object.ara",
+      ".\\testdata\\sht\\core\\string.ara",
+      ".\\testdata\\sht\\core\\array.ara"
+   );
    for(size_t i=0;;i++)
    {
       auto path = cl.getNextArg("");

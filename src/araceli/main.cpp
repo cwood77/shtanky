@@ -31,6 +31,29 @@
 
 using namespace araceli;
 
+void invokeSubProcess(const char *shortName, const char *ext, const std::string& projectDir)
+{
+   std::stringstream childStream;
+   childStream << "bin\\out\\debug\\" << shortName << ".exe ";
+   childStream << projectDir;
+   childStream << " " << ext;
+   childStream << " .\\testdata\\sht\\core\\object.ara";
+   childStream << " .\\testdata\\sht\\core\\string.ara";
+   childStream << " .\\testdata\\sht\\core\\array.ara";
+   cdwVERBOSE("calling: %s\n",childStream.str().c_str());
+   ::_flushall();
+   int rval = ::system(childStream.str().c_str());
+   cdwDEBUG("*************************************************\n");
+   cdwDEBUG("**   returned to araceli\n");
+   cdwDEBUG("*************************************************\n");
+   cdwVERBOSE("rval = %d\n",rval);
+   if(rval != 0)
+   {
+      cdwINFO("%s failed with code %d; aborting\n",shortName,rval);
+      cdwTHROW("child process failed");
+   }
+}
+
 int _main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
@@ -38,27 +61,7 @@ int _main(int argc, const char *argv[])
    std::string batchBuild = projectDir + "\\.build.bat";
 
    // invoke philemon
-   {
-      std::stringstream childStream;
-      childStream << "bin\\out\\debug\\philemon.exe ";
-      childStream << projectDir;
-      childStream << " ara";
-      childStream << " .\\testdata\\sht\\core\\object.ara";
-      childStream << " .\\testdata\\sht\\core\\string.ara";
-      childStream << " .\\testdata\\sht\\core\\array.ara";
-      cdwVERBOSE("calling: %s\n",childStream.str().c_str());
-      ::_flushall();
-      int rval = ::system(childStream.str().c_str());
-      cdwDEBUG("*************************************************\n");
-      cdwDEBUG("**   returned to araceli\n");
-      cdwDEBUG("*************************************************\n");
-      cdwVERBOSE("rval = %d\n",rval);
-      if(rval != 0)
-      {
-         cdwINFO("philemon failed with code %d; aborting\n",rval);
-         cdwTHROW("child process failed");
-      }
-   }
+   invokeSubProcess("philemon","ara",projectDir);
 
    // I convert ph -> ara.lh/ls
    loaderPrefs lPrefs = { "ph", "" };

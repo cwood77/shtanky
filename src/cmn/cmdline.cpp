@@ -1,4 +1,5 @@
 #include "cmdline.hpp"
+#include <stdarg.h>
 
 namespace cmn {
 
@@ -46,6 +47,22 @@ std::string cmdLine::getNextArg(const std::string& defValue)
       return m_args[m_i++];
    else
       return defValue;
+}
+
+void cmdLine::addNextArgDefaultsIfNoneLeft(size_t cnt, ...)
+{
+   if(m_i < m_args.size()) return; // there are some left!
+
+   va_list ap;
+   va_start(ap,cnt);
+
+   for(size_t i=0;i<cnt;i++)
+   {
+      const char *pArg = va_arg(ap,const char *);
+      m_args.push_back(pArg);
+   }
+
+   va_end(ap);
 }
 
 } // namespace cmn
