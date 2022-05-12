@@ -16,7 +16,6 @@ int main(int argc, const char *argv[])
 
    // ------------------ tests start ------------------
 
-s.skipTests();
 
    araceliTest(is,".\\testdata\\assign")
       .wholeApp()
@@ -36,13 +35,9 @@ s.skipTests();
       .expectLiamOf(".\\testdata\\nostromo\\.target.ara",false) // false = no philemon
    ;
 
-s.skipTests(false);
-
    araceliTest(is,".\\testdata\\philemon")
       .expectLiamOf(".\\testdata\\philemon\\list.ara")
    ;
-
-s.skipTests();
 
    shtasmTest(is,".\\testdata\\shtemu\\basic.asm")
       .wholeApp(".\\testdata\\shtemu\\basic.app")
