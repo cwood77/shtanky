@@ -72,6 +72,16 @@ scriptStream& script::get(size_t i)
    return s;
 }
 
+void script::skipTests(bool v)
+{
+   //get(kStreamClean).skip(v);
+   get(kStreamCmd).skip(v);
+   get(kStreamCheck).skip(v);
+   get(kStreamBless).skip(v);
+   get(kStreamUnbless).skip(v);
+   m_hadSkips = true;
+}
+
 instr::~instr()
 {
    if(!m_complete)
@@ -125,7 +135,7 @@ doInstr& doInstr::thenCheckReturnValueAndCaptureOutput(const std::string& log, c
 
    _s << ":" << failLbl << std::endl;
    cmds.stopProgressDisplayForOutput();
-   _s << "echo FAIL: nonzero exit code doing " << errorHint << std::endl;
+   _s << "echo FAIL: nonzero exit code doing " << errorHint << " [" << failLbl << "]" << std::endl;
    _s << "goto end" << std::endl;
 
    _s << ":" << passLbl << std::endl;

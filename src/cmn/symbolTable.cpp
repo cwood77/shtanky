@@ -175,8 +175,6 @@ void linkResolver::visit(classNode& n)
    if(m_l._getRefee())
       return;
 
-   std::vector<fieldNode*> fields;
-
    if(m_mode & kOwnClass)
    {
       // the next type I check, I'll actually be
@@ -349,7 +347,7 @@ void nodeResolver::visit(varRefNode& n)
    }
 
    linkResolver v(m_sTable,n.pSrc,
-      linkResolver::kBaseClasses | linkResolver::kArgs);
+      linkResolver::kBaseClasses | linkResolver::kOwnClass | linkResolver::kArgs);
    n.acceptVisitor(v);
 
    hNodeVisitor::visit(n);

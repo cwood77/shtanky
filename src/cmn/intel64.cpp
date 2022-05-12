@@ -95,7 +95,9 @@ static const instrInfo kInstrs[] = {
 
    { "ret",               "r",  true, (const instrFmt*)&retFmts },
 
-   { "system",            "x",  true, NULL     },
+   { "<split>",           NULL, false, NULL     },
+
+   { "system",            "x",  true,  NULL     },
 };
 
 void x8664Processor::createRegisterMap(std::map<size_t,size_t>& m) const

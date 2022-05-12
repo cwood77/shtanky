@@ -53,21 +53,33 @@ void intLiteralReader::advance(lexorState& s) const
 void genericTypeReader::advance(lexorState& s) const
 {
    const char *pThumb = s.pThumb;
-   for(;::isalnum(*pThumb);++pThumb);
-   if(pThumb == s.pThumb) return; // must have alphanumeric prefix
+   for(;::isalnum(*pThumb)||*pThumb=='.'||*pThumb=='_';++pThumb);
+   if(pThumb == s.pThumb) return; // must have alphanumeric prefix (. is allowed for FQNs)
    if(*pThumb != '<') return; // open <
    const char *pPayload = ++pThumb;
-   for(;*pThumb&&*pThumb!='>';++pThumb); // anything, then >
+   for(int depth=0;;++pThumb) // anything, then > (but allow nesting)
+   {
+      if(*pThumb == 0) return;
+      if(*pThumb == '<') depth++;
+      if(*pThumb == '>')
+      {
+         if(depth==0) break;
+         depth--;
+      }
+   }
    if(*pThumb != '>') return;
+   ++pThumb;
+   // suffixes are allowed for things like list<bool>_vtbl (i.e. derived type names)
+   for(;::isalnum(*pThumb)||*pThumb=='.'||*pThumb=='_';++pThumb);
    std::string payload(pPayload,pThumb-pPayload);
    bool hasComma = (payload.find(',')!=std::string::npos);
    bool hasSpaces = (payload.find(' ')!=std::string::npos);
 
    if(hasComma || !hasSpaces)
    {
-      s.lexeme = std::string(s.pThumb,pThumb + 1 - s.pThumb);
+      s.lexeme = std::string(s.pThumb,pThumb - s.pThumb);
       s.token = lexorBase::kGenericTypeExpr;
-      s.pThumb = pThumb + 1;
+      s.pThumb = pThumb;
    }
 }
 
@@ -89,6 +101,12 @@ void whitespaceEater::advance(lexorState& s) const
       s.lineNumber++;
       s.pThumb++;
    }
+}
+
+void cppCommentEater::advance(lexorState& s) const
+{
+   if(::strncmp("//",s.pThumb,2)==0)
+      for(;s.pThumb[0]!='\n'&&s.pThumb[0]!=0;++s.pThumb);
 }
 
 lexorBase::lexorBase(const char *buffer)

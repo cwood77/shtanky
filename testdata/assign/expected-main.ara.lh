@@ -17,7 +17,7 @@ class .assign.B {
 
 func .assign.assignTester.run(
    self : .assign.assignTester,
-   args : str[]) : void;
+   args : .sht.core.array<.sht.core.string>) : void;
 
 func .assign.assignTester.readFromSubObject(
    self : .assign.assignTester,
@@ -33,6 +33,9 @@ func .assign.assignTester.readFromSubSubObject(
    wrong : void) : void;
 
 func .assign.assignTester.writeIntoSubSubObject(
+   self : .assign.assignTester) : void;
+
+func .assign.assignTester.bopAssociativity(
    self : .assign.assignTester) : void;
 
 func .assign.assignTester.cctor(
@@ -82,3 +85,4 @@ func .assign.assignTester_sdtor(
    self : .assign.assignTester) : void;
 
 ref "..\sht\cons\program.ara.lh";
+ref "..\sht\core\array.ara.lh";

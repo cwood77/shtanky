@@ -1,6 +1,6 @@
 func .assign.assignTester.run(
    self : .assign.assignTester,
-   args : str[]) : void
+   args : .sht.core.array<.sht.core.string>) : void
 {
 }
 
@@ -36,6 +36,13 @@ func .assign.assignTester.writeIntoSubSubObject(
    .assign.A_sctor(wrong);
    wrong:b:x = 7;
    .assign.A_sdtor(wrong);
+}
+
+func .assign.assignTester.bopAssociativity(
+   self : .assign.assignTester) : void
+{
+   var v : void;
+   v = 1 + 2 + 3;
 }
 
 func .assign.assignTester.cctor(
@@ -127,4 +134,5 @@ func ._osCall(code : str, payload : str) : void;
 
 ref "main.ara.lh";
 ref "..\sht\cons\program.ara.lh";
+ref "..\sht\core\array.ara.lh";
 ref "..\sht\core\object.ara.lh";

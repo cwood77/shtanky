@@ -81,6 +81,12 @@ public:
    virtual void advance(lexorState& s) const;
 };
 
+class cppCommentEater : public iLexorPhase {
+public:
+   virtual void collectTerminators(std::string& t) const {}
+   virtual void advance(lexorState& s) const;
+};
+
 class lexorBase {
 public:
    enum {

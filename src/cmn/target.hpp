@@ -54,6 +54,8 @@ enum instrIds {
 
    kRet,
 
+   kSplit,
+
    kLastInstr,
    kSyscall = kLastInstr,
 };

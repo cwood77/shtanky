@@ -10,68 +10,73 @@ class commonLexor;
 class genericTypeExprLexor;
 class lexorBase;
 
+//#error add new nodes to parser: bool, int, index, if
+
 // eBNF
 //
 // ------------------------- file
-// <file> ::== <class> <file>
-//           | <const> <file>
-//           | <func> <file>
-//           | <ref> <strlit>
-//           | 'instantiate' <text> ';'
+// <file> ::== <attributes> <class> <file>
+//           | <attributes> <const> <file>
+//           | <attributes> <func> <file>
+//           | <attributes> <ref> <strlit>
+//           | <attributes> 'instantiate' <text> ';'
 //           | e
 //
 // ------------------------- class
-// <class> ::== <attributes> <generic> 'class' <name> <class-bases> '{' <class-members> '}'
+// <class> ::== <generic> 'class'** <name> <class-bases> '{' <class-members> '}'
+//   'class'** = 'class' | 'interface' | 'abstract'
 // <class-bases> ::== ':' <name>
 //                  | e
-// <class-members> ::== <method> <class-members>
-//                    | <field> <class-members>
+// <class-members> ::== <attributes> <member-keywords> <name> '(' <method> <class-members>
+//                    | <attributes> <member-keywords> <name> ':' <field> <class-members>
 //                    | e
-// <member-keywords> ::== 'override' <member-keywords>
-//                      | 'private' <member-keywords>
+// <member-keywords> ::== ['override'|'abstract'|'static'|'public/protected/private']
+//                             <member-keywords>
 //                      | e
-// <method> ::== <generic> <member-keywords> <name> '(' <name> ':' <type> ')' ':' <type> <body>
-//             | e
-// <field> ::== <member-keywords> <name> ':' <type> <field-init> ';'
-// <field-init> ::== '=' <rvalue>
-//                 | e
+// <field> ::== <type> '=' <rvalue> ';'
+//            | <type> ';'
+// <method/func> ::== <decl-arg-list> ')' ':' <type> ';'
+//                  | <decl-arg-list> ')' ':' <type> <body>
+// <decl-arg-list> ::== <name> ':' <type> ',' <decl-arg-list>
+//                    | <name> ':' <type>
+//                    | e
 //
 // ------------------------- global funcs (liam)
-// <const> ::== <name> ':' <type> <field-init> ';'
-// <func> ::== <generic> <attributes> 'func' <name> '(' <name> ':' <type> ')' ';'
+// <const> ::== 'const' <name> ':' <type> '=' <rvalue> ';'
+// <func> ::== 'func' <name> '(' <method/func>
 //
 // ------------------------- procedural
-// <body> ::== '{' <statements> '}'
+// <body> ::== '{' <statements> <body> '}'
+//           | '{' <statements> '}'
 // <statements> ::== <statement>
-//                 | <body>
 //                 | e
-// <statement> ::== 'var' <var> ';'
-//                | <invoke> ';'
-//                | <call> ';'
-//                | <assignment> ';'
-// <var>       ::== <name> ':' <type>
-//                | <name> ':' <type> '=' <rvalue>
-//                | <name> '=' <rvalue>
-// <invoke>     ::== <lvalue> '->' <name**> '(' <passedArgList> ')'
-// <call>       ::== <lvalue**> '(' <passedArgList> ')'
-// <assignment> ::== <lvalue> '=' <rvalue>
-// <passedArgList> ::== <rvalue> ',' <passedArgList>
-//                    | <rvalue>
-//                    | e
+// <statement> ::== 'var' <var>
+//                | <lvalue> '=' <assignment> ';'
+//                | <lvalue> <call-end-friends> ';'
+// <var>       ::== <name> ':' <type> ';'
+//                | <name> ':' <type> '=' <rvalue> ';'
+//                | <name> '=' <rvalue> ';'
+// <invoke>     ::== <name> '(' <passed-arg-list> ')' ';'
+// <call>       ::== <passed-arg-list> ')' ';'
+// <assignment> ::== <rvalue> ';'
+// <passed-arg-list> ::== <rvalue> ',' <passed-arg-list>
+//                      | <rvalue>
+//                      | e
 //
-// ** denote things that should allow type-paramed names in a generic class/method/func
-//    otherwise are type-opaque and treat <> in names as any other character
-//
-// ------------------------- rval/lval   <-- TODO left off here
-// <lvalue> ::== <name>
-//             | <call>
-//             | <invoke>
-//             | <faccess>
-//             | <index-op>
+// <lvalue> ::== <name> <lvalue'>
+// <lvalue'> ::== ':' <name> <lvalue'>         [fieldaccess]
+//              | '[' <rvalue> ']' <lvaue'>    [index]
+//              | e
 //
 // <rvalue> ::== <literal>
 //             | <lvalue>
-//             | <bop>
+//             | <lvalue> <call-and-friends>
+//             | <literal> <bop>
+//             | <lvalue> <bop>
+//
+// <call-and-friends> ::== '->' <invoke>
+//                       | '->(' <passed-arg-list> ')'
+//                       | '(' <call>
 //
 // <literal> ::== <string-literal>
 //              | <bool-literal>
@@ -80,14 +85,14 @@ class lexorBase;
 //
 // <struct-literal> ::== '{' <struct-literal-part> '}'
 // <struct-literal-part> :: == <literal> <struct-literal-part-prime>
-//                           | <name> <struct-literal-part-prime> // here, name can be a func
+//                           | <name> <struct-literal-part-prime> [e.g. func ptr for vtbl]
 //                           | e
 // <struct-literal-part-prime> ::== ',' <struct-literal-part>
 //                                | e
 //
-// <faccess>  ::== <lvalue> '->' <name>
-// <index-op> ::== <lvalue> '[' <lvalue> ']'
-// <bop> ::== <rvalue> '+'{,etc.} <rvalue>
+                           // <faccess>  ::== <lvalue> '->' <name>
+                           // <index-op> ::== <lvalue> '[' <lvalue> ']'
+// <bop> ::== '+'{,etc.} <rvalue>
 //
 //  so 1 + 2 + 3
 //  would be:
@@ -99,13 +104,20 @@ class lexorBase;
 // ------------------------- type
 // <type> ::== 'str' '[' ']'
 //           | 'void'
-//           | <name**> // user defined type
+//           | 'ptr'
+//           | <name>
+//           | <generic-opaque>
 //
 // ------------------------- attributes
 // <attributes> ::== '[' <name> ']' <attributes>
 //                 |  e
 //
-
+// ------------------------- generics
+// <generic> ::== word<payload>
+//                word is nonempty alphanumerics
+//                payload empty/nonempty anything
+//                payload must have comma, or cannot have spaces
+//   --delegate to generic parser--
 
 // missing:
 //  index ops      **
@@ -113,25 +125,12 @@ class lexorBase;
 //  log ops        **
 //  bitwise ops    **
 //  ptr deref      ????
-//  new/delete     ????
 //  field access   ????
-//  branch
-//  loop
-//  throw/catch
-//  ctor/dtor
 //  string interp
 //  int literal formats
-//  assignment
 //  paren grouping in exprs
 //  fancy call arg passing
-//  templates
-//  gemplates
-//  bool type
-//  char type
 //  negative values
-//
-// long term DEFERRED:
-//  floating point
 
 class commonParser {
 public:
@@ -146,16 +145,18 @@ private:
    void parseClassMembers(classNode& c);
    void parseMemberKeywords(size_t& flags);
    void parseField(fieldNode& n);
-   void parseGlobalConst(fileNode& f);
-   void parseGlobalFunc(fileNode& f);
    void parseMethodOrGlobalFuncFromOpenParen(node& n);
    void parseMethodOrGlobalFuncFromAfterOpenParen(node& n);
    void parseDecledArgList(node& owner);
+
+   void parseGlobalConst(fileNode& f);
+   void parseGlobalFunc(fileNode& f);
 
    void parseSequence(node& owner);
    void parseStatements(node& owner);
    bool tryParseStatement(node& owner);
    void parseVar(node& owner);
+   bool parseCallAndFriends(std::unique_ptr<node>& inst, node& owner, bool require);
    void parseInvoke(std::unique_ptr<node>& inst, node& owner);
    void parseCall(std::unique_ptr<node>& inst, node& owner);
    void parseAssignment(std::unique_ptr<node>& inst, node& owner);
@@ -186,8 +187,10 @@ private:
 // <constraint> ::== <name> ':' <name>
 //                 | <name>
 //
-// <type-paramed> ::== <name> '<' arg> '>'
-// <arg> ::== <name> <args'>
+//               --------
+//
+// <type-paramed> ::== <name> '<' <arg> '>'
+// <arg> ::== <type> <args'>
 //          | <type-paramed> <args'>
 // <args'> :== ',' <arg>
 //           | e
@@ -203,6 +206,9 @@ public:
    void parseTypeParamed(std::string& base, std::list<std::string>& args);
 
 private:
+   void parseTypeParamArgList(std::list<std::string>& args);
+   void parseTypeParamArg(std::list<std::string>& args);
+
    genericTypeExprLexor& m_l;
 };
 

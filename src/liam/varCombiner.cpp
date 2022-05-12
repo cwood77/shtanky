@@ -47,43 +47,54 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
       cdwDEBUG("%d>1 variables claimed storage %lld!\n",it->second.size(),it->first);
       cdwDEBUG("   when handling instr %llu\n",i.orderNum);
 
-      // categorize all clients as winners or losers; winners require
-      // this storage later whereas losers do not
-      std::set<var*> winners;
-      std::map<size_t,var*> winnerMap;
+      // categorize all clients as winners, losers, or runners-up: winners keep the
+      // storage; losers are evicted elsewhere, runners up are evicted but restored to
+      // the storage later
+      std::map<size_t,var*> runnerUpMap;
       std::set<var*> losers;
-      for(auto jit=it->second.begin();jit!=it->second.end();++jit)
+      std::set<var*> winners;
+      for(auto pVar=it->second.begin();pVar!=it->second.end();++pVar)
       {
-         size_t priority = (*jit)->requiresStorageNext(i.orderNum,it->first);
-
-         cdwDEBUG("   %s requires storage %lld after instr #%lld at #%lld\n",
-            (*jit)->name.c_str(),
-            it->first,
-            i.orderNum,
-            priority);
-
-         if(priority)
-         {
-            winnerMap[priority] = *jit;
-            winners.insert(*jit);
-         }
+         if(!(*pVar)->alreadyWantedStorage(i.orderNum,it->first))
+            winners.insert(*pVar);
          else
-            losers.insert(*jit);
+         {
+            size_t priority = (*pVar)->requiresStorageNext(i.orderNum,it->first);
+
+            cdwDEBUG("   %s requires storage %lld after instr #%lld at #%lld\n",
+               (*pVar)->name.c_str(),
+               it->first,
+               i.orderNum,
+               priority);
+
+            if(priority)
+               runnerUpMap[priority] = *pVar;
+            losers.insert(*pVar);
+         }
       }
-      if(winnerMap.size() != winners.size())
-         cdwTHROW("insanity!  multiple winners with same priority?");
 
-      // the winner gets to keep the storage
-      // pick the winner that needs the storage soonest
-      if(!winnerMap.size())
-         cdwTHROW("insanity!");
-      var *pWinner = winnerMap.begin()->second;
+      // pick a winner
+      // the winner _must_ be the only var that is introducing a requirement now (i.e.
+      // not before this instruction).  This is because if such a variable lost,
+      // the preserve instruction inject before this instruction would trigger another
+      // conflict, leading to an infinite chain of conflicts.
+      var *pWinner = NULL;
+      if(winners.size() > 1)
+         cdwTHROW("insanity!  winners size is %lld",winners.size());
+      else if(winners.size() == 1)
+         pWinner = *winners.begin();
+      else if(winners.size() == 0)
+      {
+         cdwTHROW("does this ever get hit??");
+         // then just pick the one who needs it soonest
+         if(runnerUpMap.size() == 0)
+            cdwTHROW("insanity!  can't pick a winner");
+         pWinner = runnerUpMap.begin()->second;
+         runnerUpMap.erase(runnerUpMap.begin());
+         losers.erase(pWinner);
+      }
       cdwDEBUG("   winner is %s\n",pWinner->name.c_str());
-
-      // move the runners-up to losers
-      for(auto jit=winners.begin();jit!=winners.end();++jit)
-         if(*jit != pWinner)
-            losers.insert(*jit);
+      pWinner->requireStorage(i.orderNum,it->first);
 
       // evict all the losers (and runners-up)
       std::map<var*,size_t> altStorageMap;
@@ -106,7 +117,7 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
       // placate runners-up
       // for runners up, I just hosed them by evicting them elsewhere
       // un-evict them before their storage requirement is needed again
-      for(auto jit=winnerMap.begin();jit!=winnerMap.end();++jit)
+      for(auto jit=runnerUpMap.begin();jit!=runnerUpMap.end();++jit)
       {
          if(jit->second == pWinner)
             continue;

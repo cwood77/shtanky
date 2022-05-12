@@ -240,6 +240,24 @@ void diagVisitor::visit(strTypeNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(boolTypeNode& n)
+{
+   cdwDEBUG("%sboolType\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(intTypeNode& n)
+{
+   cdwDEBUG("%sintType\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 void diagVisitor::visit(arrayTypeNode& n)
 {
    cdwDEBUG("%sarrayType\n",
@@ -271,6 +289,11 @@ void diagVisitor::visit(userTypeNode& n)
 
 void diagVisitor::visit(ptrTypeNode& n)
 {
+   cdwDEBUG("%sptrType\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
 }
 
 void diagVisitor::visit(sequenceNode& n)
@@ -363,6 +386,24 @@ void diagVisitor::visit(bopNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(indexNode& n)
+{
+   cdwDEBUG("%sindex\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(ifNode& n)
+{
+   cdwDEBUG("%sif\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 void diagVisitor::visit(stringLiteralNode& n)
 {
    cdwDEBUG("%sstrLit; value=%s\n",
@@ -413,7 +454,7 @@ void diagVisitor::visit(genericNode& n)
 
 void diagVisitor::visit(constraintNode& n)
 {
-   cdwDEBUG("%sconstraintNode; name=\n",
+   cdwDEBUG("%sconstraintNode; name=%s\n",
       getIndent().c_str(),
       n.name.c_str());
 
@@ -450,6 +491,10 @@ std::string diagVisitor::getIndent() const
 
 std::string fullyQualifiedName::build(cmn::node& n, const std::string& start)
 {
+   if(!start.empty() && start.c_str()[0] == '.')
+      // if it's already a FQN, just return it
+      return start;
+
    fullyQualifiedName self;
    self.m_fqn = start;
    n.acceptVisitor(self);
@@ -524,34 +569,9 @@ void cloningNodeVisitor::visit(methodNode& n)
    hNodeVisitor::visit(n);
 }
 
-void cloningNodeVisitor::visit(fieldNode& n)
-{
-   hNodeVisitor::visit(n);
-}
-
 void cloningNodeVisitor::visit(argNode& n)
 {
    as<argNode>().name = n.name;
-   hNodeVisitor::visit(n);
-}
-
-void cloningNodeVisitor::visit(typeNode& n)
-{
-   hNodeVisitor::visit(n);
-}
-
-void cloningNodeVisitor::visit(strTypeNode& n)
-{
-   hNodeVisitor::visit(n);
-}
-
-void cloningNodeVisitor::visit(arrayTypeNode& n)
-{
-   hNodeVisitor::visit(n);
-}
-
-void cloningNodeVisitor::visit(voidTypeNode& n)
-{
    hNodeVisitor::visit(n);
 }
 
@@ -560,11 +580,6 @@ void cloningNodeVisitor::visit(userTypeNode& n)
    as<userTypeNode>().pDef.ref = n.pDef.ref;
    if(n.pDef.getRefee())
       as<userTypeNode>().pDef.bind(*n.pDef.getRefee());
-   hNodeVisitor::visit(n);
-}
-
-void cloningNodeVisitor::visit(ptrTypeNode& n)
-{
    hNodeVisitor::visit(n);
 }
 

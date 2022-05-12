@@ -6,7 +6,9 @@
 #include "../cmn/cmdline.hpp"
 #include "../cmn/main.hpp"
 #include "../cmn/out.hpp"
+#include "../cmn/pathUtil.hpp"
 #include "../cmn/trace.hpp"
+#include "../cmn/typeVisitor.hpp"
 #include "../syzygy/frontend.hpp"
 #include "abstractGenerator.hpp"
 #include "batGen.hpp"
@@ -17,44 +19,49 @@
 #include "inheritImplementor.hpp"
 #include "loader.hpp"
 #include "matryoshkaDecomp.hpp"
+#include "metadata.hpp"
 #include "methodMover.hpp"
+#include "objectBaser.hpp"
+#include "opOverloadDecomp.hpp"
 #include "selfDecomposition.hpp"
 #include "stackClassDecomposition.hpp"
 #include "symbolTable.hpp"
 #include "vtableGenerator.hpp"
 #include <string.h>
 
-#include "metadata.hpp"
-#include "objectBaser.hpp"
-
 using namespace araceli;
+
+void invokeSubProcess(const char *shortName, const char *ext, const std::string& projectDir)
+{
+   std::stringstream childStream;
+   childStream << "bin\\out\\debug\\" << shortName << ".exe ";
+   childStream << projectDir;
+   childStream << " " << ext;
+   childStream << " .\\testdata\\sht\\core\\object.ara";
+   childStream << " .\\testdata\\sht\\core\\string.ara";
+   childStream << " .\\testdata\\sht\\core\\array.ara";
+   cdwVERBOSE("calling: %s\n",childStream.str().c_str());
+   ::_flushall();
+   int rval = ::system(childStream.str().c_str());
+   cdwDEBUG("*************************************************\n");
+   cdwDEBUG("**   returned to araceli\n");
+   cdwDEBUG("*************************************************\n");
+   cdwVERBOSE("rval = %d\n",rval);
+   if(rval != 0)
+   {
+      cdwINFO("%s failed with code %d; aborting\n",shortName,rval);
+      cdwTHROW("child process failed");
+   }
+}
 
 int _main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   std::string projectDir = cl.getNextArg(".\\testdata\\test");
+   std::string projectDir = cmn::pathUtil::toWindows(cl.getNextArg(".\\testdata\\test"));
    std::string batchBuild = projectDir + "\\.build.bat";
 
    // invoke philemon
-   {
-      std::stringstream childStream;
-      childStream << "bin\\out\\debug\\philemon.exe ";
-      childStream << projectDir;
-      childStream << " ara";
-      childStream << " .\\testdata\\sht\\core\\object.ara";
-      cdwVERBOSE("calling: %s\n",childStream.str().c_str());
-      ::_flushall();
-      int rval = ::system(childStream.str().c_str());
-      cdwDEBUG("*************************************************\n");
-      cdwDEBUG("**   returned to araceli\n");
-      cdwDEBUG("*************************************************\n");
-      cdwVERBOSE("rval = %d\n",rval);
-      if(rval != 0)
-      {
-         cdwINFO("philemon failed with code %d; aborting\n",rval);
-         cdwTHROW("child process failed");
-      }
-   }
+   invokeSubProcess("philemon","ara",projectDir);
 
    // I convert ph -> ara.lh/ls
    loaderPrefs lPrefs = { "ph", "" };
@@ -66,9 +73,9 @@ int _main(int argc, const char *argv[])
    syzygy::frontend(projectDir,pPrj,pTgt).run();
 
    // gather metadata
-   araceli::metadata md;
+   metadata md;
    {
-      araceli::nodeMetadataBuilder inner(md);
+      nodeMetadataBuilder inner(md);
       cmn::treeVisitor outer(inner);
       pPrj->acceptVisitor(outer);
    }
@@ -77,10 +84,10 @@ int _main(int argc, const char *argv[])
    pTgt->araceliCodegen(*pPrj,md);
 
    // inject implied base class
-   { araceli::objectBaser v; pPrj->acceptVisitor(v); }
+   { objectBaser v; pPrj->acceptVisitor(v); }
 
    // subsequent link to update with new target and load more
-   araceli::nodeLinker().linkGraph(*pPrj);
+   nodeLinker().linkGraph(*pPrj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
@@ -98,8 +105,22 @@ int _main(int argc, const char *argv[])
 
    // ---------------- lowering transforms ----------------
 
+   {
+      // type prop
+      cmn::type::table                           _t;
+      cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
+      cmn::type::nodeCache                       _c;
+      cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
+      cmn::propagateTypes(*pPrj.get());
+
+      // op overloader
+      { opOverloadDecomp v; pPrj->acceptVisitor(v); }
+   }
+   cdwVERBOSE("graph after op overloading decomp ----\n");
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+
    // hoist out constants
-   { araceli::constHoister v; pPrj->acceptVisitor(v); }
+   { constHoister v; pPrj->acceptVisitor(v); }
    cdwVERBOSE("graph after const hoist ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
@@ -121,7 +142,7 @@ int _main(int argc, const char *argv[])
    // -----------------------------------------------------
 
    // codegen
-   araceli::nodeLinker().linkGraph(*pPrj); // relink so codegen makes more fileRefs
+   nodeLinker().linkGraph(*pPrj); // relink so codegen makes more fileRefs
    cmn::outBundle out;
    { codeGen v(*pTgt.get(),out); pPrj->acceptVisitor(v); }
    { batGen v(*pTgt.get(),out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }

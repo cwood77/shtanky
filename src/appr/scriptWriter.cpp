@@ -41,7 +41,10 @@ void scriptWriter::run(script& s, std::ostream& out, bool skipChecks)
       s.get(kStreamCheck).stopProgressDisplayForOutput();
       s.get(kStreamCheck).playback(out);
    }
-   out << "echo pass" << std::endl;
+   if(s.hadSkips())
+      out << "echo passed, but with some tests SKIPPED" << std::endl;
+   else
+      out << "echo pass" << std::endl;
    out << "goto end" << std::endl << std::endl;
 
    out << ":bless" << std::endl;

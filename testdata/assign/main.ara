@@ -27,6 +27,12 @@ class assignTester : .sht.cons.program {
       wrong:b:x = 7;
    }
 
+   private bopAssociativity() : void
+   {
+      var v : void;
+      v = 1 + 2 + 3;
+   }
+
 }
 
 class A {

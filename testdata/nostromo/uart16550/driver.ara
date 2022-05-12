@@ -1,0 +1,13 @@
+interface fakeBase {
+
+   abstract write8(byte : ptr) : void;
+
+}
+
+class driver : fakeBase {
+
+   public override write8(byte : ptr) : void
+   {
+   }
+
+}

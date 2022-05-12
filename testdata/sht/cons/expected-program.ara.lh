@@ -13,7 +13,7 @@ class .sht.cons.program {
 
 func .sht.cons.iStream.printLn(
    self : .sht.cons.iStream,
-   msg : str) : void;
+   msg : .sht.core.string) : void;
 
 func .sht.cons.iStream.cctor(
    self : .sht.cons.iStream) : .sht.cons.iStream;
@@ -23,7 +23,7 @@ func .sht.cons.iStream.cdtor(
 
 func .sht.cons.stdout.printLn(
    self : .sht.cons.stdout,
-   msg : str) : void;
+   msg : .sht.core.string) : void;
 
 func .sht.cons.stdout.cctor(
    self : .sht.cons.stdout) : .sht.cons.stdout;
@@ -33,7 +33,7 @@ func .sht.cons.stdout.cdtor(
 
 func .sht.cons.program.run(
    self : .sht.cons.program,
-   args : str[]) : void;
+   args : .sht.core.array<.sht.core.string>) : void;
 
 func .sht.cons.program.cctor(
    self : .sht.cons.program) : .sht.cons.program;
@@ -71,3 +71,5 @@ func .sht.cons.stdout_sctor(
 func .sht.cons.stdout_sdtor(
    self : .sht.cons.stdout) : void;
 
+ref "..\core\array.ara.lh";
+ref "..\core\string.ara.lh";

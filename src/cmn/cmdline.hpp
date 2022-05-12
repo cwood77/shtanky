@@ -15,6 +15,8 @@ public:
    // always handle switches and options FIRST before using this method
    std::string getNextArg(const std::string& defValue);
 
+   void addNextArgDefaultsIfNoneLeft(size_t cnt, ...);
+
 private:
    std::vector<std::string> m_args;
    size_t m_i;

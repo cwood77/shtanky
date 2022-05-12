@@ -33,6 +33,10 @@ public:
    void write(const std::string& fmt, ...);
 
 private:
+   static std::string m_appName;
+
+   static const char *getAppName();
+
    levels m_le;
    const char *m_fi;
    unsigned long m_li;

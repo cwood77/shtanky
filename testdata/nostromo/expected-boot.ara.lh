@@ -1,0 +1,27 @@
+class .nostromo.bootstrapper {
+   _vtbl : .nostromo.bootstrapper_vtbl;
+   _out : .sht.cons.iStream;
+}
+
+func .nostromo.bootstrapper.run(
+   self : .nostromo.bootstrapper,
+   args : .sht.core.array<.sht.core.string>) : void;
+
+func .nostromo.bootstrapper.cctor(
+   self : .nostromo.bootstrapper) : .nostromo.bootstrapper;
+
+func .nostromo.bootstrapper.cdtor(
+   self : .nostromo.bootstrapper) : .nostromo.bootstrapper;
+
+class .nostromo.bootstrapper_vtbl {
+   run : ptr;
+}
+
+func .nostromo.bootstrapper_sctor(
+   self : .nostromo.bootstrapper) : void;
+
+func .nostromo.bootstrapper_sdtor(
+   self : .nostromo.bootstrapper) : void;
+
+ref "..\sht\cons\program.ara.lh";
+ref "..\sht\core\array.ara.lh";

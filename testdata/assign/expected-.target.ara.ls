@@ -1,6 +1,6 @@
 [entrypoint]
 func .assign.consoleTarget.main(
-   args : str[]) : void
+   args : .sht.core.string[]) : void
 {
    var cout : .sht.cons.stdout;
    .sht.cons.stdout_sctor(cout);
@@ -47,3 +47,4 @@ ref ".target.ara.lh";
 ref "main.ara.lh";
 ref "..\sht\cons\program.ara.lh";
 ref "..\sht\core\object.ara.lh";
+ref "..\sht\core\string.ara.lh";

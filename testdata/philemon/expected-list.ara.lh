@@ -1,0 +1,48 @@
+class .philemon.bootstrap {
+   _vtbl : .philemon.bootstrap_vtbl;
+   _out : .sht.cons.iStream;
+}
+
+class .philemon.list<str> {
+   _vtbl : .philemon.list<str>_vtbl;
+   _field : .sht.core.string;
+}
+
+func .philemon.bootstrap.run(
+   self : .philemon.bootstrap,
+   args : .sht.core.array<.sht.core.string>) : void;
+
+func .philemon.bootstrap.cctor(
+   self : .philemon.bootstrap) : .philemon.bootstrap;
+
+func .philemon.bootstrap.cdtor(
+   self : .philemon.bootstrap) : .philemon.bootstrap;
+
+func .philemon.list<str>.cctor(
+   self : .philemon.list<str>) : .philemon.list<str>;
+
+func .philemon.list<str>.cdtor(
+   self : .philemon.list<str>) : .philemon.list<str>;
+
+class .philemon.bootstrap_vtbl {
+   run : ptr;
+}
+
+class .philemon.list<str>_vtbl {
+}
+
+func .philemon.bootstrap_sctor(
+   self : .philemon.bootstrap) : void;
+
+func .philemon.bootstrap_sdtor(
+   self : .philemon.bootstrap) : void;
+
+func .philemon.list<str>_sctor(
+   self : .philemon.list<str>) : void;
+
+func .philemon.list<str>_sdtor(
+   self : .philemon.list<str>) : void;
+
+ref "..\sht\cons\program.ara.lh";
+ref "..\sht\core\array.ara.lh";
+ref "..\sht\core\string.ara.lh";

@@ -1,7 +1,6 @@
 .seg code    
 .entrypoint: 
              push, rbx                        
-             push, rsi                        
              push, rdi                        
              sub, rsp, 24                     
              sub, rsp, 8                      
@@ -18,13 +17,9 @@
              add, rsp, 32                     
              mov, [rcx+8], rdi                ; =
              sub, rsp, 32                     
-             mov, rdi, [rcx]                  ; fieldaccess: owner of run
-             mov, rsi, rcx                    ; (preserve) [combiner]
-             mov, rcx, rbx                    ; (restore [combiner])
-             mov, rdx, rcx                    ;       (args req for rdx) [splitter]
-             mov, rbx, rcx                    ; (preserve) [combiner]
-             mov, rcx, rsi                    ; (restore [combiner])
-             call, [rdi]                      ; (call ptr)
+             mov, rbx, [rcx]                  ; fieldaccess: owner of run
+             mov, rdx, rbx                    ;       (args req for rdx) [splitter]
+             call, [rbx]                      ; (call ptr)
              add, rsp, 32                     
              sub, rsp, 32                     
              call, .assign.assignTester_sdtor ; (call label)
@@ -38,7 +33,6 @@
              add, rsp, 8                      
              add, rsp, 24                     
              pop, rdi                         
-             pop, rsi                         
              pop, rbx                         
              ret                              
 

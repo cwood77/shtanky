@@ -29,11 +29,12 @@ private:
 
 class scriptStream {
 public:
-   scriptStream() : m_pState(NULL) {}
+   scriptStream() : m_pState(NULL), m_skipped(false) {}
 
    void configureIf(scriptState& s) { m_pState = &s; }
+   void skip(bool v = true) { m_skipped = v; }
 
-   std::ostream& stream() { return m_stream; }
+   std::ostream& stream() { return m_skipped ? m_fakeStream : m_stream; }
    std::string reserveLabel(const std::string& hint) { return m_pState->reserveLabel(hint); }
    void silenceTestExeIf();
    void captureTestExeOutIf(const std::string& log);
@@ -45,7 +46,9 @@ public:
 
 private:
    std::stringstream m_stream;
+   std::stringstream m_fakeStream;
    scriptState *m_pState;
+   bool m_skipped;
 };
 
 enum {
@@ -58,15 +61,20 @@ enum {
 
 class script {
 public:
-   explicit script(bool silentExes) { m_state.setSilentExes(silentExes); }
+   explicit script(bool silentExes) : m_hadSkips(false)
+   { m_state.setSilentExes(silentExes); }
 
    size_t getTotalProgressSize() const { return m_state.getTotalProgressSize(); }
 
    scriptStream& get(size_t i);
 
+   void skipTests(bool v = true);
+   bool hadSkips() const { return m_hadSkips; }
+
 private:
    scriptState m_state;
    std::map<size_t,scriptStream> m_streams;
+   bool m_hadSkips;
 };
 
 class instr {

@@ -1,6 +1,7 @@
 #include "pathUtil.hpp"
 #include "throw.hpp"
 #include "trace.hpp"
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
@@ -18,6 +19,13 @@ const char *pathUtil::kExtObj             = "o";
 const char *pathUtil::kExtList            = "list";
 const char *pathUtil::kExtMcList          = "mclist";
 const char *pathUtil::kExtMcOdaList       = "mcODAlist";
+
+std::string pathUtil::toWindows(const std::string& path)
+{
+   std::string copy = path;
+   std::replace(copy.begin(),copy.end(),'/','\\'); // replace all 'x' to 'y'
+   return copy;
+}
 
 std::string pathUtil::addExt(const std::string& path, const std::string& ext)
 {

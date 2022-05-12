@@ -4,7 +4,7 @@ class .assign.consoleTarget {
 
 [entrypoint]
 func .assign.consoleTarget.main(
-   args : str[]) : void;
+   args : .sht.core.string[]) : void;
 
 func .assign.consoleTarget.cctor(
    self : .assign.consoleTarget) : .assign.consoleTarget;
@@ -21,3 +21,4 @@ func .assign.consoleTarget_sctor(
 func .assign.consoleTarget_sdtor(
    self : .assign.consoleTarget) : void;
 
+ref "..\sht\core\string.ara.lh";

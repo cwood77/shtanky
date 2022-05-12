@@ -1,0 +1,43 @@
+=== LIR bundle has 6 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+
+----- start stream .nostromo.bootstrapper.run
+0 <enterFunc> ~rval/0, $self/0, $args/0 ;;; .nostromo.bootstrapper.run
+
+----- start stream .nostromo.bootstrapper.cctor
+0 <enterFunc> ~rval0/0, $self0/0 ;;; .nostromo.bootstrapper.cctor
+
+----- start stream .nostromo.bootstrapper.cdtor
+0 <enterFunc> ~rval1/0, $self1/0 ;;; .nostromo.bootstrapper.cdtor
+
+----- start stream .nostromo.bootstrapper_vtbl_inst
+0 <globalConstData> @.nostromo.bootstrapper.run /0 ;;; .nostromo.bootstrapper_vtbl_inst
+
+----- start stream .nostromo.bootstrapper_sctor
+0 <enterFunc> ~rval2/0, $self2/0                                 ;;; .nostromo.bootstrapper_sctor
+0 <precall>   
+0 call        ~rval3/0, @.sht.cons.program_sctor/0, $self/0      ;;; (call label)
+0 mov         [~self]/0, @.nostromo.bootstrapper_vtbl_inst/0     ;;; =
+0 <precall>   
+0 call        ~rval4/0, @.nostromo.bootstrapper.cctor/0, $self/0 ;;; (call label)
+
+----- start stream .nostromo.bootstrapper_sdtor
+0 <enterFunc> ~rval5/0, $self3/0                                 ;;; .nostromo.bootstrapper_sdtor
+0 mov         [~self]/0, @.nostromo.bootstrapper_vtbl_inst/0     ;;; =
+0 <precall>   
+0 call        ~rval6/0, @.nostromo.bootstrapper.cdtor/0, $self/0 ;;; (call label)
+0 <precall>   
+0 call        ~rval7/0, @.sht.cons.program_sdtor/0, $self/0      ;;; (call label)
+
+=== end of LIR bundle dump ===
+
+~~~ some debugging hints for this target ~~~
+
+pref order              rbx rdi rsi r12 r13 r14 r15 rax rcx rdx r8 r9 r10 r11
+passing order           -   -   -   -   -   -   -   0   1   2   3  4  -   -
+saved in Prolog or Call P   P   P   P   P   P   P   C   C   C   C  C  C   C
+as int                  24  30  29  35  36  37  38  23  25  26  31 32 33  34
+
+reg rax rbx rcx rdx rbp rsp rsi rdi r8 r9 r10 r11 r12 r13 r14 r15
+    23  24  25  26  27  28  29  30  31 32 33  34  35  36  37  38
+
+cc shadow space = 32

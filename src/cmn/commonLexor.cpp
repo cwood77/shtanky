@@ -18,6 +18,7 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kSymbolic,     commonLexor::kComma,       ",",          "comma"           },
 
    { lexemeInfo::kAlphanumeric, commonLexor::kInterface,   "interface",  "interface"       },
+   { lexemeInfo::kAlphanumeric, commonLexor::kVirtual,     "virtual",    "virtual"         },
    { lexemeInfo::kAlphanumeric, commonLexor::kOverride,    "override",   "override"        },
    { lexemeInfo::kAlphanumeric, commonLexor::kAbstract,    "abstract",   "abstract"        },
    { lexemeInfo::kAlphanumeric, commonLexor::kStatic,      "static",     "static"          },
@@ -30,6 +31,8 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kAlphanumeric, commonLexor::kVar,         "var",        "var"             },
 
    { lexemeInfo::kAlphanumeric, commonLexor::kStr,         "str",        "str"             },
+   { lexemeInfo::kAlphanumeric, commonLexor::kBool,        "bool",       "bool"            },
+   { lexemeInfo::kAlphanumeric, commonLexor::kInt,         "int",        "int"             },
    { lexemeInfo::kAlphanumeric, commonLexor::kVoid,        "void",       "void"            },
    { lexemeInfo::kAlphanumeric, commonLexor::kPtr,         "ptr",        "ptr"             },
 
@@ -45,6 +48,43 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kAlphanumeric, commonLexor::kGeneric,     "generic",    "generic"         },
    { lexemeInfo::kAlphanumeric, commonLexor::kInstantiate, "instantiate","instantiate"     },
    { lexemeInfo::kAlphanumeric, commonLexor::kType,        "type",       "type"            },
+
+   { lexemeInfo::kAlphanumeric, commonLexor::kIf,          "if",         "if"              },
+   { lexemeInfo::kAlphanumeric, commonLexor::kWhile,       "while",      "while"           },
+
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "base",       "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "throw",      "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "catch",      "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "using",      "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "namespace",  "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "scpoe",      "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "pragma",     "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "new",        "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "delete",     "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "out",        "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "break",      "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "continue",   "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "for",        "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "do",         "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "internal",   "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "component",  "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "library",    "reserved"        },
+   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "package",    "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "~",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "`",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "!",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "@",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "#",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "$",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "%",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "^",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "&",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "*",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "-",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "'",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "\\",         "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "/",          "reserved"        },
+   { lexemeInfo::kSymbolic,     commonLexor::k_Reserved,   "?",          "reserved"        },
 
    { lexemeInfo::kEndOfTable,   0,                         NULL,         NULL              }
 };
@@ -90,6 +130,7 @@ commonLexor::commonLexor(const char *buffer, const size_t *pUnsupported, bool ge
 : lexorBase(buffer)
 {
    addPhase(*new stringLiteralReader());
+   addPhase(*new cppCommentEater());
    addPhase(*new intLiteralReader());
    if(!genericAware)
       addPhase(*new genericTypeReader());

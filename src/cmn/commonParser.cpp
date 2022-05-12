@@ -90,7 +90,7 @@ void commonParser::parseClass(fileNode& f, const std::string& genericTypeExpr)
    if(!genericTypeExpr.empty())
       parseGeneric(c,genericTypeExpr);
 
-   m_l.demand(cdwLoc,commonLexor::kName);
+   m_l.demandOneOf(cdwLoc,2,commonLexor::kName,commonLexor::kGenericTypeExpr);
    c.name = m_l.getLexeme();
    m_l.advance();
 
@@ -190,41 +190,6 @@ void commonParser::parseField(fieldNode& n)
       m_l.demandOneOf(cdwLoc,2,commonLexor::kEquals,commonLexor::kSemiColon);
 }
 
-void commonParser::parseGlobalConst(fileNode& f)
-{
-   m_l.demandAndEat(cdwLoc,commonLexor::kConst);
-
-   auto& n = m_nFac.appendNewChild<constNode>(f);
-
-   m_l.demand(cdwLoc,commonLexor::kName);
-   n.name = m_l.getLexeme();
-   m_l.advance();
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kColon);
-
-   parseType(n);
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kEquals);
-
-   parseRValue(n);
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
-}
-
-// TODO !!!!! lame; nearly identical to methods
-void commonParser::parseGlobalFunc(fileNode& f)
-{
-   m_l.demandAndEat(cdwLoc,commonLexor::kFunc);
-
-   auto& n = m_nFac.appendNewChild<funcNode>(f);
-
-   m_l.demand(cdwLoc,commonLexor::kName);
-   n.name = m_l.getLexeme();
-   m_l.advance();
-
-   parseMethodOrGlobalFuncFromOpenParen(n);
-}
-
 void commonParser::parseMethodOrGlobalFuncFromOpenParen(node& n)
 {
    m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
@@ -265,6 +230,40 @@ void commonParser::parseDecledArgList(node& owner)
    }
 }
 
+void commonParser::parseGlobalConst(fileNode& f)
+{
+   m_l.demandAndEat(cdwLoc,commonLexor::kConst);
+
+   auto& n = m_nFac.appendNewChild<constNode>(f);
+
+   m_l.demand(cdwLoc,commonLexor::kName);
+   n.name = m_l.getLexeme();
+   m_l.advance();
+
+   m_l.demandAndEat(cdwLoc,commonLexor::kColon);
+
+   parseType(n);
+
+   m_l.demandAndEat(cdwLoc,commonLexor::kEquals);
+
+   parseRValue(n);
+
+   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
+}
+
+void commonParser::parseGlobalFunc(fileNode& f)
+{
+   m_l.demandAndEat(cdwLoc,commonLexor::kFunc);
+
+   auto& n = m_nFac.appendNewChild<funcNode>(f);
+
+   m_l.demandOneOf(cdwLoc,2,commonLexor::kName,commonLexor::kGenericTypeExpr);
+   n.name = m_l.getLexeme();
+   m_l.advance();
+
+   parseMethodOrGlobalFuncFromOpenParen(n);
+}
+
 void commonParser::parseSequence(node& owner)
 {
    m_l.demandAndEat(cdwLoc,commonLexor::kLBrace);
@@ -293,30 +292,12 @@ bool commonParser::tryParseStatement(node& owner)
    else
    {
       std::unique_ptr<node> pInst(&parseLValue());
-      if(m_l.getToken() == commonLexor::kArrow)
-         parseInvoke(pInst,owner);
-      else if(m_l.getToken() == commonLexor::kArrowParen)
-      {
-         m_l.advance();
-
-         auto& i = m_nFac.appendNewChild<cmn::invokeFuncPtrNode>(owner);
-         i.appendChild(*pInst.release());
-
-         parsePassedArgList(i);
-         m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
-         m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
-      }
-      else if(m_l.getToken() == commonLexor::kLParen)
-         parseCall(pInst,owner);
-      else if(m_l.getToken() == commonLexor::kEquals)
+      if(m_l.getToken() == commonLexor::kEquals)
          parseAssignment(pInst,owner);
       else
-         m_l.demandOneOf(cdwLoc,5,
-            commonLexor::kVar,
-            commonLexor::kArrow,
-            commonLexor::kArrowParen,
-            commonLexor::kLParen,
-            commonLexor::kEquals);
+         parseCallAndFriends(pInst,owner,/*require*/true);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
    }
 
    return true;
@@ -353,6 +334,33 @@ void commonParser::parseVar(node& owner)
    m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
+bool commonParser::parseCallAndFriends(std::unique_ptr<node>& inst, node& owner, bool require)
+{
+   if(m_l.getToken() == commonLexor::kArrow)
+      parseInvoke(inst,owner);
+   else if(m_l.getToken() == commonLexor::kArrowParen)
+   {
+      m_l.advance();
+
+      auto& i = m_nFac.appendNewChild<cmn::invokeFuncPtrNode>(owner);
+      i.appendChild(*inst.release());
+
+      parsePassedArgList(i);
+      m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+   }
+   else if(m_l.getToken() == commonLexor::kLParen)
+      parseCall(inst,owner);
+   else if(require)
+      m_l.demandOneOf(cdwLoc,4,
+         commonLexor::kEquals,
+         commonLexor::kArrow,
+         commonLexor::kArrowParen,
+         commonLexor::kLParen);
+   else
+      return false;
+   return true;
+}
+
 void commonParser::parseInvoke(std::unique_ptr<node>& inst, node& owner)
 {
    m_l.demandAndEat(cdwLoc,commonLexor::kArrow);
@@ -370,8 +378,6 @@ void commonParser::parseInvoke(std::unique_ptr<node>& inst, node& owner)
    parsePassedArgList(i);
 
    m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
 void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
@@ -386,8 +392,6 @@ void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
    parsePassedArgList(c);
 
    m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
 void commonParser::parseAssignment(std::unique_ptr<node>& inst, node& owner)
@@ -398,8 +402,6 @@ void commonParser::parseAssignment(std::unique_ptr<node>& inst, node& owner)
    a.appendChild(*inst.release());
 
    parseRValue(a);
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
 }
 
 void commonParser::parsePassedArgList(node& owner)
@@ -440,21 +442,19 @@ node& commonParser::parseLValuePrime(node& n)
 
       return parseLValuePrime(*i);
    }
-#if 0
-   else if(m_l.getToken() == commonLexor::kArrowParen)
+   else if(m_l.getToken() == commonLexor::kLBracket)
    {
       m_l.advance();
 
-      auto c = m_nFac.create<invokeFuncPtrNode>();
-      c->appendChild(n);
+      auto i = m_nFac.create<indexNode>();
+      i->appendChild(n);
 
-      parsePassedArgList(*c);
-      m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
-      m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
-      //parseMethodOrGlobalFuncFromAfterOpenParen(*c);
-      return *c;
+      parseRValue(*i);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
+
+      return parseLValuePrime(*i);
    }
-#endif
 
    return n;
 }
@@ -462,7 +462,11 @@ node& commonParser::parseLValuePrime(node& n)
 void commonParser::parseRValue(node& owner, node *pExprRoot)
 {
    if(!parseLiteral(owner))
-      owner.appendChild(parseLValue());
+   {
+      std::unique_ptr<node> pInst(&parseLValue());
+      if(!parseCallAndFriends(pInst,owner,false))
+         owner.appendChild(*pInst.release());
+   }
 
    if(m_l.getTokenClass() & commonLexor::kClassBop)
       parseBop(owner,pExprRoot);
@@ -543,33 +547,28 @@ void commonParser::parseBop(node& owner, node *pExprRoot)
 
 void commonParser::parseType(node& owner)
 {
+   typeNode *pType = NULL;
+
    if(m_l.getToken() == commonLexor::kStr)
    {
-      auto& t = m_nFac.appendNewChild<strTypeNode>(owner);
+      pType = &m_nFac.appendNewChild<strTypeNode>(owner);
       m_l.advance();
-
-      if(m_l.getToken() == commonLexor::kLBracket)
-      {
-         m_l.advance();
-         m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
-         m_nFac.appendNewChild<arrayTypeNode>(t);
-      }
    }
    else if(m_l.getToken() == commonLexor::kVoid)
    {
-      m_nFac.appendNewChild<voidTypeNode>(owner);
+      pType = &m_nFac.appendNewChild<voidTypeNode>(owner);
       m_l.advance();
    }
    else if(m_l.getToken() == commonLexor::kPtr)
    {
-      m_nFac.appendNewChild<ptrTypeNode>(owner);
+      pType = &m_nFac.appendNewChild<ptrTypeNode>(owner);
       m_l.advance();
    }
    else if(m_l.getToken() == commonLexor::kName ||
            m_l.getToken() == commonLexor::kGenericTypeExpr)
    {
-      auto& t = m_nFac.appendNewChild<userTypeNode>(owner);
-      t.pDef.ref = m_l.getLexeme();
+      pType = &m_nFac.appendNewChild<userTypeNode>(owner);
+      dynamic_cast<userTypeNode*>(pType)->pDef.ref = m_l.getLexeme();
       m_l.advance();
    }
    else
@@ -579,6 +578,13 @@ void commonParser::parseType(node& owner)
          commonLexor::kPtr,
          commonLexor::kName,
          commonLexor::kGenericTypeExpr);
+
+   while(m_l.getToken() == commonLexor::kLBracket)
+   {
+      m_l.advance();
+      m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
+      pType = &m_nFac.appendNewChild<arrayTypeNode>(*pType);
+   }
 }
 
 void commonParser::parseAttributes()
@@ -645,21 +651,63 @@ void genericTypeExprParser::parseTypeParamed(std::string& base, std::list<std::s
    base = m_l.getLexeme();
    m_l.advance();
 
+   parseTypeParamArgList(args);
+
+   m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kEOI);
+}
+
+void genericTypeExprParser::parseTypeParamArgList(std::list<std::string>& args)
+{
    m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kLessThan);
 
    while(true)
    {
-      m_l.demandOneOf(cdwLoc,2,genericTypeExprLexor::kName,genericTypeExprLexor::kStr);
-      args.push_back(m_l.getLexeme());
-      m_l.advance();
+      parseTypeParamArg(args);
 
       if(m_l.getToken() != genericTypeExprLexor::kComma)
          break;
    }
 
    m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kGreaterThan);
+}
 
-   m_l.demandAndEat(cdwLoc,genericTypeExprLexor::kEOI);
+void genericTypeExprParser::parseTypeParamArg(std::list<std::string>& args)
+{
+   m_l.demandOneOf(cdwLoc,4,
+      genericTypeExprLexor::kStr,
+      genericTypeExprLexor::kVoid,
+      genericTypeExprLexor::kPtr,
+      genericTypeExprLexor::kName
+   );
+
+   std::string word = m_l.getLexeme();
+   bool checkForNestedGeneric = (m_l.getToken() == genericTypeExprLexor::kName);
+   m_l.advance();
+
+   if(checkForNestedGeneric && m_l.getToken() == genericTypeExprLexor::kLessThan)
+   {
+      std::list<std::string> sublist;
+      parseTypeParamArgList(sublist);
+      std::stringstream stream;
+      stream << word << "<";
+      for(auto it=sublist.begin();it!=sublist.end();++it)
+      {
+         if(it!=sublist.begin())
+            stream << ",";
+         stream << *it;
+      }
+      stream << ">";
+      word = stream.str();
+   }
+
+   if(m_l.getToken() == commonLexor::kLBracket)
+   {
+      m_l.advance();
+      m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
+      word += "[]";
+   }
+
+   args.push_back(word);
 }
 
 } // namespace cmn

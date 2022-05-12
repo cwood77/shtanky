@@ -33,6 +33,7 @@ public:
    std::set<size_t> getStorageAt(size_t orderNum);
    size_t getStorageFor(size_t orderNum, lirArg& a);
    size_t requiresStorageNext(size_t orderNum, size_t storage);
+   bool alreadyWantedStorage(size_t orderNum, size_t storage);
 
    void requireStorage(size_t orderNum, size_t s);
    void changeStorage(size_t orderNum, size_t old, size_t nu);

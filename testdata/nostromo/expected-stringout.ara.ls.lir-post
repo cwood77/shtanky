@@ -1,0 +1,69 @@
+=== LIR bundle has 7 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+
+----- start stream .nostromo.gDbgOut
+10 <selectSegment>   @const/0 
+20 <globalConstData> @/0      ;;; .nostromo.gDbgOut
+
+----- start stream .nostromo.debugOut.write
+10  <selectSegment> @code/0                            
+20  <enterFunc>     ~rval/0, $self/0, $msg/0           ;;; .nostromo.debugOut.write
+30  <precall>       @totalStackSize/32                 
+40  mov             ~_vtbl/0, [~self+8]/0              ;;; fieldaccess: owner of _vtbl
+50  mov             ~write8/0, [~_vtbl]/0              ;;; fieldaccess: owner of write8
+60  mov             ~t/1, @0/1                         ;;; shape:hoist imm from call
+70  mov             ~t0/0, [~self+8]/0                 ;;; shape:hoist addrOf from call
+80  call            ~rval0/0, [~write8]/0, ~t0/0, ~t/1 ;;; (call ptr)
+90  <postcall>      @totalStackSize/32                 
+100 <exitFunc>      
+
+----- start stream .nostromo.debugOut.cctor
+10 <selectSegment> @code/0            
+20 <enterFunc>     ~rval1/0, $self0/0 ;;; .nostromo.debugOut.cctor
+30 <exitFunc>      
+
+----- start stream .nostromo.debugOut.cdtor
+10 <selectSegment> @code/0            
+20 <enterFunc>     ~rval2/0, $self1/0 ;;; .nostromo.debugOut.cdtor
+30 <exitFunc>      
+
+----- start stream .nostromo.debugOut_vtbl_inst
+10 <selectSegment>   @const/0 
+20 <globalConstData> @/0      ;;; .nostromo.debugOut_vtbl_inst
+
+----- start stream .nostromo.debugOut_sctor
+10  <selectSegment> @code/0                                        
+20  <enterFunc>     ~rval3/0, $self2/0                             ;;; .nostromo.debugOut_sctor
+30  <precall>       @totalStackSize/32                             
+40  call            ~rval4/0, @.sht.core.object_sctor/0, $self/0   ;;; (call label)
+50  <postcall>      @totalStackSize/32                             
+60  mov             [~self]/0, @.nostromo.debugOut_vtbl_inst/0     ;;; =
+70  <precall>       @totalStackSize/32                             
+80  call            ~rval5/0, @.nostromo.debugOut.cctor/0, $self/0 ;;; (call label)
+90  <postcall>      @totalStackSize/32                             
+100 <exitFunc>      
+
+----- start stream .nostromo.debugOut_sdtor
+10  <selectSegment> @code/0                                        
+20  <enterFunc>     ~rval6/0, $self3/0                             ;;; .nostromo.debugOut_sdtor
+30  mov             [~self]/0, @.nostromo.debugOut_vtbl_inst/0     ;;; =
+40  <precall>       @totalStackSize/32                             
+50  call            ~rval7/0, @.nostromo.debugOut.cdtor/0, $self/0 ;;; (call label)
+60  <postcall>      @totalStackSize/32                             
+70  <precall>       @totalStackSize/32                             
+80  call            ~rval8/0, @.sht.core.object_sdtor/0, $self/0   ;;; (call label)
+90  <postcall>      @totalStackSize/32                             
+100 <exitFunc>      
+
+=== end of LIR bundle dump ===
+
+~~~ some debugging hints for this target ~~~
+
+pref order              rbx rdi rsi r12 r13 r14 r15 rax rcx rdx r8 r9 r10 r11
+passing order           -   -   -   -   -   -   -   0   1   2   3  4  -   -
+saved in Prolog or Call P   P   P   P   P   P   P   C   C   C   C  C  C   C
+as int                  24  30  29  35  36  37  38  23  25  26  31 32 33  34
+
+reg rax rbx rcx rdx rbp rsp rsi rdi r8 r9 r10 r11 r12 r13 r14 r15
+    23  24  25  26  27  28  29  30  31 32 33  34  35  36  37  38
+
+cc shadow space = 32

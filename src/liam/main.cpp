@@ -99,6 +99,8 @@ int _main(int argc,const char *argv[])
          { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-preasm");
            lirIncrementalFormatter(sp,t).format(*it); }
 
+         splitResolver(*it,vTbl).run();
+
          asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
       }
       { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-postreg");

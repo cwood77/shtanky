@@ -58,6 +58,8 @@ public:
    explicit arrayOfType(iType& inner)
    : staticallySizedType(inner.getName()+"[]",0), m_inner(inner) {}
 
+   iType& inner() { return m_inner; }
+
 private:
    iType& m_inner;
 };
@@ -74,12 +76,19 @@ public:
    virtual void *_as(const std::string& name);
    virtual iType& getField(const std::string& name);
    virtual size_t getOffsetOfField(const std::string& name, const tgt::iTargetInfo& t) const;
+   virtual bool hasMethod(const std::string& name) const;
 
+   void addBase(iType& b) { m_bases.push_back(&b); }
    void addField(const std::string& name, iType& f);
+   void addMethod(const std::string& name);
 
 private:
+   iType *tryGetField(const std::string& name);
+
+   std::list<iType*> m_bases;
    std::list<std::string> m_order;
-   std::map<std::string,iType*> m_members;
+   std::map<std::string,iType*> m_fields;
+   std::set<std::string> m_methods;
 };
 
 // ----------------------- function type -----------------------

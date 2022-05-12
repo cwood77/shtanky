@@ -1,6 +1,6 @@
 [entrypoint]
 func .test.consoleTarget.main(
-   args : str[]) : void
+   args : .sht.core.string[]) : void
 {
    var cout : .sht.cons.stdout;
    .sht.cons.stdout_sctor(cout);
@@ -45,5 +45,6 @@ func ._osCall(code : str, payload : str) : void;
 
 ref "..\sht\cons\program.ara.lh";
 ref "..\sht\core\object.ara.lh";
+ref "..\sht\core\string.ara.lh";
 ref ".target.ara.lh";
 ref "test.ara.lh";

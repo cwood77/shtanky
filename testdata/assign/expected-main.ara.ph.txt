@@ -1,7 +1,7 @@
 [program] 
 class assignTester : .sht.cons.program {
 
-   override run(args : str[]) : void
+   override run(args : .sht.core.array<.sht.core.string>) : void
    {
    }
    private readFromSubObject(a : A, v : void) : void
@@ -21,6 +21,11 @@ class assignTester : .sht.cons.program {
    {
       var wrong : A;
       wrong:b:x = 7;
+   }
+   private bopAssociativity() : void
+   {
+      var v : void;
+      v = 1 + 2 + 3;
    }
 
 }

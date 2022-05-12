@@ -1,6 +1,6 @@
 func .sht.cons.iStream.printLn(
    self : .sht.cons.iStream,
-   msg : str) : void
+   msg : .sht.core.string) : void
 {
 }
 
@@ -16,7 +16,7 @@ func .sht.cons.iStream.cdtor(
 
 func .sht.cons.stdout.printLn(
    self : .sht.cons.stdout,
-   msg : str) : void
+   msg : .sht.core.string) : void
 {
    ._osCall(1,msg);
 }
@@ -33,7 +33,7 @@ func .sht.cons.stdout.cdtor(
 
 func .sht.cons.program.run(
    self : .sht.cons.program,
-   args : str[]) : void
+   args : .sht.core.array<.sht.core.string>) : void
 {
 }
 
@@ -105,4 +105,6 @@ func .sht.cons.stdout_sdtor(
 func ._osCall(code : str, payload : str) : void;
 
 ref "program.ara.lh";
+ref "..\core\array.ara.lh";
 ref "..\core\object.ara.lh";
+ref "..\core\string.ara.lh";

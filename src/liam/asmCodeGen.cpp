@@ -195,6 +195,8 @@ void asmCodeGen::handleInstr(lirInstr& i)
       case cmn::tgt::kPostCallStackAlloc:
          handlePrePostCallStackAlloc(i,cmn::tgt::kAdd);
          break;
+      case cmn::tgt::kSplit:
+         break;
       default:
          throw std::runtime_error("unknown instruction in codegen!");
    }
