@@ -130,6 +130,7 @@ commonLexor::commonLexor(const char *buffer, const size_t *pUnsupported, bool ge
 : lexorBase(buffer)
 {
    addPhase(*new stringLiteralReader());
+   addPhase(*new cppCommentEater());
    addPhase(*new intLiteralReader());
    if(!genericAware)
       addPhase(*new genericTypeReader());

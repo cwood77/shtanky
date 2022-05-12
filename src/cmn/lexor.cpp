@@ -103,6 +103,12 @@ void whitespaceEater::advance(lexorState& s) const
    }
 }
 
+void cppCommentEater::advance(lexorState& s) const
+{
+   if(::strncmp("//",s.pThumb,2)==0)
+      for(;s.pThumb[0]!='\n'&&s.pThumb[0]!=0;++s.pThumb);
+}
+
 lexorBase::lexorBase(const char *buffer)
 : m_state(buffer)
 {
