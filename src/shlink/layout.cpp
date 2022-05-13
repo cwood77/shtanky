@@ -1,3 +1,4 @@
+#include "../cmn/align.hpp"
 #include "../cmn/obj-fmt.hpp"
 #include "../cmn/throw.hpp"
 #include "../cmn/trace.hpp"
@@ -25,32 +26,51 @@ void layoutProgress::markObjectPlaced(cmn::objfmt::obj& o)
    }
 }
 
+void segmentBlock::setFlags(unsigned long f)
+{
+   if(f == cmn::objfmt::obj::kSegCode)
+      m_align = true;
+}
+
+void segmentBlock::setOffset(unsigned long o)
+{
+   unsigned long pad = 0;
+   if(m_align && false)
+      pad = cmn::align16(o) - o;
+   m_offset = pad + o;
+   m_size += pad;
+}
+
 unsigned long segmentBlock::append(cmn::objfmt::obj& o)
 {
-   unsigned long rVal = m_size;
+   unsigned long pad = 0;
+   if(m_align)
+      pad = cmn::align16(m_size) - m_size;
+   unsigned long startOffset = m_size + pad;
 
    auto left = m_bytes.size() - m_size;
-   if(left < o.blockSize)
+   if(left < (pad + o.blockSize))
    {
       // not enough space
       auto more = m_bytes.capacity() * 2;
-      if(more < o.blockSize + m_size)
+      if(more < pad + o.blockSize + m_size)
          // doubling isn't even enough!
-         more = o.blockSize + m_size;
+         more = pad + o.blockSize + m_size;
 
       m_bytes.resize(more);
    }
 
    // copy
-   ::memcpy(&m_bytes[0] + m_size, o.block.get(),o.blockSize);
-   m_size += o.blockSize;
+   ::memcpy(&m_bytes[0] + m_size + pad, o.block.get(),o.blockSize);
+   m_size += (pad + o.blockSize);
 
-   return rVal;
+   return startOffset;
 }
 
 void layout::place(cmn::objfmt::obj& o)
 {
    auto& seg = m_segments[o.flags];
+   seg.setFlags(o.flags);
    auto loc = seg.append(o);
 
    cdwVERBOSE("placing obj %lld in %lu at %lu\n",&o,o.flags,loc);
@@ -63,9 +83,9 @@ void layout::markDonePlacing()
    unsigned long total = 0;
    for(auto it=m_segments.begin();it!=m_segments.end();++it)
    {
-      it->second.offset = total;
+      it->second.setOffset(total);
       total += it->second.getSize();
-      cdwVERBOSE("segment %lu starts at %lu\n",it->first,it->second.offset);
+      cdwVERBOSE("segment %lu starts at %lu\n",it->first,it->second.getOffset());
    }
 }
 
@@ -124,7 +144,7 @@ void layout::link(iObjectProvider& d, cmn::objfmt::obj& refer)
 
 unsigned long layout::totalOffsetOfObj(cmn::objfmt::obj& o)
 {
-   return m_segments[o.flags].offset + m_objPlacements[&o];
+   return m_segments[o.flags].getOffset() + m_objPlacements[&o];
 }
 
 unsigned long layout::totalOffsetOfRIP(cmn::objfmt::obj& o, cmn::objfmt::patch& p)

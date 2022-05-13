@@ -11,8 +11,8 @@ rex(48)op(83)modR/M(ec)i8(20)
 rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
 // 11:    mov, rdx, 0
 rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
-// 12:    call, ._osCall_impl
-op(ff)modR/M(15)co32(00-00-00-00)
+// 12:    call, ._osCall
+op(e8)co32(00-00-00-00)
 // 14:    mov, rsp, rbp
 rex(48)op(89)modR/M(ec)
 // 15:    pop, rbp

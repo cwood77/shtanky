@@ -1,4 +1,4 @@
-=== LIR bundle has 12 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 12 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
 
 ----- start stream .nostromo.uart16550.fakeBase.write8
 10 <selectSegment> @code/0                   
@@ -42,23 +42,23 @@
 10  <selectSegment> @code/0                                                  
 20  <enterFunc>     ~rval5/0, $self5/0                                       ;;; .nostromo.uart16550.driver_sctor
 30  <precall>       @totalStackSize/32                                       
-40  call            ~rval6/0, @.nostromo.uart16550.fakeBase_sctor/0, $self/0 ;;; (call label)
+40  call            ~rval6/0, !.nostromo.uart16550.fakeBase_sctor/0, $self/0 ;;; (call label)
 50  <postcall>      @totalStackSize/32                                       
-60  mov             [~self]/0, @.nostromo.uart16550.driver_vtbl_inst/0       ;;; =
+60  mov             [~self]/0, !.nostromo.uart16550.driver_vtbl_inst/0       ;;; =
 70  <precall>       @totalStackSize/32                                       
-80  call            ~rval7/0, @.nostromo.uart16550.driver.cctor/0, $self/0   ;;; (call label)
+80  call            ~rval7/0, !.nostromo.uart16550.driver.cctor/0, $self/0   ;;; (call label)
 90  <postcall>      @totalStackSize/32                                       
 100 <exitFunc>      
 
 ----- start stream .nostromo.uart16550.driver_sdtor
 10  <selectSegment> @code/0                                                   
 20  <enterFunc>     ~rval8/0, $self6/0                                        ;;; .nostromo.uart16550.driver_sdtor
-30  mov             [~self]/0, @.nostromo.uart16550.driver_vtbl_inst/0        ;;; =
+30  mov             [~self]/0, !.nostromo.uart16550.driver_vtbl_inst/0        ;;; =
 40  <precall>       @totalStackSize/32                                        
-50  call            ~rval9/0, @.nostromo.uart16550.driver.cdtor/0, $self/0    ;;; (call label)
+50  call            ~rval9/0, !.nostromo.uart16550.driver.cdtor/0, $self/0    ;;; (call label)
 60  <postcall>      @totalStackSize/32                                        
 70  <precall>       @totalStackSize/32                                        
-80  call            ~rval10/0, @.nostromo.uart16550.fakeBase_sdtor/0, $self/0 ;;; (call label)
+80  call            ~rval10/0, !.nostromo.uart16550.fakeBase_sdtor/0, $self/0 ;;; (call label)
 90  <postcall>      @totalStackSize/32                                        
 100 <exitFunc>      
 
@@ -66,23 +66,23 @@
 10  <selectSegment> @code/0                                                   
 20  <enterFunc>     ~rval11/0, $self7/0                                       ;;; .nostromo.uart16550.fakeBase_sctor
 30  <precall>       @totalStackSize/32                                        
-40  call            ~rval12/0, @.sht.core.object_sctor/0, $self/0             ;;; (call label)
+40  call            ~rval12/0, !.sht.core.object_sctor/0, $self/0             ;;; (call label)
 50  <postcall>      @totalStackSize/32                                        
-60  mov             [~self]/0, @.nostromo.uart16550.fakeBase_vtbl_inst/0      ;;; =
+60  mov             [~self]/0, !.nostromo.uart16550.fakeBase_vtbl_inst/0      ;;; =
 70  <precall>       @totalStackSize/32                                        
-80  call            ~rval13/0, @.nostromo.uart16550.fakeBase.cctor/0, $self/0 ;;; (call label)
+80  call            ~rval13/0, !.nostromo.uart16550.fakeBase.cctor/0, $self/0 ;;; (call label)
 90  <postcall>      @totalStackSize/32                                        
 100 <exitFunc>      
 
 ----- start stream .nostromo.uart16550.fakeBase_sdtor
 10  <selectSegment> @code/0                                                   
 20  <enterFunc>     ~rval14/0, $self8/0                                       ;;; .nostromo.uart16550.fakeBase_sdtor
-30  mov             [~self]/0, @.nostromo.uart16550.fakeBase_vtbl_inst/0      ;;; =
+30  mov             [~self]/0, !.nostromo.uart16550.fakeBase_vtbl_inst/0      ;;; =
 40  <precall>       @totalStackSize/32                                        
-50  call            ~rval15/0, @.nostromo.uart16550.fakeBase.cdtor/0, $self/0 ;;; (call label)
+50  call            ~rval15/0, !.nostromo.uart16550.fakeBase.cdtor/0, $self/0 ;;; (call label)
 60  <postcall>      @totalStackSize/32                                        
 70  <precall>       @totalStackSize/32                                        
-80  call            ~rval16/0, @.sht.core.object_sdtor/0, $self/0             ;;; (call label)
+80  call            ~rval16/0, !.sht.core.object_sdtor/0, $self/0             ;;; (call label)
 90  <postcall>      @totalStackSize/32                                        
 100 <exitFunc>      
 

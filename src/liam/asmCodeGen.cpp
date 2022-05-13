@@ -45,7 +45,17 @@ void asmArgWriter::write(size_t orderNum, lirArg& a)
    else
    {
       if(stor == cmn::tgt::kStorageImmediate)
-         m_w[1] << a.getName();
+      {
+         if(auto *pLbl = dynamic_cast<lirArgLabel*>(&a))
+         {
+            if(pLbl->isCode)
+               m_w[1] << a.getName();
+            else
+               m_w[1] << "qwordptr " << a.getName();
+         }
+         else
+            m_w[1] << a.getName();
+      }
       else
          m_w[1] << m_t.getProc().getRegName(stor);
       writeDispIf(a.disp);

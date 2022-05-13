@@ -93,8 +93,12 @@ asmArgInfo::asmArgInfo()
 
 argTypes asmArgInfo::computeArgType()
 {
-   if(flags & kLabel)
-      return kM64; // labels are really memory locations
+   if(flags == (kImm32 | kLabel))
+      return kI32;
+   else if(flags == (kMem64 | kLabel))
+      return kM64;
+   else if(flags & kLabel)
+      cdwTHROW("unimpl'd label format");
 
    else if(flags & kImm8)
       return kI8;

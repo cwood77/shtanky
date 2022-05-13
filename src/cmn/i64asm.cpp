@@ -169,12 +169,12 @@ void modRm::encodeOpcodeArg(unsigned char opcode, unsigned char& rex, unsigned c
    modRmByte |= (opcode << 3);
 }
 
-void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize, bool& dispOrCodeOffset)
+void modRm::encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize, bool& dispToLabel)
 {
-   dispOrCodeOffset = true;
-   if(ai.flags == asmArgInfo::kLabel)
+   dispToLabel = false;
+   if(ai.flags == (asmArgInfo::kMem64 | asmArgInfo::kLabel))
    {
-      dispOrCodeOffset = false;
+      dispToLabel = true;
       encodeModRmArg_Label(ai,rex,modRmByte,dispSize);
    }
    else if(ai.flags == (asmArgInfo::kMem64 | asmArgInfo::kReg64))
@@ -383,21 +383,21 @@ void argFmtBytes::encodeArgModRmReg(asmArgInfo& a, bool regOrRm)
    unsigned char rex = 0;
    unsigned char _modRm = 0;
    char dispSize = 0;
-   bool dispOrCodeOffset = true;
+   bool dispToLabel = true;
    gather(rex,_modRm);
 
    if(regOrRm)
       modRm::encodeRegArg(a,rex,_modRm);
    else
-      modRm::encodeModRmArg(a,rex,_modRm,dispSize,dispOrCodeOffset);
+      modRm::encodeModRmArg(a,rex,_modRm,dispSize,dispToLabel);
 
    release(rex,_modRm);
    if(dispSize)
    {
-      if(dispOrCodeOffset)
-         setDisp(dispSize,a.disp);
+      if(dispToLabel)
+         setDispToLabel(dispSize);
       else
-         setCodeOffset(dispSize);
+         setDisp(dispSize,a.disp);
    }
 }
 
@@ -514,6 +514,7 @@ void argFmtBytes::release(const unsigned char& rex, const unsigned char& modRm)
    }
 }
 
+// disps are filled in now
 void argFmtBytes::setDisp(char size, __int64 value)
 {
    size_t arrayIdx = m_argFmtByteStream.size();
@@ -530,7 +531,8 @@ void argFmtBytes::setDisp(char size, __int64 value)
    }
 }
 
-void argFmtBytes::setCodeOffset(char size)
+// code offsets are filled in later, with patch (by assembler)
+void argFmtBytes::setDispToLabel(char size)
 {
    if(size != 4)
       cdwTHROW("unimplemented");
@@ -538,8 +540,7 @@ void argFmtBytes::setCodeOffset(char size)
    size_t arrayIdx = m_argFmtByteStream.size();
    m_argFmtByteStream.resize(arrayIdx + 1 /*+ size*/);
 
-   m_argFmtByteStream[arrayIdx] = genInfo::kCodeOffset32;
-//   *reinterpret_cast<long*>(&m_argFmtByteStream[arrayIdx+1]) = 0;
+   m_argFmtByteStream[arrayIdx] = genInfo::kDisp32ToLabel;
 }
 
 } // namespace i64

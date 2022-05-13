@@ -11,40 +11,40 @@ op(c3)
 // 15: .data, .nostromo.bootstrapper.run 
 _lbldata(00-00-00-00,00-00-00-00)
 // 18: .nostromo.bootstrapper_sctor: 
-// 19:                               sub, rsp, 32                               
+// 19:                               sub, rsp, 32                                        
 rex(48)op(83)modR/M(ec)i8(20)
-// 20:                               call, .sht.cons.program_sctor              ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
-// 21:                               add, rsp, 32                               
+// 20:                               call, .sht.cons.program_sctor                       ; (call label)
+op(e8)co32(00-00-00-00)
+// 21:                               add, rsp, 32                                        
 rex(48)op(83)modR/M(c4)i8(20)
-// 22:                               mov, r10, .nostromo.bootstrapper_vtbl_inst ; codeshape decomp
-rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
-// 23:                               mov, [rcx], r10                            ; =
+// 22:                               mov, r10, qwordptr .nostromo.bootstrapper_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 23:                               mov, [rcx], r10                                     ; =
 rex(4c)op(89)modR/M(11)
-// 24:                               sub, rsp, 32                               
+// 24:                               sub, rsp, 32                                        
 rex(48)op(83)modR/M(ec)i8(20)
-// 25:                               call, .nostromo.bootstrapper.cctor         ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
-// 26:                               add, rsp, 32                               
+// 25:                               call, .nostromo.bootstrapper.cctor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 26:                               add, rsp, 32                                        
 rex(48)op(83)modR/M(c4)i8(20)
-// 27:                               ret                                        
+// 27:                               ret                                                 
 op(c3)
 // 30: .nostromo.bootstrapper_sdtor: 
-// 31:                               mov, r10, .nostromo.bootstrapper_vtbl_inst ; codeshape decomp
-rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
-// 32:                               mov, [rcx], r10                            ; =
+// 31:                               mov, r10, qwordptr .nostromo.bootstrapper_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 32:                               mov, [rcx], r10                                     ; =
 rex(4c)op(89)modR/M(11)
-// 33:                               sub, rsp, 32                               
+// 33:                               sub, rsp, 32                                        
 rex(48)op(83)modR/M(ec)i8(20)
-// 34:                               call, .nostromo.bootstrapper.cdtor         ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
-// 35:                               add, rsp, 32                               
+// 34:                               call, .nostromo.bootstrapper.cdtor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 35:                               add, rsp, 32                                        
 rex(48)op(83)modR/M(c4)i8(20)
-// 36:                               sub, rsp, 32                               
+// 36:                               sub, rsp, 32                                        
 rex(48)op(83)modR/M(ec)i8(20)
-// 37:                               call, .sht.cons.program_sdtor              ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
-// 38:                               add, rsp, 32                               
+// 37:                               call, .sht.cons.program_sdtor                       ; (call label)
+op(e8)co32(00-00-00-00)
+// 38:                               add, rsp, 32                                        
 rex(48)op(83)modR/M(c4)i8(20)
-// 39:                               ret                                        
+// 39:                               ret                                                 
 op(c3)

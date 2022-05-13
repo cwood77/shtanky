@@ -1,4 +1,4 @@
-=== LIR bundle has 12 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 12 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
 
 ----- start stream .nostromo.uart16550.fakeBase.write8
 0 <enterFunc> ~rval/0, $self/0, $byte/0 ;;; .nostromo.uart16550.fakeBase.write8
@@ -27,34 +27,34 @@
 ----- start stream .nostromo.uart16550.driver_sctor
 0 <enterFunc> ~rval5/0, $self5/0                                       ;;; .nostromo.uart16550.driver_sctor
 0 <precall>   
-0 call        ~rval6/0, @.nostromo.uart16550.fakeBase_sctor/0, $self/0 ;;; (call label)
-0 mov         [~self]/0, @.nostromo.uart16550.driver_vtbl_inst/0       ;;; =
+0 call        ~rval6/0, !.nostromo.uart16550.fakeBase_sctor/0, $self/0 ;;; (call label)
+0 mov         [~self]/0, !.nostromo.uart16550.driver_vtbl_inst/0       ;;; =
 0 <precall>   
-0 call        ~rval7/0, @.nostromo.uart16550.driver.cctor/0, $self/0   ;;; (call label)
+0 call        ~rval7/0, !.nostromo.uart16550.driver.cctor/0, $self/0   ;;; (call label)
 
 ----- start stream .nostromo.uart16550.driver_sdtor
 0 <enterFunc> ~rval8/0, $self6/0                                        ;;; .nostromo.uart16550.driver_sdtor
-0 mov         [~self]/0, @.nostromo.uart16550.driver_vtbl_inst/0        ;;; =
+0 mov         [~self]/0, !.nostromo.uart16550.driver_vtbl_inst/0        ;;; =
 0 <precall>   
-0 call        ~rval9/0, @.nostromo.uart16550.driver.cdtor/0, $self/0    ;;; (call label)
+0 call        ~rval9/0, !.nostromo.uart16550.driver.cdtor/0, $self/0    ;;; (call label)
 0 <precall>   
-0 call        ~rval10/0, @.nostromo.uart16550.fakeBase_sdtor/0, $self/0 ;;; (call label)
+0 call        ~rval10/0, !.nostromo.uart16550.fakeBase_sdtor/0, $self/0 ;;; (call label)
 
 ----- start stream .nostromo.uart16550.fakeBase_sctor
 0 <enterFunc> ~rval11/0, $self7/0                                       ;;; .nostromo.uart16550.fakeBase_sctor
 0 <precall>   
-0 call        ~rval12/0, @.sht.core.object_sctor/0, $self/0             ;;; (call label)
-0 mov         [~self]/0, @.nostromo.uart16550.fakeBase_vtbl_inst/0      ;;; =
+0 call        ~rval12/0, !.sht.core.object_sctor/0, $self/0             ;;; (call label)
+0 mov         [~self]/0, !.nostromo.uart16550.fakeBase_vtbl_inst/0      ;;; =
 0 <precall>   
-0 call        ~rval13/0, @.nostromo.uart16550.fakeBase.cctor/0, $self/0 ;;; (call label)
+0 call        ~rval13/0, !.nostromo.uart16550.fakeBase.cctor/0, $self/0 ;;; (call label)
 
 ----- start stream .nostromo.uart16550.fakeBase_sdtor
 0 <enterFunc> ~rval14/0, $self8/0                                       ;;; .nostromo.uart16550.fakeBase_sdtor
-0 mov         [~self]/0, @.nostromo.uart16550.fakeBase_vtbl_inst/0      ;;; =
+0 mov         [~self]/0, !.nostromo.uart16550.fakeBase_vtbl_inst/0      ;;; =
 0 <precall>   
-0 call        ~rval15/0, @.nostromo.uart16550.fakeBase.cdtor/0, $self/0 ;;; (call label)
+0 call        ~rval15/0, !.nostromo.uart16550.fakeBase.cdtor/0, $self/0 ;;; (call label)
 0 <precall>   
-0 call        ~rval16/0, @.sht.core.object_sdtor/0, $self/0             ;;; (call label)
+0 call        ~rval16/0, !.sht.core.object_sdtor/0, $self/0             ;;; (call label)
 
 === end of LIR bundle dump ===
 

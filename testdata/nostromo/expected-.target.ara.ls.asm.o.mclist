@@ -14,7 +14,7 @@ rex(48)op(89)modR/M(cb)
 // 9:              mov, rcx, [rbp-8]                  ;       (cout req for rcx) [splitter]
 rex(48)op(8b)modR/M(4d)d8(f8)
 // 10:              call, .sht.cons.stdout_sctor       ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
+op(e8)co32(00-00-00-00)
 // 11:              add, rsp, 32                       
 rex(48)op(83)modR/M(c4)i8(20)
 // 12:              sub, rsp, 16                       
@@ -26,7 +26,7 @@ rex(48)op(89)modR/M(cf)
 // 15:              mov, rcx, [rbp-8]                  ;       (obj0 req for rcx) [splitter]
 rex(48)op(8b)modR/M(4d)d8(f8)
 // 16:              call, .nostromo.bootstrapper_sctor ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
+op(e8)co32(00-00-00-00)
 // 17:              add, rsp, 32                       
 rex(48)op(83)modR/M(c4)i8(20)
 // 18:              mov, [rcx+8], rdi                  ; =
@@ -44,7 +44,7 @@ rex(48)op(83)modR/M(c4)i8(20)
 // 24:              sub, rsp, 32                       
 rex(48)op(83)modR/M(ec)i8(20)
 // 25:              call, .nostromo.bootstrapper_sdtor ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
+op(e8)co32(00-00-00-00)
 // 26:              add, rsp, 32                       
 rex(48)op(83)modR/M(c4)i8(20)
 // 27:              sub, rsp, 32                       
@@ -54,7 +54,7 @@ rex(48)op(89)modR/M(cb)
 // 29:              mov, rcx, rdi                      ; (restore [combiner])
 rex(48)op(89)modR/M(f9)
 // 30:              call, .sht.cons.stdout_sdtor       ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
+op(e8)co32(00-00-00-00)
 // 31:              add, rsp, 32                       
 rex(48)op(83)modR/M(c4)i8(20)
 // 32:              add, rsp, 16                       
@@ -78,40 +78,40 @@ op(c3)
 // 48: .nostromo.consoleTarget_vtbl_inst:
 // 49: .data, 
 // 52: .nostromo.consoleTarget_sctor: 
-// 53:                                sub, rsp, 32                                
+// 53:                                sub, rsp, 32                                         
 rex(48)op(83)modR/M(ec)i8(20)
-// 54:                                call, .sht.core.object_sctor                ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
-// 55:                                add, rsp, 32                                
+// 54:                                call, .sht.core.object_sctor                         ; (call label)
+op(e8)co32(00-00-00-00)
+// 55:                                add, rsp, 32                                         
 rex(48)op(83)modR/M(c4)i8(20)
-// 56:                                mov, r10, .nostromo.consoleTarget_vtbl_inst ; codeshape decomp
-rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
-// 57:                                mov, [rcx], r10                             ; =
+// 56:                                mov, r10, qwordptr .nostromo.consoleTarget_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 57:                                mov, [rcx], r10                                      ; =
 rex(4c)op(89)modR/M(11)
-// 58:                                sub, rsp, 32                                
+// 58:                                sub, rsp, 32                                         
 rex(48)op(83)modR/M(ec)i8(20)
-// 59:                                call, .nostromo.consoleTarget.cctor         ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
-// 60:                                add, rsp, 32                                
+// 59:                                call, .nostromo.consoleTarget.cctor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 60:                                add, rsp, 32                                         
 rex(48)op(83)modR/M(c4)i8(20)
-// 61:                                ret                                         
+// 61:                                ret                                                  
 op(c3)
 // 64: .nostromo.consoleTarget_sdtor: 
-// 65:                                mov, r10, .nostromo.consoleTarget_vtbl_inst ; codeshape decomp
-rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
-// 66:                                mov, [rcx], r10                             ; =
+// 65:                                mov, r10, qwordptr .nostromo.consoleTarget_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 66:                                mov, [rcx], r10                                      ; =
 rex(4c)op(89)modR/M(11)
-// 67:                                sub, rsp, 32                                
+// 67:                                sub, rsp, 32                                         
 rex(48)op(83)modR/M(ec)i8(20)
-// 68:                                call, .nostromo.consoleTarget.cdtor         ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
-// 69:                                add, rsp, 32                                
+// 68:                                call, .nostromo.consoleTarget.cdtor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 69:                                add, rsp, 32                                         
 rex(48)op(83)modR/M(c4)i8(20)
-// 70:                                sub, rsp, 32                                
+// 70:                                sub, rsp, 32                                         
 rex(48)op(83)modR/M(ec)i8(20)
-// 71:                                call, .sht.core.object_sdtor                ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
-// 72:                                add, rsp, 32                                
+// 71:                                call, .sht.core.object_sdtor                         ; (call label)
+op(e8)co32(00-00-00-00)
+// 72:                                add, rsp, 32                                         
 rex(48)op(83)modR/M(c4)i8(20)
-// 73:                                ret                                         
+// 73:                                ret                                                  
 op(c3)

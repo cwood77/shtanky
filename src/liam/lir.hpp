@@ -57,6 +57,15 @@ public:
    lirArgConst(const std::string& name, size_t size) : lirArg(name,size) {}
    virtual lirArg& clone() const { return _clone<lirArgConst>(); }
 };
+class lirArgLabel : public lirArgConst {
+public:
+   lirArgLabel(const std::string& name, size_t size)
+   : lirArgConst(name,size), isCode(false) {}
+   bool isCode;
+   virtual lirArg& clone() const { return _clone<lirArgLabel>(); }
+protected:
+   virtual lirArg& copyFieldsInto(lirArg& noob) const;
+};
 class lirArgTemp : public lirArg {
 public:
    lirArgTemp(const std::string& name, size_t size) : lirArg(name,size) {}
@@ -306,6 +315,10 @@ public:
 
       instrBuilder& returnToParent(size_t nArg)
       { m_b.publishArg(m_n,*m_i.getArgs()[nArg]); return *this; }
+
+      template<class T>
+      T& tweakArgAs(size_t nArg)
+      { return dynamic_cast<T&>(*m_i.getArgs()[nArg]); }
 
    private:
       lirBuilder& m_b;

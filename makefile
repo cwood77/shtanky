@@ -61,6 +61,7 @@ dirs:
 # cmn
 
 CMN_SRC = \
+	src/cmn/align.cpp \
 	src/cmn/ast.cpp \
 	src/cmn/binReader.cpp \
 	src/cmn/binWriter.cpp \

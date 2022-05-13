@@ -50,25 +50,25 @@
 
 .seg code                  
 .test.consoleTarget_sctor: 
-                           sub, rsp, 32                            
-                           call, .sht.core.object_sctor            ; (call label)
-                           add, rsp, 32                            
-                           mov, r10, .test.consoleTarget_vtbl_inst ; codeshape decomp
-                           mov, [rcx], r10                         ; =
-                           sub, rsp, 32                            
-                           call, .test.consoleTarget.cctor         ; (call label)
-                           add, rsp, 32                            
-                           ret                                     
+                           sub, rsp, 32                                     
+                           call, .sht.core.object_sctor                     ; (call label)
+                           add, rsp, 32                                     
+                           mov, r10, qwordptr .test.consoleTarget_vtbl_inst ; codeshape decomp
+                           mov, [rcx], r10                                  ; =
+                           sub, rsp, 32                                     
+                           call, .test.consoleTarget.cctor                  ; (call label)
+                           add, rsp, 32                                     
+                           ret                                              
 
 .seg code                  
 .test.consoleTarget_sdtor: 
-                           mov, r10, .test.consoleTarget_vtbl_inst ; codeshape decomp
-                           mov, [rcx], r10                         ; =
-                           sub, rsp, 32                            
-                           call, .test.consoleTarget.cdtor         ; (call label)
-                           add, rsp, 32                            
-                           sub, rsp, 32                            
-                           call, .sht.core.object_sdtor            ; (call label)
-                           add, rsp, 32                            
-                           ret                                     
+                           mov, r10, qwordptr .test.consoleTarget_vtbl_inst ; codeshape decomp
+                           mov, [rcx], r10                                  ; =
+                           sub, rsp, 32                                     
+                           call, .test.consoleTarget.cdtor                  ; (call label)
+                           add, rsp, 32                                     
+                           sub, rsp, 32                                     
+                           call, .sht.core.object_sdtor                     ; (call label)
+                           add, rsp, 32                                     
+                           ret                                              
 

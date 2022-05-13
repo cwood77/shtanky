@@ -31,9 +31,14 @@ private:
 // a flat list of all the objects in a given segment
 class segmentBlock {
 public:
-   segmentBlock() : offset(0), m_size(0) {}
+   segmentBlock() : m_offset(0), m_size(0), m_align(false) {}
 
-   unsigned long offset; // unset until all objects have been placed
+   void setFlags(unsigned long f);
+
+   // unset until all objects have been placed
+   unsigned long getOffset() { return m_offset; }
+   void setOffset(unsigned long o); // maybe adjusted for alignment
+
    size_t getSize() const { return m_size; }
 
    unsigned long append(cmn::objfmt::obj& o);
@@ -42,8 +47,10 @@ public:
    const unsigned char *getHeadPtr() const { return &m_bytes[0]; }
 
 private:
+   unsigned long m_offset;
    std::vector<unsigned char> m_bytes;
    size_t m_size;
+   bool m_align;
 };
 
 class layout {

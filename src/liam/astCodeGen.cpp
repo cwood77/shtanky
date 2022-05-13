@@ -173,8 +173,9 @@ void astCodeGen::visit(cmn::callNode& n)
       .append(cmn::tgt::kCall)
          .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
          .returnToParent(0)
-         .withArg<lirArgConst>(n.pTarget.ref,/*n*/ 0) // label
+         .withArg<lirArgLabel>(n.pTarget.ref,/*n*/ 0) // label
          .withComment("(call label)");
+   iCall.tweakArgAs<lirArgLabel>(1).isCode = true;
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       iCall.inheritArgFromChild(**it);
@@ -188,7 +189,7 @@ void astCodeGen::visit(cmn::varRefNode& n)
       // references to another stream, like a global, are patched
       // patches are immediate data
 
-      auto pA = new lirArgConst(
+      auto pA = new lirArgLabel(
          n.pSrc.ref,
          cmn::type::gNodeCache->demand(*n.pSrc._getRefee()).getPseudoRefSize());
 

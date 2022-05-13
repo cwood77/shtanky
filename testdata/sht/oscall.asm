@@ -3,5 +3,12 @@
 
 .seg code
 ._osCall:
-   call, ._osCall_impl
+   push, rbp
+   mov, rbp, rsp
+   sub, rsp, 32
+
+   call, qwordptr ._osCall_impl
+
+   mov, rsp, rbp
+   pop, rbp
    ret

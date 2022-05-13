@@ -1,4 +1,4 @@
-=== LIR bundle has 5 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 5 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
 
 ----- start stream .sht.core.object.cctor
 0 <enterFunc> ~rval/0, $self/0 ;;; .sht.core.object.cctor
@@ -11,15 +11,15 @@
 
 ----- start stream .sht.core.object_sctor
 0 <enterFunc> ~rval1/0, $self1/0                           ;;; .sht.core.object_sctor
-0 mov         [~self]/0, @.sht.core.object_vtbl_inst/0     ;;; =
+0 mov         [~self]/0, !.sht.core.object_vtbl_inst/0     ;;; =
 0 <precall>   
-0 call        ~rval2/0, @.sht.core.object.cctor/0, $self/0 ;;; (call label)
+0 call        ~rval2/0, !.sht.core.object.cctor/0, $self/0 ;;; (call label)
 
 ----- start stream .sht.core.object_sdtor
 0 <enterFunc> ~rval3/0, $self2/0                           ;;; .sht.core.object_sdtor
-0 mov         [~self]/0, @.sht.core.object_vtbl_inst/0     ;;; =
+0 mov         [~self]/0, !.sht.core.object_vtbl_inst/0     ;;; =
 0 <precall>   
-0 call        ~rval4/0, @.sht.core.object.cdtor/0, $self/0 ;;; (call label)
+0 call        ~rval4/0, !.sht.core.object.cdtor/0, $self/0 ;;; (call label)
 
 === end of LIR bundle dump ===
 

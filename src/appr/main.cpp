@@ -16,7 +16,6 @@ int main(int argc, const char *argv[])
 
    // ------------------ tests start ------------------
 
-
    araceliTest(is,".\\testdata\\assign")
       .wholeApp()
       .expectLiamOf(".\\testdata\\assign\\main.ara")

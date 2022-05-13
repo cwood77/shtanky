@@ -9,7 +9,7 @@ helloWorld: .data, "hello world" <b> 0
 
    mov, rcx, 1
    mov, rdx, 0
-   call, ._osCall_impl
+   call, ._osCall
 
    mov, rsp, rbp
    pop, rbp

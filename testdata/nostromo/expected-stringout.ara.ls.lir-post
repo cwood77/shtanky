@@ -1,4 +1,4 @@
-=== LIR bundle has 7 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 7 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
 
 ----- start stream .nostromo.gDbgOut
 10 <selectSegment>   @const/0 
@@ -34,23 +34,23 @@
 10  <selectSegment> @code/0                                        
 20  <enterFunc>     ~rval3/0, $self2/0                             ;;; .nostromo.debugOut_sctor
 30  <precall>       @totalStackSize/32                             
-40  call            ~rval4/0, @.sht.core.object_sctor/0, $self/0   ;;; (call label)
+40  call            ~rval4/0, !.sht.core.object_sctor/0, $self/0   ;;; (call label)
 50  <postcall>      @totalStackSize/32                             
-60  mov             [~self]/0, @.nostromo.debugOut_vtbl_inst/0     ;;; =
+60  mov             [~self]/0, !.nostromo.debugOut_vtbl_inst/0     ;;; =
 70  <precall>       @totalStackSize/32                             
-80  call            ~rval5/0, @.nostromo.debugOut.cctor/0, $self/0 ;;; (call label)
+80  call            ~rval5/0, !.nostromo.debugOut.cctor/0, $self/0 ;;; (call label)
 90  <postcall>      @totalStackSize/32                             
 100 <exitFunc>      
 
 ----- start stream .nostromo.debugOut_sdtor
 10  <selectSegment> @code/0                                        
 20  <enterFunc>     ~rval6/0, $self3/0                             ;;; .nostromo.debugOut_sdtor
-30  mov             [~self]/0, @.nostromo.debugOut_vtbl_inst/0     ;;; =
+30  mov             [~self]/0, !.nostromo.debugOut_vtbl_inst/0     ;;; =
 40  <precall>       @totalStackSize/32                             
-50  call            ~rval7/0, @.nostromo.debugOut.cdtor/0, $self/0 ;;; (call label)
+50  call            ~rval7/0, !.nostromo.debugOut.cdtor/0, $self/0 ;;; (call label)
 60  <postcall>      @totalStackSize/32                             
 70  <precall>       @totalStackSize/32                             
-80  call            ~rval8/0, @.sht.core.object_sdtor/0, $self/0   ;;; (call label)
+80  call            ~rval8/0, !.sht.core.object_sdtor/0, $self/0   ;;; (call label)
 90  <postcall>      @totalStackSize/32                             
 100 <exitFunc>      
 

@@ -7,28 +7,28 @@ op(c3)
 // 10: .sht.core.object_vtbl_inst:
 // 11: .data, 
 // 14: .sht.core.object_sctor: 
-// 15:                         mov, r10, .sht.core.object_vtbl_inst ; codeshape decomp
-rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
-// 16:                         mov, [rcx], r10                      ; =
+// 15:                         mov, r10, qwordptr .sht.core.object_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 16:                         mov, [rcx], r10                               ; =
 rex(4c)op(89)modR/M(11)
-// 17:                         sub, rsp, 32                         
+// 17:                         sub, rsp, 32                                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 18:                         call, .sht.core.object.cctor         ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
-// 19:                         add, rsp, 32                         
+// 18:                         call, .sht.core.object.cctor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 19:                         add, rsp, 32                                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 20:                         ret                                  
+// 20:                         ret                                           
 op(c3)
 // 23: .sht.core.object_sdtor: 
-// 24:                         mov, r10, .sht.core.object_vtbl_inst ; codeshape decomp
-rex(4c)op(8b)modR/M(15)co32(00-00-00-00)
-// 25:                         mov, [rcx], r10                      ; =
+// 24:                         mov, r10, qwordptr .sht.core.object_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 25:                         mov, [rcx], r10                               ; =
 rex(4c)op(89)modR/M(11)
-// 26:                         sub, rsp, 32                         
+// 26:                         sub, rsp, 32                                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 27:                         call, .sht.core.object.cdtor         ; (call label)
-op(ff)modR/M(15)co32(00-00-00-00)
-// 28:                         add, rsp, 32                         
+// 27:                         call, .sht.core.object.cdtor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 28:                         add, rsp, 32                                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 29:                         ret                                  
+// 29:                         ret                                           
 op(c3)

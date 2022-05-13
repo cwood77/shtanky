@@ -108,7 +108,9 @@ static const cmn::lexemeInfo argScanTable[] = {
    { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegR14,      "r14",      "register"        },
    { cmn::lexemeInfo::kAlphanumeric, argLexor::kRegR15,      "r15",      "register"        },
 
-   { cmn::lexemeInfo::kEndOfTable,   0,                       NULL,       NULL              }
+   { cmn::lexemeInfo::kAlphanumeric, argLexor::kQWordPtr,    "qwordptr", "qword ptr"       },
+
+   { cmn::lexemeInfo::kEndOfTable,   0,                       NULL,       NULL             }
 };
 
 static const cmn::lexemeClassInfo argClassTable[] = {
@@ -201,9 +203,19 @@ void argParser::parseArg(cmn::tgt::asmArgInfo& i)
             cdwTHROW("unknow int size");
       }
    }
+   else if(m_l.getToken() == argLexor::kQWordPtr)
+   {
+      m_l.advance();
+      m_l.demand(cdwLoc,argLexor::kName);
+      m_pAi->flags |= cmn::tgt::asmArgInfo::kLabel;
+      m_pAi->flags |= cmn::tgt::asmArgInfo::kMem64;
+      m_pAi->label = m_l.getLexeme();
+      m_l.advance();
+   }
    else if(m_l.getToken() == argLexor::kName)
    {
       m_pAi->flags |= cmn::tgt::asmArgInfo::kLabel;
+      m_pAi->flags |= cmn::tgt::asmArgInfo::kImm32;
       m_pAi->label = m_l.getLexeme();
       m_l.advance();
    }
