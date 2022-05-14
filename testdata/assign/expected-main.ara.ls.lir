@@ -18,16 +18,16 @@
 
 ----- start stream .assign.assignTester.readFromSubSubObject
 0 <enterFunc> ~rval4/0, $self2/0, $a1/0, $wrong/0 ;;; .assign.assignTester.readFromSubSubObject
-0 mov         ~x/0, [~a+16]/0                     ;;; fieldaccess: owner of x
-0 mov         $wrong/0, [~x+16]/0                 ;;; =
+0 mov         ~_x/0, [~a+16]/0                    ;;; fieldaccess: owner of _x
+0 mov         $wrong/0, [~_x+16]/0                ;;; =
 
 ----- start stream .assign.assignTester.writeIntoSubSubObject
 0 <enterFunc>    ~rval5/0, $self3/0                     ;;; .assign.assignTester.writeIntoSubSubObject
 0 <reserveLocal> $wrong0/24                             ;;; wrong
 0 <precall>      
 0 call           ~rval6/0, !.assign.A_sctor/0, $wrong/0 ;;; (call label)
-0 mov            ~x0/0, [~wrong+16]/0                   ;;; fieldaccess: owner of x
-0 mov            [~x0+16]/0, @7/1                       ;;; =
+0 mov            ~_x0/0, [~wrong+16]/0                  ;;; fieldaccess: owner of _x
+0 mov            [~_x0+16]/0, @7/1                      ;;; =
 0 <precall>      
 0 call           ~rval7/0, !.assign.A_sdtor/0, $wrong/0 ;;; (call label)
 

@@ -28,8 +28,8 @@
 ----- start stream .assign.assignTester.readFromSubSubObject
 10 <selectSegment> @code/0                             
 20 <enterFunc>     ~rval4/0, $self2/0, $a1/0, $wrong/0 ;;; .assign.assignTester.readFromSubSubObject
-30 mov             ~x/0, [~a+16]/0                     ;;; fieldaccess: owner of x
-40 mov             $wrong/0, [~x+16]/0                 ;;; =
+30 mov             ~_x/0, [~a+16]/0                    ;;; fieldaccess: owner of _x
+40 mov             $wrong/0, [~_x+16]/0                ;;; =
 50 <exitFunc>      
 
 ----- start stream .assign.assignTester.writeIntoSubSubObject
@@ -39,8 +39,8 @@
 40  <precall>        @totalStackSize/32                     
 50  call             ~rval6/0, !.assign.A_sctor/0, $wrong/0 ;;; (call label)
 60  <postcall>       @totalStackSize/32                     
-70  mov              ~x0/0, [~wrong+16]/0                   ;;; fieldaccess: owner of x
-80  mov              [~x0+16]/0, @7/1                       ;;; =
+70  mov              ~_x0/0, [~wrong+16]/0                  ;;; fieldaccess: owner of _x
+80  mov              [~_x0+16]/0, @7/1                      ;;; =
 90  <precall>        @totalStackSize/32                     
 100 call             ~rval7/0, !.assign.A_sdtor/0, $wrong/0 ;;; (call label)
 110 <postcall>       @totalStackSize/32                     

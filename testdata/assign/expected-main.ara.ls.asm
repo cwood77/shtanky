@@ -26,7 +26,7 @@
 .assign.assignTester.readFromSubSubObject: 
                                            push, rbx          
                                            push, rdi          
-                                           mov, rbx, [rdi+16] ; fieldaccess: owner of x
+                                           mov, rbx, [rdi+16] ; fieldaccess: owner of _x
                                            mov, r8, [rbx+16]  ; =
                                            pop, rdi           
                                            pop, rbx           
@@ -40,7 +40,7 @@
                                             sub, rsp, 32          
                                             call, .assign.A_sctor ; (call label)
                                             add, rsp, 32          
-                                            mov, rbx, [rcx+16]    ; fieldaccess: owner of x
+                                            mov, rbx, [rcx+16]    ; fieldaccess: owner of _x
                                             mov, [rbx+16], 7      ; =
                                             sub, rsp, 32          
                                             call, .assign.A_sdtor ; (call label)

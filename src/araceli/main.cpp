@@ -9,6 +9,7 @@
 #include "../cmn/pathUtil.hpp"
 #include "../cmn/trace.hpp"
 #include "../cmn/typeVisitor.hpp"
+#include "../cmn/userError.hpp"
 #include "../syzygy/frontend.hpp"
 #include "abstractGenerator.hpp"
 #include "batGen.hpp"
@@ -17,10 +18,12 @@
 #include "constHoister.hpp"
 #include "ctorDtorGenerator.hpp"
 #include "inheritImplementor.hpp"
+#include "intfTransform.hpp"
 #include "loader.hpp"
 #include "matryoshkaDecomp.hpp"
 #include "metadata.hpp"
 #include "methodMover.hpp"
+#include "nodeFlagChecker.hpp"
 #include "objectBaser.hpp"
 #include "opOverloadDecomp.hpp"
 #include "selfDecomposition.hpp"
@@ -67,7 +70,7 @@ int _main(int argc, const char *argv[])
    loaderPrefs lPrefs = { "ph", "" };
    cmn::globalPublishTo<loaderPrefs> _lPrefs(lPrefs,gLoaderPrefs);
 
-   // setup project, target, AST; load & link
+   // setup project, AST; load & link
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
    std::unique_ptr<araceli::iTarget> pTgt;
    syzygy::frontend(projectDir,pPrj,pTgt).run();
@@ -82,6 +85,25 @@ int _main(int argc, const char *argv[])
 
    // use metadata to generate the target
    pTgt->araceliCodegen(*pPrj,md);
+
+   // ---------------- early syntax checks ----------------
+   cmn::userErrors ue;
+   cmn::globalPublishTo<cmn::userErrors> _ueReg(ue,cmn::gUserErrors);
+
+   // interface has only public abstract methods
+   { intfTransform v; pPrj->acceptVisitor(v); }
+
+   { nodeFlagChecker v; pPrj->acceptVisitor(v); }
+
+   // some possible checks:
+   // abstract classes can't be instantiated
+   // protected members cannot be accessed inappropriately
+   // private members cannot be accessed inappropriately
+   // method calls have the right parameters
+   // multiple classes with same name
+   // multiple methods with same name
+
+   ue.throwIfAny();
 
    // inject implied base class
    { objectBaser v; pPrj->acceptVisitor(v); }
@@ -102,6 +124,7 @@ int _main(int argc, const char *argv[])
          projectDir + "\\.classInfo"));
       fmt.format(cc);
    }
+   ue.throwIfAny();
 
    // ---------------- lowering transforms ----------------
 

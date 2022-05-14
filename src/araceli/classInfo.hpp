@@ -25,7 +25,7 @@ public:
    size_t flags;
    cmn::methodNode *pMethod;
    cmn::methodNode *pBaseImpl;
-   bool inherited;
+   bool inherited; // e.g., I didn't override this virtual func
 };
 
 class classInfo {
@@ -33,10 +33,11 @@ public:
    classInfo();
 
    void addOrReplaceVirtualMethod(cmn::classNode& forClass, cmn::methodNode& n);
+   void checkNonVirtualMethod(cmn::methodNode& n);
 
    std::string name;
    std::string fqn;
-   //size_t flags;
+   size_t flags;
    cmn::classNode *pNode;
    std::list<std::string> bases;
 

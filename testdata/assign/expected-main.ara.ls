@@ -9,7 +9,7 @@ func .assign.assignTester.readFromSubObject(
    a : .assign.A,
    v : void) : void
 {
-   v = a:b;
+   v = a:_b;
 }
 
 func .assign.assignTester.writeIntoSubObject(
@@ -17,7 +17,7 @@ func .assign.assignTester.writeIntoSubObject(
 {
    var a : .assign.A;
    .assign.A_sctor(a);
-   a:b = 7;
+   a:_b = 7;
    .assign.A_sdtor(a);
 }
 
@@ -26,7 +26,7 @@ func .assign.assignTester.readFromSubSubObject(
    a : .assign.A,
    wrong : void) : void
 {
-   wrong = a:b:x;
+   wrong = a:_b:_x;
 }
 
 func .assign.assignTester.writeIntoSubSubObject(
@@ -34,7 +34,7 @@ func .assign.assignTester.writeIntoSubSubObject(
 {
    var wrong : .assign.A;
    .assign.A_sctor(wrong);
-   wrong:b:x = 7;
+   wrong:_b:_x = 7;
    .assign.A_sdtor(wrong);
 }
 

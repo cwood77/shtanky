@@ -84,6 +84,7 @@ CMN_SRC = \
 	src/cmn/type.cpp \
 	src/cmn/typeVisitor.cpp \
 	src/cmn/unique.cpp \
+	src/cmn/userError.cpp \
 
 CMN_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(CMN_SRC)))
 
@@ -210,9 +211,11 @@ ARACELI_SRC = \
 	src/araceli/constHoister.cpp \
 	src/araceli/ctorDtorGenerator.cpp \
 	src/araceli/inheritImplementor.cpp \
+	src/araceli/intfTransform.cpp \
 	src/araceli/main.cpp \
 	src/araceli/matryoshkaDecomp.cpp \
 	src/araceli/methodMover.cpp \
+	src/araceli/nodeFlagChecker.cpp \
 	src/araceli/opOverloadDecomp.cpp \
 	src/araceli/selfDecomposition.cpp \
 	src/araceli/stackClassDecomposition.cpp \

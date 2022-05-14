@@ -36,7 +36,7 @@ op(c3)
 rex(48)op(ff)modR/M(f3)
 // 28:                                            push, rdi          
 rex(48)op(ff)modR/M(f7)
-// 29:                                            mov, rbx, [rdi+16] ; fieldaccess: owner of x
+// 29:                                            mov, rbx, [rdi+16] ; fieldaccess: owner of _x
 rex(48)op(8b)modR/M(5f)d8(10)
 // 30:                                            mov, r8, [rbx+16]  ; =
 rex(4c)op(8b)modR/M(43)d8(10)
@@ -59,7 +59,7 @@ rex(48)op(83)modR/M(ec)i8(20)
 op(e8)co32(00-00-00-00)
 // 42:                                             add, rsp, 32          
 rex(48)op(83)modR/M(c4)i8(20)
-// 43:                                             mov, rbx, [rcx+16]    ; fieldaccess: owner of x
+// 43:                                             mov, rbx, [rcx+16]    ; fieldaccess: owner of _x
 rex(48)op(8b)modR/M(59)d8(10)
 // 44:                                             mov, [rbx+16], 7      ; =
 rex(48)op(c7)modR/M(43)d8(10)i32(07-00-00-00)

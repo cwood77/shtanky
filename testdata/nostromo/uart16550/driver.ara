@@ -6,7 +6,7 @@ interface fakeBase {
 
 class driver : fakeBase {
 
-   public override write8(byte : ptr) : void
+   override write8(byte : ptr) : void
    {
    }
 

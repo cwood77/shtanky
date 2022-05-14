@@ -5,14 +5,14 @@ class .assign.assignTester {
 
 class .assign.A {
    _vtbl : .assign.A_vtbl;
-   x : void;
-   b : .assign.B;
+   _x : void;
+   _b : .assign.B;
 }
 
 class .assign.B {
    _vtbl : .assign.B_vtbl;
-   unused : void;
-   x : void;
+   _unused : void;
+   _x : void;
 }
 
 func .assign.assignTester.run(

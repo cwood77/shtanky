@@ -1,4 +1,5 @@
 #include "../cmn/out.hpp"
+#include "../cmn/userError.hpp"
 #include "classInfo.hpp"
 
 namespace araceli {
@@ -29,6 +30,29 @@ void classInfo::addOrReplaceVirtualMethod(cmn::classNode& forClass, cmn::methodN
    mi.pBaseImpl = mi.pMethod;
    mi.pMethod = &n;
    mi.inherited = (&forClass != &n.getAncestor<cmn::classNode>());
+
+   if(mi.pBaseImpl == NULL &&
+      !(mi.flags & cmn::nodeFlags::kAbstract) &&
+      !(mi.flags & cmn::nodeFlags::kVirtual))
+      cmn::gUserErrors->add(n,cmn::kErrorMethodsStartingInheritanceMustBeAbstractOrVirtual);
+   if(mi.pBaseImpl != NULL &&
+      !(mi.flags & cmn::nodeFlags::kOverride))
+      cmn::gUserErrors->add(n,cmn::kErrorOverridesMustUseKeyword);
+
+   // inherit the access
+   if(mi.pBaseImpl)
+   {
+      size_t specB = (mi.pBaseImpl->flags & cmn::nodeFlags::kAccessSpecifierMask);
+      mi.pMethod->flags |= specB;
+      mi.flags |= specB;
+   }
+}
+
+void classInfo::checkNonVirtualMethod(cmn::methodNode& n)
+{
+   auto it = nameLookup.find(n.name);
+   if(it != nameLookup.end())
+      cmn::gUserErrors->add(n,cmn::kErrorNonVirtualMethodHidesInheritedMethod);
 }
 
 classInfo& classCatalog::create(cmn::classNode& n)
@@ -37,6 +61,7 @@ classInfo& classCatalog::create(cmn::classNode& n)
    classInfo& info = classes[fqn];
    info.name = n.name;
    info.fqn = fqn;
+   info.flags = n.flags;
    info.pNode = &n;
    auto l = n.computeLineage();
    for(auto it=l.begin();it!=l.end();++it)
@@ -49,6 +74,7 @@ void classInfoBuilder::visit(cmn::classNode& n)
 {
    auto& info = m_cCat.create(n);
 
+   // build
    auto l = n.computeLineage();
    for(auto it=l.begin();it!=l.end();++it)
    {
@@ -56,6 +82,18 @@ void classInfoBuilder::visit(cmn::classNode& n)
       for(auto mit=methods.begin();mit!=methods.end();++mit)
          if((*mit)->flags & (cmn::nodeFlags::kVirtual | cmn::nodeFlags::kOverride | cmn::nodeFlags::kAbstract))
             info.addOrReplaceVirtualMethod(n,**mit);
+         else
+            info.checkNonVirtualMethod(**mit);
+   }
+
+   // infer abstract
+   for(auto it=info.inheritedAndDirectMethods.begin();it!=info.inheritedAndDirectMethods.end();++it)
+   {
+      if(it->flags & cmn::nodeFlags::kAbstract)
+      {
+         info.flags |= cmn::nodeFlags::kAbstract;
+         break;
+      }
    }
 }
 
@@ -69,6 +107,8 @@ void classInfoFormatter::format(classCatalog& cc)
       m_s.stream() << "CLASS " << cit->second.fqn << std::endl;
       cmn::autoIndent _i(m_s);
       m_s.stream() << cmn::indent(m_s) << "name: " << cit->second.name << std::endl;
+      m_s.stream() << cmn::indent(m_s) << "fqn: " << cit->second.fqn << std::endl;
+      m_s.stream() << cmn::indent(m_s) << "flags: " << cit->second.flags << std::endl;
       m_s.stream() << std::endl;
 
       for(auto mit=cit->second.inheritedAndDirectMethods.begin();mit!=cit->second.inheritedAndDirectMethods.end();++mit)

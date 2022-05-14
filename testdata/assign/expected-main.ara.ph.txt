@@ -6,21 +6,21 @@ class assignTester : .sht.cons.program {
    }
    private readFromSubObject(a : A, v : void) : void
    {
-      v = a:b;
+      v = a:_b;
    }
    private writeIntoSubObject() : void
    {
       var a : A;
-      a:b = 7;
+      a:_b = 7;
    }
    private readFromSubSubObject(a : A, wrong : void) : void
    {
-      wrong = a:b:x;
+      wrong = a:_b:_x;
    }
    private writeIntoSubSubObject() : void
    {
       var wrong : A;
-      wrong:b:x = 7;
+      wrong:_b:_x = 7;
    }
    private bopAssociativity() : void
    {
@@ -32,15 +32,15 @@ class assignTester : .sht.cons.program {
 
 class A {
 
-   public x : void;
-   public b : B;
+   _x : void;
+   _b : B;
 
 }
 
 class B {
 
-   public unused : void;
-   public x : void;
+   _unused : void;
+   _x : void;
 
 }
 
