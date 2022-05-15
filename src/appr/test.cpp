@@ -81,11 +81,21 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
 
 araceliTest& araceliTest::expectLiamOf(const std::string& path, bool hasPhilemon)
 {
+   auto salome = cmn::pathUtil::addExt(path,"sa");
    auto philemon = cmn::pathUtil::addExt(path,"ph");
    auto header = cmn::pathUtil::addExt(path,cmn::pathUtil::kExtLiamHeader);
    auto source = cmn::pathUtil::addExt(path,cmn::pathUtil::kExtLiamSource);
 
    if(hasPhilemon)
+   {
+      m_stream.appendNew<compareInstr>()
+         // salome files will get sucked in by philemon, so make sure these
+         // aren't salome files
+         .withControl(cmn::pathUtil::addExt(
+            cmn::pathUtil::addPrefixToFilePart(salome,"expected-"),"txt"))
+         .withVariable(salome)
+         .because("generated salome");
+
       m_stream.appendNew<compareInstr>()
          // philemon files will get sucked in by araceli, so make sure these
          // aren't philemon files
@@ -93,6 +103,7 @@ araceliTest& araceliTest::expectLiamOf(const std::string& path, bool hasPhilemon
             cmn::pathUtil::addPrefixToFilePart(philemon,"expected-"),"txt"))
          .withVariable(philemon)
          .because("generated philemon");
+   }
 
    m_stream.appendNew<compareInstr>()
       .withControl(cmn::pathUtil::addPrefixToFilePart(header,"expected-"))

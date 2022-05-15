@@ -1,0 +1,21 @@
+generic<T>
+class list {
+
+   private _field : T;
+
+}
+
+[program] 
+class bootstrap : .sht.cons.program {
+
+   override run(args : str[]) : void
+   {
+      var L : .philemon.list<str>;
+      var A2 : str[][];
+      var L2 : .philemon.list<str>[];
+   }
+
+}
+
+instantiate .philemon.list<str>;
+
