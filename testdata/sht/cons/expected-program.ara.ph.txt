@@ -1,6 +1,6 @@
 interface iStream {
 
-   abstract printLn(msg : .sht.core.string) : void;
+   public abstract printLn(msg : .sht.core.string) : void;
 
 }
 
@@ -15,8 +15,8 @@ class stdout : iStream {
 
 abstract program {
 
-   _out : iStream;
-   abstract run(args : .sht.core.array<.sht.core.string>) : void;
+   private _out : iStream;
+   protected abstract run(args : .sht.core.array<.sht.core.string>) : void;
 
 }
 

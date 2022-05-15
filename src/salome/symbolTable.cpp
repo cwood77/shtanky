@@ -1,5 +1,6 @@
 #include "../cmn/trace.hpp"
 #include "../syzygy/genericUnlinker.hpp"
+#include "intfTransform.hpp"
 #include "symbolTable.hpp"
 #include <cstring>
 
@@ -34,6 +35,21 @@ bool nodeLinker::tryFixUnresolved(cmn::node& root, cmn::symbolTable& sTable)
    }
 
    return nChanges;
+}
+
+bool nodeLinker::loadAnotherSymbol(cmn::node& root, cmn::symbolTable& sTable)
+{
+   // first, call my parent
+   bool madeProgress = araceli::nodeLinker::loadAnotherSymbol(root,sTable);
+   if(madeProgress)
+      return madeProgress;
+
+   // if that don't work, try running the intf pass.  This provides dyn dispatch keywords
+   // that can make some link refees "appear" suddenly.
+   intfTransform v;
+   root.acceptVisitor(v);
+
+   return v.nChanges;
 }
 
 } // namespace salome

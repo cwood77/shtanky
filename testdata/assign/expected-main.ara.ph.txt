@@ -32,15 +32,15 @@ class assignTester : .sht.cons.program {
 
 class A {
 
-   _x : void;
-   _b : B;
+   private _x : void;
+   private _b : B;
 
 }
 
 class B {
 
-   _unused : void;
-   _x : void;
+   private _unused : void;
+   private _x : void;
 
 }
 

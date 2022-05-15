@@ -5,8 +5,11 @@
 #include "../cmn/main.hpp"
 #include "../cmn/out.hpp"
 #include "../cmn/trace.hpp"
+#include "../cmn/userError.hpp"
 #include "../syzygy/codegen.hpp"
 #include "frontend.hpp"
+#include "intfTransform.hpp"
+#include "nodeFlagChecker.hpp"
 #include "symbolTable.hpp"
 
 using namespace salome;
@@ -20,6 +23,12 @@ int _main(int argc, const char *argv[])
    // I convert * (arg) -> sa
    araceli::loaderPrefs lPrefs = { inExt, ".target.ara" };
    cmn::globalPublishTo<araceli::loaderPrefs> _lPrefs(lPrefs,araceli::gLoaderPrefs);
+
+   // setup transform state and userErrors
+   intfTransformState _s1;
+   cmn::globalPublishTo<intfTransformState> _s1Ref(_s1,intfTransform::gState);
+   cmn::userErrors ue;
+   cmn::globalPublishTo<cmn::userErrors> _ueReg(ue,cmn::gUserErrors);
 
    // setup project, target, AST; load & link
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
@@ -46,6 +55,13 @@ int _main(int argc, const char *argv[])
    nodeLinker().linkGraph(*pPrj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+
+   // syntax-checking / explicit-defaulting transforms
+   { intfTransform v; pPrj->acceptVisitor(v); }
+   { nodeFlagChecker v; pPrj->acceptVisitor(v); }
+
+   // report errors as late as possible
+   ue.throwIfAny();
 
    // codegen
    cmn::outBundle b;
