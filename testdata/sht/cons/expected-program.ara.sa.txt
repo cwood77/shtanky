@@ -16,7 +16,7 @@ class stdout : iStream {
 abstract program {
 
    private _out : iStream;
-   protected abstract run(args : str[]) : void;
+   public abstract run(args : str[]) : void;
 
 }
 

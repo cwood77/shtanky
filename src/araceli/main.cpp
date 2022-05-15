@@ -12,6 +12,7 @@
 #include "../cmn/userError.hpp"
 #include "../syzygy/frontend.hpp"
 #include "abstractGenerator.hpp"
+#include "accessChecker.hpp"
 #include "batGen.hpp"
 #include "classInfo.hpp"
 #include "codegen.hpp"
@@ -100,8 +101,6 @@ int _main(int argc, const char *argv[])
    // multiple classes with same name
    // multiple methods with same name
 
-   ue.throwIfAny();
-
    // inject implied base class
    { objectBaser v; pPrj->acceptVisitor(v); }
 
@@ -121,9 +120,6 @@ int _main(int argc, const char *argv[])
          projectDir + "\\.classInfo"));
       fmt.format(cc);
    }
-   ue.throwIfAny();
-
-   // ---------------- lowering transforms ----------------
 
    {
       // type prop
@@ -135,9 +131,15 @@ int _main(int argc, const char *argv[])
 
       // op overloader
       { opOverloadDecomp v; pPrj->acceptVisitor(v); }
+      cdwVERBOSE("graph after op overloading decomp ----\n");
+      { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+
+      // ---------------- syntax checking ----------------
+      { memberAccessChecker v(cc); pPrj->acceptVisitor(v); }
+      ue.throwIfAny();
    }
-   cdwVERBOSE("graph after op overloading decomp ----\n");
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+
+   // ---------------- lowering transforms ----------------
 
    // hoist out constants
    { constHoister v; pPrj->acceptVisitor(v); }

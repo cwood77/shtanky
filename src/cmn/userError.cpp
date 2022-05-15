@@ -37,6 +37,7 @@ size_t kErrorTooManyDynDispatchFlags = (size_t)"too many dynamic binding keyword
 size_t kErrorStaticCantBeUsedWithDynDispatch = (size_t)"static can't be used with dynamic binding";
 size_t kErrorOverrideCannotSpecifyAccess = (size_t)"overrides cannot have access specifiers";
 size_t kErrorFieldsBeginWithUnderscore = (size_t)"field names should begin with an underscore";
+size_t kErrorIllegalUseOfMember = (size_t)"member usage violates requested access";
 
 std::ostream& userErrors::add(cmn::node& n, size_t id)
 {

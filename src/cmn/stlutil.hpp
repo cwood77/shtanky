@@ -14,4 +14,13 @@ void addUnique(std::map<T,U>& m, T k, U v)
    nv = v;
 }
 
+template<class T, class U>
+U& demand(std::map<T,U>& m, T k, const char *msg = "value not found in map")
+{
+   auto it = m.find(k);
+   if(it == m.end())
+      cdwTHROW(msg);
+   return it->second;
+}
+
 } // namespace cmn

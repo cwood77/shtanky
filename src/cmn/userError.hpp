@@ -18,6 +18,7 @@ extern size_t kErrorTooManyDynDispatchFlags;
 extern size_t kErrorStaticCantBeUsedWithDynDispatch;
 extern size_t kErrorOverrideCannotSpecifyAccess;
 extern size_t kErrorFieldsBeginWithUnderscore;
+extern size_t kErrorIllegalUseOfMember;
 
 class userError {
 public:
