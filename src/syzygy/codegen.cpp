@@ -284,6 +284,31 @@ void codegen::visit(cmn::structLiteralNode& n)
    s.stream() << " }";
 }
 
+void codegen::visit(cmn::genericNode& n)
+{
+   auto& s = getOutStream();
+   s.stream() << "generic<";
+
+   auto cons = n.getChildrenOf<cmn::constraintNode>();
+   for(auto it = cons.begin();it!=cons.end();++it)
+   {
+      if(it!=cons.begin())
+         s.stream() << ",";
+      s.stream() << (*it)->name;
+   }
+
+   s.stream() << ">" << std::endl;
+   hNodeVisitor::visit(n);
+}
+
+void codegen::visit(cmn::instantiateNode& n)
+{
+   auto& s = getOutStream();
+   s.stream() << "instantiate " << n.text << ";" << std::endl;
+   s.stream() << std::endl;
+   hNodeVisitor::visit(n);
+}
+
 cmn::outStream& codegen::getOutStream()
 {
    if(m_pCurrStream == NULL)

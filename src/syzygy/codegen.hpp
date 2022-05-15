@@ -43,9 +43,8 @@ public:
    virtual void visit(cmn::boolLiteralNode& n) { unexpected(n); }
    virtual void visit(cmn::intLiteralNode& n);
    virtual void visit(cmn::structLiteralNode& n);
-   virtual void visit(cmn::genericNode& n) { unexpected(n); }
-   virtual void visit(cmn::constraintNode& n) { unexpected(n); }
-   virtual void visit(cmn::instantiateNode& n) { unexpected(n); }
+   virtual void visit(cmn::genericNode& n);
+   virtual void visit(cmn::instantiateNode& n);
 
    virtual void _implementLanguage() {} // all
 

@@ -78,7 +78,7 @@ void arrayDecomposition::injectInstances(cmn::node& r)
       ).filterSoleChild<cmn::scopeNode>([](auto& n)
          { return n.scopeName == "core"; }
          ).filterSoleChild<cmn::fileNode>([](auto& n)
-            { return cmn::pathUtil::getLastPart(n.fullPath) == "array.ara"; });
+            { return cmn::pathUtil::getLastPart(n.fullPath) == "array.ara.sa"; });
 
    // remove instances already there
    auto inodes = f.getChildrenOf<cmn::instantiateNode>();

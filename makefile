@@ -152,6 +152,7 @@ SYZYGY_SRC = \
 	src/araceli/symbolTable.cpp \
 	src/syzygy/codegen.cpp \
 	src/syzygy/frontend.cpp \
+	src/syzygy/genericUnlinker.cpp \
 
 SYZYGY_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SYZYGY_SRC)))
 
@@ -178,6 +179,7 @@ $(SYZYGY_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 
 SALOME_SRC = \
 	src/salome/main.cpp \
+	src/salome/symbolTable.cpp \
 
 SALOME_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SALOME_SRC)))
 

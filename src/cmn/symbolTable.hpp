@@ -122,6 +122,7 @@ public:
    void linkGraph(node& root);
 
 protected:
+   virtual bool tryFixUnresolved(node& root, symbolTable& sTable) { return false; }
    virtual bool loadAnotherSymbol(node& root, symbolTable& sTable) { return false; }
 };
 

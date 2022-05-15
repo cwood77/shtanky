@@ -1,17 +1,15 @@
 #include "../araceli/iTarget.hpp"
 #include "../araceli/loader.hpp"
-#include "../araceli/symbolTable.hpp"
 #include "../cmn/cmdline.hpp"
 #include "../cmn/global.hpp"
 #include "../cmn/main.hpp"
 #include "../cmn/out.hpp"
 #include "../cmn/trace.hpp"
 #include "../syzygy/codegen.hpp"
-#include "../syzygy/frontend.hpp"
-//#include "frontend.hpp"
-//#include "symbolTable.hpp"
+#include "frontend.hpp"
+#include "symbolTable.hpp"
 
-//using namespace philemon;
+using namespace salome;
 
 int _main(int argc, const char *argv[])
 {
@@ -26,7 +24,7 @@ int _main(int argc, const char *argv[])
    // setup project, target, AST; load & link
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
    std::unique_ptr<araceli::iTarget> pTgt;
-   syzygy::frontend(projectDir,pPrj,pTgt).run();
+   frontend(projectDir,pPrj,pTgt).run();
 
    // load any additional files indicated on the command line
    cl.addNextArgDefaultsIfNoneLeft(3,
@@ -45,7 +43,7 @@ int _main(int argc, const char *argv[])
    }
 
    // subsequent link to load more
-   araceli::nodeLinker().linkGraph(*pPrj);
+   nodeLinker().linkGraph(*pPrj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 

@@ -371,6 +371,17 @@ void nodeLinker::linkGraph(node& root)
       if(!nMissing)
          break;
 
+      if(tryFixUnresolved(root,sTable))
+      {
+         cdwVERBOSE("sub-linked made changes to table; new results:\n");
+         cdwVERBOSE("%lld published; %lld unresolved\n",
+            sTable.published.size(),
+            sTable.unresolved.size());
+         nMissing = sTable.unresolved.size();
+         if(!nMissing)
+            break;
+      }
+
       if(!loadAnotherSymbol(root,sTable))
       {
          cdwVERBOSE("no guesses on what to load to find missing symbols; try settling\n");
