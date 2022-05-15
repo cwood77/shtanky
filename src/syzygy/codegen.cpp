@@ -288,7 +288,12 @@ cmn::outStream& codegen::getOutStream()
 {
    if(m_pCurrStream == NULL)
    {
-      auto outPath = cmn::pathUtil::addExt(m_pCurrFile->fullPath,m_infix);
+      std::string outPath;
+      if(m_addExt)
+         outPath = cmn::pathUtil::addExt(m_pCurrFile->fullPath,m_infix);
+      else
+         outPath = cmn::pathUtil::replaceOrAddExt(m_pCurrFile->fullPath,
+            cmn::pathUtil::getExt(m_pCurrFile->fullPath),m_infix);
       cdwDEBUG("infixed path w/ '%s' yields [%s] -> [%s]\n",
          m_infix.c_str(),
          m_pCurrFile->fullPath.c_str(),

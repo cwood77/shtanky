@@ -34,15 +34,15 @@
 
 using namespace araceli;
 
-void invokeSubProcess(const char *shortName, const char *ext, const std::string& projectDir)
+void invokeSubProcess(const char *shortName, const char *ext, const char *addendumFileExt, const std::string& projectDir)
 {
    std::stringstream childStream;
    childStream << "bin\\out\\debug\\" << shortName << ".exe ";
    childStream << projectDir;
    childStream << " " << ext;
-   childStream << " .\\testdata\\sht\\core\\object.ara";
-   childStream << " .\\testdata\\sht\\core\\string.ara";
-   childStream << " .\\testdata\\sht\\core\\array.ara";
+   childStream << " .\\testdata\\sht\\core\\object." << addendumFileExt;
+   childStream << " .\\testdata\\sht\\core\\string." << addendumFileExt;
+   childStream << " .\\testdata\\sht\\core\\array." << addendumFileExt;
    cdwVERBOSE("calling: %s\n",childStream.str().c_str());
    ::_flushall();
    int rval = ::system(childStream.str().c_str());
@@ -63,8 +63,11 @@ int _main(int argc, const char *argv[])
    std::string projectDir = cmn::pathUtil::toWindows(cl.getNextArg(".\\testdata\\test"));
    std::string batchBuild = projectDir + "\\.build.bat";
 
+   // invoke salome
+   invokeSubProcess("salome","ara","ara",projectDir);
+
    // invoke philemon
-   invokeSubProcess("philemon","ara",projectDir);
+   invokeSubProcess("philemon","sa","ara.sa",projectDir);
 
    // I convert ph -> ara.lh/ls
    loaderPrefs lPrefs = { "ph", "" };

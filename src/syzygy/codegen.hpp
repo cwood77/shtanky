@@ -10,7 +10,8 @@ namespace syzygy {
 
 class codegen : public cmn::hNodeVisitor {
 public:
-   codegen(cmn::outBundle& b, const std::string& infix) : m_b(b), m_infix(infix) {}
+   codegen(cmn::outBundle& b, const std::string& infix, bool addOrReplaceExt)
+   : m_b(b), m_infix(infix), m_addExt(addOrReplaceExt) {}
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
    virtual void visit(cmn::liamProjectNode& n) { unexpected(n); }
@@ -57,6 +58,7 @@ private:
 
    cmn::outBundle& m_b;
    const std::string m_infix;
+   const bool m_addExt;
 
    cmn::fileNode *m_pCurrFile;
    cmn::outStream *m_pCurrStream;
