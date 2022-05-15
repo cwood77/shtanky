@@ -1,6 +1,6 @@
 interface lameBase {
-   abstract indexOpGet(i : ptr) : ptr;
-   abstract indexOpSet(i : ptr, val : ptr) : void;
+   indexOpGet(i : ptr) : ptr;
+   indexOpSet(i : ptr, val : ptr) : void;
 }
 
 class string : lameBase {

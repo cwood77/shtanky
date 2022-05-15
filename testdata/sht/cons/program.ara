@@ -1,6 +1,6 @@
 interface iStream {
 
-   abstract printLn(msg : str) : void;
+   printLn(msg : str) : void;
 
 }
 

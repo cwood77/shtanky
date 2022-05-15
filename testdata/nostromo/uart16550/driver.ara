@@ -1,6 +1,6 @@
 interface fakeBase {
 
-   abstract write8(byte : ptr) : void;
+   write8(byte : ptr) : void;
 
 }
 

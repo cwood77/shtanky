@@ -20,7 +20,7 @@ void intfTransform::visit(cmn::classNode& n)
    for(auto it=methods.begin();it!=methods.end();++it)
    {
       if((*it)->flags)
-         ;//cmn::gUserErrors->add(**it,cmn::kErrorInterfacesInherentlyPublicAbstract);
+         cmn::gUserErrors->add(**it,cmn::kErrorInterfacesInherentlyPublicAbstract);
 
       // set defaults
       (*it)->flags |= (cmn::nodeFlags::kPublic | cmn::nodeFlags::kAbstract);
