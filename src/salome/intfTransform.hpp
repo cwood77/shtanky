@@ -1,7 +1,7 @@
 #pragma once
 #include "../cmn/ast.hpp"
 
-namespace araceli {
+namespace salome {
 
 // implement implied flags on interfaces
 // and sanity check them
@@ -13,4 +13,4 @@ public:
    virtual void _implementLanguage() {} // all
 };
 
-} // namespace araceli
+} // namespace salome

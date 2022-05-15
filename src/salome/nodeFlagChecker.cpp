@@ -1,7 +1,7 @@
 #include "../cmn/userError.hpp"
 #include "nodeFlagChecker.hpp"
 
-namespace araceli {
+namespace salome {
 
 void nodeFlagChecker::visit(cmn::node& n)
 {
@@ -93,4 +93,4 @@ void nodeFlagChecker::visit(cmn::fieldNode& n)
    visitChildren(n);
 }
 
-} // namespace araceli
+} // namespace salome

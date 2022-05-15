@@ -1,7 +1,7 @@
 #include "../cmn/userError.hpp"
 #include "intfTransform.hpp"
 
-namespace araceli {
+namespace salome {
 
 void intfTransform::visit(cmn::classNode& n)
 {
@@ -25,4 +25,4 @@ void intfTransform::visit(cmn::classNode& n)
    }
 }
 
-} // namespace araceli
+} // namespace salome

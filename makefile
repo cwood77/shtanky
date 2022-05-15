@@ -178,7 +178,9 @@ $(SYZYGY_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # salome
 
 SALOME_SRC = \
+	src/salome/intfTransform.cpp \
 	src/salome/main.cpp \
+	src/salome/nodeFlagChecker.cpp \
 	src/salome/symbolTable.cpp \
 
 SALOME_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SALOME_SRC)))
@@ -243,11 +245,9 @@ ARACELI_SRC = \
 	src/araceli/constHoister.cpp \
 	src/araceli/ctorDtorGenerator.cpp \
 	src/araceli/inheritImplementor.cpp \
-	src/araceli/intfTransform.cpp \
 	src/araceli/main.cpp \
 	src/araceli/matryoshkaDecomp.cpp \
 	src/araceli/methodMover.cpp \
-	src/araceli/nodeFlagChecker.cpp \
 	src/araceli/opOverloadDecomp.cpp \
 	src/araceli/selfDecomposition.cpp \
 	src/araceli/stackClassDecomposition.cpp \

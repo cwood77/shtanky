@@ -18,12 +18,10 @@
 #include "constHoister.hpp"
 #include "ctorDtorGenerator.hpp"
 #include "inheritImplementor.hpp"
-#include "intfTransform.hpp"
 #include "loader.hpp"
 #include "matryoshkaDecomp.hpp"
 #include "metadata.hpp"
 #include "methodMover.hpp"
-#include "nodeFlagChecker.hpp"
 #include "objectBaser.hpp"
 #include "opOverloadDecomp.hpp"
 #include "selfDecomposition.hpp"
@@ -94,10 +92,6 @@ int _main(int argc, const char *argv[])
    cmn::globalPublishTo<cmn::userErrors> _ueReg(ue,cmn::gUserErrors);
 
    // interface has only public abstract methods
-   { intfTransform v; pPrj->acceptVisitor(v); }
-
-   { nodeFlagChecker v; pPrj->acceptVisitor(v); }
-
    // some possible checks:
    // abstract classes can't be instantiated
    // protected members cannot be accessed inappropriately

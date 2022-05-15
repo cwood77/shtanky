@@ -1,7 +1,7 @@
 #pragma once
 #include "../cmn/ast.hpp"
 
-namespace araceli {
+namespace salome {
 
 // issue a bunch of checks, and set default access specifiers on some things
 class nodeFlagChecker : public cmn::hNodeVisitor {
@@ -15,4 +15,4 @@ public:
    virtual void _implementLanguage() {} // all
 };
 
-} // namespace araceli
+} // namespace salome

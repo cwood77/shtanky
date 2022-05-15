@@ -7,6 +7,7 @@ namespace salome {
 
 bool nodeLinker::tryFixUnresolved(cmn::node& root, cmn::symbolTable& sTable)
 {
+   // first, call my parent
    bool madeProgress = araceli::nodeLinker::tryFixUnresolved(root,sTable);
    if(madeProgress)
       return madeProgress;
