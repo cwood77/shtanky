@@ -591,13 +591,32 @@ void commonParser::parseAttributes()
 {
    while(m_l.getToken() == commonLexor::kLBracket)
    {
-      m_l.advance();
+      std::string attr;
+      while(true)
+      {
+         m_l.advance();
 
-      m_l.demand(cdwLoc,commonLexor::kName);
-      m_nFac.deferAttribute(m_l.getLexeme());
-      m_l.advance();
+         m_l.demand(cdwLoc,commonLexor::kName);
+         attr += m_l.getLexeme();
+         m_l.advance();
 
-      m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
+         if(m_l.getToken() == commonLexor::kColon)
+         {
+            attr += ":";
+            continue;
+         }
+         else if(m_l.getToken() == commonLexor::kEquals)
+         {
+            attr += "=";
+            continue;
+         }
+
+         m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
+
+         m_nFac.deferAttribute(attr);
+         attr = "";
+         break;
+      }
    }
 }
 

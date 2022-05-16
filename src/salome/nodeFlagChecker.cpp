@@ -88,6 +88,8 @@ void nodeFlagChecker::visit(cmn::fieldNode& n)
 
    // set the default access scope if unspecified
    if(!(n.flags & cmn::nodeFlags::kAccessSpecifierMask))
+      // TODO dirty, dirty hack
+      //n.flags |= cmn::nodeFlags::kPublic;
       n.flags |= cmn::nodeFlags::kPrivate;
 
    visitChildren(n);

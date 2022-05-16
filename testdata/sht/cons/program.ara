@@ -15,6 +15,7 @@ class stdout : iStream {
 
 abstract program {
 
+   [allow:consoleTarget]
    _out : iStream;
 
    public abstract run(args : str[]) : void;

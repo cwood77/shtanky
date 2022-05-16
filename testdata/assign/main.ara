@@ -36,11 +36,11 @@ class assignTester : .sht.cons.program {
 }
 
 class A {
-   _x : void;
-   _b : B;
+   [allow:assignTester] _x : void;
+   [allow:assignTester] _b : B;
 }
 
 class B {
-   _unused : void;
-   _x : void;
+   [allow:assignTester] _unused : void;
+   [allow:assignTester] _x : void;
 }

@@ -100,7 +100,7 @@ void codegen::visit(cmn::fieldNode& n)
 {
    auto& s = getOutStream();
 
-   s.stream() << cmn::indent(s);
+   s.stream() << cmn::indent(s) << writeAttributes(n,s);
    visitNameTypePair(n,n.name);
    s.stream() << ";" << std::endl;
 }

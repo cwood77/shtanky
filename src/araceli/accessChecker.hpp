@@ -36,7 +36,7 @@ public:
    virtual void _implementLanguage() {} // all
 
 private:
-   void enforce(cmn::node& site,
+   void enforce(cmn::node& site, std::set<std::string>& attributes,
       cmn::classNode& refee, cmn::classNode& refer, size_t kind);
    bool isAnAncestor(cmn::classNode& refee, cmn::classNode& refer);
 
