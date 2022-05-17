@@ -9,13 +9,12 @@ namespace araceli {
 
 void memberAccessChecker::visit(cmn::invokeNode& n)
 {
-   auto instTypeName = cmn::type::gNodeCache->demand(*n.getChildren()[0]).getName();
-   auto& cInfo = cmn::demand(m_cc.classes,instTypeName,"class not found");
-   auto idx = cmn::demand(cInfo.nameLookup,n.proto.ref,"class does not have this method");
-   auto& method = *cInfo.inheritedAndDirectMethods[idx].pMethod;
-   size_t access = method.flags & cmn::nodeFlags::kAccessSpecifierMask;
-
-   enforce(n,method.attributes,*cInfo.pNode,n.getAncestor<cmn::classNode>(),access);
+   enforce(
+      n,
+      n.proto.getRefee()->attributes,
+      n.proto.getRefee()->getAncestor<cmn::classNode>(),
+      n.getAncestor<cmn::classNode>(),
+      n.proto.getRefee()->flags & cmn::nodeFlags::kAccessSpecifierMask);
 
    hNodeVisitor::visit(n);
 }

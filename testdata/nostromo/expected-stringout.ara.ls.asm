@@ -4,19 +4,28 @@
 
 .seg code                 
 .nostromo.debugOut.write: 
-                          push, rbx         
-                          push, rdi         
-                          sub, rsp, 32      
-                          mov, rbx, [rcx+8] ; fieldaccess: owner of _vtbl
-                          mov, rdi, [rbx]   ; fieldaccess: owner of write8
-                          mov, rdx, 0       ; shape:hoist imm from call
-                          mov, rbx, rcx     ; (preserve) [combiner]
-                          mov, rcx, [rbx+8] ; shape:hoist addrOf from call
-                          call, [rdi]       ; (call ptr)
-                          add, rsp, 32      
-                          pop, rdi          
-                          pop, rbx          
-                          ret               
+                          push, rbx                         
+                          push, rsi                         
+                          push, rdi                         
+                          sub, rsp, 32                      
+                          mov, rbx, [rcx+8]                 ; fieldaccess: owner of _vtbl
+                          mov, rsi, [rbx]                   ; fieldaccess: owner of write8
+                          sub, rsp, 32                      
+                          mov, rbx, rdx                     ; (preserve) [combiner]
+                          mov, rdx, 0                       ; shape:hoist imm from call
+                          mov, rdi, rbx                     ; (preserve) [combiner]
+                          mov, rbx, rcx                     ; (preserve) [combiner]
+                          mov, rcx, rdi                     ;       (msg req for rcx) [splitter]
+                          call, .sht.core.string.indexOpGet ; (call label)
+                          add, rsp, 32                      
+                          mov, rcx, [rbx+8]                 ; shape:hoist addrOf from call
+                          mov, rdx, rax                     ;       (rval0 req for rdx) [splitter]
+                          call, [rsi]                       ; (call ptr)
+                          add, rsp, 32                      
+                          pop, rdi                          
+                          pop, rsi                          
+                          pop, rbx                          
+                          ret                               
 
 .seg code                 
 .nostromo.debugOut.cctor: 

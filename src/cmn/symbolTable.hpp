@@ -16,7 +16,7 @@ namespace cmn {
 // -   varRefNode -> type     via:: ?? fields and globals  for:: ara codegen       *
 //
 // type prop
-// -   invokeNode -> method   via:: ?? type prop + name                     NO, and unimpled
+// -   invokeNode -> method   via:: ?? type prop + name                            *
 //
 // anything else?
 // fieldAccessNode
@@ -28,6 +28,7 @@ class symbolTable {
 public:
    std::map<std::string,node*> published;
    std::set<linkBase*> unresolved;
+   std::set<linkBase*> linksThatNeedTypeProp;
 
    void markRequired(linkBase& l);
    void publish(const std::string& fqn, node& n);
@@ -107,9 +108,21 @@ public:
    virtual void visit(classNode& n);
    virtual void visit(methodNode& n);
    virtual void visit(userTypeNode& n);
-   //virtual void visit(invokeNode& n);
+   virtual void visit(invokeNode& n);
    virtual void visit(callNode& n);
    virtual void visit(varRefNode& n);
+
+   virtual void _implementLanguage() {} // all
+
+private:
+   symbolTable& m_sTable;
+};
+
+class typeAwareNodeResolver : public hNodeVisitor {
+public:
+   explicit typeAwareNodeResolver(symbolTable& st) : m_sTable(st) {}
+
+   virtual void visit(invokeNode& n);
 
    virtual void _implementLanguage() {} // all
 
@@ -122,8 +135,12 @@ public:
    void linkGraph(node& root);
 
 protected:
+   virtual bool typePropLink(node& root, symbolTable& sTable);
    virtual bool tryFixUnresolved(node& root, symbolTable& sTable) { return false; }
    virtual bool loadAnotherSymbol(node& root, symbolTable& sTable) { return false; }
+
+private:
+   void simpleLink(node& root, symbolTable& sTable);
 };
 
 } // namespace cmn

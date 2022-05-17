@@ -5,25 +5,28 @@
 20 <globalConstData> @/0      ;;; .nostromo.gDbgOut
 
 ----- start stream .nostromo.debugOut.write
-10  <selectSegment> @code/0                            
-20  <enterFunc>     ~rval/0, $self/0, $msg/0           ;;; .nostromo.debugOut.write
-30  <precall>       @totalStackSize/32                 
-40  mov             ~_vtbl/0, [~self+8]/0              ;;; fieldaccess: owner of _vtbl
-50  mov             ~write8/0, [~_vtbl]/0              ;;; fieldaccess: owner of write8
-60  mov             ~t/1, @0/1                         ;;; shape:hoist imm from call
-70  mov             ~t0/0, [~self+8]/0                 ;;; shape:hoist addrOf from call
-80  call            ~rval0/0, [~write8]/0, ~t0/0, ~t/1 ;;; (call ptr)
-90  <postcall>      @totalStackSize/32                 
-100 <exitFunc>      
+10  <selectSegment> @code/0                                                
+20  <enterFunc>     ~rval/0, $self/0, $msg/0                               ;;; .nostromo.debugOut.write
+30  <precall>       @totalStackSize/32                                     
+40  mov             ~_vtbl/0, [~self+8]/0                                  ;;; fieldaccess: owner of _vtbl
+50  mov             ~write8/0, [~_vtbl]/0                                  ;;; fieldaccess: owner of write8
+60  <precall>       @totalStackSize/32                                     
+70  mov             ~t/1, @0/1                                             ;;; shape:hoist imm from call
+80  call            ~rval0/0, !.sht.core.string.indexOpGet/0, $msg/0, ~t/1 ;;; (call label)
+90  <postcall>      @totalStackSize/32                                     
+100 mov             ~t0/0, [~self+8]/0                                     ;;; shape:hoist addrOf from call
+110 call            ~rval1/0, [~write8]/0, ~t0/0, ~rval0/0                 ;;; (call ptr)
+120 <postcall>      @totalStackSize/32                                     
+130 <exitFunc>      
 
 ----- start stream .nostromo.debugOut.cctor
 10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval1/0, $self0/0 ;;; .nostromo.debugOut.cctor
+20 <enterFunc>     ~rval2/0, $self0/0 ;;; .nostromo.debugOut.cctor
 30 <exitFunc>      
 
 ----- start stream .nostromo.debugOut.cdtor
 10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval2/0, $self1/0 ;;; .nostromo.debugOut.cdtor
+20 <enterFunc>     ~rval3/0, $self1/0 ;;; .nostromo.debugOut.cdtor
 30 <exitFunc>      
 
 ----- start stream .nostromo.debugOut_vtbl_inst
@@ -32,25 +35,25 @@
 
 ----- start stream .nostromo.debugOut_sctor
 10  <selectSegment> @code/0                                        
-20  <enterFunc>     ~rval3/0, $self2/0                             ;;; .nostromo.debugOut_sctor
+20  <enterFunc>     ~rval4/0, $self2/0                             ;;; .nostromo.debugOut_sctor
 30  <precall>       @totalStackSize/32                             
-40  call            ~rval4/0, !.sht.core.object_sctor/0, $self/0   ;;; (call label)
+40  call            ~rval5/0, !.sht.core.object_sctor/0, $self/0   ;;; (call label)
 50  <postcall>      @totalStackSize/32                             
 60  mov             [~self]/0, !.nostromo.debugOut_vtbl_inst/0     ;;; =
 70  <precall>       @totalStackSize/32                             
-80  call            ~rval5/0, !.nostromo.debugOut.cctor/0, $self/0 ;;; (call label)
+80  call            ~rval6/0, !.nostromo.debugOut.cctor/0, $self/0 ;;; (call label)
 90  <postcall>      @totalStackSize/32                             
 100 <exitFunc>      
 
 ----- start stream .nostromo.debugOut_sdtor
 10  <selectSegment> @code/0                                        
-20  <enterFunc>     ~rval6/0, $self3/0                             ;;; .nostromo.debugOut_sdtor
+20  <enterFunc>     ~rval7/0, $self3/0                             ;;; .nostromo.debugOut_sdtor
 30  mov             [~self]/0, !.nostromo.debugOut_vtbl_inst/0     ;;; =
 40  <precall>       @totalStackSize/32                             
-50  call            ~rval7/0, !.nostromo.debugOut.cdtor/0, $self/0 ;;; (call label)
+50  call            ~rval8/0, !.nostromo.debugOut.cdtor/0, $self/0 ;;; (call label)
 60  <postcall>      @totalStackSize/32                             
 70  <precall>       @totalStackSize/32                             
-80  call            ~rval8/0, !.sht.core.object_sdtor/0, $self/0   ;;; (call label)
+80  call            ~rval9/0, !.sht.core.object_sdtor/0, $self/0   ;;; (call label)
 90  <postcall>      @totalStackSize/32                             
 100 <exitFunc>      
 

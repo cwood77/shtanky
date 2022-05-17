@@ -266,6 +266,14 @@ public:
    virtual const std::string& getNameForVarRefee() const = 0;
 };
 
+// anything callable via an invoke (i.e. methods, functions)
+class iInvokeTargetNode {
+public:
+   virtual bool isDynDispatch() const = 0;
+   virtual const std::string& getShortName() const = 0;
+   virtual cmn::node& getNode() = 0;
+};
+
 // ----------------------- project -----------------------
 
 class araceliProjectNode : public node {
@@ -334,11 +342,14 @@ public:
    virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
-class methodNode : public memberNode {
+class methodNode : public memberNode, public iInvokeTargetNode {
 public:
    link<methodNode> baseImpl;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+   virtual bool isDynDispatch() const { return flags & nodeFlags::kDynDispatchMask; }
+   virtual const std::string& getShortName() const { return baseImpl.ref; }
+   virtual cmn::node& getNode() { return *this; }
 };
 
 class fieldNode : public memberNode {
@@ -354,12 +365,15 @@ public:
    virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
-class funcNode : public node, public iVarSourceNode {
+class funcNode : public node, public iVarSourceNode, public iInvokeTargetNode {
 public:
    std::string name;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
    virtual const std::string& getNameForVarRefee() const { return name; }
+   virtual bool isDynDispatch() const { return false; }
+   virtual const std::string& getShortName() const { return name; }
+   virtual cmn::node& getNode() { return *this; }
 };
 
 class intrinsicNode : public funcNode {
@@ -428,9 +442,7 @@ public:
 
 class invokeNode : public node {
 public:
-   link<methodNode> proto; // the _ONLY_ unimpled link
-                           // TODO I need this for araceli compile--to tell dynamic vs.
-                           // static dispatch!
+   link<methodNode> proto;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
@@ -449,7 +461,7 @@ public:
 
 class callNode : public node {
 public:
-   link<funcNode> pTarget;
+   link<iInvokeTargetNode> pTarget;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };

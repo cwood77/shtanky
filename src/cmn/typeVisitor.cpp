@@ -195,7 +195,7 @@ void typePropagator::visit(callNode& n)
 {
    hNodeVisitor::visit(n);
 
-   auto fqn = fullyQualifiedName::build(*n.pTarget.getRefee(),n.pTarget.ref);
+   auto fqn = fullyQualifiedName::build(n.pTarget.getRefee()->getNode(),n.pTarget.ref);
    auto& rVal = type::gTable->fetch(fqn).as<type::iFunctionType>().getReturnType();
    type::gNodeCache->publish(n,rVal);
 }

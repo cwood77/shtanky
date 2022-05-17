@@ -1,6 +1,9 @@
 #include "nameUtil.hpp"
+#include "stlutil.hpp"
 #include "symbolTable.hpp"
 #include "trace.hpp"
+#include "type.hpp"
+#include "typeVisitor.hpp"
 
 namespace cmn {
 
@@ -253,9 +256,7 @@ void nodePublisher::visit(classNode& n)
 
 void nodePublisher::visit(memberNode& n)
 {
-   bool isField = (dynamic_cast<fieldNode*>(&n)!=NULL);
-   if(isField || (n.flags & (nodeFlags::kOverride | nodeFlags::kAbstract)))
-      m_sTable.publish(fullyQualifiedName::build(n,n.name),n);
+   m_sTable.publish(fullyQualifiedName::build(n,n.name),n);
 
    hNodeVisitor::visit(n);
 }
@@ -320,18 +321,12 @@ void nodeResolver::visit(userTypeNode& n)
    hNodeVisitor::visit(n);
 }
 
-// invoke node linking is a lot more involved.... it depends on the type found in the
-// instance
-#if 0
 void nodeResolver::visit(invokeNode& n)
 {
-   linkResolver v(m_sTable,n.proto,
-      linkResolver::kContainingScopes | linkResolver::kOwnClass);
-   n.acceptVisitor(v);
-
+   m_sTable.markRequired(n.proto);
+   m_sTable.linksThatNeedTypeProp.insert(&n.proto);
    hNodeVisitor::visit(n);
 }
-#endif
 
 void nodeResolver::visit(varRefNode& n)
 {
@@ -353,6 +348,36 @@ void nodeResolver::visit(varRefNode& n)
    hNodeVisitor::visit(n);
 }
 
+void typeAwareNodeResolver::visit(invokeNode& n)
+{
+   if(!n.proto._getRefee())
+   {
+      auto& instTy = type::gNodeCache->demand(*n.getChildren()[0]);
+      auto& targetClass = dynamic_cast<cmn::classNode&>(
+         *cmn::demand(m_sTable.published,instTy.getName()));
+
+      linkResolver v(m_sTable,n.proto,
+         linkResolver::kBaseClasses | linkResolver::kOwnClass);
+      targetClass.acceptVisitor(v);
+
+      if(n.proto._getRefee())
+      {
+         cdwDEBUG("holy crap!  invoke actually linked! %s: ->%s = %s\r\n",
+            n.getAncestor<cmn::methodNode>().name.c_str(),
+            n.proto.ref.c_str(),
+            typeid(*n.proto._getRefee()).name());
+      }
+      else
+      {
+         cdwDEBUG("invoke STILL NOT LINKED; even after typeprop! %s: -> %s\n",
+            n.getAncestor<cmn::methodNode>().name.c_str(),
+            n.proto.ref.c_str());
+      }
+   }
+
+   hNodeVisitor::visit(n);
+}
+
 void nodeLinker::linkGraph(node& root)
 {
    cdwVERBOSE("entering link/load loop ----\n");
@@ -361,12 +386,7 @@ void nodeLinker::linkGraph(node& root)
    {
       symbolTable sTable;
 
-      { nodePublisher p(sTable); treeVisitor t(p); root.acceptVisitor(t); }
-      { nodeResolver r(sTable); treeVisitor t(r); root.acceptVisitor(t); }
-      cdwVERBOSE("%lld published; %lld unresolved\n",
-         sTable.published.size(),
-         sTable.unresolved.size());
-
+      simpleLink(root,sTable);
       size_t nMissing = sTable.unresolved.size();
       if(!nMissing)
          break;
@@ -384,6 +404,17 @@ void nodeLinker::linkGraph(node& root)
 
       if(!loadAnotherSymbol(root,sTable))
       {
+         if(typePropLink(root,sTable))
+         {
+            cdwVERBOSE("typeprop link made changes to table; new results:\n");
+            cdwVERBOSE("%lld published; %lld unresolved\n",
+               sTable.published.size(),
+               sTable.unresolved.size());
+            nMissing = sTable.unresolved.size();
+            if(!nMissing)
+               break;
+         }
+
          cdwVERBOSE("no guesses on what to load to find missing symbols; try settling\n");
          if(nMissing != missingLastTime)
             missingLastTime = nMissing; // retry
@@ -394,6 +425,41 @@ void nodeLinker::linkGraph(node& root)
          }
       }
    }
+}
+
+bool nodeLinker::typePropLink(node& root, symbolTable& sTable)
+{
+   std::set<linkBase*> toTry;
+
+   for(auto *l : sTable.unresolved)
+      if(cmn::has(sTable.linksThatNeedTypeProp,l))
+         toTry.insert(l);
+
+   if(toTry.size() == 0)
+      return false;
+
+   // let's attempt a type prop
+   cdwVERBOSE("detected %lld type-sensitive links, attempting type-aware link\n",
+      toTry.size());
+   type::table                      _t;
+   globalPublishTo<type::table>     _tReg(_t,type::gTable);
+   type::nodeCache                  _c;
+   globalPublishTo<type::nodeCache> _cReg(_c,type::gNodeCache);
+   propagateTypes(root);
+
+   size_t before = sTable.unresolved.size();
+   { typeAwareNodeResolver r(sTable); treeVisitor t(r); root.acceptVisitor(t); }
+
+   return sTable.unresolved.size() != before;
+}
+
+void nodeLinker::simpleLink(node& root, symbolTable& sTable)
+{
+   { nodePublisher p(sTable); treeVisitor t(p); root.acceptVisitor(t); }
+   { nodeResolver r(sTable); treeVisitor t(r); root.acceptVisitor(t); }
+   cdwVERBOSE("%lld published; %lld unresolved\n",
+      sTable.published.size(),
+      sTable.unresolved.size());
 }
 
 } // namespace cmn

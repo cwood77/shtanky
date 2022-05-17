@@ -1,11 +1,11 @@
 generic<T>
-class array : lameBase {
+class array {
 
-   override indexOpGet(i : ptr) : T
+   public indexOpGet(i : ptr) : T
    {
    }
 
-   override indexOpSet(i : ptr, val : T) : void
+   public indexOpSet(i : ptr, val : T) : void
    {
    }
 

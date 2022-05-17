@@ -135,6 +135,7 @@ int _main(int argc, const char *argv[])
       { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
       // ---------------- syntax checking ----------------
+      nodeLinker().linkGraph(*pPrj); // make sure all invokes are linked
       { memberAccessChecker v(cc); pPrj->acceptVisitor(v); }
       ue.throwIfAny();
    }
@@ -147,17 +148,17 @@ int _main(int argc, const char *argv[])
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
    // --- compile-away classes ---
-   { ctorDtorGenerator v; pPrj->acceptVisitor(v); }  // write cctor/cdtor
-   { abstractGenerator::generate(cc); }              // implement pure virtual functions
-   { selfDecomposition v; pPrj->acceptVisitor(v); }  // add self param, scope self fields,
-                                                     //   invoke decomp
+   { ctorDtorGenerator v; pPrj->acceptVisitor(v); } // write cctor/cdtor
+   { abstractGenerator::generate(cc); }             // implement pure virtual functions
+   { selfDecomposition v; pPrj->acceptVisitor(v); } // add self param, scope self fields,
+                                                    //   invoke decomp
    // basecall decomp
-   { methodMover v(cc); pPrj->acceptVisitor(v); }    // make methods functions
-   { vtableGenerator().generate(cc); }               // add vtable class and global instance
-   { inheritImplementor().generate(cc); }            // inject fields into derived classes
-   { matryoshkaDecomposition(cc).run(); }            // write sctor/sdtor
-   { stackClassDecomposition v;                      // inject sctor/sdtor calls for stack
-     pPrj->acceptVisitor(v); v.inject(); }           //   allocated classes
+   { methodMover v(cc); pPrj->acceptVisitor(v); }   // make methods functions
+   { vtableGenerator().generate(cc); }              // add vtable class and global instance
+   { inheritImplementor().generate(cc); }           // inject fields into derived classes
+   { matryoshkaDecomposition(cc).run(); }           // write sctor/sdtor
+   { stackClassDecomposition v;                     // inject sctor/sdtor calls for stack
+     pPrj->acceptVisitor(v); v.inject(); }          //   allocated classes
    cdwVERBOSE("graph after declassing transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
