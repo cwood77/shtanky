@@ -47,6 +47,7 @@ enum instrIds {
    kAdd,
 
    kMov,
+   kLea,
 
    kPreCallStackAlloc,
    kCall,

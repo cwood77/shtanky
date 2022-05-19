@@ -41,8 +41,7 @@ static const instrFmt movFmts[] = {
       kArgTypeNone, kArgTypeNone, "wr", false },
    { "MOV{REX.W + 8B /r}",
       kR64,
-      kR64 | kM64, // TODO anybody who takes a memory could theoretically emit a displacment
-                   //      and a patch!
+      kR64 | kM64,
       kArgTypeNone, kArgTypeNone, "wr", false },
    { "MOV{REX.W + B8+ rd io}",
       kR64,
@@ -51,6 +50,14 @@ static const instrFmt movFmts[] = {
    { "MOV{REX.W + C7 /0 id}",
       kR64 | kM64,
       kI32,
+      kArgTypeNone, kArgTypeNone, "wr", false },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
+static const instrFmt leaFmts[] = {
+   { "LEA{REX.W + 8D /r}",
+      kR64,
+      kM64,
       kArgTypeNone, kArgTypeNone, "wr", false },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
@@ -88,6 +95,7 @@ static const instrInfo kInstrs[] = {
    { "add",               "br", false, (const instrFmt*)&addFmts },
 
    { "mov",               "wr", false, (const instrFmt*)&movFmts },
+   { "lea",               "wr", false, (const instrFmt*)&leaFmts },
 
    { "<precall>",         NULL, false, NULL     },
    { "call",              "x",  true,  (const instrFmt*)&callFmts },

@@ -9,13 +9,13 @@ rex(48)op(89)modR/M(e5)
 rex(48)op(83)modR/M(ec)i8(20)
 // 10:    mov, rcx, 1
 rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
-// 11:    mov, rdx, 0
-rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
+// 11:    lea, rdx, qwordptr helloWorld
+rex(48)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
 // 12:    call, ._osCall
 op(e8)co32(00-00-00-00)
-// 14:    mov, rsp, rbp
+// 15:    mov, rsp, rbp
 rex(48)op(89)modR/M(ec)
-// 15:    pop, rbp
+// 16:    pop, rbp
 rex(48)op(8f)modR/M(c5)
-// 16:    ret
+// 17:    ret
 op(c3)

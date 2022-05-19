@@ -8,9 +8,10 @@ helloWorld: .data, "hello world" <b> 0
    sub, rsp, 32
 
    mov, rcx, 1
-   mov, rdx, 0
+   lea, rdx, qwordptr helloWorld
    call, ._osCall
 
+;   add, rsp, 32 ; add is not sufficient
    mov, rsp, rbp
    pop, rbp
    ret

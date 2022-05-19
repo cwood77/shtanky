@@ -4,10 +4,10 @@ received osCall!
 loading '.\testdata\shtemu\basic.app'
 patching osCall
   offset is 24
-  entrypoint is offset 32
+  entrypoint is offset 44
 running
 received osCall!
    i = 1
-   misc = NULL
+   misc = hello world
 returned
 done
