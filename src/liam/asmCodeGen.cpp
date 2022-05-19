@@ -109,6 +109,8 @@ void asmCodeGen::handleInstr(lirInstr& i)
          {
             m_w[0] << i.comment << ":";
             m_w.advanceLine();
+            m_w[1] << "push, " << m_t.getProc().getRegName(cmn::tgt::kStorageStackFramePtr);
+            m_w.advanceLine();
             auto& regs = m_f.getUsedRegs();
             for(auto it=regs.begin();it!=regs.end();++it)
             {
@@ -118,6 +120,10 @@ void asmCodeGen::handleInstr(lirInstr& i)
                   m_w.advanceLine();
                }
             }
+            m_w[1] << "mov, "
+               << m_t.getProc().getRegName(cmn::tgt::kStorageStackFramePtr) << ", "
+               << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr);
+            m_w.advanceLine();
             size_t locals = m_f.getUsedStackSpace();
             if(locals)
             {
@@ -131,15 +137,10 @@ void asmCodeGen::handleInstr(lirInstr& i)
          break;
       case cmn::tgt::kExitFunc:
          {
-            size_t locals = m_f.getUsedStackSpace();
-            if(locals)
-            {
-               m_w[1]
-                  << "add, "
-                  << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
-                  << locals;
-               m_w.advanceLine();
-            }
+            m_w[1] << "mov, "
+               << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
+               << m_t.getProc().getRegName(cmn::tgt::kStorageStackFramePtr);
+            m_w.advanceLine();
             auto& regs = m_f.getUsedRegs();
             for(auto it=regs.rbegin();it!=regs.rend();++it)
             {
@@ -149,6 +150,8 @@ void asmCodeGen::handleInstr(lirInstr& i)
                   m_w.advanceLine();
                }
             }
+            m_w[1] << "pop, " << m_t.getProc().getRegName(cmn::tgt::kStorageStackFramePtr);
+            m_w.advanceLine();
             m_w[1] << "ret";
             m_w.advanceLine();
          }

@@ -1,50 +1,90 @@
 // 2: .nostromo.bootstrapper.run: 
-// 3:                             ret
+// 3:                             push, rbp
+rex(48)op(ff)modR/M(f5)
+// 4:                             mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 5:                             mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 6:                             pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 7:                             ret
 op(c3)
-// 6: .nostromo.bootstrapper.cctor: 
-// 7:                               ret
+// 10: .nostromo.bootstrapper.cctor: 
+// 11:                               push, rbp
+rex(48)op(ff)modR/M(f5)
+// 12:                               mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 13:                               mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 14:                               pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 15:                               ret
 op(c3)
-// 10: .nostromo.bootstrapper.cdtor: 
-// 11:                               ret
+// 18: .nostromo.bootstrapper.cdtor: 
+// 19:                               push, rbp
+rex(48)op(ff)modR/M(f5)
+// 20:                               mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 21:                               mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 22:                               pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 23:                               ret
 op(c3)
-// 14: .nostromo.bootstrapper_vtbl_inst:
-// 15: .data, .nostromo.bootstrapper.run 
+// 26: .nostromo.bootstrapper_vtbl_inst:
+// 27: .data, .nostromo.bootstrapper.run 
 _lbldata(00-00-00-00,00-00-00-00)
-// 18: .nostromo.bootstrapper_sctor: 
-// 19:                               sub, rsp, 32                                        
-rex(48)op(83)modR/M(ec)i8(20)
-// 20:                               call, .sht.cons.program_sctor                       ; (call label)
-op(e8)co32(00-00-00-00)
-// 21:                               add, rsp, 32                                        
-rex(48)op(83)modR/M(c4)i8(20)
-// 22:                               mov, r10, qwordptr .nostromo.bootstrapper_vtbl_inst ; codeshape decomp
-rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 23:                               mov, [rcx], r10                                     ; =
-rex(4c)op(89)modR/M(11)
-// 24:                               sub, rsp, 32                                        
-rex(48)op(83)modR/M(ec)i8(20)
-// 25:                               call, .nostromo.bootstrapper.cctor                  ; (call label)
-op(e8)co32(00-00-00-00)
-// 26:                               add, rsp, 32                                        
-rex(48)op(83)modR/M(c4)i8(20)
-// 27:                               ret                                                 
-op(c3)
-// 30: .nostromo.bootstrapper_sdtor: 
-// 31:                               mov, r10, qwordptr .nostromo.bootstrapper_vtbl_inst ; codeshape decomp
-rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 32:                               mov, [rcx], r10                                     ; =
-rex(4c)op(89)modR/M(11)
+// 30: .nostromo.bootstrapper_sctor: 
+// 31:                               push, rbp                                           
+rex(48)op(ff)modR/M(f5)
+// 32:                               mov, rbp, rsp                                       
+rex(48)op(89)modR/M(e5)
 // 33:                               sub, rsp, 32                                        
 rex(48)op(83)modR/M(ec)i8(20)
-// 34:                               call, .nostromo.bootstrapper.cdtor                  ; (call label)
+// 34:                               call, .sht.cons.program_sctor                       ; (call label)
 op(e8)co32(00-00-00-00)
 // 35:                               add, rsp, 32                                        
 rex(48)op(83)modR/M(c4)i8(20)
-// 36:                               sub, rsp, 32                                        
+// 36:                               mov, r10, qwordptr .nostromo.bootstrapper_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 37:                               mov, [rcx], r10                                     ; =
+rex(4c)op(89)modR/M(11)
+// 38:                               sub, rsp, 32                                        
 rex(48)op(83)modR/M(ec)i8(20)
-// 37:                               call, .sht.cons.program_sdtor                       ; (call label)
+// 39:                               call, .nostromo.bootstrapper.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 38:                               add, rsp, 32                                        
+// 40:                               add, rsp, 32                                        
 rex(48)op(83)modR/M(c4)i8(20)
-// 39:                               ret                                                 
+// 41:                               mov, rsp, rbp                                       
+rex(48)op(89)modR/M(ec)
+// 42:                               pop, rbp                                            
+rex(48)op(8f)modR/M(c5)
+// 43:                               ret                                                 
+op(c3)
+// 46: .nostromo.bootstrapper_sdtor: 
+// 47:                               push, rbp                                           
+rex(48)op(ff)modR/M(f5)
+// 48:                               mov, rbp, rsp                                       
+rex(48)op(89)modR/M(e5)
+// 49:                               mov, r10, qwordptr .nostromo.bootstrapper_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 50:                               mov, [rcx], r10                                     ; =
+rex(4c)op(89)modR/M(11)
+// 51:                               sub, rsp, 32                                        
+rex(48)op(83)modR/M(ec)i8(20)
+// 52:                               call, .nostromo.bootstrapper.cdtor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 53:                               add, rsp, 32                                        
+rex(48)op(83)modR/M(c4)i8(20)
+// 54:                               sub, rsp, 32                                        
+rex(48)op(83)modR/M(ec)i8(20)
+// 55:                               call, .sht.cons.program_sdtor                       ; (call label)
+op(e8)co32(00-00-00-00)
+// 56:                               add, rsp, 32                                        
+rex(48)op(83)modR/M(c4)i8(20)
+// 57:                               mov, rsp, rbp                                       
+rex(48)op(89)modR/M(ec)
+// 58:                               pop, rbp                                            
+rex(48)op(8f)modR/M(c5)
+// 59:                               ret                                                 
 op(c3)

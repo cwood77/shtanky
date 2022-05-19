@@ -1,7 +1,9 @@
 .seg code    
 .entrypoint: 
+             push, rbp                        
              push, rbx                        
              push, rdi                        
+             mov, rbp, rsp                    
              sub, rsp, 24                     
              sub, rsp, 8                      
              sub, rsp, 32                     
@@ -31,17 +33,26 @@
              add, rsp, 32                     
              add, rsp, 16                     
              add, rsp, 8                      
-             add, rsp, 24                     
+             mov, rsp, rbp                    
              pop, rdi                         
              pop, rbx                         
+             pop, rbp                         
              ret                              
 
 .seg code                    
 .assign.consoleTarget.cctor: 
+                             push, rbp
+                             mov, rbp, rsp
+                             mov, rsp, rbp
+                             pop, rbp
                              ret
 
 .seg code                    
 .assign.consoleTarget.cdtor: 
+                             push, rbp
+                             mov, rbp, rsp
+                             mov, rsp, rbp
+                             pop, rbp
                              ret
 
 .seg const
@@ -50,6 +61,8 @@
 
 .seg code                    
 .assign.consoleTarget_sctor: 
+                             push, rbp                                          
+                             mov, rbp, rsp                                      
                              sub, rsp, 32                                       
                              call, .sht.core.object_sctor                       ; (call label)
                              add, rsp, 32                                       
@@ -58,10 +71,14 @@
                              sub, rsp, 32                                       
                              call, .assign.consoleTarget.cctor                  ; (call label)
                              add, rsp, 32                                       
+                             mov, rsp, rbp                                      
+                             pop, rbp                                           
                              ret                                                
 
 .seg code                    
 .assign.consoleTarget_sdtor: 
+                             push, rbp                                          
+                             mov, rbp, rsp                                      
                              mov, r10, qwordptr .assign.consoleTarget_vtbl_inst ; codeshape decomp
                              mov, [rcx], r10                                    ; =
                              sub, rsp, 32                                       
@@ -70,5 +87,7 @@
                              sub, rsp, 32                                       
                              call, .sht.core.object_sdtor                       ; (call label)
                              add, rsp, 32                                       
+                             mov, rsp, rbp                                      
+                             pop, rbp                                           
                              ret                                                
 
