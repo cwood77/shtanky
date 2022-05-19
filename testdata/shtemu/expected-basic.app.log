@@ -1,13 +1,9 @@
-received osCall!
-   i = 1
-   misc = NULL
-loading '.\testdata\shtemu\basic.app'
-patching osCall
-  offset is 24
-  entrypoint is offset 44
-running
-received osCall!
-   i = 1
-   misc = hello world
-returned
-done
+[shtemu.exe:D:src/shtemu/osCall.cpp-16] service registered 1 => N6shtemu12printServiceE
+[shtemu.exe:i:src/shtemu/main.cpp-11] win64 shtanky emulator
+[shtemu.exe:i:src/shtemu/main.cpp-15] loading file .\testdata\shtemu\basic.app
+[shtemu.exe:v:src/shtemu/loader.cpp-33] loading '.\testdata\shtemu\basic.app'
+[shtemu.exe:D:src/shtemu/loader.cpp-20]   osCall is offset 24
+[shtemu.exe:i:src/shtemu/main.cpp-21] passing control to app
+[shtemu.exe:D:src/shtemu/loader.cpp-12]   entrypoint is offset 44
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'hello world'
+[shtemu.exe:i:src/shtemu/main.cpp-23] control returned to shtemu

@@ -1,7 +1,9 @@
 #pragma once
+#include "trace.hpp"
+#include <exception>
 
 // wrapping main with catch
-// if you don't do this, throws result in crashs
+// if you don't do this, throws result in crashes
 // which don't honor dtor code
 
 #define cdwImplMain() \

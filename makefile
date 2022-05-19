@@ -376,11 +376,12 @@ $(SHLINK_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # ----------------------------------------------------------------------
 # shtemu
 
-# I'm using -fpermissive here to allow some ptr math; I don't understand
-# why that's an error in the first place.
-
 SHTEMU_SRC = \
-	src/shtemu/stemu.cpp \
+	src/shtemu/allocator.cpp \
+	src/shtemu/loader.cpp \
+	src/shtemu/main.cpp \
+	src/shtemu/osCall.cpp \
+	src/shtemu/servicePrint.cpp \
 
 SHTEMU_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SHTEMU_SRC)))
 
