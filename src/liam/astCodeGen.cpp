@@ -73,6 +73,9 @@ void astCodeGen::visit(cmn::invokeFuncPtrNode& n) // TODO left off here
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       i.inheritArgFromChild(**it);
+
+   consumeAllArgRegisters(i);
+   trashScratchRegsOnCall(i);
 }
 
 void astCodeGen::visit(cmn::localDeclNode& n)
@@ -179,6 +182,9 @@ void astCodeGen::visit(cmn::callNode& n)
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       iCall.inheritArgFromChild(**it);
+
+   consumeAllArgRegisters(iCall);
+   trashScratchRegsOnCall(iCall);
 }
 
 void astCodeGen::visit(cmn::varRefNode& n)
@@ -267,6 +273,50 @@ void astCodeGen::visit(cmn::intLiteralNode& n)
 
    m_b.forNode(n)
       .returnToParent(*pA);
+}
+
+void astCodeGen::consumeAllArgRegisters(lirBuilder::instrBuilder& instr)
+{
+   // generate additional args to trash regs as necessary
+
+   std::vector<size_t> argStorage;
+   m_t.getCallConvention().getRValAndArgBank(argStorage);
+
+   size_t storageUsed = (instr.instr().getArgs().size() - 1); // -1 for callptr
+
+   if(storageUsed < argStorage.size())
+   {
+      // need some extra dummy args
+      const size_t toBurn = argStorage.size() - storageUsed;
+      const size_t offset = storageUsed;
+      for(size_t i=0;i<toBurn;i++)
+      {
+         size_t stor = argStorage[i+offset];
+
+         std::stringstream nameHint;
+         nameHint << m_t.getProc().getRegName(stor) << "_burn";
+
+         instr.withArg<lirArgTemp>(m_u.makeUnique(nameHint.str()),0);
+      }
+   }
+}
+
+void astCodeGen::trashScratchRegsOnCall(lirBuilder::instrBuilder& instr)
+{
+   // add more dummies for trashed args as required for calling convention
+
+   std::vector<size_t> argStorage;
+   m_t.getCallConvention().createScratchRegisterBank(argStorage);
+
+   for(size_t i=0;i<argStorage.size();i++)
+   {
+      size_t stor = argStorage[i];
+
+      std::stringstream nameHint;
+      nameHint << m_t.getProc().getRegName(stor) << "_trash";
+
+      instr.withArg<lirArgTemp>(m_u.makeUnique(nameHint.str()),0);
+   }
 }
 
 } // namespace liam

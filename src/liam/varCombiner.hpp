@@ -34,6 +34,7 @@ private:
       size_t srcStorage,
       size_t destStorage);
 
+   // storage => vars
    std::map<size_t,std::set<var*> > m_clients;
 };
 

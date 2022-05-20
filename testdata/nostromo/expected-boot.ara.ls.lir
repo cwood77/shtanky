@@ -13,20 +13,20 @@
 0 <globalConstData> @.nostromo.bootstrapper.run /0 ;;; .nostromo.bootstrapper_vtbl_inst
 
 ----- start stream .nostromo.bootstrapper_sctor
-0 <enterFunc> ~rval2/0, $self2/0                                 ;;; .nostromo.bootstrapper_sctor
+0 <enterFunc> ~rval2/0, $self2/0                                                                                                       ;;; .nostromo.bootstrapper_sctor
 0 <precall>   
-0 call        ~rval3/0, !.sht.cons.program_sctor/0, $self/0      ;;; (call label)
-0 mov         [~self]/0, !.nostromo.bootstrapper_vtbl_inst/0     ;;; =
+0 call        ~rval3/0, !.sht.cons.program_sctor/0, $self/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0           ;;; (call label)
+0 mov         [~self]/0, !.nostromo.bootstrapper_vtbl_inst/0                                                                           ;;; =
 0 <precall>   
-0 call        ~rval4/0, !.nostromo.bootstrapper.cctor/0, $self/0 ;;; (call label)
+0 call        ~rval4/0, !.nostromo.bootstrapper.cctor/0, $self/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
 
 ----- start stream .nostromo.bootstrapper_sdtor
-0 <enterFunc> ~rval5/0, $self3/0                                 ;;; .nostromo.bootstrapper_sdtor
-0 mov         [~self]/0, !.nostromo.bootstrapper_vtbl_inst/0     ;;; =
+0 <enterFunc> ~rval5/0, $self3/0                                                                                                       ;;; .nostromo.bootstrapper_sdtor
+0 mov         [~self]/0, !.nostromo.bootstrapper_vtbl_inst/0                                                                           ;;; =
 0 <precall>   
-0 call        ~rval6/0, !.nostromo.bootstrapper.cdtor/0, $self/0 ;;; (call label)
+0 call        ~rval6/0, !.nostromo.bootstrapper.cdtor/0, $self/0, ~rdx_burn1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0 ;;; (call label)
 0 <precall>   
-0 call        ~rval7/0, !.sht.cons.program_sdtor/0, $self/0      ;;; (call label)
+0 call        ~rval7/0, !.sht.cons.program_sdtor/0, $self/0, ~rdx_burn2/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0      ;;; (call label)
 
 === end of LIR bundle dump ===
 

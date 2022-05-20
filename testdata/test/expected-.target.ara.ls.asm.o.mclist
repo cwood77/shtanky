@@ -110,46 +110,54 @@ rex(48)op(83)modR/M(ec)i8(20)
 op(e8)co32(00-00-00-00)
 // 68:                            add, rsp, 32                                     
 rex(48)op(83)modR/M(c4)i8(20)
-// 69:                            mov, r10, qwordptr .test.consoleTarget_vtbl_inst ; codeshape decomp
+// 69:                            push, r10                                        ; codeshape spill
+rex(49)op(ff)modR/M(f2)
+// 70:                            mov, r10, qwordptr .test.consoleTarget_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 70:                            mov, [rcx], r10                                  ; =
+// 71:                            mov, [rcx], r10                                  ; =
 rex(4c)op(89)modR/M(11)
-// 71:                            sub, rsp, 32                                     
+// 72:                            pop, r10                                         ; codeshape restore
+rex(49)op(8f)modR/M(c2)
+// 73:                            sub, rsp, 32                                     
 rex(48)op(83)modR/M(ec)i8(20)
-// 72:                            call, .test.consoleTarget.cctor                  ; (call label)
+// 74:                            call, .test.consoleTarget.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 73:                            add, rsp, 32                                     
+// 75:                            add, rsp, 32                                     
 rex(48)op(83)modR/M(c4)i8(20)
-// 74:                            mov, rsp, rbp                                    
+// 76:                            mov, rsp, rbp                                    
 rex(48)op(89)modR/M(ec)
-// 75:                            pop, rbp                                         
+// 77:                            pop, rbp                                         
 rex(48)op(8f)modR/M(c5)
-// 76:                            ret                                              
+// 78:                            ret                                              
 op(c3)
-// 79: .test.consoleTarget_sdtor: 
-// 80:                            push, rbp                                        
+// 81: .test.consoleTarget_sdtor: 
+// 82:                            push, rbp                                        
 rex(48)op(ff)modR/M(f5)
-// 81:                            mov, rbp, rsp                                    
+// 83:                            mov, rbp, rsp                                    
 rex(48)op(89)modR/M(e5)
-// 82:                            mov, r10, qwordptr .test.consoleTarget_vtbl_inst ; codeshape decomp
+// 84:                            push, r10                                        ; codeshape spill
+rex(49)op(ff)modR/M(f2)
+// 85:                            mov, r10, qwordptr .test.consoleTarget_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 83:                            mov, [rcx], r10                                  ; =
+// 86:                            mov, [rcx], r10                                  ; =
 rex(4c)op(89)modR/M(11)
-// 84:                            sub, rsp, 32                                     
+// 87:                            pop, r10                                         ; codeshape restore
+rex(49)op(8f)modR/M(c2)
+// 88:                            sub, rsp, 32                                     
 rex(48)op(83)modR/M(ec)i8(20)
-// 85:                            call, .test.consoleTarget.cdtor                  ; (call label)
+// 89:                            call, .test.consoleTarget.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 86:                            add, rsp, 32                                     
+// 90:                            add, rsp, 32                                     
 rex(48)op(83)modR/M(c4)i8(20)
-// 87:                            sub, rsp, 32                                     
+// 91:                            sub, rsp, 32                                     
 rex(48)op(83)modR/M(ec)i8(20)
-// 88:                            call, .sht.core.object_sdtor                     ; (call label)
+// 92:                            call, .sht.core.object_sdtor                     ; (call label)
 op(e8)co32(00-00-00-00)
-// 89:                            add, rsp, 32                                     
+// 93:                            add, rsp, 32                                     
 rex(48)op(83)modR/M(c4)i8(20)
-// 90:                            mov, rsp, rbp                                    
+// 94:                            mov, rsp, rbp                                    
 rex(48)op(89)modR/M(ec)
-// 91:                            pop, rbp                                         
+// 95:                            pop, rbp                                         
 rex(48)op(8f)modR/M(c5)
-// 92:                            ret                                              
+// 96:                            ret                                              
 op(c3)

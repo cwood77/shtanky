@@ -16,12 +16,12 @@
 30 <exitFunc>      
 
 ----- start stream .sht.cons.stdout.printLn
-10 <selectSegment> @code/0                             
-20 <enterFunc>     ~rval2/0, $self2/0, $msg0/0         ;;; .sht.cons.stdout.printLn
-30 <precall>       @totalStackSize/32                  
-40 mov             ~t/1, @1/1                          ;;; shape:hoist imm from call
-50 call            ~rval3/0, !._osCall/0, ~t/1, $msg/0 ;;; (call label)
-60 <postcall>      @totalStackSize/32                  
+10 <selectSegment> @code/0                                                                                 
+20 <enterFunc>     ~rval2/0, $self2/0, $msg0/0                                                             ;;; .sht.cons.stdout.printLn
+30 <precall>       @totalStackSize/32                                                                      
+40 mov             ~t/1, @1/1                                                                              ;;; shape:hoist imm from call
+50 call            ~rval3/0, !._osCall/0, ~t/1, $msg/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (call label)
+60 <postcall>      @totalStackSize/32                                                                      
 70 <exitFunc>      
 
 ----- start stream .sht.cons.stdout.cctor
@@ -62,75 +62,75 @@
 20 <globalConstData> @.sht.cons.stdout.printLn /0 ;;; .sht.cons.stdout_vtbl_inst
 
 ----- start stream .sht.cons.iStream_sctor
-10  <selectSegment> @code/0                                        
-20  <enterFunc>     ~rval9/0, $self8/0                             ;;; .sht.cons.iStream_sctor
-30  <precall>       @totalStackSize/32                             
-40  call            ~rval10/0, !.sht.core.object_sctor/0, $self/0  ;;; (call label)
-50  <postcall>      @totalStackSize/32                             
-60  mov             [~self]/0, !.sht.cons.iStream_vtbl_inst/0      ;;; =
-70  <precall>       @totalStackSize/32                             
-80  call            ~rval11/0, !.sht.cons.iStream.cctor/0, $self/0 ;;; (call label)
-90  <postcall>      @totalStackSize/32                             
+10  <selectSegment> @code/0                                                                                                              
+20  <enterFunc>     ~rval9/0, $self8/0                                                                                                   ;;; .sht.cons.iStream_sctor
+30  <precall>       @totalStackSize/32                                                                                                   
+40  call            ~rval10/0, !.sht.core.object_sctor/0, $self/0, ~rdx_burn/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0   ;;; (call label)
+50  <postcall>      @totalStackSize/32                                                                                                   
+60  mov             [~self]/0, !.sht.cons.iStream_vtbl_inst/0                                                                            ;;; =
+70  <precall>       @totalStackSize/32                                                                                                   
+80  call            ~rval11/0, !.sht.cons.iStream.cctor/0, $self/0, ~rdx_burn0/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0 ;;; (call label)
+90  <postcall>      @totalStackSize/32                                                                                                   
 100 <exitFunc>      
 
 ----- start stream .sht.cons.iStream_sdtor
-10  <selectSegment> @code/0                                        
-20  <enterFunc>     ~rval12/0, $self9/0                            ;;; .sht.cons.iStream_sdtor
-30  mov             [~self]/0, !.sht.cons.iStream_vtbl_inst/0      ;;; =
-40  <precall>       @totalStackSize/32                             
-50  call            ~rval13/0, !.sht.cons.iStream.cdtor/0, $self/0 ;;; (call label)
-60  <postcall>      @totalStackSize/32                             
-70  <precall>       @totalStackSize/32                             
-80  call            ~rval14/0, !.sht.core.object_sdtor/0, $self/0  ;;; (call label)
-90  <postcall>      @totalStackSize/32                             
+10  <selectSegment> @code/0                                                                                                              
+20  <enterFunc>     ~rval12/0, $self9/0                                                                                                  ;;; .sht.cons.iStream_sdtor
+30  mov             [~self]/0, !.sht.cons.iStream_vtbl_inst/0                                                                            ;;; =
+40  <precall>       @totalStackSize/32                                                                                                   
+50  call            ~rval13/0, !.sht.cons.iStream.cdtor/0, $self/0, ~rdx_burn1/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0 ;;; (call label)
+60  <postcall>      @totalStackSize/32                                                                                                   
+70  <precall>       @totalStackSize/32                                                                                                   
+80  call            ~rval14/0, !.sht.core.object_sdtor/0, $self/0, ~rdx_burn2/0, ~r8_burn3/0, ~r9_burn3/0, ~r10_trash3/0, ~r11_trash3/0  ;;; (call label)
+90  <postcall>      @totalStackSize/32                                                                                                   
 100 <exitFunc>      
 
 ----- start stream .sht.cons.program_sctor
-10  <selectSegment> @code/0                                        
-20  <enterFunc>     ~rval15/0, $self10/0                           ;;; .sht.cons.program_sctor
-30  <precall>       @totalStackSize/32                             
-40  call            ~rval16/0, !.sht.core.object_sctor/0, $self/0  ;;; (call label)
-50  <postcall>      @totalStackSize/32                             
-60  mov             [~self]/0, !.sht.cons.program_vtbl_inst/0      ;;; =
-70  <precall>       @totalStackSize/32                             
-80  call            ~rval17/0, !.sht.cons.program.cctor/0, $self/0 ;;; (call label)
-90  <postcall>      @totalStackSize/32                             
+10  <selectSegment> @code/0                                                                                                              
+20  <enterFunc>     ~rval15/0, $self10/0                                                                                                 ;;; .sht.cons.program_sctor
+30  <precall>       @totalStackSize/32                                                                                                   
+40  call            ~rval16/0, !.sht.core.object_sctor/0, $self/0, ~rdx_burn3/0, ~r8_burn4/0, ~r9_burn4/0, ~r10_trash4/0, ~r11_trash4/0  ;;; (call label)
+50  <postcall>      @totalStackSize/32                                                                                                   
+60  mov             [~self]/0, !.sht.cons.program_vtbl_inst/0                                                                            ;;; =
+70  <precall>       @totalStackSize/32                                                                                                   
+80  call            ~rval17/0, !.sht.cons.program.cctor/0, $self/0, ~rdx_burn4/0, ~r8_burn5/0, ~r9_burn5/0, ~r10_trash5/0, ~r11_trash5/0 ;;; (call label)
+90  <postcall>      @totalStackSize/32                                                                                                   
 100 <exitFunc>      
 
 ----- start stream .sht.cons.program_sdtor
-10  <selectSegment> @code/0                                        
-20  <enterFunc>     ~rval18/0, $self11/0                           ;;; .sht.cons.program_sdtor
-30  mov             [~self]/0, !.sht.cons.program_vtbl_inst/0      ;;; =
-40  <precall>       @totalStackSize/32                             
-50  call            ~rval19/0, !.sht.cons.program.cdtor/0, $self/0 ;;; (call label)
-60  <postcall>      @totalStackSize/32                             
-70  <precall>       @totalStackSize/32                             
-80  call            ~rval20/0, !.sht.core.object_sdtor/0, $self/0  ;;; (call label)
-90  <postcall>      @totalStackSize/32                             
+10  <selectSegment> @code/0                                                                                                              
+20  <enterFunc>     ~rval18/0, $self11/0                                                                                                 ;;; .sht.cons.program_sdtor
+30  mov             [~self]/0, !.sht.cons.program_vtbl_inst/0                                                                            ;;; =
+40  <precall>       @totalStackSize/32                                                                                                   
+50  call            ~rval19/0, !.sht.cons.program.cdtor/0, $self/0, ~rdx_burn5/0, ~r8_burn6/0, ~r9_burn6/0, ~r10_trash6/0, ~r11_trash6/0 ;;; (call label)
+60  <postcall>      @totalStackSize/32                                                                                                   
+70  <precall>       @totalStackSize/32                                                                                                   
+80  call            ~rval20/0, !.sht.core.object_sdtor/0, $self/0, ~rdx_burn6/0, ~r8_burn7/0, ~r9_burn7/0, ~r10_trash7/0, ~r11_trash7/0  ;;; (call label)
+90  <postcall>      @totalStackSize/32                                                                                                   
 100 <exitFunc>      
 
 ----- start stream .sht.cons.stdout_sctor
-10  <selectSegment> @code/0                                        
-20  <enterFunc>     ~rval21/0, $self12/0                           ;;; .sht.cons.stdout_sctor
-30  <precall>       @totalStackSize/32                             
-40  call            ~rval22/0, !.sht.cons.iStream_sctor/0, $self/0 ;;; (call label)
-50  <postcall>      @totalStackSize/32                             
-60  mov             [~self]/0, !.sht.cons.stdout_vtbl_inst/0       ;;; =
-70  <precall>       @totalStackSize/32                             
-80  call            ~rval23/0, !.sht.cons.stdout.cctor/0, $self/0  ;;; (call label)
-90  <postcall>      @totalStackSize/32                             
+10  <selectSegment> @code/0                                                                                                              
+20  <enterFunc>     ~rval21/0, $self12/0                                                                                                 ;;; .sht.cons.stdout_sctor
+30  <precall>       @totalStackSize/32                                                                                                   
+40  call            ~rval22/0, !.sht.cons.iStream_sctor/0, $self/0, ~rdx_burn7/0, ~r8_burn8/0, ~r9_burn8/0, ~r10_trash8/0, ~r11_trash8/0 ;;; (call label)
+50  <postcall>      @totalStackSize/32                                                                                                   
+60  mov             [~self]/0, !.sht.cons.stdout_vtbl_inst/0                                                                             ;;; =
+70  <precall>       @totalStackSize/32                                                                                                   
+80  call            ~rval23/0, !.sht.cons.stdout.cctor/0, $self/0, ~rdx_burn8/0, ~r8_burn9/0, ~r9_burn9/0, ~r10_trash9/0, ~r11_trash9/0  ;;; (call label)
+90  <postcall>      @totalStackSize/32                                                                                                   
 100 <exitFunc>      
 
 ----- start stream .sht.cons.stdout_sdtor
-10  <selectSegment> @code/0                                        
-20  <enterFunc>     ~rval24/0, $self13/0                           ;;; .sht.cons.stdout_sdtor
-30  mov             [~self]/0, !.sht.cons.stdout_vtbl_inst/0       ;;; =
-40  <precall>       @totalStackSize/32                             
-50  call            ~rval25/0, !.sht.cons.stdout.cdtor/0, $self/0  ;;; (call label)
-60  <postcall>      @totalStackSize/32                             
-70  <precall>       @totalStackSize/32                             
-80  call            ~rval26/0, !.sht.cons.iStream_sdtor/0, $self/0 ;;; (call label)
-90  <postcall>      @totalStackSize/32                             
+10  <selectSegment> @code/0                                                                                                                   
+20  <enterFunc>     ~rval24/0, $self13/0                                                                                                      ;;; .sht.cons.stdout_sdtor
+30  mov             [~self]/0, !.sht.cons.stdout_vtbl_inst/0                                                                                  ;;; =
+40  <precall>       @totalStackSize/32                                                                                                        
+50  call            ~rval25/0, !.sht.cons.stdout.cdtor/0, $self/0, ~rdx_burn9/0, ~r8_burn10/0, ~r9_burn10/0, ~r10_trash10/0, ~r11_trash10/0   ;;; (call label)
+60  <postcall>      @totalStackSize/32                                                                                                        
+70  <precall>       @totalStackSize/32                                                                                                        
+80  call            ~rval26/0, !.sht.cons.iStream_sdtor/0, $self/0, ~rdx_burn10/0, ~r8_burn11/0, ~r9_burn11/0, ~r10_trash11/0, ~r11_trash11/0 ;;; (call label)
+90  <postcall>      @totalStackSize/32                                                                                                        
 100 <exitFunc>      
 
 === end of LIR bundle dump ===

@@ -1,13 +1,12 @@
 #pragma once
 #include "../cmn/ast.hpp"
 #include "../cmn/unique.hpp"
+#include "lir.hpp"
 #include <ostream>
 
 namespace cmn { namespace tgt { class iTargetInfo; } }
 
 namespace liam {
-
-class lirBuilder;
 
 // data uses weirdo syntax like .data, "foo" <b> 0 so it's special
 class dataFormatter : public cmn::liamVisitor<> {
@@ -42,6 +41,9 @@ public:
    virtual void visit(cmn::intLiteralNode& n);
 
 private:
+   void consumeAllArgRegisters(lirBuilder::instrBuilder& instr);
+   void trashScratchRegsOnCall(lirBuilder::instrBuilder& instr);
+
    lirBuilder& m_b;
    cmn::tgt::iTargetInfo& m_t;
    cmn::uniquifier m_u;

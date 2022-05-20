@@ -125,154 +125,178 @@ rex(48)op(83)modR/M(ec)i8(20)
 op(e8)co32(00-00-00-00)
 // 95:                          add, rsp, 32                                   
 rex(48)op(83)modR/M(c4)i8(20)
-// 96:                          mov, r10, qwordptr .sht.cons.iStream_vtbl_inst ; codeshape decomp
+// 96:                          push, r10                                      ; codeshape spill
+rex(49)op(ff)modR/M(f2)
+// 97:                          mov, r10, qwordptr .sht.cons.iStream_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 97:                          mov, [rcx], r10                                ; =
+// 98:                          mov, [rcx], r10                                ; =
 rex(4c)op(89)modR/M(11)
-// 98:                          sub, rsp, 32                                   
+// 99:                          pop, r10                                       ; codeshape restore
+rex(49)op(8f)modR/M(c2)
+// 100:                          sub, rsp, 32                                   
 rex(48)op(83)modR/M(ec)i8(20)
-// 99:                          call, .sht.cons.iStream.cctor                  ; (call label)
+// 101:                          call, .sht.cons.iStream.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 100:                          add, rsp, 32                                   
+// 102:                          add, rsp, 32                                   
 rex(48)op(83)modR/M(c4)i8(20)
-// 101:                          mov, rsp, rbp                                  
+// 103:                          mov, rsp, rbp                                  
 rex(48)op(89)modR/M(ec)
-// 102:                          pop, rbp                                       
+// 104:                          pop, rbp                                       
 rex(48)op(8f)modR/M(c5)
-// 103:                          ret                                            
+// 105:                          ret                                            
 op(c3)
-// 106: .sht.cons.iStream_sdtor: 
-// 107:                          push, rbp                                      
+// 108: .sht.cons.iStream_sdtor: 
+// 109:                          push, rbp                                      
 rex(48)op(ff)modR/M(f5)
-// 108:                          mov, rbp, rsp                                  
+// 110:                          mov, rbp, rsp                                  
 rex(48)op(89)modR/M(e5)
-// 109:                          mov, r10, qwordptr .sht.cons.iStream_vtbl_inst ; codeshape decomp
+// 111:                          push, r10                                      ; codeshape spill
+rex(49)op(ff)modR/M(f2)
+// 112:                          mov, r10, qwordptr .sht.cons.iStream_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 110:                          mov, [rcx], r10                                ; =
+// 113:                          mov, [rcx], r10                                ; =
 rex(4c)op(89)modR/M(11)
-// 111:                          sub, rsp, 32                                   
+// 114:                          pop, r10                                       ; codeshape restore
+rex(49)op(8f)modR/M(c2)
+// 115:                          sub, rsp, 32                                   
 rex(48)op(83)modR/M(ec)i8(20)
-// 112:                          call, .sht.cons.iStream.cdtor                  ; (call label)
+// 116:                          call, .sht.cons.iStream.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 113:                          add, rsp, 32                                   
+// 117:                          add, rsp, 32                                   
 rex(48)op(83)modR/M(c4)i8(20)
-// 114:                          sub, rsp, 32                                   
+// 118:                          sub, rsp, 32                                   
 rex(48)op(83)modR/M(ec)i8(20)
-// 115:                          call, .sht.core.object_sdtor                   ; (call label)
+// 119:                          call, .sht.core.object_sdtor                   ; (call label)
 op(e8)co32(00-00-00-00)
-// 116:                          add, rsp, 32                                   
+// 120:                          add, rsp, 32                                   
 rex(48)op(83)modR/M(c4)i8(20)
-// 117:                          mov, rsp, rbp                                  
+// 121:                          mov, rsp, rbp                                  
 rex(48)op(89)modR/M(ec)
-// 118:                          pop, rbp                                       
+// 122:                          pop, rbp                                       
 rex(48)op(8f)modR/M(c5)
-// 119:                          ret                                            
+// 123:                          ret                                            
 op(c3)
-// 122: .sht.cons.program_sctor: 
-// 123:                          push, rbp                                      
+// 126: .sht.cons.program_sctor: 
+// 127:                          push, rbp                                      
 rex(48)op(ff)modR/M(f5)
-// 124:                          mov, rbp, rsp                                  
+// 128:                          mov, rbp, rsp                                  
 rex(48)op(89)modR/M(e5)
-// 125:                          sub, rsp, 32                                   
+// 129:                          sub, rsp, 32                                   
 rex(48)op(83)modR/M(ec)i8(20)
-// 126:                          call, .sht.core.object_sctor                   ; (call label)
+// 130:                          call, .sht.core.object_sctor                   ; (call label)
 op(e8)co32(00-00-00-00)
-// 127:                          add, rsp, 32                                   
+// 131:                          add, rsp, 32                                   
 rex(48)op(83)modR/M(c4)i8(20)
-// 128:                          mov, r10, qwordptr .sht.cons.program_vtbl_inst ; codeshape decomp
+// 132:                          push, r10                                      ; codeshape spill
+rex(49)op(ff)modR/M(f2)
+// 133:                          mov, r10, qwordptr .sht.cons.program_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 129:                          mov, [rcx], r10                                ; =
+// 134:                          mov, [rcx], r10                                ; =
 rex(4c)op(89)modR/M(11)
-// 130:                          sub, rsp, 32                                   
+// 135:                          pop, r10                                       ; codeshape restore
+rex(49)op(8f)modR/M(c2)
+// 136:                          sub, rsp, 32                                   
 rex(48)op(83)modR/M(ec)i8(20)
-// 131:                          call, .sht.cons.program.cctor                  ; (call label)
+// 137:                          call, .sht.cons.program.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 132:                          add, rsp, 32                                   
+// 138:                          add, rsp, 32                                   
 rex(48)op(83)modR/M(c4)i8(20)
-// 133:                          mov, rsp, rbp                                  
+// 139:                          mov, rsp, rbp                                  
 rex(48)op(89)modR/M(ec)
-// 134:                          pop, rbp                                       
+// 140:                          pop, rbp                                       
 rex(48)op(8f)modR/M(c5)
-// 135:                          ret                                            
+// 141:                          ret                                            
 op(c3)
-// 138: .sht.cons.program_sdtor: 
-// 139:                          push, rbp                                      
+// 144: .sht.cons.program_sdtor: 
+// 145:                          push, rbp                                      
 rex(48)op(ff)modR/M(f5)
-// 140:                          mov, rbp, rsp                                  
+// 146:                          mov, rbp, rsp                                  
 rex(48)op(89)modR/M(e5)
-// 141:                          mov, r10, qwordptr .sht.cons.program_vtbl_inst ; codeshape decomp
+// 147:                          push, r10                                      ; codeshape spill
+rex(49)op(ff)modR/M(f2)
+// 148:                          mov, r10, qwordptr .sht.cons.program_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 142:                          mov, [rcx], r10                                ; =
+// 149:                          mov, [rcx], r10                                ; =
 rex(4c)op(89)modR/M(11)
-// 143:                          sub, rsp, 32                                   
+// 150:                          pop, r10                                       ; codeshape restore
+rex(49)op(8f)modR/M(c2)
+// 151:                          sub, rsp, 32                                   
 rex(48)op(83)modR/M(ec)i8(20)
-// 144:                          call, .sht.cons.program.cdtor                  ; (call label)
+// 152:                          call, .sht.cons.program.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 145:                          add, rsp, 32                                   
+// 153:                          add, rsp, 32                                   
 rex(48)op(83)modR/M(c4)i8(20)
-// 146:                          sub, rsp, 32                                   
+// 154:                          sub, rsp, 32                                   
 rex(48)op(83)modR/M(ec)i8(20)
-// 147:                          call, .sht.core.object_sdtor                   ; (call label)
+// 155:                          call, .sht.core.object_sdtor                   ; (call label)
 op(e8)co32(00-00-00-00)
-// 148:                          add, rsp, 32                                   
+// 156:                          add, rsp, 32                                   
 rex(48)op(83)modR/M(c4)i8(20)
-// 149:                          mov, rsp, rbp                                  
+// 157:                          mov, rsp, rbp                                  
 rex(48)op(89)modR/M(ec)
-// 150:                          pop, rbp                                       
+// 158:                          pop, rbp                                       
 rex(48)op(8f)modR/M(c5)
-// 151:                          ret                                            
+// 159:                          ret                                            
 op(c3)
-// 154: .sht.cons.stdout_sctor: 
-// 155:                         push, rbp                                     
+// 162: .sht.cons.stdout_sctor: 
+// 163:                         push, rbp                                     
 rex(48)op(ff)modR/M(f5)
-// 156:                         mov, rbp, rsp                                 
+// 164:                         mov, rbp, rsp                                 
 rex(48)op(89)modR/M(e5)
-// 157:                         sub, rsp, 32                                  
+// 165:                         sub, rsp, 32                                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 158:                         call, .sht.cons.iStream_sctor                 ; (call label)
+// 166:                         call, .sht.cons.iStream_sctor                 ; (call label)
 op(e8)co32(00-00-00-00)
-// 159:                         add, rsp, 32                                  
+// 167:                         add, rsp, 32                                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 160:                         mov, r10, qwordptr .sht.cons.stdout_vtbl_inst ; codeshape decomp
+// 168:                         push, r10                                     ; codeshape spill
+rex(49)op(ff)modR/M(f2)
+// 169:                         mov, r10, qwordptr .sht.cons.stdout_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 161:                         mov, [rcx], r10                               ; =
+// 170:                         mov, [rcx], r10                               ; =
 rex(4c)op(89)modR/M(11)
-// 162:                         sub, rsp, 32                                  
+// 171:                         pop, r10                                      ; codeshape restore
+rex(49)op(8f)modR/M(c2)
+// 172:                         sub, rsp, 32                                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 163:                         call, .sht.cons.stdout.cctor                  ; (call label)
+// 173:                         call, .sht.cons.stdout.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 164:                         add, rsp, 32                                  
+// 174:                         add, rsp, 32                                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 165:                         mov, rsp, rbp                                 
+// 175:                         mov, rsp, rbp                                 
 rex(48)op(89)modR/M(ec)
-// 166:                         pop, rbp                                      
+// 176:                         pop, rbp                                      
 rex(48)op(8f)modR/M(c5)
-// 167:                         ret                                           
+// 177:                         ret                                           
 op(c3)
-// 170: .sht.cons.stdout_sdtor: 
-// 171:                         push, rbp                                     
+// 180: .sht.cons.stdout_sdtor: 
+// 181:                         push, rbp                                     
 rex(48)op(ff)modR/M(f5)
-// 172:                         mov, rbp, rsp                                 
+// 182:                         mov, rbp, rsp                                 
 rex(48)op(89)modR/M(e5)
-// 173:                         mov, r10, qwordptr .sht.cons.stdout_vtbl_inst ; codeshape decomp
+// 183:                         push, r10                                     ; codeshape spill
+rex(49)op(ff)modR/M(f2)
+// 184:                         mov, r10, qwordptr .sht.cons.stdout_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 174:                         mov, [rcx], r10                               ; =
+// 185:                         mov, [rcx], r10                               ; =
 rex(4c)op(89)modR/M(11)
-// 175:                         sub, rsp, 32                                  
+// 186:                         pop, r10                                      ; codeshape restore
+rex(49)op(8f)modR/M(c2)
+// 187:                         sub, rsp, 32                                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 176:                         call, .sht.cons.stdout.cdtor                  ; (call label)
+// 188:                         call, .sht.cons.stdout.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 177:                         add, rsp, 32                                  
+// 189:                         add, rsp, 32                                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 178:                         sub, rsp, 32                                  
+// 190:                         sub, rsp, 32                                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 179:                         call, .sht.cons.iStream_sdtor                 ; (call label)
+// 191:                         call, .sht.cons.iStream_sdtor                 ; (call label)
 op(e8)co32(00-00-00-00)
-// 180:                         add, rsp, 32                                  
+// 192:                         add, rsp, 32                                  
 rex(48)op(83)modR/M(c4)i8(20)
-// 181:                         mov, rsp, rbp                                 
+// 193:                         mov, rsp, rbp                                 
 rex(48)op(89)modR/M(ec)
-// 182:                         pop, rbp                                      
+// 194:                         pop, rbp                                      
 rex(48)op(8f)modR/M(c5)
-// 183:                         ret                                           
+// 195:                         ret                                           
 op(c3)

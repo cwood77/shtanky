@@ -20,27 +20,27 @@
 20 <globalConstData> @.nostromo.bootstrapper.run /0 ;;; .nostromo.bootstrapper_vtbl_inst
 
 ----- start stream .nostromo.bootstrapper_sctor
-10  <selectSegment> @code/0                                            
-20  <enterFunc>     ~rval2/0, $self2/0                                 ;;; .nostromo.bootstrapper_sctor
-30  <precall>       @totalStackSize/32                                 
-40  call            ~rval3/0, !.sht.cons.program_sctor/0, $self/0      ;;; (call label)
-50  <postcall>      @totalStackSize/32                                 
-60  mov             [~self]/0, !.nostromo.bootstrapper_vtbl_inst/0     ;;; =
-70  <precall>       @totalStackSize/32                                 
-80  call            ~rval4/0, !.nostromo.bootstrapper.cctor/0, $self/0 ;;; (call label)
-90  <postcall>      @totalStackSize/32                                 
+10  <selectSegment> @code/0                                                                                                                  
+20  <enterFunc>     ~rval2/0, $self2/0                                                                                                       ;;; .nostromo.bootstrapper_sctor
+30  <precall>       @totalStackSize/32                                                                                                       
+40  call            ~rval3/0, !.sht.cons.program_sctor/0, $self/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0           ;;; (call label)
+50  <postcall>      @totalStackSize/32                                                                                                       
+60  mov             [~self]/0, !.nostromo.bootstrapper_vtbl_inst/0                                                                           ;;; =
+70  <precall>       @totalStackSize/32                                                                                                       
+80  call            ~rval4/0, !.nostromo.bootstrapper.cctor/0, $self/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
+90  <postcall>      @totalStackSize/32                                                                                                       
 100 <exitFunc>      
 
 ----- start stream .nostromo.bootstrapper_sdtor
-10  <selectSegment> @code/0                                            
-20  <enterFunc>     ~rval5/0, $self3/0                                 ;;; .nostromo.bootstrapper_sdtor
-30  mov             [~self]/0, !.nostromo.bootstrapper_vtbl_inst/0     ;;; =
-40  <precall>       @totalStackSize/32                                 
-50  call            ~rval6/0, !.nostromo.bootstrapper.cdtor/0, $self/0 ;;; (call label)
-60  <postcall>      @totalStackSize/32                                 
-70  <precall>       @totalStackSize/32                                 
-80  call            ~rval7/0, !.sht.cons.program_sdtor/0, $self/0      ;;; (call label)
-90  <postcall>      @totalStackSize/32                                 
+10  <selectSegment> @code/0                                                                                                                  
+20  <enterFunc>     ~rval5/0, $self3/0                                                                                                       ;;; .nostromo.bootstrapper_sdtor
+30  mov             [~self]/0, !.nostromo.bootstrapper_vtbl_inst/0                                                                           ;;; =
+40  <precall>       @totalStackSize/32                                                                                                       
+50  call            ~rval6/0, !.nostromo.bootstrapper.cdtor/0, $self/0, ~rdx_burn1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0 ;;; (call label)
+60  <postcall>      @totalStackSize/32                                                                                                       
+70  <precall>       @totalStackSize/32                                                                                                       
+80  call            ~rval7/0, !.sht.cons.program_sdtor/0, $self/0, ~rdx_burn2/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0      ;;; (call label)
+90  <postcall>      @totalStackSize/32                                                                                                       
 100 <exitFunc>      
 
 === end of LIR bundle dump ===

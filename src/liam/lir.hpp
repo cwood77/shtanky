@@ -320,6 +320,8 @@ public:
       T& tweakArgAs(size_t nArg)
       { return dynamic_cast<T&>(*m_i.getArgs()[nArg]); }
 
+      lirInstr& instr() { return m_i; }
+
    private:
       lirBuilder& m_b;
       cmn::node& m_n;

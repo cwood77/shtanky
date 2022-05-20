@@ -127,8 +127,19 @@ void lirCallVirtualStackCalculation::runInstr(lirInstr& i)
 
    if(i.instrId == cmn::tgt::kCall)
    {
+      // rval not included in stack calculation
+      m_argRealSizes.erase(m_argRealSizes.begin());
       // ignore the calladdr/instptr for calls/invokes
       m_argRealSizes.erase(m_argRealSizes.begin());
+
+      // any scratch regs that the target might have are appended to the call,
+      // but should not be considered arguments for this calculation
+      {
+         std::vector<size_t> scratch;
+         m_t.getCallConvention().createScratchRegisterBank(scratch);
+         for(size_t i=0;i<scratch.size();i++)
+            m_argRealSizes.erase(--m_argRealSizes.end());
+      }
 
       lirInstr& precall = *m_preCalls.back();
       size_t subcallStackSize = m_t.getCallConvention().getShadowSpace();
@@ -426,7 +437,7 @@ void codeShapeTransform::runInstr(lirInstr& i)
       auto& arg = pop.addArg<lirArgTemp>(varName,origArg.getSize());
       pop.comment = "codeshape restore";
 
-      scheduleInjectBefore(pop,i);
+      scheduleInjectBefore(pop,i.next());
       scheduleVarBind(pop,arg,m_v,altStor);
    }
 
