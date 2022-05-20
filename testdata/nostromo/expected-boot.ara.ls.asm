@@ -33,10 +33,8 @@
                               sub, rsp, 32                                        
                               call, .sht.cons.program_sctor                       ; (call label)
                               add, rsp, 32                                        
-                              push, r10                                           ; codeshape spill
                               mov, r10, qwordptr .nostromo.bootstrapper_vtbl_inst ; codeshape decomp
                               mov, [rcx], r10                                     ; =
-                              pop, r10                                            ; codeshape restore
                               sub, rsp, 32                                        
                               call, .nostromo.bootstrapper.cctor                  ; (call label)
                               add, rsp, 32                                        
@@ -48,10 +46,8 @@
 .nostromo.bootstrapper_sdtor: 
                               push, rbp                                           
                               mov, rbp, rsp                                       
-                              push, r10                                           ; codeshape spill
                               mov, r10, qwordptr .nostromo.bootstrapper_vtbl_inst ; codeshape decomp
                               mov, [rcx], r10                                     ; =
-                              pop, r10                                            ; codeshape restore
                               sub, rsp, 32                                        
                               call, .nostromo.bootstrapper.cdtor                  ; (call label)
                               add, rsp, 32                                        

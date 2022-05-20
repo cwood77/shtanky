@@ -81,116 +81,100 @@ rex(48)op(83)modR/M(ec)i8(20)
 op(e8)co32(00-00-00-00)
 // 63:                                   add, rsp, 32                                            
 rex(48)op(83)modR/M(c4)i8(20)
-// 64:                                   push, r10                                               ; codeshape spill
-rex(49)op(ff)modR/M(f2)
-// 65:                                   mov, r10, qwordptr .nostromo.uart16550.driver_vtbl_inst ; codeshape decomp
+// 64:                                   mov, r10, qwordptr .nostromo.uart16550.driver_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 66:                                   mov, [rcx], r10                                         ; =
+// 65:                                   mov, [rcx], r10                                         ; =
 rex(4c)op(89)modR/M(11)
-// 67:                                   pop, r10                                                ; codeshape restore
-rex(49)op(8f)modR/M(c2)
-// 68:                                   sub, rsp, 32                                            
+// 66:                                   sub, rsp, 32                                            
 rex(48)op(83)modR/M(ec)i8(20)
-// 69:                                   call, .nostromo.uart16550.driver.cctor                  ; (call label)
+// 67:                                   call, .nostromo.uart16550.driver.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 70:                                   add, rsp, 32                                            
+// 68:                                   add, rsp, 32                                            
 rex(48)op(83)modR/M(c4)i8(20)
-// 71:                                   mov, rsp, rbp                                           
+// 69:                                   mov, rsp, rbp                                           
 rex(48)op(89)modR/M(ec)
-// 72:                                   pop, rbp                                                
+// 70:                                   pop, rbp                                                
 rex(48)op(8f)modR/M(c5)
-// 73:                                   ret                                                     
+// 71:                                   ret                                                     
 op(c3)
-// 76: .nostromo.uart16550.driver_sdtor: 
-// 77:                                   push, rbp                                               
+// 74: .nostromo.uart16550.driver_sdtor: 
+// 75:                                   push, rbp                                               
 rex(48)op(ff)modR/M(f5)
-// 78:                                   mov, rbp, rsp                                           
+// 76:                                   mov, rbp, rsp                                           
 rex(48)op(89)modR/M(e5)
-// 79:                                   push, r10                                               ; codeshape spill
-rex(49)op(ff)modR/M(f2)
-// 80:                                   mov, r10, qwordptr .nostromo.uart16550.driver_vtbl_inst ; codeshape decomp
+// 77:                                   mov, r10, qwordptr .nostromo.uart16550.driver_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 81:                                   mov, [rcx], r10                                         ; =
+// 78:                                   mov, [rcx], r10                                         ; =
 rex(4c)op(89)modR/M(11)
-// 82:                                   pop, r10                                                ; codeshape restore
-rex(49)op(8f)modR/M(c2)
-// 83:                                   sub, rsp, 32                                            
+// 79:                                   sub, rsp, 32                                            
 rex(48)op(83)modR/M(ec)i8(20)
-// 84:                                   call, .nostromo.uart16550.driver.cdtor                  ; (call label)
+// 80:                                   call, .nostromo.uart16550.driver.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 85:                                   add, rsp, 32                                            
+// 81:                                   add, rsp, 32                                            
 rex(48)op(83)modR/M(c4)i8(20)
-// 86:                                   sub, rsp, 32                                            
+// 82:                                   sub, rsp, 32                                            
 rex(48)op(83)modR/M(ec)i8(20)
-// 87:                                   call, .nostromo.uart16550.fakeBase_sdtor                ; (call label)
+// 83:                                   call, .nostromo.uart16550.fakeBase_sdtor                ; (call label)
 op(e8)co32(00-00-00-00)
-// 88:                                   add, rsp, 32                                            
+// 84:                                   add, rsp, 32                                            
 rex(48)op(83)modR/M(c4)i8(20)
-// 89:                                   mov, rsp, rbp                                           
+// 85:                                   mov, rsp, rbp                                           
 rex(48)op(89)modR/M(ec)
-// 90:                                   pop, rbp                                                
+// 86:                                   pop, rbp                                                
 rex(48)op(8f)modR/M(c5)
-// 91:                                   ret                                                     
+// 87:                                   ret                                                     
 op(c3)
-// 94: .nostromo.uart16550.fakeBase_sctor: 
-// 95:                                     push, rbp                                                 
+// 90: .nostromo.uart16550.fakeBase_sctor: 
+// 91:                                     push, rbp                                                 
 rex(48)op(ff)modR/M(f5)
-// 96:                                     mov, rbp, rsp                                             
+// 92:                                     mov, rbp, rsp                                             
 rex(48)op(89)modR/M(e5)
-// 97:                                     sub, rsp, 32                                              
+// 93:                                     sub, rsp, 32                                              
 rex(48)op(83)modR/M(ec)i8(20)
-// 98:                                     call, .sht.core.object_sctor                              ; (call label)
+// 94:                                     call, .sht.core.object_sctor                              ; (call label)
 op(e8)co32(00-00-00-00)
-// 99:                                     add, rsp, 32                                              
+// 95:                                     add, rsp, 32                                              
 rex(48)op(83)modR/M(c4)i8(20)
-// 100:                                     push, r10                                                 ; codeshape spill
-rex(49)op(ff)modR/M(f2)
-// 101:                                     mov, r10, qwordptr .nostromo.uart16550.fakeBase_vtbl_inst ; codeshape decomp
+// 96:                                     mov, r10, qwordptr .nostromo.uart16550.fakeBase_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 102:                                     mov, [rcx], r10                                           ; =
+// 97:                                     mov, [rcx], r10                                           ; =
 rex(4c)op(89)modR/M(11)
-// 103:                                     pop, r10                                                  ; codeshape restore
-rex(49)op(8f)modR/M(c2)
-// 104:                                     sub, rsp, 32                                              
+// 98:                                     sub, rsp, 32                                              
 rex(48)op(83)modR/M(ec)i8(20)
-// 105:                                     call, .nostromo.uart16550.fakeBase.cctor                  ; (call label)
+// 99:                                     call, .nostromo.uart16550.fakeBase.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 106:                                     add, rsp, 32                                              
+// 100:                                     add, rsp, 32                                              
 rex(48)op(83)modR/M(c4)i8(20)
-// 107:                                     mov, rsp, rbp                                             
+// 101:                                     mov, rsp, rbp                                             
 rex(48)op(89)modR/M(ec)
-// 108:                                     pop, rbp                                                  
+// 102:                                     pop, rbp                                                  
 rex(48)op(8f)modR/M(c5)
-// 109:                                     ret                                                       
+// 103:                                     ret                                                       
 op(c3)
-// 112: .nostromo.uart16550.fakeBase_sdtor: 
-// 113:                                     push, rbp                                                 
+// 106: .nostromo.uart16550.fakeBase_sdtor: 
+// 107:                                     push, rbp                                                 
 rex(48)op(ff)modR/M(f5)
-// 114:                                     mov, rbp, rsp                                             
+// 108:                                     mov, rbp, rsp                                             
 rex(48)op(89)modR/M(e5)
-// 115:                                     push, r10                                                 ; codeshape spill
-rex(49)op(ff)modR/M(f2)
-// 116:                                     mov, r10, qwordptr .nostromo.uart16550.fakeBase_vtbl_inst ; codeshape decomp
+// 109:                                     mov, r10, qwordptr .nostromo.uart16550.fakeBase_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 117:                                     mov, [rcx], r10                                           ; =
+// 110:                                     mov, [rcx], r10                                           ; =
 rex(4c)op(89)modR/M(11)
-// 118:                                     pop, r10                                                  ; codeshape restore
-rex(49)op(8f)modR/M(c2)
-// 119:                                     sub, rsp, 32                                              
+// 111:                                     sub, rsp, 32                                              
 rex(48)op(83)modR/M(ec)i8(20)
-// 120:                                     call, .nostromo.uart16550.fakeBase.cdtor                  ; (call label)
+// 112:                                     call, .nostromo.uart16550.fakeBase.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 121:                                     add, rsp, 32                                              
+// 113:                                     add, rsp, 32                                              
 rex(48)op(83)modR/M(c4)i8(20)
-// 122:                                     sub, rsp, 32                                              
+// 114:                                     sub, rsp, 32                                              
 rex(48)op(83)modR/M(ec)i8(20)
-// 123:                                     call, .sht.core.object_sdtor                              ; (call label)
+// 115:                                     call, .sht.core.object_sdtor                              ; (call label)
 op(e8)co32(00-00-00-00)
-// 124:                                     add, rsp, 32                                              
+// 116:                                     add, rsp, 32                                              
 rex(48)op(83)modR/M(c4)i8(20)
-// 125:                                     mov, rsp, rbp                                             
+// 117:                                     mov, rsp, rbp                                             
 rex(48)op(89)modR/M(ec)
-// 126:                                     pop, rbp                                                  
+// 118:                                     pop, rbp                                                  
 rex(48)op(8f)modR/M(c5)
-// 127:                                     ret                                                       
+// 119:                                     ret                                                       
 op(c3)

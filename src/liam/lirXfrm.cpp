@@ -349,6 +349,8 @@ void spuriousVarStripper::runInstr(lirInstr& i)
 
 void codeShapeTransform::runInstr(lirInstr& i)
 {
+   m_vfProg.onInstr(i);
+
    cdwDEBUG("checking codeshape for instr #%lld instrId=%lld\n",i.orderNum,i.instrId);
 
    // convert lirArgs into the target's argTypes
@@ -376,7 +378,7 @@ void codeShapeTransform::runInstr(lirInstr& i)
 
    // choose registers to use
    bool needsSpill;
-   size_t altStor = chooseRegister(needsSpill);
+   size_t altStor = m_f.pickScratchRegister(needsSpill);
    if(needsSpill && (pIInfo->stackSensitive || isStackFramePtrInUse(i,*pIInfo,at)))
       cdwTHROW("can't spill, but must spill... arrgh!");
 
@@ -633,22 +635,6 @@ bool codeShapeTransform::isStackFramePtrInUse(lirInstr& i, const cmn::tgt::instr
    }
 
    return stackFramePtrInUse;
-}
-
-size_t codeShapeTransform::chooseRegister(bool& needsSpill)
-{
-   std::vector<size_t> bank;
-   m_t.getCallConvention().createScratchRegisterBank(bank);
-   for(auto it=bank.begin();it!=bank.end();++it)
-   {
-      if(m_f.getUsedRegs().find(*it)==m_f.getUsedRegs().end())
-      {
-         needsSpill = false;
-         return *it;
-      }
-   }
-   needsSpill = true;
-   return *bank.begin();
 }
 
 } // namespace liam

@@ -18,11 +18,14 @@ public:
 
    size_t chooseFreeStorage(size_t pseudoSize);
    size_t decideStackStorage(size_t pseudoSize);
+   size_t pickScratchRegister(bool& needsSpill);
 
    const std::set<size_t>& getUsedRegs() const { return m_regsUsed; }
    size_t getUsedStackSpace() const { return m_stackLocalSpace; }
 
 private:
+   bool tryFindFreeRegister(size_t& reg);
+
    cmn::tgt::iTargetInfo& m_t;
    std::map<size_t,size_t> m_inUse; // reset for each instr
    std::set<size_t> m_regsUsed; // accumulated for entire function

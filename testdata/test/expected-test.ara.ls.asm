@@ -49,10 +49,8 @@
                   sub, rsp, 32                            
                   call, .sht.cons.program_sctor           ; (call label)
                   add, rsp, 32                            
-                  push, r10                               ; codeshape spill
                   mov, r10, qwordptr .test.test_vtbl_inst ; codeshape decomp
                   mov, [rcx], r10                         ; =
-                  pop, r10                                ; codeshape restore
                   sub, rsp, 32                            
                   call, .test.test.cctor                  ; (call label)
                   add, rsp, 32                            
@@ -64,10 +62,8 @@
 .test.test_sdtor: 
                   push, rbp                               
                   mov, rbp, rsp                           
-                  push, r10                               ; codeshape spill
                   mov, r10, qwordptr .test.test_vtbl_inst ; codeshape decomp
                   mov, [rcx], r10                         ; =
-                  pop, r10                                ; codeshape restore
                   sub, rsp, 32                            
                   call, .test.test.cdtor                  ; (call label)
                   add, rsp, 32                            

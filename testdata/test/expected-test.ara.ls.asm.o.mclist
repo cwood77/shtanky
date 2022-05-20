@@ -72,54 +72,46 @@ rex(48)op(83)modR/M(ec)i8(20)
 op(e8)co32(00-00-00-00)
 // 51:                   add, rsp, 32                            
 rex(48)op(83)modR/M(c4)i8(20)
-// 52:                   push, r10                               ; codeshape spill
-rex(49)op(ff)modR/M(f2)
-// 53:                   mov, r10, qwordptr .test.test_vtbl_inst ; codeshape decomp
+// 52:                   mov, r10, qwordptr .test.test_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 54:                   mov, [rcx], r10                         ; =
+// 53:                   mov, [rcx], r10                         ; =
 rex(4c)op(89)modR/M(11)
-// 55:                   pop, r10                                ; codeshape restore
-rex(49)op(8f)modR/M(c2)
-// 56:                   sub, rsp, 32                            
+// 54:                   sub, rsp, 32                            
 rex(48)op(83)modR/M(ec)i8(20)
-// 57:                   call, .test.test.cctor                  ; (call label)
+// 55:                   call, .test.test.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 58:                   add, rsp, 32                            
+// 56:                   add, rsp, 32                            
 rex(48)op(83)modR/M(c4)i8(20)
-// 59:                   mov, rsp, rbp                           
+// 57:                   mov, rsp, rbp                           
 rex(48)op(89)modR/M(ec)
-// 60:                   pop, rbp                                
+// 58:                   pop, rbp                                
 rex(48)op(8f)modR/M(c5)
-// 61:                   ret                                     
+// 59:                   ret                                     
 op(c3)
-// 64: .test.test_sdtor: 
-// 65:                   push, rbp                               
+// 62: .test.test_sdtor: 
+// 63:                   push, rbp                               
 rex(48)op(ff)modR/M(f5)
-// 66:                   mov, rbp, rsp                           
+// 64:                   mov, rbp, rsp                           
 rex(48)op(89)modR/M(e5)
-// 67:                   push, r10                               ; codeshape spill
-rex(49)op(ff)modR/M(f2)
-// 68:                   mov, r10, qwordptr .test.test_vtbl_inst ; codeshape decomp
+// 65:                   mov, r10, qwordptr .test.test_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 69:                   mov, [rcx], r10                         ; =
+// 66:                   mov, [rcx], r10                         ; =
 rex(4c)op(89)modR/M(11)
-// 70:                   pop, r10                                ; codeshape restore
-rex(49)op(8f)modR/M(c2)
-// 71:                   sub, rsp, 32                            
+// 67:                   sub, rsp, 32                            
 rex(48)op(83)modR/M(ec)i8(20)
-// 72:                   call, .test.test.cdtor                  ; (call label)
+// 68:                   call, .test.test.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 73:                   add, rsp, 32                            
+// 69:                   add, rsp, 32                            
 rex(48)op(83)modR/M(c4)i8(20)
-// 74:                   sub, rsp, 32                            
+// 70:                   sub, rsp, 32                            
 rex(48)op(83)modR/M(ec)i8(20)
-// 75:                   call, .sht.cons.program_sdtor           ; (call label)
+// 71:                   call, .sht.cons.program_sdtor           ; (call label)
 op(e8)co32(00-00-00-00)
-// 76:                   add, rsp, 32                            
+// 72:                   add, rsp, 32                            
 rex(48)op(83)modR/M(c4)i8(20)
-// 77:                   mov, rsp, rbp                           
+// 73:                   mov, rsp, rbp                           
 rex(48)op(89)modR/M(ec)
-// 78:                   pop, rbp                                
+// 74:                   pop, rbp                                
 rex(48)op(8f)modR/M(c5)
-// 79:                   ret                                     
+// 75:                   ret                                     
 op(c3)

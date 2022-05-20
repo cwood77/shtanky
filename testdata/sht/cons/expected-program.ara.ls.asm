@@ -93,10 +93,8 @@
                          sub, rsp, 32                                   
                          call, .sht.core.object_sctor                   ; (call label)
                          add, rsp, 32                                   
-                         push, r10                                      ; codeshape spill
                          mov, r10, qwordptr .sht.cons.iStream_vtbl_inst ; codeshape decomp
                          mov, [rcx], r10                                ; =
-                         pop, r10                                       ; codeshape restore
                          sub, rsp, 32                                   
                          call, .sht.cons.iStream.cctor                  ; (call label)
                          add, rsp, 32                                   
@@ -108,10 +106,8 @@
 .sht.cons.iStream_sdtor: 
                          push, rbp                                      
                          mov, rbp, rsp                                  
-                         push, r10                                      ; codeshape spill
                          mov, r10, qwordptr .sht.cons.iStream_vtbl_inst ; codeshape decomp
                          mov, [rcx], r10                                ; =
-                         pop, r10                                       ; codeshape restore
                          sub, rsp, 32                                   
                          call, .sht.cons.iStream.cdtor                  ; (call label)
                          add, rsp, 32                                   
@@ -129,10 +125,8 @@
                          sub, rsp, 32                                   
                          call, .sht.core.object_sctor                   ; (call label)
                          add, rsp, 32                                   
-                         push, r10                                      ; codeshape spill
                          mov, r10, qwordptr .sht.cons.program_vtbl_inst ; codeshape decomp
                          mov, [rcx], r10                                ; =
-                         pop, r10                                       ; codeshape restore
                          sub, rsp, 32                                   
                          call, .sht.cons.program.cctor                  ; (call label)
                          add, rsp, 32                                   
@@ -144,10 +138,8 @@
 .sht.cons.program_sdtor: 
                          push, rbp                                      
                          mov, rbp, rsp                                  
-                         push, r10                                      ; codeshape spill
                          mov, r10, qwordptr .sht.cons.program_vtbl_inst ; codeshape decomp
                          mov, [rcx], r10                                ; =
-                         pop, r10                                       ; codeshape restore
                          sub, rsp, 32                                   
                          call, .sht.cons.program.cdtor                  ; (call label)
                          add, rsp, 32                                   
@@ -165,10 +157,8 @@
                         sub, rsp, 32                                  
                         call, .sht.cons.iStream_sctor                 ; (call label)
                         add, rsp, 32                                  
-                        push, r10                                     ; codeshape spill
                         mov, r10, qwordptr .sht.cons.stdout_vtbl_inst ; codeshape decomp
                         mov, [rcx], r10                               ; =
-                        pop, r10                                      ; codeshape restore
                         sub, rsp, 32                                  
                         call, .sht.cons.stdout.cctor                  ; (call label)
                         add, rsp, 32                                  
@@ -180,10 +170,8 @@
 .sht.cons.stdout_sdtor: 
                         push, rbp                                     
                         mov, rbp, rsp                                 
-                        push, r10                                     ; codeshape spill
                         mov, r10, qwordptr .sht.cons.stdout_vtbl_inst ; codeshape decomp
                         mov, [rcx], r10                               ; =
-                        pop, r10                                      ; codeshape restore
                         sub, rsp, 32                                  
                         call, .sht.cons.stdout.cdtor                  ; (call label)
                         add, rsp, 32                                  

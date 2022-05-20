@@ -66,10 +66,8 @@
                              sub, rsp, 32                                       
                              call, .sht.core.object_sctor                       ; (call label)
                              add, rsp, 32                                       
-                             push, r10                                          ; codeshape spill
                              mov, r10, qwordptr .assign.consoleTarget_vtbl_inst ; codeshape decomp
                              mov, [rcx], r10                                    ; =
-                             pop, r10                                           ; codeshape restore
                              sub, rsp, 32                                       
                              call, .assign.consoleTarget.cctor                  ; (call label)
                              add, rsp, 32                                       
@@ -81,10 +79,8 @@
 .assign.consoleTarget_sdtor: 
                              push, rbp                                          
                              mov, rbp, rsp                                      
-                             push, r10                                          ; codeshape spill
                              mov, r10, qwordptr .assign.consoleTarget_vtbl_inst ; codeshape decomp
                              mov, [rcx], r10                                    ; =
-                             pop, r10                                           ; codeshape restore
                              sub, rsp, 32                                       
                              call, .assign.consoleTarget.cdtor                  ; (call label)
                              add, rsp, 32                                       

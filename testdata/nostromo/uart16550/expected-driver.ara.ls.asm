@@ -61,10 +61,8 @@
                                   sub, rsp, 32                                            
                                   call, .nostromo.uart16550.fakeBase_sctor                ; (call label)
                                   add, rsp, 32                                            
-                                  push, r10                                               ; codeshape spill
                                   mov, r10, qwordptr .nostromo.uart16550.driver_vtbl_inst ; codeshape decomp
                                   mov, [rcx], r10                                         ; =
-                                  pop, r10                                                ; codeshape restore
                                   sub, rsp, 32                                            
                                   call, .nostromo.uart16550.driver.cctor                  ; (call label)
                                   add, rsp, 32                                            
@@ -76,10 +74,8 @@
 .nostromo.uart16550.driver_sdtor: 
                                   push, rbp                                               
                                   mov, rbp, rsp                                           
-                                  push, r10                                               ; codeshape spill
                                   mov, r10, qwordptr .nostromo.uart16550.driver_vtbl_inst ; codeshape decomp
                                   mov, [rcx], r10                                         ; =
-                                  pop, r10                                                ; codeshape restore
                                   sub, rsp, 32                                            
                                   call, .nostromo.uart16550.driver.cdtor                  ; (call label)
                                   add, rsp, 32                                            
@@ -97,10 +93,8 @@
                                     sub, rsp, 32                                              
                                     call, .sht.core.object_sctor                              ; (call label)
                                     add, rsp, 32                                              
-                                    push, r10                                                 ; codeshape spill
                                     mov, r10, qwordptr .nostromo.uart16550.fakeBase_vtbl_inst ; codeshape decomp
                                     mov, [rcx], r10                                           ; =
-                                    pop, r10                                                  ; codeshape restore
                                     sub, rsp, 32                                              
                                     call, .nostromo.uart16550.fakeBase.cctor                  ; (call label)
                                     add, rsp, 32                                              
@@ -112,10 +106,8 @@
 .nostromo.uart16550.fakeBase_sdtor: 
                                     push, rbp                                                 
                                     mov, rbp, rsp                                             
-                                    push, r10                                                 ; codeshape spill
                                     mov, r10, qwordptr .nostromo.uart16550.fakeBase_vtbl_inst ; codeshape decomp
                                     mov, [rcx], r10                                           ; =
-                                    pop, r10                                                  ; codeshape restore
                                     sub, rsp, 32                                              
                                     call, .nostromo.uart16550.fakeBase.cdtor                  ; (call label)
                                     add, rsp, 32                                              

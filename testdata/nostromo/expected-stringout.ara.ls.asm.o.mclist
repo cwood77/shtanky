@@ -88,54 +88,46 @@ rex(48)op(83)modR/M(ec)i8(20)
 op(e8)co32(00-00-00-00)
 // 60:                           add, rsp, 32                                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 61:                           push, r10                                       ; codeshape spill
-rex(49)op(ff)modR/M(f2)
-// 62:                           mov, r10, qwordptr .nostromo.debugOut_vtbl_inst ; codeshape decomp
+// 61:                           mov, r10, qwordptr .nostromo.debugOut_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 63:                           mov, [rcx], r10                                 ; =
+// 62:                           mov, [rcx], r10                                 ; =
 rex(4c)op(89)modR/M(11)
-// 64:                           pop, r10                                        ; codeshape restore
-rex(49)op(8f)modR/M(c2)
-// 65:                           sub, rsp, 32                                    
+// 63:                           sub, rsp, 32                                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 66:                           call, .nostromo.debugOut.cctor                  ; (call label)
+// 64:                           call, .nostromo.debugOut.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 67:                           add, rsp, 32                                    
+// 65:                           add, rsp, 32                                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 68:                           mov, rsp, rbp                                   
+// 66:                           mov, rsp, rbp                                   
 rex(48)op(89)modR/M(ec)
-// 69:                           pop, rbp                                        
+// 67:                           pop, rbp                                        
 rex(48)op(8f)modR/M(c5)
-// 70:                           ret                                             
+// 68:                           ret                                             
 op(c3)
-// 73: .nostromo.debugOut_sdtor: 
-// 74:                           push, rbp                                       
+// 71: .nostromo.debugOut_sdtor: 
+// 72:                           push, rbp                                       
 rex(48)op(ff)modR/M(f5)
-// 75:                           mov, rbp, rsp                                   
+// 73:                           mov, rbp, rsp                                   
 rex(48)op(89)modR/M(e5)
-// 76:                           push, r10                                       ; codeshape spill
-rex(49)op(ff)modR/M(f2)
-// 77:                           mov, r10, qwordptr .nostromo.debugOut_vtbl_inst ; codeshape decomp
+// 74:                           mov, r10, qwordptr .nostromo.debugOut_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 78:                           mov, [rcx], r10                                 ; =
+// 75:                           mov, [rcx], r10                                 ; =
 rex(4c)op(89)modR/M(11)
-// 79:                           pop, r10                                        ; codeshape restore
-rex(49)op(8f)modR/M(c2)
-// 80:                           sub, rsp, 32                                    
+// 76:                           sub, rsp, 32                                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 81:                           call, .nostromo.debugOut.cdtor                  ; (call label)
+// 77:                           call, .nostromo.debugOut.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 82:                           add, rsp, 32                                    
+// 78:                           add, rsp, 32                                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 83:                           sub, rsp, 32                                    
+// 79:                           sub, rsp, 32                                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 84:                           call, .sht.core.object_sdtor                    ; (call label)
+// 80:                           call, .sht.core.object_sdtor                    ; (call label)
 op(e8)co32(00-00-00-00)
-// 85:                           add, rsp, 32                                    
+// 81:                           add, rsp, 32                                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 86:                           mov, rsp, rbp                                   
+// 82:                           mov, rsp, rbp                                   
 rex(48)op(89)modR/M(ec)
-// 87:                           pop, rbp                                        
+// 83:                           pop, rbp                                        
 rex(48)op(8f)modR/M(c5)
-// 88:                           ret                                             
+// 84:                           ret                                             
 op(c3)

@@ -82,7 +82,7 @@ int _main(int argc,const char *argv[])
          varSplitter::split(*it,vTbl,t);
 
          varFinder f(t);
-         { varCombiner p(*it,vTbl,t,f); p.run(); }
+         { varCombiner p(*it,vTbl,f); p.run(); }
 
          stackAllocator().run(vTbl,f);
          varAllocator(t).run(vTbl,f);

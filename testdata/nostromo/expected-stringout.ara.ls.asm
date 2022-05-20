@@ -58,10 +58,8 @@
                           sub, rsp, 32                                    
                           call, .sht.core.object_sctor                    ; (call label)
                           add, rsp, 32                                    
-                          push, r10                                       ; codeshape spill
                           mov, r10, qwordptr .nostromo.debugOut_vtbl_inst ; codeshape decomp
                           mov, [rcx], r10                                 ; =
-                          pop, r10                                        ; codeshape restore
                           sub, rsp, 32                                    
                           call, .nostromo.debugOut.cctor                  ; (call label)
                           add, rsp, 32                                    
@@ -73,10 +71,8 @@
 .nostromo.debugOut_sdtor: 
                           push, rbp                                       
                           mov, rbp, rsp                                   
-                          push, r10                                       ; codeshape spill
                           mov, r10, qwordptr .nostromo.debugOut_vtbl_inst ; codeshape decomp
                           mov, [rcx], r10                                 ; =
-                          pop, r10                                        ; codeshape restore
                           sub, rsp, 32                                    
                           call, .nostromo.debugOut.cdtor                  ; (call label)
                           add, rsp, 32                                    

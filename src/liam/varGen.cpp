@@ -50,13 +50,14 @@ void var::unbindArgButKeepStorage(lirInstr& i, lirArg& a)
 
 bool var::isAlive(size_t orderNum)
 {
-   return refs.begin()->first <= orderNum && orderNum <= (--(refs.end()))->first;
+   return refs.size() &&
+      refs.begin()->first <= orderNum && orderNum <= (--(refs.end()))->first;
 }
 
 bool var::isAlive(size_t start, size_t end)
 {
    return isAlive(start) || isAlive(end) ||
-      (start < refs.begin()->first && (--(refs.end()))->first < end);
+      (refs.size() && start < refs.begin()->first && (--(refs.end()))->first < end);
 }
 
 // ans    req

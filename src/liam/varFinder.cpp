@@ -17,17 +17,9 @@ void varFinder::recordStorageUsed(size_t s)
 
 size_t varFinder::chooseFreeStorage(size_t pseudoSize)
 {
-   std::vector<size_t> regs;
-   m_t.getCallConvention().createRegisterBankInPreferredOrder(regs);
-
-   for(size_t i=0;i<regs.size();i++)
-   {
-      if(m_inUse[regs[i]]==0)
-      {
-         recordStorageUsed(regs[i]);
-         return regs[i];
-      }
-   }
+   size_t reg = 0;
+   if(tryFindFreeRegister(reg))
+      return reg;
 
    // use a stack slot
    return decideStackStorage(pseudoSize);
@@ -40,6 +32,42 @@ size_t varFinder::decideStackStorage(size_t pseudoSize)
    m_stackLocalSpace += actualSize;
    recordStorageUsed(cmn::tgt::kStorageStackFramePtr);
    return s;
+}
+
+size_t varFinder::pickScratchRegister(bool& needsSpill)
+{
+   std::vector<size_t> bank;
+   m_t.getCallConvention().createScratchRegisterBank(bank);
+   for(size_t i=0;i<bank.size();i++)
+   {
+      if(m_inUse[bank[i]]==0)
+      {
+         needsSpill = false;
+         return bank[i];
+      }
+   }
+
+   // if all else fails, require a spill
+   needsSpill = true;
+   return bank[0];
+}
+
+bool varFinder::tryFindFreeRegister(size_t& reg)
+{
+   std::vector<size_t> regs;
+   m_t.getCallConvention().createRegisterBankInPreferredOrder(regs);
+
+   for(size_t i=0;i<regs.size();i++)
+   {
+      if(m_inUse[regs[i]]==0)
+      {
+         recordStorageUsed(regs[i]);
+         reg = regs[i];
+         return true;
+      }
+   }
+
+   return false;
 }
 
 } // namespace liam

@@ -1,4 +1,5 @@
 #pragma once
+#include "availVarPass.hpp"
 #include <list>
 
 namespace cmn { class uniquifier; }
@@ -175,7 +176,7 @@ private:
 class codeShapeTransform : public lirTransform {
 public:
    codeShapeTransform(varTable& v, varFinder& f, cmn::tgt::iTargetInfo& t)
-   : m_v(v), m_f(f), m_t(t) {}
+   : m_v(v), m_f(f), m_t(t), m_vfProg(v,f) {}
 
 protected:
    virtual void runInstr(lirInstr& i);
@@ -211,21 +212,10 @@ private:
       const cmn::tgt::instrInfo& iInfo,
       std::vector<cmn::tgt::argTypes> origArgs);
 
-   size_t chooseRegister(bool& needsSpill);
-
-   void patchInstructions(
-//         needSpill
- //        reg
- //        offsets
- //        i
- //        iInfo
- //        retryArgs
-
-         );
-
    varTable& m_v;
    varFinder& m_f;
    cmn::tgt::iTargetInfo& m_t;
+   varFinderProgrammer m_vfProg;
 };
 
 } // namespace liam

@@ -153,10 +153,8 @@
                  sub, rsp, 32                           
                  call, .sht.core.object_sctor           ; (call label)
                  add, rsp, 32                           
-                 push, r10                              ; codeshape spill
                  mov, r10, qwordptr .assign.A_vtbl_inst ; codeshape decomp
                  mov, [rcx], r10                        ; =
-                 pop, r10                               ; codeshape restore
                  sub, rsp, 32                           
                  call, .assign.A.cctor                  ; (call label)
                  add, rsp, 32                           
@@ -168,10 +166,8 @@
 .assign.A_sdtor: 
                  push, rbp                              
                  mov, rbp, rsp                          
-                 push, r10                              ; codeshape spill
                  mov, r10, qwordptr .assign.A_vtbl_inst ; codeshape decomp
                  mov, [rcx], r10                        ; =
-                 pop, r10                               ; codeshape restore
                  sub, rsp, 32                           
                  call, .assign.A.cdtor                  ; (call label)
                  add, rsp, 32                           
@@ -189,10 +185,8 @@
                  sub, rsp, 32                           
                  call, .sht.core.object_sctor           ; (call label)
                  add, rsp, 32                           
-                 push, r10                              ; codeshape spill
                  mov, r10, qwordptr .assign.B_vtbl_inst ; codeshape decomp
                  mov, [rcx], r10                        ; =
-                 pop, r10                               ; codeshape restore
                  sub, rsp, 32                           
                  call, .assign.B.cctor                  ; (call label)
                  add, rsp, 32                           
@@ -204,10 +198,8 @@
 .assign.B_sdtor: 
                  push, rbp                              
                  mov, rbp, rsp                          
-                 push, r10                              ; codeshape spill
                  mov, r10, qwordptr .assign.B_vtbl_inst ; codeshape decomp
                  mov, [rcx], r10                        ; =
-                 pop, r10                               ; codeshape restore
                  sub, rsp, 32                           
                  call, .assign.B.cdtor                  ; (call label)
                  add, rsp, 32                           
@@ -225,10 +217,8 @@
                             sub, rsp, 32                                      
                             call, .sht.cons.program_sctor                     ; (call label)
                             add, rsp, 32                                      
-                            push, r10                                         ; codeshape spill
                             mov, r10, qwordptr .assign.assignTester_vtbl_inst ; codeshape decomp
                             mov, [rcx], r10                                   ; =
-                            pop, r10                                          ; codeshape restore
                             sub, rsp, 32                                      
                             call, .assign.assignTester.cctor                  ; (call label)
                             add, rsp, 32                                      
@@ -240,10 +230,8 @@
 .assign.assignTester_sdtor: 
                             push, rbp                                         
                             mov, rbp, rsp                                     
-                            push, r10                                         ; codeshape spill
                             mov, r10, qwordptr .assign.assignTester_vtbl_inst ; codeshape decomp
                             mov, [rcx], r10                                   ; =
-                            pop, r10                                          ; codeshape restore
                             sub, rsp, 32                                      
                             call, .assign.assignTester.cdtor                  ; (call label)
                             add, rsp, 32                                      
