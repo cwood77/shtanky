@@ -1,10 +1,14 @@
 class string {
 
-   public indexOpGet(i : ptr) : ptr
+   public length() : int
    {
    }
 
-   public indexOpSet(i : ptr, val : ptr) : void
+   public indexOpGet(i : int) : int
+   {
+   }
+
+   public indexOpSet(i : int, val : int) : void
    {
    }
 

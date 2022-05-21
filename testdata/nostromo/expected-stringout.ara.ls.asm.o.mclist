@@ -5,129 +5,131 @@
 rex(48)op(ff)modR/M(f5)
 // 8:                           push, rbx                         
 rex(48)op(ff)modR/M(f3)
-// 9:                           push, rsi                         
-rex(48)op(ff)modR/M(f6)
-// 10:                           push, rdi                         
-rex(48)op(ff)modR/M(f7)
-// 11:                           mov, rbp, rsp                     
+// 9:                           mov, rbp, rsp                     
 rex(48)op(89)modR/M(e5)
+// 10:                           sub, rsp, 8                       
+rex(48)op(83)modR/M(ec)i8(08)
+// 11:                           sub, rsp, 8                       
+rex(48)op(83)modR/M(ec)i8(08)
 // 12:                           sub, rsp, 32                      
 rex(48)op(83)modR/M(ec)i8(20)
-// 13:                           mov, rbx, [rcx+8]                 ; fieldaccess: owner of _vtbl
-rex(48)op(8b)modR/M(59)d8(08)
-// 14:                           mov, rsi, [rbx]                   ; fieldaccess: owner of write8
-rex(48)op(8b)modR/M(33)
-// 15:                           sub, rsp, 32                      
-rex(48)op(83)modR/M(ec)i8(20)
-// 16:                           mov, rbx, rdx                     ; (preserve) [combiner]
-rex(48)op(89)modR/M(d3)
-// 17:                           mov, rdx, 0                       ; shape:hoist imm from call
-rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
-// 18:                           mov, rdi, rbx                     ; (preserve) [combiner]
-rex(48)op(89)modR/M(df)
-// 19:                           mov, rbx, rcx                     ; (preserve) [combiner]
+// 13:                           mov, rbx, rcx                     ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
-// 20:                           mov, rcx, rdi                     ;       (msg req for rcx) [splitter]
-rex(48)op(89)modR/M(f9)
-// 21:                           call, .sht.core.string.indexOpGet ; (call label)
+// 14:                           mov, rcx, rdx                     ;       (msg req for rcx) [splitter]
+rex(48)op(89)modR/M(d1)
+// 15:                           call, .sht.core.string.length     ; (call label)
 op(e8)co32(00-00-00-00)
-// 22:                           add, rsp, 32                      
+// 16:                           add, rsp, 32                      
 rex(48)op(83)modR/M(c4)i8(20)
-// 23:                           mov, rcx, [rbx+8]                 ; shape:hoist addrOf from call
+// 17:                           mov, [rbp-8], rax                 ; =
+rex(48)op(89)modR/M(45)d8(f8)
+// 18:                           sub, rsp, 32                      
+rex(48)op(83)modR/M(ec)i8(20)
+// 19:                           mov, rbx, [rbx+8]                 ; fieldaccess: owner of _vtbl
+rex(48)op(8b)modR/M(5b)d8(08)
+// 20:                           mov, rbx, [rbx]                   ; fieldaccess: owner of write8
+rex(48)op(8b)modR/M(1b)
+// 21:                           sub, rsp, 32                      
+rex(48)op(83)modR/M(ec)i8(20)
+// 22:                           mov, rdx, 0                       ; shape:hoist imm from call
+rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
+// 23:                           call, .sht.core.string.indexOpGet ; (call label)
+op(e8)co32(00-00-00-00)
+// 24:                           add, rsp, 32                      
+rex(48)op(83)modR/M(c4)i8(20)
+// 25:                           mov, rcx, [rbx+8]                 ; shape:hoist addrOf from call
 rex(48)op(8b)modR/M(4b)d8(08)
-// 24:                           mov, rdx, rax                     ;       (rval0 req for rdx) [splitter]
+// 26:                           mov, rdx, rax                     ;       (rval1 req for rdx) [splitter]
 rex(48)op(89)modR/M(c2)
-// 25:                           call, [rsi]                       ; (call ptr)
-rex(48)op(ff)modR/M(16)
-// 26:                           add, rsp, 32                      
+// 27:                           call, [rbx]                       ; (call ptr)
+rex(48)op(ff)modR/M(13)
+// 28:                           add, rsp, 32                      
 rex(48)op(83)modR/M(c4)i8(20)
-// 27:                           mov, rsp, rbp                     
+// 29:                           add, rsp, 8                       
+rex(48)op(83)modR/M(c4)i8(08)
+// 30:                           mov, rsp, rbp                     
 rex(48)op(89)modR/M(ec)
-// 28:                           pop, rdi                          
-rex(48)op(8f)modR/M(c7)
-// 29:                           pop, rsi                          
-rex(48)op(8f)modR/M(c6)
-// 30:                           pop, rbx                          
+// 31:                           pop, rbx                          
 rex(48)op(8f)modR/M(c3)
-// 31:                           pop, rbp                          
+// 32:                           pop, rbp                          
 rex(48)op(8f)modR/M(c5)
-// 32:                           ret                               
+// 33:                           ret                               
 op(c3)
-// 35: .nostromo.debugOut.cctor: 
-// 36:                           push, rbp
+// 36: .nostromo.debugOut.cctor: 
+// 37:                           push, rbp
 rex(48)op(ff)modR/M(f5)
-// 37:                           mov, rbp, rsp
+// 38:                           mov, rbp, rsp
 rex(48)op(89)modR/M(e5)
-// 38:                           mov, rsp, rbp
+// 39:                           mov, rsp, rbp
 rex(48)op(89)modR/M(ec)
-// 39:                           pop, rbp
+// 40:                           pop, rbp
 rex(48)op(8f)modR/M(c5)
-// 40:                           ret
+// 41:                           ret
 op(c3)
-// 43: .nostromo.debugOut.cdtor: 
-// 44:                           push, rbp
+// 44: .nostromo.debugOut.cdtor: 
+// 45:                           push, rbp
 rex(48)op(ff)modR/M(f5)
-// 45:                           mov, rbp, rsp
+// 46:                           mov, rbp, rsp
 rex(48)op(89)modR/M(e5)
-// 46:                           mov, rsp, rbp
+// 47:                           mov, rsp, rbp
 rex(48)op(89)modR/M(ec)
-// 47:                           pop, rbp
+// 48:                           pop, rbp
 rex(48)op(8f)modR/M(c5)
-// 48:                           ret
+// 49:                           ret
 op(c3)
-// 51: .nostromo.debugOut_vtbl_inst:
-// 52: .data, 
-// 55: .nostromo.debugOut_sctor: 
-// 56:                           push, rbp                                       
+// 52: .nostromo.debugOut_vtbl_inst:
+// 53: .data, 
+// 56: .nostromo.debugOut_sctor: 
+// 57:                           push, rbp                                       
 rex(48)op(ff)modR/M(f5)
-// 57:                           mov, rbp, rsp                                   
+// 58:                           mov, rbp, rsp                                   
 rex(48)op(89)modR/M(e5)
-// 58:                           sub, rsp, 32                                    
+// 59:                           sub, rsp, 32                                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 59:                           call, .sht.core.object_sctor                    ; (call label)
+// 60:                           call, .sht.core.object_sctor                    ; (call label)
 op(e8)co32(00-00-00-00)
-// 60:                           add, rsp, 32                                    
+// 61:                           add, rsp, 32                                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 61:                           mov, r10, qwordptr .nostromo.debugOut_vtbl_inst ; codeshape decomp
+// 62:                           mov, r10, qwordptr .nostromo.debugOut_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 62:                           mov, [rcx], r10                                 ; =
+// 63:                           mov, [rcx], r10                                 ; =
 rex(4c)op(89)modR/M(11)
-// 63:                           sub, rsp, 32                                    
+// 64:                           sub, rsp, 32                                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 64:                           call, .nostromo.debugOut.cctor                  ; (call label)
+// 65:                           call, .nostromo.debugOut.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 65:                           add, rsp, 32                                    
+// 66:                           add, rsp, 32                                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 66:                           mov, rsp, rbp                                   
+// 67:                           mov, rsp, rbp                                   
 rex(48)op(89)modR/M(ec)
-// 67:                           pop, rbp                                        
+// 68:                           pop, rbp                                        
 rex(48)op(8f)modR/M(c5)
-// 68:                           ret                                             
+// 69:                           ret                                             
 op(c3)
-// 71: .nostromo.debugOut_sdtor: 
-// 72:                           push, rbp                                       
+// 72: .nostromo.debugOut_sdtor: 
+// 73:                           push, rbp                                       
 rex(48)op(ff)modR/M(f5)
-// 73:                           mov, rbp, rsp                                   
+// 74:                           mov, rbp, rsp                                   
 rex(48)op(89)modR/M(e5)
-// 74:                           mov, r10, qwordptr .nostromo.debugOut_vtbl_inst ; codeshape decomp
+// 75:                           mov, r10, qwordptr .nostromo.debugOut_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 75:                           mov, [rcx], r10                                 ; =
+// 76:                           mov, [rcx], r10                                 ; =
 rex(4c)op(89)modR/M(11)
-// 76:                           sub, rsp, 32                                    
+// 77:                           sub, rsp, 32                                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 77:                           call, .nostromo.debugOut.cdtor                  ; (call label)
+// 78:                           call, .nostromo.debugOut.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 78:                           add, rsp, 32                                    
+// 79:                           add, rsp, 32                                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 79:                           sub, rsp, 32                                    
+// 80:                           sub, rsp, 32                                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 80:                           call, .sht.core.object_sdtor                    ; (call label)
+// 81:                           call, .sht.core.object_sdtor                    ; (call label)
 op(e8)co32(00-00-00-00)
-// 81:                           add, rsp, 32                                    
+// 82:                           add, rsp, 32                                    
 rex(48)op(83)modR/M(c4)i8(20)
-// 82:                           mov, rsp, rbp                                   
+// 83:                           mov, rsp, rbp                                   
 rex(48)op(89)modR/M(ec)
-// 83:                           pop, rbp                                        
+// 84:                           pop, rbp                                        
 rex(48)op(8f)modR/M(c5)
-// 84:                           ret                                             
+// 85:                           ret                                             
 op(c3)

@@ -38,6 +38,8 @@ public:
    virtual void visit(cmn::node& n) {}
    virtual void visit(cmn::typeNode& n);
    virtual void visit(cmn::strTypeNode& n);
+   virtual void visit(cmn::boolTypeNode& n);
+   virtual void visit(cmn::intTypeNode& n);
    virtual void visit(cmn::arrayTypeNode& n);
    virtual void visit(cmn::voidTypeNode& n);
    virtual void visit(cmn::userTypeNode& n);

@@ -4,6 +4,8 @@ func .nostromo.debugOut.write(
    self : .nostromo.debugOut,
    msg : .sht.core.string) : void
 {
+   var l : int;
+   l = .sht.core.string.length(msg);
    self:_uart:_vtbl:write8->(self:_uart,.sht.core.string.indexOpGet(msg,0));
 }
 

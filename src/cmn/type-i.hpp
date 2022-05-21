@@ -36,6 +36,11 @@ public:
    stringType() : staticallySizedType("string",0) {}
 };
 
+class boolType : public staticallySizedType {
+public:
+   boolType() : staticallySizedType("bool",0) {}
+};
+
 class intType : public staticallySizedType {
 public:
    intType() : staticallySizedType("int",0) {}

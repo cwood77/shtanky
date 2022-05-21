@@ -153,6 +153,7 @@ SYZYGY_SRC = \
 	src/syzygy/codegen.cpp \
 	src/syzygy/frontend.cpp \
 	src/syzygy/genericUnlinker.cpp \
+	src/syzygy/symbolTable.cpp \
 
 SYZYGY_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SYZYGY_SRC)))
 

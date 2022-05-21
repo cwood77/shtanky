@@ -1,10 +1,16 @@
 #include "../cmn/trace.hpp"
 #include "../syzygy/genericUnlinker.hpp"
+#include "../syzygy/symbolTable.hpp"
 #include "intfTransform.hpp"
 #include "symbolTable.hpp"
 #include <cstring>
 
 namespace salome {
+
+bool nodeLinker::typePropLink(cmn::node& root, cmn::symbolTable& sTable)
+{
+   return syzygy::nodeLinkerHelper::typePropLink(root,sTable);
+}
 
 bool nodeLinker::tryFixUnresolved(cmn::node& root, cmn::symbolTable& sTable)
 {

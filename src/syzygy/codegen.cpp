@@ -132,6 +132,18 @@ void codegen::visit(cmn::strTypeNode& n)
    hNodeVisitor::visit(n);
 }
 
+void codegen::visit(cmn::boolTypeNode& n)
+{
+   getOutStream().stream() << "bool";
+   hNodeVisitor::visit(n);
+}
+
+void codegen::visit(cmn::intTypeNode& n)
+{
+   getOutStream().stream() << "int";
+   hNodeVisitor::visit(n);
+}
+
 void codegen::visit(cmn::arrayTypeNode& n)
 {
    getOutStream().stream() << "[]";
@@ -177,7 +189,7 @@ void codegen::visit(cmn::invokeNode& n)
 {
    auto& s = getOutStream();
 
-   if(n.getChildren().size() < 2)
+   if(n.getChildren().size() < 1)
       cdwTHROW("insanity");
 
    n.getChildren()[0]->acceptVisitor(*this);
@@ -189,7 +201,7 @@ void codegen::visit(cmn::invokeFuncPtrNode& n)
 {
    auto& s = getOutStream();
 
-   if(n.getChildren().size() < 2)
+   if(n.getChildren().size() < 1)
       cdwTHROW("insanity");
 
    n.getChildren()[0]->acceptVisitor(*this);
@@ -268,6 +280,12 @@ void codegen::visit(cmn::stringLiteralNode& n)
 {
    auto& s = getOutStream();
    s.stream() << "\"" << n.value << "\"";
+}
+
+void codegen::visit(cmn::boolLiteralNode& n)
+{
+   auto& s = getOutStream();
+   s.stream() << "\"" << (n.value ? "true" : "false" ) << "\"";
 }
 
 void codegen::visit(cmn::intLiteralNode& n)

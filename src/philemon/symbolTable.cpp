@@ -1,8 +1,14 @@
 #include "../cmn/trace.hpp"
+#include "../syzygy/symbolTable.hpp"
 #include "genericClassInstantiator.hpp"
 #include "symbolTable.hpp"
 
 namespace philemon {
+
+bool nodeLinker::typePropLink(cmn::node& root, cmn::symbolTable& sTable)
+{
+   return syzygy::nodeLinkerHelper::typePropLink(root,sTable);
+}
 
 bool nodeLinker::loadAnotherSymbol(cmn::node& root, cmn::symbolTable& sTable)
 {

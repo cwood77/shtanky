@@ -10,8 +10,6 @@ class commonLexor;
 class genericTypeExprLexor;
 class lexorBase;
 
-//#error add new nodes to parser: bool, int, index, if
-
 // eBNF
 //
 // ------------------------- file
@@ -105,6 +103,8 @@ class lexorBase;
 // <type> ::== 'str' '[' ']'
 //           | 'void'
 //           | 'ptr'
+//           | 'bool'
+//           | 'int'
 //           | <name>
 //           | <generic-opaque>
 //

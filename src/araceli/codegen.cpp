@@ -73,6 +73,18 @@ void liamTypeWriter::visit(cmn::strTypeNode& n)
    hNodeVisitor::visit(n);
 }
 
+void liamTypeWriter::visit(cmn::boolTypeNode& n)
+{
+   m_o << "bool";
+   hNodeVisitor::visit(n);
+}
+
+void liamTypeWriter::visit(cmn::intTypeNode& n)
+{
+   m_o << "int";
+   hNodeVisitor::visit(n);
+}
+
 void liamTypeWriter::visit(cmn::arrayTypeNode& n)
 {
    m_o << "[]";

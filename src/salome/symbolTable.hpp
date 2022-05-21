@@ -5,6 +5,7 @@ namespace salome {
 
 class nodeLinker : public araceli::nodeLinker {
 protected:
+   virtual bool typePropLink(cmn::node& root, cmn::symbolTable& sTable);
    virtual bool tryFixUnresolved(cmn::node& root, cmn::symbolTable& sTable);
    virtual bool loadAnotherSymbol(cmn::node& root, cmn::symbolTable& sTable);
 };

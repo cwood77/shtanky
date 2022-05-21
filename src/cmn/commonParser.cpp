@@ -564,6 +564,16 @@ void commonParser::parseType(node& owner)
       pType = &m_nFac.appendNewChild<ptrTypeNode>(owner);
       m_l.advance();
    }
+   else if(m_l.getToken() == commonLexor::kBool)
+   {
+      pType = &m_nFac.appendNewChild<boolTypeNode>(owner);
+      m_l.advance();
+   }
+   else if(m_l.getToken() == commonLexor::kInt)
+   {
+      pType = &m_nFac.appendNewChild<intTypeNode>(owner);
+      m_l.advance();
+   }
    else if(m_l.getToken() == commonLexor::kName ||
            m_l.getToken() == commonLexor::kGenericTypeExpr)
    {
@@ -572,10 +582,12 @@ void commonParser::parseType(node& owner)
       m_l.advance();
    }
    else
-      m_l.demandOneOf(cdwLoc,5,
+      m_l.demandOneOf(cdwLoc,7,
          commonLexor::kStr,
          commonLexor::kVoid,
          commonLexor::kPtr,
+         commonLexor::kBool,
+         commonLexor::kInt,
          commonLexor::kName,
          commonLexor::kGenericTypeExpr);
 

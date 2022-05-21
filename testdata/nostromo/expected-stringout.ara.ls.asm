@@ -6,27 +6,28 @@
 .nostromo.debugOut.write: 
                           push, rbp                         
                           push, rbx                         
-                          push, rsi                         
-                          push, rdi                         
                           mov, rbp, rsp                     
+                          sub, rsp, 8                       
+                          sub, rsp, 8                       
                           sub, rsp, 32                      
-                          mov, rbx, [rcx+8]                 ; fieldaccess: owner of _vtbl
-                          mov, rsi, [rbx]                   ; fieldaccess: owner of write8
-                          sub, rsp, 32                      
-                          mov, rbx, rdx                     ; (preserve) [combiner]
-                          mov, rdx, 0                       ; shape:hoist imm from call
-                          mov, rdi, rbx                     ; (preserve) [combiner]
                           mov, rbx, rcx                     ; (preserve) [combiner]
-                          mov, rcx, rdi                     ;       (msg req for rcx) [splitter]
+                          mov, rcx, rdx                     ;       (msg req for rcx) [splitter]
+                          call, .sht.core.string.length     ; (call label)
+                          add, rsp, 32                      
+                          mov, [rbp-8], rax                 ; =
+                          sub, rsp, 32                      
+                          mov, rbx, [rbx+8]                 ; fieldaccess: owner of _vtbl
+                          mov, rbx, [rbx]                   ; fieldaccess: owner of write8
+                          sub, rsp, 32                      
+                          mov, rdx, 0                       ; shape:hoist imm from call
                           call, .sht.core.string.indexOpGet ; (call label)
                           add, rsp, 32                      
                           mov, rcx, [rbx+8]                 ; shape:hoist addrOf from call
-                          mov, rdx, rax                     ;       (rval0 req for rdx) [splitter]
-                          call, [rsi]                       ; (call ptr)
+                          mov, rdx, rax                     ;       (rval1 req for rdx) [splitter]
+                          call, [rbx]                       ; (call ptr)
                           add, rsp, 32                      
+                          add, rsp, 8                       
                           mov, rsp, rbp                     
-                          pop, rdi                          
-                          pop, rsi                          
                           pop, rbx                          
                           pop, rbp                          
                           ret                               

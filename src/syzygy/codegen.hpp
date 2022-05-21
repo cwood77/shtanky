@@ -25,6 +25,8 @@ public:
    virtual void visit(cmn::intrinsicNode& n) { }
    virtual void visit(cmn::argNode& n);
    virtual void visit(cmn::strTypeNode& n);
+   virtual void visit(cmn::boolTypeNode& n);
+   virtual void visit(cmn::intTypeNode& n);
    virtual void visit(cmn::arrayTypeNode& n);
    virtual void visit(cmn::voidTypeNode& n);
    virtual void visit(cmn::userTypeNode& n);
@@ -40,7 +42,7 @@ public:
    virtual void visit(cmn::bopNode& n);
    virtual void visit(cmn::indexNode& n);
    virtual void visit(cmn::stringLiteralNode& n);
-   virtual void visit(cmn::boolLiteralNode& n) { unexpected(n); }
+   virtual void visit(cmn::boolLiteralNode& n);
    virtual void visit(cmn::intLiteralNode& n);
    virtual void visit(cmn::structLiteralNode& n);
    virtual void visit(cmn::genericNode& n);

@@ -352,26 +352,29 @@ void typeAwareNodeResolver::visit(invokeNode& n)
 {
    if(!n.proto._getRefee())
    {
-      auto& instTy = type::gNodeCache->demand(*n.getChildren()[0]);
-      auto& targetClass = dynamic_cast<cmn::classNode&>(
-         *cmn::demand(m_sTable.published,instTy.getName()));
-
-      linkResolver v(m_sTable,n.proto,
-         linkResolver::kBaseClasses | linkResolver::kOwnClass);
-      targetClass.acceptVisitor(v);
-
-      if(n.proto._getRefee())
+      const std::string& typeName = type::gNodeCache->demand(*n.getChildren()[0]).getName();
+      if(cmn::has(m_sTable.published,typeName))
       {
-         cdwDEBUG("holy crap!  invoke actually linked! %s: ->%s = %s\r\n",
-            n.getAncestor<cmn::methodNode>().name.c_str(),
-            n.proto.ref.c_str(),
-            typeid(*n.proto._getRefee()).name());
-      }
-      else
-      {
-         cdwDEBUG("invoke STILL NOT LINKED; even after typeprop! %s: -> %s\n",
-            n.getAncestor<cmn::methodNode>().name.c_str(),
-            n.proto.ref.c_str());
+         auto& targetClass = dynamic_cast<cmn::classNode&>(
+            *cmn::demand(m_sTable.published,typeName));
+
+         linkResolver v(m_sTable,n.proto,
+            linkResolver::kBaseClasses | linkResolver::kOwnClass);
+         targetClass.acceptVisitor(v);
+
+         if(n.proto._getRefee())
+         {
+            cdwDEBUG("holy crap!  invoke actually linked! %s: ->%s = %s\r\n",
+               n.getAncestor<cmn::methodNode>().name.c_str(),
+               n.proto.ref.c_str(),
+               typeid(*n.proto._getRefee()).name());
+         }
+         else
+         {
+            cdwDEBUG("invoke STILL NOT LINKED; even after typeprop! %s: -> %s\n",
+               n.getAncestor<cmn::methodNode>().name.c_str(),
+               n.proto.ref.c_str());
+         }
       }
    }
 
@@ -402,27 +405,27 @@ void nodeLinker::linkGraph(node& root)
             break;
       }
 
-      if(!loadAnotherSymbol(root,sTable))
-      {
-         if(typePropLink(root,sTable))
-         {
-            cdwVERBOSE("typeprop link made changes to table; new results:\n");
-            cdwVERBOSE("%lld published; %lld unresolved\n",
-               sTable.published.size(),
-               sTable.unresolved.size());
-            nMissing = sTable.unresolved.size();
-            if(!nMissing)
-               break;
-         }
+      if(loadAnotherSymbol(root,sTable))
+         continue;
 
-         cdwVERBOSE("no guesses on what to load to find missing symbols; try settling\n");
-         if(nMissing != missingLastTime)
-            missingLastTime = nMissing; // retry
-         else
-         {
-            sTable.debugDump();
-            throw std::runtime_error("gave up trying to resolve symbols");
-         }
+      if(typePropLink(root,sTable))
+      {
+         cdwVERBOSE("typeprop link made changes to table; new results:\n");
+         cdwVERBOSE("%lld published; %lld unresolved\n",
+            sTable.published.size(),
+            sTable.unresolved.size());
+         nMissing = sTable.unresolved.size();
+         if(!nMissing)
+            break;
+      }
+
+      cdwVERBOSE("no guesses on what to load to find missing symbols; try settling\n");
+      if(nMissing != missingLastTime)
+         missingLastTime = nMissing; // retry
+      else
+      {
+         sTable.debugDump();
+         throw std::runtime_error("gave up trying to resolve symbols");
       }
    }
 }

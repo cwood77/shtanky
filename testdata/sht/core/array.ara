@@ -1,11 +1,11 @@
 generic<T>
 class array {
 
-   public indexOpGet(i : ptr) : T
+   public indexOpGet(i : int) : T
    {
    }
 
-   public indexOpSet(i : ptr, val : T) : void
+   public indexOpSet(i : int, val : T) : void
    {
    }
 
