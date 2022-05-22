@@ -45,8 +45,14 @@ enum instrIds {
 
    kSub,
    kAdd,
+   kXor,
 
    kMov,
+         // an aside on LEA: I had originally hoped to avoid this instr, but I believe it
+         // is unavoidable given my requirements. Consider the string literals.  To deal
+         // with a string, I need to know the address of the first character, which is
+         // determined by where the loader placed the data segment at runtime.  Since I
+         // don't want load-time patching, this is only discoverable with LEA.
    kLea,
 
    kPreCallStackAlloc,
@@ -56,6 +62,14 @@ enum instrIds {
    kRet,
 
    kSplit,
+
+   kMacroIsLessThan,
+   kCmp,
+   kSetLessThan,
+
+   kMacroIfTrue,
+   kJumpEqual,
+   kGoto,
 
    kLastInstr,
    kSyscall = kLastInstr,

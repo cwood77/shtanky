@@ -1,21 +1,41 @@
 // 2: helloWorld: .data, "hello world" <b> 0
 _strdata(68-65-6c-6c,6f-20-77-6f,72-6c-64)_intdata(00)
-// 8: .entrypoint:
-// 9:    push, rbp
+// 5: nopeMsg: .data, "nope" <b> 0
+_strdata(6e-6f-70-65)_intdata(00)
+// 8: atDone: .data, "done!" <b> 0
+_strdata(64-6f-6e-65,21)_intdata(00)
+// 11: .entrypoint:
+// 12:    push, rbp
 rex(48)op(ff)modR/M(f5)
-// 10:    mov, rbp, rsp
+// 13:    mov, rbp, rsp
 rex(48)op(89)modR/M(e5)
-// 11:    sub, rsp, 32
+// 14:    sub, rsp, 32
 rex(48)op(83)modR/M(ec)i8(20)
-// 13:    mov, rcx, 1
+// 23:    mov, rcx, 1
 rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
-// 20:    lea, rdx, qwordptr helloWorld
+// 24:    lea, rdx, qwordptr helloWorld
 rex(48)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
-// 22:    call, ._osCall
+// 25:    call, ._osCall
 op(e8)co32(00-00-00-00)
-// 25:    mov, rsp, rbp
+// 26:    goto, .entrypoint.done
+op(e9)co32(00-00-00-00)
+// 29: .entrypoint.nope:
+// 30:    mov, rcx, 1
+rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
+// 31:    lea, rdx, qwordptr nopeMsg
+rex(48)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
+// 32:    call, ._osCall
+op(e8)co32(00-00-00-00)
+// 35: .entrypoint.done:
+// 36:    mov, rcx, 1
+rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
+// 37:    lea, rdx, qwordptr atDone
+rex(48)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
+// 38:    call, ._osCall
+op(e8)co32(00-00-00-00)
+// 41:    mov, rsp, rbp
 rex(48)op(89)modR/M(ec)
-// 26:    pop, rbp
+// 42:    pop, rbp
 rex(48)op(8f)modR/M(c5)
-// 27:    ret
+// 43:    ret
 op(c3)

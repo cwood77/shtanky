@@ -1,8 +1,11 @@
 .seg data
 helloWorld: .data, "hello world" <b> 0
 
-;.seg data
-;helloWorldPtr: .data, helloWorld
+.seg data
+nopeMsg: .data, "nope" <b> 0
+
+.seg data
+atDone: .data, "done!" <b> 0
 
 .seg code
 .entrypoint:
@@ -10,18 +13,31 @@ helloWorld: .data, "hello world" <b> 0
    mov, rbp, rsp
    sub, rsp, 32
 
+;  mov, r10, 1
+;  xor, r11, r11  ;;; <isLessThan?>, r11, r10, 1
+;  cmp, r10, 1
+;  sblt, r11      ;;; --end--
+;  cmp, r11, 1    ;;; <ifTrue>, r11, .entrypoint.nope
+;  je, .entrypoint.nope       ;;; --end--
+
    mov, rcx, 1
-   ; there is no way around this LEA
-   ; at first, I thought I could generate a second ptr
-   ; allocation in the datasegment that could patch, and then
-   ; reference that with a MOV.  That doesn't work, because
-   ; the address in the ptr allocation is still patched at link-time,
-   ; not load-time, so it's still wrong at run-time.
    lea, rdx, qwordptr helloWorld
-;  mov, rdx, qwordptr helloWorldPtr
+   call, ._osCall
+   goto, .entrypoint.done
+
+.seg code
+.entrypoint.nope:
+   mov, rcx, 1
+   lea, rdx, qwordptr nopeMsg
    call, ._osCall
 
-;   add, rsp, 32 ; add is not sufficient
+.seg code
+.entrypoint.done:
+   mov, rcx, 1
+   lea, rdx, qwordptr atDone
+   call, ._osCall
+
+;   add, rsp, 32 ; add is not sufficient - req of Win64 calling conv?
    mov, rsp, rbp
    pop, rbp
    ret

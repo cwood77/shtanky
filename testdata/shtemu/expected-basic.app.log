@@ -4,6 +4,7 @@
 [shtemu.exe:v:src/shtemu/loader.cpp-33] loading '.\testdata\shtemu\basic.app'
 [shtemu.exe:D:src/shtemu/loader.cpp-20]   osCall is offset 24
 [shtemu.exe:i:src/shtemu/main.cpp-21] passing control to app
-[shtemu.exe:D:src/shtemu/loader.cpp-12]   entrypoint is offset 44
+[shtemu.exe:D:src/shtemu/loader.cpp-12]   entrypoint is offset 50
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'hello world'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'done!'
 [shtemu.exe:i:src/shtemu/main.cpp-23] control returned to shtemu

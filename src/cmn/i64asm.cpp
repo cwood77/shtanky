@@ -30,6 +30,20 @@ static const genInfo kGenInfo[] = {
    },
    { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
+   { "JMP{E9 cd}", (unsigned char[]){
+      genInfo::kOpcode1, 0xE9,
+      genInfo::kCodeOffset32,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kRipRelCO, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+
+   { "LEA{REX.W + 8D /r}", (unsigned char[]){
+      genInfo::kOpcode1, 0x8D,
+      genInfo::kArgFmtBytes,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kModRmReg, genInfo::kModRmRm, genInfo::kNa, genInfo::kNa } },
+
    { "MOV{REX.W + 89 /r}", (unsigned char[]){
       genInfo::kOpcode1, 0x89,
       genInfo::kArgFmtBytes,
@@ -58,13 +72,6 @@ static const genInfo kGenInfo[] = {
       genInfo::kEndOfInstr,
    },
    { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
-
-   { "LEA{REX.W + 8D /r}", (unsigned char[]){
-      genInfo::kOpcode1, 0x8D,
-      genInfo::kArgFmtBytes,
-      genInfo::kEndOfInstr,
-   },
-   { genInfo::kModRmReg, genInfo::kModRmRm, genInfo::kNa, genInfo::kNa } },
 
    { "POP{8F /0}", (unsigned char[]){
       genInfo::kOpcode1, 0x8F,

@@ -78,6 +78,12 @@ static const instrFmt retFmts[] = {
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
+static const instrFmt gotoFmts[] = {
+   { "JMP{E9 cd}",
+      kI32, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
 static const instrInfo kInstrs[] = {
    { "<selectSegment>",   NULL, false, NULL     },
    { "<enterFunc>",       NULL, false, NULL     },
@@ -93,6 +99,7 @@ static const instrInfo kInstrs[] = {
 
    { "sub",               "br", false, (const instrFmt*)&subFmts },
    { "add",               "br", false, (const instrFmt*)&addFmts },
+   { "xor",               NULL, false, NULL     }, // TODO
 
    { "mov",               "wr", false, (const instrFmt*)&movFmts },
    { "lea",               "wr", false, (const instrFmt*)&leaFmts },
@@ -104,6 +111,14 @@ static const instrInfo kInstrs[] = {
    { "ret",               "r",  true, (const instrFmt*)&retFmts },
 
    { "<split>",           NULL, false, NULL     },
+
+   { "<isLessThan?>",     NULL, false, NULL     }, // TODO
+   { "cmp",               NULL, false, NULL     }, // TODO
+   { "setLessThan",       NULL, false, NULL     }, // TODO
+
+   { "<ifTrue>",          NULL, false, NULL     }, // TODO
+   { "jumpEqual",         NULL, false, NULL     }, // TODO
+   { "goto",              "r",  false, (const instrFmt*)&gotoFmts }, // TODO
 
    { "system",            "x",  true,  NULL     },
 };
