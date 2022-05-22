@@ -30,6 +30,21 @@ static const genInfo kGenInfo[] = {
    },
    { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
+   { "CMP{REX.W + 81 /7 id}", (unsigned char[]){
+      genInfo::kOpcode1, 0x81,
+      genInfo::kArgFmtBytesWithFixedOp, 0x7,
+      genInfo::kArg2Imm32,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+
+   { "JE{0F 84 cd}", (unsigned char[]){
+      genInfo::kOpcode2, 0x0F, 0x84,
+      genInfo::kCodeOffset32,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kRipRelCO, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+
    { "JMP{E9 cd}", (unsigned char[]){
       genInfo::kOpcode1, 0xE9,
       genInfo::kCodeOffset32,
@@ -445,6 +460,13 @@ unsigned char *argFmtBytes::computeTotalByteStream()
       if(*pThumb == genInfo::kOpcode1)
       {
          // pass thru with 1-byte payload
+         m_totalByteStream.push_back(*pThumb); pThumb++;
+         m_totalByteStream.push_back(*pThumb);
+      }
+      else if(*pThumb == genInfo::kOpcode2)
+      {
+         // pass thru with 2-byte payload
+         m_totalByteStream.push_back(*pThumb); pThumb++;
          m_totalByteStream.push_back(*pThumb); pThumb++;
          m_totalByteStream.push_back(*pThumb);
       }

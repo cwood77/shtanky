@@ -56,6 +56,10 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
       {
          w.write("op",++pByte,1);
       }
+      else if(*pByte == cmn::tgt::i64::genInfo::kOpcode2)
+      {
+         w.write("op",(++pByte)++,2);
+      }
       else if(*pByte == cmn::tgt::i64::genInfo::kCodeOffset32)
       {
          if(label.empty())

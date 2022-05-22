@@ -17,8 +17,9 @@ atDone: .data, "done!" <b> 0
 ;  xor, r11, r11  ;;; <isLessThan?>, r11, r10, 1
 ;  cmp, r10, 1
 ;  sblt, r11      ;;; --end--
-;  cmp, r11, 1    ;;; <ifTrue>, r11, .entrypoint.nope
-;  je, .entrypoint.nope       ;;; --end--
+        mov, r11, 1
+   cmp, r11, 1    ;;; <ifTrue>, r11, .entrypoint.nope
+   jumpEqual, .entrypoint.nope       ;;; --end--
 
    mov, rcx, 1
    lea, rdx, qwordptr helloWorld
@@ -30,6 +31,7 @@ atDone: .data, "done!" <b> 0
    mov, rcx, 1
    lea, rdx, qwordptr nopeMsg
    call, ._osCall
+   goto, .entrypoint.done
 
 .seg code
 .entrypoint.done:

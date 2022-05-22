@@ -78,6 +78,20 @@ static const instrFmt retFmts[] = {
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
+static const instrFmt cmpFmts[] = {
+   { "CMP{REX.W + 81 /7 id}",
+      kR64 | kM64,
+      kI32,
+      kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
+static const instrFmt jumpEqualFmts[] = {
+   { "JE{0F 84 cd}",
+      kI32, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
 static const instrFmt gotoFmts[] = {
    { "JMP{E9 cd}",
       kI32, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
@@ -113,12 +127,12 @@ static const instrInfo kInstrs[] = {
    { "<split>",           NULL, false, NULL     },
 
    { "<isLessThan?>",     NULL, false, NULL     }, // TODO
-   { "cmp",               NULL, false, NULL     }, // TODO
+   { "cmp",               NULL, false, (const instrFmt*)&cmpFmts },
    { "setLessThan",       NULL, false, NULL     }, // TODO
 
    { "<ifTrue>",          NULL, false, NULL     }, // TODO
-   { "jumpEqual",         NULL, false, NULL     }, // TODO
-   { "goto",              "r",  false, (const instrFmt*)&gotoFmts }, // TODO
+   { "jumpEqual",         NULL, false, (const instrFmt*)&jumpEqualFmts },
+   { "goto",              "r",  false, (const instrFmt*)&gotoFmts },
 
    { "system",            "x",  true,  NULL     },
 };

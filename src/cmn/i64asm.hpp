@@ -28,7 +28,7 @@ public:
    enum byteType {
       // ---------- safe to use in constants
       kOpcode1,
-      //kOpcode2,
+      kOpcode2,
       //kOpcode3,
       kOpcode1WithReg, // lower 3-bits of opcode are a register
       kCodeOffset32,
