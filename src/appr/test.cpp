@@ -11,7 +11,7 @@ shlinkTest& shlinkTest::withObject(const std::string& oFile)
 shlinkTest& shlinkTest::test()
 {
    m_stream.appendNew<doInstr>()
-      .usingApp("bin\\out\\debug\\shlink.exe")
+      .usingApp("shlink.exe")
       .withArg(m_outFile)
       .withArgs(m_objFiles)
       .thenCheckReturnValue("link");
@@ -55,7 +55,7 @@ void testBase::emulateAndCheckOutput()
    auto log = cmn::pathUtil::addExt(m_appPath,"log");
 
    m_stream.appendNew<doInstr>()
-      .usingApp("bin\\out\\debug\\shtemu.exe")
+      .usingApp("shtemu.exe")
       .withArg(m_appPath)
       .thenCheckReturnValueAndCaptureOutput(log,"Win64 emulation");
 
@@ -69,7 +69,7 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
 : testBase(s), m_folder(folder)
 {
    m_stream.appendNew<doInstr>()
-      .usingApp("bin\\out\\debug\\araceli.exe")
+      .usingApp("araceli.exe")
       .withArg(folder)
       .thenCheckReturnValue("araceli compile");
 
@@ -125,7 +125,7 @@ liamTest::liamTest(instrStream& s, const std::string& file)
 : intermediateTest(s)
 {
    s.appendNew<doInstr>()
-      .usingApp("bin\\out\\debug\\liam.exe")
+      .usingApp("liam.exe")
       .withArg(file)
       .thenCheckReturnValue("liam compile");
 
@@ -158,7 +158,7 @@ shtasmTest::shtasmTest(instrStream& s, const std::string& file)
 : intermediateTest(s)
 {
    s.appendNew<doInstr>()
-      .usingApp("bin\\out\\debug\\shtasm.exe")
+      .usingApp("shtasm.exe")
       .withArg(file)
       .thenCheckReturnValue("shtasm assemble");
 
@@ -187,4 +187,14 @@ shtasmTest::shtasmTest(instrStream& s, const std::string& file)
 void shtasmTest::andLink(shlinkTest& t)
 {
    t.withObject(getFilesForNextStage().front());
+}
+
+void testWriter::add(const std::string& name, std::function<void (instrStream&)> f)
+{
+   if(m_subset && !m_cl.getSwitch(name,"",false))
+      return;
+
+   m_s.noteFailHint(name);
+   instrStream is(m_s);
+   f(is);
 }

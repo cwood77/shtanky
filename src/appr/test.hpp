@@ -1,4 +1,6 @@
 #pragma once
+#include "../cmn/cmdline.hpp"
+#include <functional>
 #include <list>
 #include <map>
 #include <memory>
@@ -89,4 +91,16 @@ public:
    { testBase::emulateAndCheckOutput(); return *this; }
 
    virtual void andLink(shlinkTest& t);
+};
+
+class testWriter {
+public:
+   testWriter(script& s, bool subset, cmn::cmdLine& cl)
+   : m_s(s), m_subset(subset), m_cl(cl) {}
+   void add(const std::string& name, std::function<void (instrStream&)> f);
+
+private:
+   script& m_s;
+   bool m_subset;
+   cmn::cmdLine& m_cl;
 };

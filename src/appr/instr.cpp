@@ -4,7 +4,7 @@
 #include <fstream>
 
 scriptState::scriptState()
-: m_silenceExes(true), m_progressCnt(0)
+: m_silenceExes(true), m_debug(true), m_progressCnt(0)
 {
    scriptWriter::populateReservedLabels(*this);
 }
@@ -82,6 +82,17 @@ void script::skipTests(bool v)
    m_hadSkips = true;
 }
 
+std::string script::buildAppPath(const std::string& exeName)
+{
+   std::string rval("bin\\out\\");
+   if(m_state.isDebugMode())
+      rval += "debug\\";
+   else
+      rval += "release\\";
+   rval += exeName;
+   return rval;
+}
+
 instr::~instr()
 {
    if(!m_complete)
@@ -97,10 +108,10 @@ instrStream::~instrStream()
       delete *it;
 }
 
-doInstr& doInstr::usingApp(const std::string& path)
+doInstr& doInstr::usingApp(const std::string& exeName)
 {
    s().get(kStreamCmd).updateProgress();
-   s().get(kStreamCmd).stream() << "\"" << path << "\" ";
+   s().get(kStreamCmd).stream() << "\"" << s().buildAppPath(exeName) << "\" ";
    return *this;
 }
 
@@ -136,6 +147,7 @@ doInstr& doInstr::thenCheckReturnValueAndCaptureOutput(const std::string& log, c
    _s << ":" << failLbl << std::endl;
    cmds.stopProgressDisplayForOutput();
    _s << "echo FAIL: nonzero exit code doing " << errorHint << " [" << failLbl << "]" << std::endl;
+   _s << "echo test: " << cmds.getFailHint() << std::endl;
    _s << "goto end" << std::endl;
 
    _s << ":" << passLbl << std::endl;
@@ -198,6 +210,7 @@ compareInstr& compareInstr::because(const std::string& reason)
       ss.stopProgressDisplayForOutput();
       ss.stream() << "echo FAIL: files are different for " << reason << std::endl;
       ss.stream() << "echo       aborting run prematurely [" << failLbl << "]" << std::endl;
+      ss.stream() << "echo test: " << ss.getFailHint() << std::endl;
       ss.stream() << "goto end" << std::endl;
       ss.stream() << ":" << passLbl << std::endl;
    }

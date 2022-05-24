@@ -34,6 +34,8 @@ void scriptWriter::run(script& s, std::ostream& out, bool skipChecks)
          label += std::string(s.getTotalProgressSize()-label.length()-1,' ');
          out << "echo " << label << "]" << std::endl;
       }
+      else
+         out << "echo -- testing --" << std::endl;
    }
    s.get(kStreamCmd).playback(out);
    if(!skipChecks)

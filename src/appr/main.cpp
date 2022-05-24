@@ -8,48 +8,60 @@
 int main(int argc, const char *argv[])
 {
    cmn::cmdLine cl(argc,argv);
-   bool skipChecks = (cl.getNextArg("") == "-skipchecks"); // used for bootstrapping new tests
-   bool verbose = (cl.getNextArg("") == "-verbose"); // include prog output in script
+   bool skipChecks = cl.getSwitch("-skipchecks","",false); // used for bootstrapping new tests
+   bool verbose = cl.getSwitch("-verbose","",false);       // include prog output in script
+   bool subset = cl.getSwitch("!","",false);               // run a subset of tests
+   bool release = cl.getSwitch("rel","",false);            // run against release binaries
 
-   script s(/*silentExes*/ !verbose);
+   script s(/*silentExes*/ !verbose, !release);
    instrStream is(s);
 
    // ------------------ tests start ------------------
 
-   araceliTest(is,".\\testdata\\assign")
-      .wholeApp()
-      .expectLiamOf(".\\testdata\\assign\\main.ara")
-      .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
-      .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
-      .expectLiamOf(".\\testdata\\assign\\.target.ara",false)
-   ;
+   testWriter(s,subset,cl).add("assign",[](auto& is){
+      araceliTest(is,".\\testdata\\assign")
+         .wholeApp()
+         .expectLiamOf(".\\testdata\\assign\\main.ara")
+         .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+         .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
+         .expectLiamOf(".\\testdata\\assign\\.target.ara",false)
+      ;
+   });
 
-   araceliTest(is,".\\testdata\\nostromo")
-      .wholeApp()
-      .expectLiamOf(".\\testdata\\nostromo\\boot.ara")
-      .expectLiamOf(".\\testdata\\nostromo\\stringout.ara")
-      .expectLiamOf(".\\testdata\\nostromo\\uart16550\\driver.ara")
-      .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
-      .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
-      .expectLiamOf(".\\testdata\\nostromo\\.target.ara",false) // false = no philemon
-   ;
+   testWriter(s,subset,cl).add("nostromo",[](auto& is){
+      araceliTest(is,".\\testdata\\nostromo")
+         .wholeApp()
+         .expectLiamOf(".\\testdata\\nostromo\\boot.ara")
+         .expectLiamOf(".\\testdata\\nostromo\\stringout.ara")
+         .expectLiamOf(".\\testdata\\nostromo\\uart16550\\driver.ara")
+         .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+         .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
+         .expectLiamOf(".\\testdata\\nostromo\\.target.ara",false) // false = no philemon
+      ;
+   });
 
-   araceliTest(is,".\\testdata\\philemon")
-      .expectLiamOf(".\\testdata\\philemon\\list.ara")
-   ;
+   testWriter(s,subset,cl).add("philemon",[](auto& is){
+      araceliTest(is,".\\testdata\\philemon")
+         .expectLiamOf(".\\testdata\\philemon\\list.ara")
+      ;
+   });
 
-   shtasmTest(is,".\\testdata\\shtemu\\basic.asm")
-      .wholeApp(".\\testdata\\shtemu\\basic.app")
-      .emulateAndCheckOutput()
-   ;
+   testWriter(s,subset,cl).add("shtemu",[](auto& is){
+      shtasmTest(is,".\\testdata\\shtemu\\basic.asm")
+         .wholeApp(".\\testdata\\shtemu\\basic.app")
+         .emulateAndCheckOutput()
+      ;
+   });
 
-   araceliTest(is,".\\testdata\\test")
-      .wholeApp()
-      .expectLiamOf(".\\testdata\\test\\test.ara")
-      .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
-      .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
-      .expectLiamOf(".\\testdata\\test\\.target.ara",false) // false = no philemon
-   ;
+   testWriter(s,subset,cl).add("test",[](auto& is){
+      araceliTest(is,".\\testdata\\test")
+         .wholeApp()
+         .expectLiamOf(".\\testdata\\test\\test.ara")
+         .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+         .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
+         .expectLiamOf(".\\testdata\\test\\.target.ara",false) // false = no philemon
+      ;
+   });
 
    // ------------------ tests end ------------------
 

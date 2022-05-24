@@ -9,6 +9,9 @@ RELEASE_LNK_FLAGS_POST = -static-libgcc -static-libstdc++ -static
 
 SCRIPTLIB = scriptlib/xcopy-deploy.bat
 
+dtest: debug
+	@cmd /c appr.bat
+
 debug: \
 	dirs \
 	$(OUT_DIR)/debug/appr.exe \
@@ -18,8 +21,7 @@ debug: \
 	$(OUT_DIR)/debug/salome.exe \
 	$(OUT_DIR)/debug/shlink.exe \
 	$(OUT_DIR)/debug/shtasm.exe \
-	$(OUT_DIR)/debug/shtemu.exe
-	@cmd /c appr.bat
+	$(OUT_DIR)/debug/shtemu.exe \
 
 all: \
 	debug \
