@@ -108,6 +108,13 @@ static const genInfo kGenInfo[] = {
    },
    { genInfo::kNa, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
+   { "SETL{REX + 0F 9C}", (unsigned char[]){
+      genInfo::kOpcode2, 0x0F, 0x9C,
+      genInfo::kArgFmtBytes,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+
    { "SUB{REX.W + 83 /5 ib}", (unsigned char[]){
       genInfo::kOpcode1, 0x83,
       genInfo::kArgFmtBytesWithFixedOp, 0x5,
@@ -115,6 +122,13 @@ static const genInfo kGenInfo[] = {
       genInfo::kEndOfInstr,
    },
    { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+
+   { "XOR{REX.W + 31 /r}", (unsigned char[]){
+      genInfo::kOpcode1, 0x31,
+      genInfo::kArgFmtBytes,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kModRmRm, genInfo::kModRmReg, genInfo::kNa, genInfo::kNa } },
 
    { NULL, NULL, { genInfo::kNa, genInfo::kNa, genInfo::kNa, genInfo::kNa } }
 };

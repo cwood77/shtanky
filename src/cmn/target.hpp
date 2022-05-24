@@ -65,7 +65,7 @@ enum instrIds {
 
    kMacroIsLessThan,
    kCmp,
-   kSetLessThan,
+   kSetLessThanSigned,
 
    kMacroIfTrue,
    kJumpEqual,

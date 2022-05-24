@@ -1,7 +1,7 @@
-// 2: helloWorld: .data, "hello world" <b> 0
-_strdata(68-65-6c-6c,6f-20-77-6f,72-6c-64)_intdata(00)
-// 5: nopeMsg: .data, "nope" <b> 0
-_strdata(6e-6f-70-65)_intdata(00)
+// 2: isLessThan: .data, "YES!" <b> 0
+_strdata(59-45-53-21)_intdata(00)
+// 5: isNotLessThan: .data, "NO!" <b> 0
+_strdata(4e-4f-21)_intdata(00)
 // 8: atDone: .data, "done!" <b> 0
 _strdata(64-6f-6e-65,21)_intdata(00)
 // 11: .entrypoint:
@@ -11,39 +11,45 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(89)modR/M(e5)
 // 14:    sub, rsp, 32
 rex(48)op(83)modR/M(ec)i8(20)
-// 20:         mov, r11, 1
-rex(49)op(bb)i64(01-00-00-00,00-00-00-00)
-// 21:    cmp, r11, 1    ;;; <ifTrue>, r11, .entrypoint.nope
+// 16:    mov, r10, 4
+rex(49)op(ba)i64(04-00-00-00,00-00-00-00)
+// 18:    xor, r11, r11  ;;; <isLessThan?>, r11, r10, 3
+rex(4d)op(31)modR/M(db)
+// 19:    cmp, r10, 3
+rex(49)op(81)modR/M(fa)i32(03-00-00-00)
+// 20:    setlts, r11      ;;; --end--
+rex(49)op(0f-9c)modR/M(c3)
+// 22:    cmp, r11, 1    ;;; <ifTrue>, r11, .entrypoint.nope
 rex(49)op(81)modR/M(fb)i32(01-00-00-00)
-// 22:    jumpEqual, .entrypoint.nope       ;;; --end--
+// 23:    je, .entrypoint.isLessThan       ;;; --end--
 op(0f-84)co32(00-00-00-00)
-// 24:    mov, rcx, 1
+// 25:    mov, rcx, 1
 rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
-// 25:    lea, rdx, qwordptr helloWorld
+// 26:    lea, rdx, qwordptr isNotLessThan
 rex(48)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
-// 26:    call, ._osCall
+// 27:    call, ._osCall
 op(e8)co32(00-00-00-00)
-// 27:    goto, .entrypoint.done
+// 28:    goto, .entrypoint.done
 op(e9)co32(00-00-00-00)
-// 30: .entrypoint.nope:
-// 31:    mov, rcx, 1
+// 31: .entrypoint.isLessThan:
+// 32:    mov, rcx, 1
 rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
-// 32:    lea, rdx, qwordptr nopeMsg
+// 33:    lea, rdx, qwordptr isLessThan
 rex(48)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
-// 33:    call, ._osCall
+// 34:    call, ._osCall
 op(e8)co32(00-00-00-00)
-// 34:    goto, .entrypoint.done
+// 35:    goto, .entrypoint.done
 op(e9)co32(00-00-00-00)
-// 37: .entrypoint.done:
-// 38:    mov, rcx, 1
+// 38: .entrypoint.done:
+// 39:    mov, rcx, 1
 rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
-// 39:    lea, rdx, qwordptr atDone
+// 40:    lea, rdx, qwordptr atDone
 rex(48)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
-// 40:    call, ._osCall
+// 41:    call, ._osCall
 op(e8)co32(00-00-00-00)
-// 43:    mov, rsp, rbp
+// 44:    mov, rsp, rbp
 rex(48)op(89)modR/M(ec)
-// 44:    pop, rbp
+// 45:    pop, rbp
 rex(48)op(8f)modR/M(c5)
-// 45:    ret
+// 46:    ret
 op(c3)

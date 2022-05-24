@@ -1,8 +1,8 @@
 .seg data
-helloWorld: .data, "hello world" <b> 0
+isLessThan: .data, "YES!" <b> 0
 
 .seg data
-nopeMsg: .data, "nope" <b> 0
+isNotLessThan: .data, "NO!" <b> 0
 
 .seg data
 atDone: .data, "done!" <b> 0
@@ -13,23 +13,24 @@ atDone: .data, "done!" <b> 0
    mov, rbp, rsp
    sub, rsp, 32
 
-;  mov, r10, 1
-;  xor, r11, r11  ;;; <isLessThan?>, r11, r10, 1
-;  cmp, r10, 1
-;  sblt, r11      ;;; --end--
-        mov, r11, 1
+   mov, r10, 4
+
+   xor, r11, r11  ;;; <isLessThan?>, r11, r10, 3
+   cmp, r10, 3
+   setlts, r11      ;;; --end--
+
    cmp, r11, 1    ;;; <ifTrue>, r11, .entrypoint.nope
-   jumpEqual, .entrypoint.nope       ;;; --end--
+   je, .entrypoint.isLessThan       ;;; --end--
 
    mov, rcx, 1
-   lea, rdx, qwordptr helloWorld
+   lea, rdx, qwordptr isNotLessThan
    call, ._osCall
    goto, .entrypoint.done
 
 .seg code
-.entrypoint.nope:
+.entrypoint.isLessThan:
    mov, rcx, 1
-   lea, rdx, qwordptr nopeMsg
+   lea, rdx, qwordptr isLessThan
    call, ._osCall
    goto, .entrypoint.done
 

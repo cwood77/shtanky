@@ -34,6 +34,14 @@ static const instrFmt addFmts[] = {
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
+static const instrFmt xorFmts[] = {
+   { "XOR{REX.W + 31 /r}",
+      kR64 | kM64,
+      kR64,
+      kArgTypeNone, kArgTypeNone, "br", false },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
 static const instrFmt movFmts[] = {
    { "MOV{REX.W + 89 /r}",
       kR64 | kM64,
@@ -86,6 +94,13 @@ static const instrFmt cmpFmts[] = {
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
+static const instrFmt sltsFmts[] = {
+   { "SETL{REX + 0F 9C}",
+      kR64,
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
 static const instrFmt jumpEqualFmts[] = {
    { "JE{0F 84 cd}",
       kI32, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
@@ -113,7 +128,7 @@ static const instrInfo kInstrs[] = {
 
    { "sub",               "br", false, (const instrFmt*)&subFmts },
    { "add",               "br", false, (const instrFmt*)&addFmts },
-   { "xor",               NULL, false, NULL     }, // TODO
+   { "xor",               NULL, false, (const instrFmt*)&xorFmts },
 
    { "mov",               "wr", false, (const instrFmt*)&movFmts },
    { "lea",               "wr", false, (const instrFmt*)&leaFmts },
@@ -128,10 +143,10 @@ static const instrInfo kInstrs[] = {
 
    { "<isLessThan?>",     NULL, false, NULL     }, // TODO
    { "cmp",               NULL, false, (const instrFmt*)&cmpFmts },
-   { "setLessThan",       NULL, false, NULL     }, // TODO
+   { "setlts",            "w",  false, (const instrFmt*)&sltsFmts },
 
    { "<ifTrue>",          NULL, false, NULL     }, // TODO
-   { "jumpEqual",         NULL, false, (const instrFmt*)&jumpEqualFmts },
+   { "je",                NULL, false, (const instrFmt*)&jumpEqualFmts },
    { "goto",              "r",  false, (const instrFmt*)&gotoFmts },
 
    { "system",            "x",  true,  NULL     },
