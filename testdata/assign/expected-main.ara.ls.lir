@@ -34,9 +34,11 @@
 ----- start stream .assign.assignTester.bopAssociativity
 0 <enterFunc>    ~rval8/0, $self4/0 ;;; .assign.assignTester.bopAssociativity
 0 <reserveLocal> $v0/8              ;;; v
-0 mov            @1/1, @2/1         ;;; BOP , but not really - HACK!!
-0 mov            @1/1, @3/1         ;;; BOP , but not really - HACK!!
-0 mov            $v/0, @1/1         ;;; =
+0 mov            ~agg/1, @1/1       
+0 add            ~agg/1, @2/1       
+0 mov            ~agg0/1, ~agg/1    
+0 add            ~agg0/1, @3/1      
+0 mov            $v/0, ~agg0/1      ;;; =
 
 ----- start stream .assign.assignTester.cctor
 0 <enterFunc> ~rval9/0, $self5/0 ;;; .assign.assignTester.cctor

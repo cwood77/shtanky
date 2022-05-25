@@ -127,6 +127,13 @@ protected:
 };
 
 // implement the following instrs:
+//    kMacroIsLessThan
+class lirComparisonOpDecomposition : public lirTransform {
+protected:
+   virtual void runInstr(lirInstr& i);
+};
+
+// implement the following instrs:
 //    kMacroIfFalse
 class lirBranchDecomposition : public lirTransform {
 protected:

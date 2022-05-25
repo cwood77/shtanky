@@ -72,16 +72,18 @@
 .assign.assignTester.bopAssociativity: 
                                        push, rbp     
                                        push, rbx     
+                                       push, rdi     
                                        mov, rbp, rsp 
                                        sub, rsp, 8   
                                        sub, rsp, 8   
-                                       mov, rbx, 1   ; shape:hoist const from mov lhs
-                                       mov, rbx, 2   ; BOP , but not really - HACK!!
-                                       mov, rbx, 1   ; shape:hoist const from mov lhs
-                                       mov, rbx, 3   ; BOP , but not really - HACK!!
-                                       mov, rbx, 1   ; =
+                                       mov, rdi, 1   
+                                       add, rdi, 2   
+                                       mov, rbx, rdi 
+                                       add, rbx, 3   
+                                       mov, rbx, rbx ; =
                                        add, rsp, 8   
                                        mov, rsp, rbp 
+                                       pop, rdi      
                                        pop, rbx      
                                        pop, rbp      
                                        ret           

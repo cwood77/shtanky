@@ -241,19 +241,36 @@ void astCodeGen::visit(cmn::assignmentNode& n)
 
 void astCodeGen::visit(cmn::bopNode& n)
 {
-   // TODO HACK - bops aren't really implemented yet
-   //             mainly a copy of assignment for now
-
    n.getChildren()[1]->acceptVisitor(*this);
    n.getChildren()[0]->acceptVisitor(*this);
 
-   m_b.forNode(n)
-      .append(cmn::tgt::kMov)
-         .inheritArgFromChild(*n.getChildren()[0])
-         .inheritArgFromChild(*n.getChildren()[1])
-         .withComment("BOP , but not really - HACK!!")
-         .returnToParent(0); // can't do this, or you're giving your parent a literal
-                             // can't rely on a transform to fix this for you
+   if(n.op == "+")
+   {
+      auto *pTmp = new lirArgTemp(
+         m_u.makeUnique("agg"),
+         m_b.borrowArgFromChild(*n.getChildren()[0]).getSize());
+
+      m_b.forNode(n)
+         .append(cmn::tgt::kMov)
+            .withArg(pTmp->clone())
+            .inheritArgFromChild(*n.getChildren()[0])
+            .then()
+         .append(cmn::tgt::kAdd)
+            .withArg(*pTmp)
+            .inheritArgFromChild(*n.getChildren()[1])
+            .returnToParent(0);
+   }
+   else if(n.op == "<")
+   {
+      m_b.forNode(n)
+         .append(cmn::tgt::kMacroIsLessThan)
+            .withArg<lirArgTemp>(m_u.makeUnique("lt"),0)
+            .inheritArgFromChild(*n.getChildren()[0])
+            .inheritArgFromChild(*n.getChildren()[1])
+            .returnToParent(0);
+   }
+   else
+      cdwTHROW("unimplemented bop %s",n.op.c_str());
 }
 
 void astCodeGen::visit(cmn::ifNode& n)

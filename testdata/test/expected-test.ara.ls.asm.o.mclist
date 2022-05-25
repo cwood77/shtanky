@@ -25,7 +25,7 @@ rex(48)op(8b)modR/M(4b)d8(08)
 // 17:                 call, [rdi]                ; (call ptr)
 rex(48)op(ff)modR/M(17)
 // 18:                 add, rsp, 32               
-rex(48)op(83)modR/M(c4)i8(20)
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 19:                 mov, rsp, rbp              
 rex(48)op(89)modR/M(ec)
 // 20:                 pop, rdi                   
@@ -71,7 +71,7 @@ rex(48)op(83)modR/M(ec)i8(20)
 // 50:                   call, .sht.cons.program_sctor           ; (call label)
 op(e8)co32(00-00-00-00)
 // 51:                   add, rsp, 32                            
-rex(48)op(83)modR/M(c4)i8(20)
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 52:                   mov, r10, qwordptr .test.test_vtbl_inst ; codeshape decomp
 rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
 // 53:                   mov, [rcx], r10                         ; =
@@ -81,7 +81,7 @@ rex(48)op(83)modR/M(ec)i8(20)
 // 55:                   call, .test.test.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
 // 56:                   add, rsp, 32                            
-rex(48)op(83)modR/M(c4)i8(20)
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 57:                   mov, rsp, rbp                           
 rex(48)op(89)modR/M(ec)
 // 58:                   pop, rbp                                
@@ -102,13 +102,13 @@ rex(48)op(83)modR/M(ec)i8(20)
 // 68:                   call, .test.test.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
 // 69:                   add, rsp, 32                            
-rex(48)op(83)modR/M(c4)i8(20)
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 70:                   sub, rsp, 32                            
 rex(48)op(83)modR/M(ec)i8(20)
 // 71:                   call, .sht.cons.program_sdtor           ; (call label)
 op(e8)co32(00-00-00-00)
 // 72:                   add, rsp, 32                            
-rex(48)op(83)modR/M(c4)i8(20)
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 73:                   mov, rsp, rbp                           
 rex(48)op(89)modR/M(ec)
 // 74:                   pop, rbp                                

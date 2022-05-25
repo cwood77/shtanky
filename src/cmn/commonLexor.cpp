@@ -121,6 +121,8 @@ static const lexemeClassInfo classTable[] = {
    { commonLexor::kClassBop, "binary operator",
       (size_t[]){
          commonLexor::kPlus,
+         commonLexor::kLessThan,
+         commonLexor::kGreaterThan,
          0,
       } },
 

@@ -200,6 +200,23 @@ void lirPairedInstrDecomposition::runInstr(lirInstr& i)
    lirTransform::runInstr(i);
 }
 
+void lirComparisonOpDecomposition::runInstr(lirInstr& i)
+{
+   if(i.instrId == cmn::tgt::kMacroIsLessThan)
+   {
+      // inject a SETcc instruction after me
+      auto noob = new lirInstr(cmn::tgt::kSetLessThanSigned);
+      noob->addArg(*i.getArgs()[0]);
+      scheduleInjectAfter(*noob,i);
+
+      // repurpose my instruction as a compare
+      i.instrId = cmn::tgt::kCmp;
+      i.getArgs().erase(i.getArgs().begin()); // I gave this arg away
+   }
+
+   lirTransform::runInstr(i);
+}
+
 void lirBranchDecomposition::runInstr(lirInstr& i)
 {
    if(i.instrId == cmn::tgt::kMacroIfFalse)
@@ -347,6 +364,7 @@ void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
 {
    { lirCallVirtualStackCalculation xfrm(t); xfrm.runStreams(lir); }
    { lirPairedInstrDecomposition xfrm; xfrm.runStreams(lir); }
+   { lirComparisonOpDecomposition xfrm; xfrm.runStreams(lir); }
    { lirBranchDecomposition xfrm; xfrm.runStreams(lir); }
    { lirLabelDecomposition xfrm; xfrm.runStreams(lir); }
    { lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); }

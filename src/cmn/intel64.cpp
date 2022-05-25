@@ -27,6 +27,10 @@ static const instrFmt subFmts[] = {
 };
 
 static const instrFmt addFmts[] = {
+   { "ADD{REX.W + 81 /0 id}",
+      kR64 | kM64,
+      kI32,
+      kArgTypeNone, kArgTypeNone, "br", false },
    { "ADD{REX.W + 83 /0 ib}",
       kR64 | kM64,
       kI8,

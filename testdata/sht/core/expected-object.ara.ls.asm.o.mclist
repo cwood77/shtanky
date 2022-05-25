@@ -36,7 +36,7 @@ rex(48)op(83)modR/M(ec)i8(20)
 // 28:                         call, .sht.core.object.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
 // 29:                         add, rsp, 32                                  
-rex(48)op(83)modR/M(c4)i8(20)
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 30:                         mov, rsp, rbp                                 
 rex(48)op(89)modR/M(ec)
 // 31:                         pop, rbp                                      
@@ -57,7 +57,7 @@ rex(48)op(83)modR/M(ec)i8(20)
 // 41:                         call, .sht.core.object.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
 // 42:                         add, rsp, 32                                  
-rex(48)op(83)modR/M(c4)i8(20)
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 43:                         mov, rsp, rbp                                 
 rex(48)op(89)modR/M(ec)
 // 44:                         pop, rbp                                      

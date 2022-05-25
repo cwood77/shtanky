@@ -234,7 +234,12 @@ void typePropagator::visit(bopNode& n)
 {
    hNodeVisitor::visit(n);
 
-   type::gNodeCache->publish(n,type::gNodeCache->demand(*n.getChildren()[0]));
+   if(n.op == "+")
+      type::gNodeCache->publish(n,type::gNodeCache->demand(*n.getChildren()[0]));
+   else if(n.op == "<")
+      type::gNodeCache->publish(n,type::gTable->fetch("bool"));
+   else
+      cdwTHROW("unknown bop %s",n.op.c_str());
 }
 
 void typePropagator::visit(indexNode& n)

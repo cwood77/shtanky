@@ -188,22 +188,6 @@ void asmCodeGen::handleInstr(lirInstr& i)
             m_w.advanceLine();
          }
          break;
-      case cmn::tgt::kPush:
-      case cmn::tgt::kPop:
-      case cmn::tgt::kXor:
-      case cmn::tgt::kMov:
-      case cmn::tgt::kLea:
-      case cmn::tgt::kRet:
-      case cmn::tgt::kCmp:
-      case cmn::tgt::kJumpEqual:
-      case cmn::tgt::kGoto:
-         {
-            m_w[1] << m_t.getProc().getInstr(i.instrId)->name << ",";
-            asmArgWriter(m_v,m_t,m_w).write(i);
-            handleComment(i);
-            m_w.advanceLine();
-         }
-         break;
       case cmn::tgt::kCall:
       case cmn::tgt::kSyscall:
          {
@@ -220,7 +204,12 @@ void asmCodeGen::handleInstr(lirInstr& i)
          handlePrePostCallStackAlloc(i,cmn::tgt::kAdd);
          break;
       default:
-         throw std::runtime_error("unknown instruction in codegen!");
+         {
+            m_w[1] << m_t.getProc().getInstr(i.instrId)->name << ",";
+            asmArgWriter(m_v,m_t,m_w).write(i);
+            handleComment(i);
+            m_w.advanceLine();
+         }
    }
 }
 

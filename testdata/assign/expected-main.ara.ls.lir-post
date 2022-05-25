@@ -51,11 +51,11 @@
 10  <selectSegment>  @code/0            
 20  <enterFunc>      ~rval8/0, $self4/0 ;;; .assign.assignTester.bopAssociativity
 30  <reserveLocal>   $v0/8              ;;; v
-40  mov              ~t/1, @1/1         ;;; shape:hoist const from mov lhs
-50  mov              ~t/1, @2/1         ;;; BOP , but not really - HACK!!
-60  mov              ~t0/1, @1/1        ;;; shape:hoist const from mov lhs
-70  mov              ~t0/1, @3/1        ;;; BOP , but not really - HACK!!
-80  mov              $v/0, @1/1         ;;; =
+40  mov              ~agg/1, @1/1       
+50  add              ~agg/1, @2/1       
+60  mov              ~agg0/1, ~agg/1    
+70  add              ~agg0/1, @3/1      
+80  mov              $v/0, ~agg0/1      ;;; =
 90  <unreserveLocal> $v0/8              
 100 <exitFunc>       
 

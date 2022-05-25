@@ -8,6 +8,14 @@ namespace tgt {
 namespace i64 {
 
 static const genInfo kGenInfo[] = {
+   { "ADD{REX.W + 81 /0 id}", (unsigned char[]){
+      genInfo::kOpcode1, 0x81,
+      genInfo::kArgFmtBytesWithFixedOp, 0x0,
+      genInfo::kArg2Imm32,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+
    { "ADD{REX.W + 83 /0 ib}", (unsigned char[]){
       genInfo::kOpcode1, 0x83,
       genInfo::kArgFmtBytesWithFixedOp, 0x0,
