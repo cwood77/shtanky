@@ -52,6 +52,7 @@ public:
       kType,
 
       kIf,
+      kElse,
       kWhile,
 
       k_Reserved,

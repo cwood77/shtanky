@@ -25,12 +25,44 @@ rex(48)op(83)modR/M(c4)i8(20)
 // 17:                      goto, .entrypoint.endif.1  
 op(e9)co32(00-00-00-00)
 // 19: .entrypoint.else.0:  
-// 20:                      goto, .entrypoint.endif.1  
+// 20:                      mov, r10, 0                ; codeshape decomp
+rex(49)op(ba)i64(00-00-00-00,00-00-00-00)
+// 21:                      cmp, r10, 0                
+rex(49)op(81)modR/M(fa)i32(00-00-00-00)
+// 22:                      je, .entrypoint.else.2     
+op(0f-84)co32(00-00-00-00)
+// 23:                      sub, rsp, 32               
+rex(48)op(83)modR/M(ec)i8(20)
+// 24:                      lea, rdx, qwordptr .const0 
+rex(48)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
+// 25:                      mov, rcx, 1                ; shape:hoist imm from call
+rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
+// 26:                      call, ._osCall             ; (call label)
+op(e8)co32(00-00-00-00)
+// 27:                      add, rsp, 32               
+rex(48)op(83)modR/M(c4)i8(20)
+// 28:                      goto, .entrypoint.endif.3  
 op(e9)co32(00-00-00-00)
-// 22: .entrypoint.endif.1: 
-// 23:                      mov, rsp, rbp              
+// 30: .entrypoint.else.2:  
+// 31:                      sub, rsp, 32               
+rex(48)op(83)modR/M(ec)i8(20)
+// 32:                      lea, rdx, qwordptr .const0 
+rex(48)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
+// 33:                      mov, rcx, 1                ; shape:hoist imm from call
+rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
+// 34:                      call, ._osCall             ; (call label)
+op(e8)co32(00-00-00-00)
+// 35:                      add, rsp, 32               
+rex(48)op(83)modR/M(c4)i8(20)
+// 36:                      goto, .entrypoint.endif.3  
+op(e9)co32(00-00-00-00)
+// 38: .entrypoint.endif.3: 
+// 39:                      goto, .entrypoint.endif.1  
+op(e9)co32(00-00-00-00)
+// 41: .entrypoint.endif.1: 
+// 42:                      mov, rsp, rbp              
 rex(48)op(89)modR/M(ec)
-// 24:                      pop, rbp                   
+// 43:                      pop, rbp                   
 rex(48)op(8f)modR/M(c5)
-// 25:                      ret                        
+// 44:                      ret                        
 op(c3)

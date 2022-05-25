@@ -305,6 +305,18 @@ bool commonParser::tryParseStatement(node& owner)
    return true;
 }
 
+void commonParser::parseStatementOrBody(node& owner)
+{
+   if(m_l.getToken() == commonLexor::kLBrace)
+      parseSequence(owner);
+   else
+   {
+      bool success = tryParseStatement(owner);
+      if(!success)
+         m_l.error(cdwLoc,"expected statement");
+   }
+}
+
 void commonParser::parseVar(node& owner)
 {
    m_l.demandAndEat(cdwLoc,commonLexor::kVar);
@@ -428,10 +440,20 @@ void commonParser::parseIf(node& owner)
 
    m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
 
-   if(m_l.getToken() == commonLexor::kLBrace)
-      parseSequence(rIf);
+   parseStatementOrBody(rIf);
+
+   if(m_l.getToken() == commonLexor::kElse)
+      parseIfPrime(rIf);
+}
+
+void commonParser::parseIfPrime(node& owner)
+{
+   m_l.demandAndEat(cdwLoc,commonLexor::kElse);
+
+   if(m_l.getToken() == commonLexor::kIf)
+      parseIf(owner);
    else
-      tryParseStatement(rIf);
+      parseStatementOrBody(owner);
 }
 
 node& commonParser::parseLValue()

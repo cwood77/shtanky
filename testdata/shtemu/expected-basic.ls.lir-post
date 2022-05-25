@@ -5,22 +5,40 @@
 20 <globalConstData> @"hello world!" <b> 0 /0 ;;; .const0
 
 ----- start stream .entrypoint
-10  <selectSegment> @code/0                                                                                 
-20  <enterFunc>     ~rval/0                                                                                 ;;; .entrypoint
-30  cmp             @1/1, @0/1                                                                              
-40  je              !.entrypoint.else.0/0                                                                   
-50  <precall>       @totalStackSize/32                                                                      
-60  lea             ~str/0, !.const0/0                                                                      
-70  mov             ~t/1, @1/1                                                                              ;;; shape:hoist imm from call
-80  call            ~rval0/0, !._osCall/0, ~t/1, ~str/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (call label)
-90  <postcall>      @totalStackSize/32                                                                      
-100 goto            !.entrypoint.endif.1/0                                                                  
-110 <selectSegment> @code/0                                                                                 
-120 <label>         !.entrypoint.else.0/0                                                                   
-130 goto            !.entrypoint.endif.1/0                                                                  
-140 <selectSegment> @code/0                                                                                 
-150 <label>         !.entrypoint.endif.1/0                                                                  
-160 <exitFunc>      
+10  <selectSegment> @code/0                                                                                       
+20  <enterFunc>     ~rval/0                                                                                       ;;; .entrypoint
+30  cmp             @1/1, @0/1                                                                                    
+40  je              !.entrypoint.else.0/0                                                                         
+50  <precall>       @totalStackSize/32                                                                            
+60  lea             ~str/0, !.const0/0                                                                            
+70  mov             ~t/1, @1/1                                                                                    ;;; shape:hoist imm from call
+80  call            ~rval0/0, !._osCall/0, ~t/1, ~str/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0       ;;; (call label)
+90  <postcall>      @totalStackSize/32                                                                            
+100 goto            !.entrypoint.endif.1/0                                                                        
+110 <selectSegment> @code/0                                                                                       
+120 <label>         !.entrypoint.else.0/0                                                                         
+130 cmp             @0/1, @0/1                                                                                    
+140 je              !.entrypoint.else.2/0                                                                         
+150 <precall>       @totalStackSize/32                                                                            
+160 lea             ~str0/0, !.const0/0                                                                           
+170 mov             ~t0/1, @1/1                                                                                   ;;; shape:hoist imm from call
+180 call            ~rval1/0, !._osCall/0, ~t0/1, ~str0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
+190 <postcall>      @totalStackSize/32                                                                            
+200 goto            !.entrypoint.endif.3/0                                                                        
+210 <selectSegment> @code/0                                                                                       
+220 <label>         !.entrypoint.else.2/0                                                                         
+230 <precall>       @totalStackSize/32                                                                            
+240 lea             ~str1/0, !.const0/0                                                                           
+250 mov             ~t1/1, @1/1                                                                                   ;;; shape:hoist imm from call
+260 call            ~rval2/0, !._osCall/0, ~t1/1, ~str1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0 ;;; (call label)
+270 <postcall>      @totalStackSize/32                                                                            
+280 goto            !.entrypoint.endif.3/0                                                                        
+290 <selectSegment> @code/0                                                                                       
+300 <label>         !.entrypoint.endif.3/0                                                                        
+310 goto            !.entrypoint.endif.1/0                                                                        
+320 <selectSegment> @code/0                                                                                       
+330 <label>         !.entrypoint.endif.1/0                                                                        
+340 <exitFunc>      
 
 === end of LIR bundle dump ===
 

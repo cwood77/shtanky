@@ -50,6 +50,7 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kAlphanumeric, commonLexor::kType,        "type",       "type"            },
 
    { lexemeInfo::kAlphanumeric, commonLexor::kIf,          "if",         "if"              },
+   { lexemeInfo::kAlphanumeric, commonLexor::kElse,        "else",       "else"            },
    { lexemeInfo::kAlphanumeric, commonLexor::kWhile,       "while",      "while"           },
 
    { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "base",       "reserved"        },
