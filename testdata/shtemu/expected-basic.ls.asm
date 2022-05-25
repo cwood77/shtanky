@@ -5,9 +5,12 @@
 .seg code            
 .entrypoint:         
                      push, rbp                  
+                     push, rbx                  
                      mov, rbp, rsp              
-                     mov, r10, 1                ; codeshape decomp
-                     cmp, r10, 0                
+                     mov, r10, 0                ; codeshape decomp
+                     cmp, r10, 7                
+                     setlts, rbx                
+                     cmp, rbx, 0                
                      je, .entrypoint.else.0     
                      sub, rsp, 32               
                      lea, rdx, qwordptr .const0 
@@ -40,6 +43,7 @@
 .seg code            
 .entrypoint.endif.1: 
                      mov, rsp, rbp              
+                     pop, rbx                   
                      pop, rbp                   
                      ret                        
 

@@ -72,18 +72,16 @@
 .assign.assignTester.bopAssociativity: 
                                        push, rbp     
                                        push, rbx     
-                                       push, rdi     
                                        mov, rbp, rsp 
                                        sub, rsp, 8   
                                        sub, rsp, 8   
-                                       mov, rdi, 1   
-                                       add, rdi, 2   
-                                       mov, rbx, rdi 
+                                       mov, rbx, 1   
+                                       add, rbx, 2   
+                                       mov, rbx, rbx 
                                        add, rbx, 3   
                                        mov, rbx, rbx ; =
                                        add, rsp, 8   
                                        mov, rsp, rbp 
-                                       pop, rdi      
                                        pop, rbx      
                                        pop, rbp      
                                        ret           
