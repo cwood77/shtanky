@@ -16,9 +16,7 @@
                      add, rsp, 32              
                      goto, .entrypoint.endif.1 
 .entrypoint.else.0:  
-                     sub, rsp, 0               
 .entrypoint.endif.1: 
-                     sub, rsp, 0               
                      mov, rsp, rbp             
                      pop, rbp                  
                      ret                       

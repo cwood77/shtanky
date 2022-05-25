@@ -161,6 +161,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
             m_w[0] << i.getArgs()[0]->getName() << ":";
             m_w.advanceLine();
          }
+         break;
       case cmn::tgt::kReserveLocal: // TODO this stack space is duplicated by enter/exit func?
          {
             m_w[1]
