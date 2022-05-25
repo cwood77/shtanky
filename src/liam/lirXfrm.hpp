@@ -133,6 +133,13 @@ protected:
    virtual void runInstr(lirInstr& i);
 };
 
+// add segment directives for labels, and also implicit
+// gotos
+class lirLabelDecomposition : public lirTransform {
+protected:
+   virtual void runInstr(lirInstr& i);
+};
+
 // TODO there's two of these--one pre regalloc and one post
 //      combine?  or just rename them?
 class lirCodeShapeDecomposition : public lirTransform {

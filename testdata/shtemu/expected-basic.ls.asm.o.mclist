@@ -1,21 +1,33 @@
-// 2: .entrypoint: 
-// 3:              push, rbp      
+// 2: .entrypoint:         
+// 3:                      push, rbp                 
 rex(48)op(ff)modR/M(f5)
-// 4:              mov, rbp, rsp  
+// 4:                      mov, rbp, rsp             
 rex(48)op(89)modR/M(e5)
-// 5:              sub, rsp, 32   
+// 5:                      mov, r10, 1               ; codeshape decomp
+rex(49)op(ba)i64(01-00-00-00,00-00-00-00)
+// 6:                      cmp, r10, 0               
+rex(49)op(81)modR/M(fa)i32(00-00-00-00)
+// 7:                      je, .entrypoint.else.0    
+op(0f-84)co32(00-00-00-00)
+// 8:                      sub, rsp, 32              
 rex(48)op(83)modR/M(ec)i8(20)
-// 6:              mov, rcx, 1    ; shape:hoist imm from call
+// 9:                      mov, rcx, 1               ; shape:hoist imm from call
 rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
-// 7:              mov, rdx, 0    ; shape:hoist imm from call
+// 10:                      mov, rdx, 0               ; shape:hoist imm from call
 rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
-// 8:              call, ._osCall ; (call label)
+// 11:                      call, ._osCall            ; (call label)
 op(e8)co32(00-00-00-00)
-// 9:              add, rsp, 32   
+// 12:                      add, rsp, 32              
 rex(48)op(83)modR/M(c4)i8(20)
-// 10:              mov, rsp, rbp  
+// 13:                      goto, .entrypoint.endif.1 
+op(e9)co32(00-00-00-00)
+// 15: .entrypoint.else.0:  
+// 16:                      goto, .entrypoint.endif.1 
+op(e9)co32(00-00-00-00)
+// 18: .entrypoint.endif.1: 
+// 19:                      mov, rsp, rbp             
 rex(48)op(89)modR/M(ec)
-// 11:              pop, rbp       
+// 20:                      pop, rbp                  
 rex(48)op(8f)modR/M(c5)
-// 12:              ret            
+// 21:                      ret                       
 op(c3)

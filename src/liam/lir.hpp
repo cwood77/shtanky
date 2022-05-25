@@ -91,6 +91,7 @@ public:
    lirInstr& append(lirInstr& noob);
 
    bool isLast() const { return m_pNext == NULL; }
+   lirInstr& prev() { return *m_pPrev; }
    lirInstr& next() { return *m_pNext; }
    lirInstr& head();
    lirInstr& tail();

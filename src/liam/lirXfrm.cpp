@@ -1,3 +1,4 @@
+#include "../cmn/obj-fmt.hpp"
 #include "../cmn/trace.hpp"
 #include "../cmn/unique.hpp"
 #include "lir.hpp"
@@ -217,6 +218,25 @@ void lirBranchDecomposition::runInstr(lirInstr& i)
    lirTransform::runInstr(i);
 }
 
+void lirLabelDecomposition::runInstr(lirInstr& i)
+{
+   if(i.instrId == cmn::tgt::kLabel)
+   {
+      if(i.prev().instrId != cmn::tgt::kGoto)
+      {
+         auto *pGoto = new lirInstr(cmn::tgt::kGoto);
+         pGoto->addArg(i.getArgs()[0]->clone());
+         scheduleInjectBefore(*pGoto,i);
+      }
+
+      auto *pSeg = new lirInstr(cmn::tgt::kSelectSegment);
+      pSeg->addArg<lirArgConst>(cmn::objfmt::obj::kLexCode,0);
+      scheduleInjectBefore(*pSeg,i);
+   }
+
+   lirTransform::runInstr(i);
+}
+
 void lirNumberingTransform::_runStream(lirStream& s)
 {
    m_next = 10;
@@ -328,6 +348,7 @@ void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
    { lirCallVirtualStackCalculation xfrm(t); xfrm.runStreams(lir); }
    { lirPairedInstrDecomposition xfrm; xfrm.runStreams(lir); }
    { lirBranchDecomposition xfrm; xfrm.runStreams(lir); }
+   { lirLabelDecomposition xfrm; xfrm.runStreams(lir); }
    { lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); }
    { lirNumberingTransform xfrm; xfrm.runStreams(lir); }
 }

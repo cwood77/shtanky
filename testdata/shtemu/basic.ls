@@ -1,7 +1,7 @@
 [entrypoint]
 func .whatever() : void
 {
-  // if(true)
+   if(true)
       ._osCall(1,0);
 }
 
