@@ -5,15 +5,15 @@
 20 <globalConstData> @"hello world!" <b> 0 /0 ;;; .const0
 
 ----- start stream .test.test.run
-10  <selectSegment> @code/0                                                                                 
-20  <enterFunc>     ~rval/0, $self/0, $args/0                                                               ;;; .test.test.run
-30  <precall>       @totalStackSize/32                                                                      
-40  mov             ~_vtbl/0, [~self+8]/0                                                                   ;;; fieldaccess: owner of _vtbl
-50  mov             ~printLn/0, [~_vtbl]/0                                                                  ;;; fieldaccess: owner of printLn
-60  mov             ~t/0, !.const0/0                                                                        ;;; shape:hoist imm from call
-70  mov             ~t0/0, [~self+8]/0                                                                      ;;; shape:hoist addrOf from call
-80  call            ~rval0/0, [~printLn]/0, ~t0/0, ~t/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (call ptr)
-90  <postcall>      @totalStackSize/32                                                                      
+10  <selectSegment> @code/0                                                                                  
+20  <enterFunc>     ~rval/0, $self/0, $args/0                                                                ;;; .test.test.run
+30  <precall>       @totalStackSize/32                                                                       
+40  mov             ~_vtbl/0, [~self+8]/0                                                                    ;;; fieldaccess: owner of _vtbl
+50  mov             ~printLn/0, [~_vtbl]/0                                                                   ;;; fieldaccess: owner of printLn
+60  lea             ~str/0, !.const0/0                                                                       
+70  mov             ~t/0, [~self+8]/0                                                                        ;;; shape:hoist addrOf from call
+80  call            ~rval0/0, [~printLn]/0, ~t/0, ~str/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (call ptr)
+90  <postcall>      @totalStackSize/32                                                                       
 100 <exitFunc>      
 
 ----- start stream .test.test.cctor

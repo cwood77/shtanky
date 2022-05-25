@@ -16,8 +16,8 @@ rex(48)op(83)modR/M(ec)i8(20)
 rex(48)op(8b)modR/M(59)d8(08)
 // 13:                 mov, rdi, [rbx]            ; fieldaccess: owner of printLn
 rex(48)op(8b)modR/M(3b)
-// 14:                 mov, rdx, qwordptr .const0 ; shape:hoist imm from call
-rex(48)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 14:                 lea, rdx, qwordptr .const0 
+rex(48)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
 // 15:                 mov, rbx, rcx              ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
 // 16:                 mov, rcx, [rbx+8]          ; shape:hoist addrOf from call

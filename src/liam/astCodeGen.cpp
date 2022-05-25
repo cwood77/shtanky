@@ -195,12 +195,26 @@ void astCodeGen::visit(cmn::varRefNode& n)
       // references to another stream, like a global, are patched
       // patches are immediate data
 
-      auto pA = new lirArgLabel(
-         n.pSrc.ref,
-         cmn::type::gNodeCache->demand(*n.pSrc._getRefee()).getPseudoRefSize());
+      auto& ty = cmn::type::gNodeCache->demand(*n.pSrc._getRefee());
+      if(ty.getName() == "string")
+      {
+         // strings are special and require LEA
 
-      m_b.forNode(n)
-         .returnToParent(*pA);
+         m_b.forNode(n)
+            .append(cmn::tgt::kLea)
+               .withArg<lirArgTemp>(m_u.makeUnique("str"),0)
+               .withArg<lirArgLabel>(n.pSrc.ref,0)
+               .returnToParent(0);
+      }
+      else
+      {
+         auto pA = new lirArgLabel(
+            n.pSrc.ref,
+            cmn::type::gNodeCache->demand(*n.pSrc._getRefee()).getPseudoRefSize());
+
+         m_b.forNode(n)
+            .returnToParent(*pA);
+      }
    }
    else
    {

@@ -4,11 +4,12 @@
 0 <globalConstData> @"hello world!" <b> 0 /0 ;;; .const0
 
 ----- start stream .test.test.run
-0 <enterFunc> ~rval/0, $self/0, $args/0                                                                           ;;; .test.test.run
+0 <enterFunc> ~rval/0, $self/0, $args/0                                                                       ;;; .test.test.run
 0 <precall>   
-0 mov         ~_vtbl/0, [~self+8]/0                                                                               ;;; fieldaccess: owner of _vtbl
-0 mov         ~printLn/0, [~_vtbl]/0                                                                              ;;; fieldaccess: owner of printLn
-0 call        ~rval0/0, [~printLn]/0, [~self+8]/0, !.const0/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (call ptr)
+0 mov         ~_vtbl/0, [~self+8]/0                                                                           ;;; fieldaccess: owner of _vtbl
+0 mov         ~printLn/0, [~_vtbl]/0                                                                          ;;; fieldaccess: owner of printLn
+0 lea         ~str/0, !.const0/0                                                                              
+0 call        ~rval0/0, [~printLn]/0, [~self+8]/0, ~str/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (call ptr)
 
 ----- start stream .test.test.cctor
 0 <enterFunc> ~rval1/0, $self0/0 ;;; .test.test.cctor

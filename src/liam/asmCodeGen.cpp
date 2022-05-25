@@ -192,6 +192,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
       case cmn::tgt::kPop:
       case cmn::tgt::kXor:
       case cmn::tgt::kMov:
+      case cmn::tgt::kLea:
       case cmn::tgt::kRet:
       case cmn::tgt::kCmp:
       case cmn::tgt::kJumpEqual:

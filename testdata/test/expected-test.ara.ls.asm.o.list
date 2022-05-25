@@ -19,7 +19,7 @@ numentries(01-00-00-00,00-00-00-00)
 name:len(07-00-00-00,00-00-00-00)name:bytes(2e-63-6f-6e,73-74-30)numentries(01-00-00-00,00-00-00-00)
 type(01)offset(1a-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
 // returnedto: class obj
-blockSize(39-00-00-00,00-00-00-00)block(48-ff-f5-48,ff-f3-48-ff,f7-48-89-e5,48-83-ec-20,48-8b-59-08,48-8b-3b-48,8b-15-00-00,00-00-48-89,cb-48-8b-4b,08-48-ff-17,48-83-c4-20,48-89-ec-48,8f-c7-48-8f,c3-48-8f-c5,c3)
+blockSize(39-00-00-00,00-00-00-00)block(48-ff-f5-48,ff-f3-48-ff,f7-48-89-e5,48-83-ec-20,48-8b-59-08,48-8b-3b-48,8d-15-00-00,00-00-48-89,cb-48-8b-4b,08-48-ff-17,48-83-c4-20,48-89-ec-48,8f-c7-48-8f,c3-48-8f-c5,c3)
 // class obj
 flags(03-00-00-00)
 // class exportTable

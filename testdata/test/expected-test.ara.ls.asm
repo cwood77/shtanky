@@ -11,7 +11,7 @@
                 sub, rsp, 32               
                 mov, rbx, [rcx+8]          ; fieldaccess: owner of _vtbl
                 mov, rdi, [rbx]            ; fieldaccess: owner of printLn
-                mov, rdx, qwordptr .const0 ; shape:hoist imm from call
+                lea, rdx, qwordptr .const0 
                 mov, rbx, rcx              ; (preserve) [combiner]
                 mov, rcx, [rbx+8]          ; shape:hoist addrOf from call
                 call, [rdi]                ; (call ptr)
