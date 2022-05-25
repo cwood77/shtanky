@@ -1,0 +1,9 @@
+[shtemu.exe:D:src/shtemu/osCall.cpp-16] service registered 1 => N6shtemu12printServiceE
+[shtemu.exe:i:src/shtemu/main.cpp-11] win64 shtanky emulator
+[shtemu.exe:i:src/shtemu/main.cpp-15] loading file .\testdata\shtemu\basic.ls.app
+[shtemu.exe:v:src/shtemu/loader.cpp-33] loading '.\testdata\shtemu\basic.ls.app'
+[shtemu.exe:D:src/shtemu/loader.cpp-20]   osCall is offset 24
+[shtemu.exe:i:src/shtemu/main.cpp-21] passing control to app
+[shtemu.exe:D:src/shtemu/loader.cpp-12]   entrypoint is offset 32
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '(null)'
+[shtemu.exe:i:src/shtemu/main.cpp-23] control returned to shtemu

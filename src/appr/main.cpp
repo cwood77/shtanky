@@ -46,8 +46,13 @@ int main(int argc, const char *argv[])
       ;
    });
 
+   testWriter(s,subset,cl).add("shtemu.ls",[](auto& is){
+      liamTest(is,".\\testdata\\shtemu\\basic.ls")
+         .wholeApp(".\\testdata\\shtemu\\basic.ls.app")
+         .emulateAndCheckOutput()
+      ;
+   });
    testWriter(s,subset,cl).add("shtemu",[](auto& is){
-      liamTest(is,".\\testdata\\shtemu\\basic.ls");
       shtasmTest(is,".\\testdata\\shtemu\\basic.asm")
          .wholeApp(".\\testdata\\shtemu\\basic.app")
          .emulateAndCheckOutput()

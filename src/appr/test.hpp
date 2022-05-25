@@ -77,6 +77,12 @@ class liamTest : public intermediateTest {
 public:
    liamTest(instrStream& s, const std::string& file);
 
+   liamTest& wholeApp(const std::string& appPath)
+   { setupAutoShlink(appPath); return *this; }
+
+   liamTest& emulateAndCheckOutput()
+   { testBase::emulateAndCheckOutput(); return *this; }
+
    virtual void andLink(shlinkTest& t);
 };
 

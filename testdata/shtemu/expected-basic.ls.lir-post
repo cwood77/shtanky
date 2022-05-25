@@ -1,23 +1,14 @@
-=== LIR bundle has 2 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
-
------ start stream .yes
-10 <selectSegment>   @const/0         
-20 <globalConstData> @"YES!" <b> 0 /0 ;;; .yes
+=== LIR bundle has 1 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
 
 ----- start stream .entrypoint
-10  <selectSegment> @code/0                                                                                
-20  <enterFunc>     ~rval/0                                                                                ;;; .entrypoint
-30  cmp             @1/1, @0/1                                                                             
-40  je              !.entrypoint.else.0/0                                                                  
-50  <precall>       @totalStackSize/32                                                                     
-60  mov             ~t/1, @1/1                                                                             ;;; shape:hoist imm from call
-70  mov             ~t0/0, !.yes/0                                                                         ;;; shape:hoist imm from call
-80  call            ~rval0/0, !._osCall/0, ~t/1, ~t0/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (call label)
-90  <postcall>      @totalStackSize/32                                                                     
-100 goto            !.entrypoint.endif.1/0                                                                 
-110 <label>         !.entrypoint.else.0/0                                                                  
-120 <label>         !.entrypoint.endif.1/0                                                                 
-130 <exitFunc>      
+10 <selectSegment> @code/0                                                                                
+20 <enterFunc>     ~rval/0                                                                                ;;; .entrypoint
+30 <precall>       @totalStackSize/32                                                                     
+40 mov             ~t/1, @1/1                                                                             ;;; shape:hoist imm from call
+50 mov             ~t0/1, @0/1                                                                            ;;; shape:hoist imm from call
+60 call            ~rval0/0, !._osCall/0, ~t/1, ~t0/1, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (call label)
+70 <postcall>      @totalStackSize/32                                                                     
+80 <exitFunc>      
 
 === end of LIR bundle dump ===
 
