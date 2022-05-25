@@ -156,6 +156,11 @@ void asmCodeGen::handleInstr(lirInstr& i)
             m_w.advanceLine();
          }
          break;
+      case cmn::tgt::kLabel:
+         {
+            m_w[0] << i.getArgs()[0]->getName() << ":";
+            m_w.advanceLine();
+         }
       case cmn::tgt::kReserveLocal: // TODO this stack space is duplicated by enter/exit func?
          {
             m_w[1]
@@ -184,8 +189,12 @@ void asmCodeGen::handleInstr(lirInstr& i)
          break;
       case cmn::tgt::kPush:
       case cmn::tgt::kPop:
+      case cmn::tgt::kXor:
       case cmn::tgt::kMov:
       case cmn::tgt::kRet:
+      case cmn::tgt::kCmp:
+      case cmn::tgt::kJumpEqual:
+      case cmn::tgt::kGoto:
          {
             m_w[1] << m_t.getProc().getInstr(i.instrId)->name << ",";
             asmArgWriter(m_v,m_t,m_w).write(i);
@@ -207,8 +216,6 @@ void asmCodeGen::handleInstr(lirInstr& i)
          break;
       case cmn::tgt::kPostCallStackAlloc:
          handlePrePostCallStackAlloc(i,cmn::tgt::kAdd);
-         break;
-      case cmn::tgt::kSplit:
          break;
       default:
          throw std::runtime_error("unknown instruction in codegen!");

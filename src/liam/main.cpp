@@ -66,10 +66,6 @@ int _main(int argc,const char *argv[])
 
    try
    {
-      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-postreg");
-        lirIncrementalFormatter(sp,t).start(lir); }
-      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-preasm");
-        lirIncrementalFormatter(sp,t).start(lir); }
       for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
       {
          cdwVERBOSE("backend passes on %s\n",it->name.c_str());
@@ -103,10 +99,6 @@ int _main(int argc,const char *argv[])
 
          asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
       }
-      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-postreg");
-        lirIncrementalFormatter(sp,t).end(); }
-      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-preasm");
-        lirIncrementalFormatter(sp,t).end(); }
    }
    catch(std::exception&)
    {

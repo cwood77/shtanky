@@ -369,10 +369,10 @@ void lirBuilder::createNewStream(const std::string& name, const std::string& seg
    m_nLabel = 0;
 }
 
-std::string lirBuilder::reserveNewLabel()
+std::string lirBuilder::reserveNewLabel(const std::string& nameHint)
 {
    std::stringstream stream;
-   stream << m_pCurrStream->name << "." << (m_nLabel++);
+   stream << m_pCurrStream->name << "." << nameHint << "." << (m_nLabel++);
    return stream.str();
 }
 

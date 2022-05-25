@@ -268,7 +268,7 @@ public:
    ~lirBuilder();
 
    void createNewStream(const std::string& name, const std::string& segment);
-   std::string reserveNewLabel();
+   std::string reserveNewLabel(const std::string& nameHint);
 
    nodeScope forNode(cmn::node& n) { return nodeScope(*this,n); }
 
@@ -322,6 +322,8 @@ public:
       { return dynamic_cast<T&>(*m_i.getArgs()[nArg]); }
 
       lirInstr& instr() { return m_i; }
+
+      nodeScope then() { return m_b.forNode(m_n); }
 
    private:
       lirBuilder& m_b;

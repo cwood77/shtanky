@@ -206,14 +206,12 @@ void lirBranchDecomposition::runInstr(lirInstr& i)
       // inject a jump instruction after me
       auto noob = new lirInstr(cmn::tgt::kJumpEqual);
       noob->addArg(*i.getArgs()[1]);
-      noob->comment = ";; --end--";
-      scheduleAppend(*noob);
+      scheduleInjectAfter(*noob,i);
 
       // repurpose my instruction as a compare
       i.instrId = cmn::tgt::kCmp;
       i.getArgs().resize(1); // rescind ownership of label I just gave to je
-      i.addArg<lirArgConst>("0",0);
-      i.comment = std::string(";; <ifFalse> ") + i.comment;
+      i.addArg<lirArgConst>("0",1);
    }
 
    lirTransform::runInstr(i);
@@ -496,8 +494,20 @@ void codeShapeTransform::categorizeArgs(lirInstr& i, std::vector<cmn::tgt::argTy
             }
             else
             {
-               cdwDEBUG("   m (l)\n");
-               at.push_back(cmn::tgt::kM64);
+               // N.B., we haven't decided whether or not this instr is magic yet.  So this
+               //       code needs to be fairly loose to support things like '.seg code'
+               //       hence we should not demand this arg be a label at this point.
+               auto *pLabel = dynamic_cast<lirArgLabel*>(*it);
+               if(pLabel && pLabel->isCode)
+               {
+                  cdwDEBUG("   i (l): I32\n");
+                  at.push_back(cmn::tgt::kI32);
+               }
+               else
+               {
+                  cdwDEBUG("   i (l): M64\n");
+                  at.push_back(cmn::tgt::kM64);
+               }
             }
          }
          else
@@ -592,7 +602,7 @@ bool codeShapeTransform::mutateInstrFmt(const cmn::tgt::instrInfo& iInfo, const 
    size_t idx=0;
    for(auto it=args.begin();it!=args.end();++it,idx++)
    {
-      if(makeChanges && isMemory(*it) && isReadOnly(iInfo,idx))
+      if(makeChanges && isMemoryOrImmediate(*it) && isReadOnly(iInfo,idx))
       {
          retryArgs.push_back(makeRegister(*it));
          changedIndicies.insert(idx);
@@ -623,6 +633,16 @@ bool codeShapeTransform::isMemory(cmn::tgt::argTypes a)
    );
 }
 
+bool codeShapeTransform::isImmediate(cmn::tgt::argTypes a)
+{
+   return (
+      a == cmn::tgt::kI8 ||
+      a == cmn::tgt::kI16 ||
+      a == cmn::tgt::kI32 ||
+      a == cmn::tgt::kI64
+   );
+}
+
 cmn::tgt::argTypes codeShapeTransform::makeRegister(cmn::tgt::argTypes a)
 {
    switch(a)
@@ -631,6 +651,10 @@ cmn::tgt::argTypes codeShapeTransform::makeRegister(cmn::tgt::argTypes a)
       case cmn::tgt::kM16: return cmn::tgt::kR16;
       case cmn::tgt::kM32: return cmn::tgt::kR32;
       case cmn::tgt::kM64: return cmn::tgt::kR64;
+      case cmn::tgt::kI8:  return cmn::tgt::kR8;
+      case cmn::tgt::kI16: return cmn::tgt::kR16;
+      case cmn::tgt::kI32: return cmn::tgt::kR32;
+      case cmn::tgt::kI64: return cmn::tgt::kR64;
       default:
          cdwTHROW("ISE");
    }
@@ -643,7 +667,7 @@ bool codeShapeTransform::isStackFramePtrInUse(lirInstr& i, const cmn::tgt::instr
    size_t idx=0;
    for(auto it=origArgs.begin();it!=origArgs.end();++it,idx++)
    {
-      if(isMemory(*it) && isReadOnly(iInfo,idx))
+      if(isMemoryOrImmediate(*it) && isReadOnly(iInfo,idx))
          ;
       else
       {

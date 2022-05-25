@@ -246,18 +246,40 @@ void astCodeGen::visit(cmn::ifNode& n)
 {
    n.getChildren()[0]->acceptVisitor(*this);
 
-   auto label = m_b.reserveNewLabel();
+   auto elseLabel = m_b.reserveNewLabel("else");
+   auto endifLabel = m_b.reserveNewLabel("endif");
 
    m_b.forNode(n)
       .append(cmn::tgt::kMacroIfFalse)
          .inheritArgFromChild(*n.getChildren()[0])
-         .withArg<lirArgConst>(label,0);
+         .withArg<lirArgLabel>(elseLabel,0)
+         .tweakArgAs<lirArgLabel>(1).isCode = true;
 
    n.getChildren()[1]->acceptVisitor(*this);
 
    m_b.forNode(n)
+      .append(cmn::tgt::kGoto)
+         .withArg<lirArgLabel>(endifLabel,0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
+   m_b.forNode(n)
       .append(cmn::tgt::kLabel)
-         .withArg<lirArgConst>(label,0);
+         .withArg<lirArgLabel>(elseLabel,0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
+
+   auto children = n.getChildren();
+   for(size_t i=2;i<children.size();i++)
+   {
+      children[i]->acceptVisitor(*this);
+      m_b.forNode(n)
+         .append(cmn::tgt::kGoto)
+            .withArg<lirArgLabel>(endifLabel,0)
+            .tweakArgAs<lirArgLabel>(0).isCode = true;
+   }
+
+   m_b.forNode(n)
+      .append(cmn::tgt::kLabel)
+         .withArg<lirArgLabel>(endifLabel,0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
 }
 
 // all literals are nearly identical (just 'value' different) - share this?
@@ -274,9 +296,7 @@ void astCodeGen::visit(cmn::stringLiteralNode& n)
 
 void astCodeGen::visit(cmn::boolLiteralNode& n)
 {
-   auto pA = new lirArgConst(
-      n.value ? "T" : "F",
-      cmn::type::gNodeCache->demand(n).getPseudoRefSize());
+   auto pA = new lirArgConst(n.value ? "1" : "0",1);
 
    m_b.forNode(n)
       .returnToParent(*pA);

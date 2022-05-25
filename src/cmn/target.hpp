@@ -37,7 +37,7 @@ enum instrIds {
    kLabel,
 
    kReserveLocal,
-   kUnreserveLocal,
+   kUnreserveLocal, // 5
 
    kGlobalConstData,
 
@@ -45,7 +45,7 @@ enum instrIds {
    kPop,
 
    kSub,
-   kAdd,
+   kAdd, // 10
    kXor,
 
    kMov,
@@ -60,7 +60,7 @@ enum instrIds {
    kCall,
    kPostCallStackAlloc,
 
-   kRet,
+   kRet, // 17
 
    kSplit,
 

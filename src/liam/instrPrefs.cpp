@@ -36,15 +36,7 @@ void instrPrefs::handle(lirInstr& i)
 {
    switch(i.instrId)
    {
-      case cmn::tgt::kSelectSegment: // no prefs
-      case cmn::tgt::kExitFunc:
-      case cmn::tgt::kUnreserveLocal:
-      case cmn::tgt::kGlobalConstData:
-      case cmn::tgt::kPush:
-      case cmn::tgt::kPop:
-      case cmn::tgt::kMov:
-      case cmn::tgt::kPreCallStackAlloc:
-      case cmn::tgt::kPostCallStackAlloc:
+      default:
          break;
 
       case cmn::tgt::kEnterFunc:
@@ -96,8 +88,6 @@ void instrPrefs::handle(lirInstr& i)
             handle(i,cc,/*outOrIn*/true,/*isInvoke*/false);
          }
          break;
-      default:
-         throw std::runtime_error("unknown instruction!");
    }
 }
 

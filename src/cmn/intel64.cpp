@@ -129,7 +129,7 @@ static const instrInfo kInstrs[] = {
 
    { "sub",               "br", false, (const instrFmt*)&subFmts },
    { "add",               "br", false, (const instrFmt*)&addFmts },
-   { "xor",               NULL, false, (const instrFmt*)&xorFmts },
+   { "xor",               "br", false, (const instrFmt*)&xorFmts },
 
    { "mov",               "wr", false, (const instrFmt*)&movFmts },
    { "lea",               "wr", false, (const instrFmt*)&leaFmts },
@@ -142,13 +142,13 @@ static const instrInfo kInstrs[] = {
 
    { "<split>",           NULL, false, NULL     },
 
-   { "<isLessThan?>",     NULL, false, NULL     }, // TODO
-   { "cmp",               NULL, false, (const instrFmt*)&cmpFmts },
+   { "<isLessThan?>",     NULL, false, NULL     },
+   { "cmp",               "rr", false, (const instrFmt*)&cmpFmts },
    { "setlts",            "w",  false, (const instrFmt*)&sltsFmts },
 
-   { "<ifFalse>",         NULL, false, NULL     }, // TODO
-   { "je",                NULL, false, (const instrFmt*)&jumpEqualFmts },
-   { "goto",              "r",  false, (const instrFmt*)&gotoFmts },
+   { "<ifFalse>",         NULL, false, NULL     },
+   { "je",                "rx", false, (const instrFmt*)&jumpEqualFmts },
+   { "goto",              "x",  false, (const instrFmt*)&gotoFmts },
 
    { "system",            "x",  true,  NULL     },
 };

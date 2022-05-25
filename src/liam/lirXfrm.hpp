@@ -213,6 +213,8 @@ private:
 
    bool isReadOnly(const cmn::tgt::instrInfo& info, size_t idx);
    bool isMemory(cmn::tgt::argTypes a);
+   bool isImmediate(cmn::tgt::argTypes a);
+   bool isMemoryOrImmediate(cmn::tgt::argTypes a) { return isMemory(a) || isImmediate(a); }
    cmn::tgt::argTypes makeRegister(cmn::tgt::argTypes a);
    bool isStackFramePtrInUse(
       lirInstr& i,
