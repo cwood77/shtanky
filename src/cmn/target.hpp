@@ -34,6 +34,7 @@ enum instrIds {
    kSelectSegment = kFirstInstr,
    kEnterFunc,
    kExitFunc,
+   kLabel,
 
    kReserveLocal,
    kUnreserveLocal,
@@ -67,7 +68,7 @@ enum instrIds {
    kCmp,
    kSetLessThanSigned,
 
-   kMacroIfTrue,
+   kMacroIfFalse,
    kJumpEqual,
    kGoto,
 

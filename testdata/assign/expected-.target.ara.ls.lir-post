@@ -1,6 +1,6 @@
 === LIR bundle has 6 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
 
------ start stream .assign.consoleTarget.main
+----- start stream .entrypoint
 10  <selectSegment>  @code/0                                                                                                                
 20  <enterFunc>      ~rval/0, $args/0                                                                                                       ;;; .entrypoint
 30  <reserveLocal>   $cout/8                                                                                                                ;;; cout

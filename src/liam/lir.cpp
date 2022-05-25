@@ -366,6 +366,14 @@ lirBuilder::~lirBuilder()
 void lirBuilder::createNewStream(const std::string& name, const std::string& segment)
 {
    m_pCurrStream = &m_lir.addNewObject(name,segment);
+   m_nLabel = 0;
+}
+
+std::string lirBuilder::reserveNewLabel()
+{
+   std::stringstream stream;
+   stream << m_pCurrStream->name << "." << (m_nLabel++);
+   return stream.str();
 }
 
 const lirArg& lirBuilder::borrowArgFromChild(cmn::node& n)

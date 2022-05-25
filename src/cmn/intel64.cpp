@@ -117,6 +117,7 @@ static const instrInfo kInstrs[] = {
    { "<selectSegment>",   NULL, false, NULL     },
    { "<enterFunc>",       NULL, false, NULL     },
    { "<exitFunc>",        NULL, false, NULL     },
+   { "<label>",           NULL, false, NULL     },
 
    { "<reserveLocal>",    NULL, false, NULL     },
    { "<unreserveLocal>",  NULL, false, NULL     },
@@ -145,7 +146,7 @@ static const instrInfo kInstrs[] = {
    { "cmp",               NULL, false, (const instrFmt*)&cmpFmts },
    { "setlts",            "w",  false, (const instrFmt*)&sltsFmts },
 
-   { "<ifTrue>",          NULL, false, NULL     }, // TODO
+   { "<ifFalse>",         NULL, false, NULL     }, // TODO
    { "je",                NULL, false, (const instrFmt*)&jumpEqualFmts },
    { "goto",              "r",  false, (const instrFmt*)&gotoFmts },
 

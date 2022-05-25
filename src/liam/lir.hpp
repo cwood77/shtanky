@@ -263,11 +263,12 @@ public:
    class instrBuilder;
 
    lirBuilder(lirStreams& lir, cmn::tgt::iTargetInfo& t)
-   : m_lir(lir), m_t(t), m_pCurrStream(NULL) {}
+   : m_lir(lir), m_t(t), m_pCurrStream(NULL), m_nLabel(0) {}
 
    ~lirBuilder();
 
    void createNewStream(const std::string& name, const std::string& segment);
+   std::string reserveNewLabel();
 
    nodeScope forNode(cmn::node& n) { return nodeScope(*this,n); }
 
@@ -336,6 +337,7 @@ private:
    lirStreams& m_lir;
    cmn::tgt::iTargetInfo& m_t;
    lirStream *m_pCurrStream;
+   size_t m_nLabel;
    std::map<cmn::node*,lirArg*> m_cache;
    std::set<lirArg*> m_orphans;
 };

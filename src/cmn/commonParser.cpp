@@ -289,6 +289,8 @@ bool commonParser::tryParseStatement(node& owner)
 
    if(m_l.getToken() == commonLexor::kVar)
       parseVar(owner);
+   else if(m_l.getToken() == commonLexor::kIf)
+      parseIf(owner);
    else
    {
       std::unique_ptr<node> pInst(&parseLValue());
@@ -413,6 +415,23 @@ void commonParser::parsePassedArgList(node& owner)
       if(m_l.getToken() == commonLexor::kComma)
          m_l.advance();
    }
+}
+
+void commonParser::parseIf(node& owner)
+{
+   m_l.demandAndEat(cdwLoc,commonLexor::kIf);
+   m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
+
+   auto& rIf = m_nFac.appendNewChild<ifNode>(owner);
+
+   parseRValue(rIf);
+
+   m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+   if(m_l.getToken() == commonLexor::kLBrace)
+      parseSequence(rIf);
+   else
+      tryParseStatement(rIf);
 }
 
 node& commonParser::parseLValue()

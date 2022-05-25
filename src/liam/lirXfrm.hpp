@@ -126,6 +126,13 @@ protected:
    virtual void runInstr(lirInstr& i);
 };
 
+// implement the following instrs:
+//    kMacroIfFalse
+class lirBranchDecomposition : public lirTransform {
+protected:
+   virtual void runInstr(lirInstr& i);
+};
+
 // TODO there's two of these--one pre regalloc and one post
 //      combine?  or just rename them?
 class lirCodeShapeDecomposition : public lirTransform {

@@ -199,6 +199,26 @@ void lirPairedInstrDecomposition::runInstr(lirInstr& i)
    lirTransform::runInstr(i);
 }
 
+void lirBranchDecomposition::runInstr(lirInstr& i)
+{
+   if(i.instrId == cmn::tgt::kMacroIfFalse)
+   {
+      // inject a jump instruction after me
+      auto noob = new lirInstr(cmn::tgt::kJumpEqual);
+      noob->addArg(*i.getArgs()[1]);
+      noob->comment = ";; --end--";
+      scheduleAppend(*noob);
+
+      // repurpose my instruction as a compare
+      i.instrId = cmn::tgt::kCmp;
+      i.getArgs().resize(1); // rescind ownership of label I just gave to je
+      i.addArg<lirArgConst>("0",0);
+      i.comment = std::string(";; <ifFalse> ") + i.comment;
+   }
+
+   lirTransform::runInstr(i);
+}
+
 void lirNumberingTransform::_runStream(lirStream& s)
 {
    m_next = 10;
@@ -309,6 +329,7 @@ void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
 {
    { lirCallVirtualStackCalculation xfrm(t); xfrm.runStreams(lir); }
    { lirPairedInstrDecomposition xfrm; xfrm.runStreams(lir); }
+   { lirBranchDecomposition xfrm; xfrm.runStreams(lir); }
    { lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); }
    { lirNumberingTransform xfrm; xfrm.runStreams(lir); }
 }

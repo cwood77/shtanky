@@ -38,12 +38,12 @@ void astCodeGen::visit(cmn::funcNode& n)
    if(n.getChildrenOf<cmn::sequenceNode>().size() == 0)
       return; // ignore forward references
 
-   m_b.createNewStream(n.name,cmn::objfmt::obj::kLexCode);
-
    // determine real func name (different if entrypoint)
    std::string funcNameInAsm = n.name;
    if(n.attributes.find("entrypoint") != n.attributes.end())
       funcNameInAsm = ".entrypoint";
+
+   m_b.createNewStream(funcNameInAsm,cmn::objfmt::obj::kLexCode);
 
    auto& i = m_b.forNode(n)
       .append(cmn::tgt::kEnterFunc)
@@ -240,6 +240,24 @@ void astCodeGen::visit(cmn::bopNode& n)
          .withComment("BOP , but not really - HACK!!")
          .returnToParent(0); // can't do this, or you're giving your parent a literal
                              // can't rely on a transform to fix this for you
+}
+
+void astCodeGen::visit(cmn::ifNode& n)
+{
+   n.getChildren()[0]->acceptVisitor(*this);
+
+   auto label = m_b.reserveNewLabel();
+
+   m_b.forNode(n)
+      .append(cmn::tgt::kMacroIfFalse)
+         .inheritArgFromChild(*n.getChildren()[0])
+         .withArg<lirArgConst>(label,0);
+
+   n.getChildren()[1]->acceptVisitor(*this);
+
+   m_b.forNode(n)
+      .append(cmn::tgt::kLabel)
+         .withArg<lirArgConst>(label,0);
 }
 
 // all literals are nearly identical (just 'value' different) - share this?
