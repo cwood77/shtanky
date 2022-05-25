@@ -25,15 +25,15 @@ class debugOut {
 //     var i : .sht.core.loop; // if public
 //     {
 //        var i : .sht.core.loop; // if private
-//        :label_i;
+//        :label_i; <loopStart i>
 //
 //        i:exitedNormally = (i:count < l);
 //        if(i:exitedNormally)
-//           goto label_i_done;
+//           goto label_i_done; <loopBreak i>
 //
 //        <loop body>
 //
-//        goto label_i;
+//        goto label_i; <loopEnd i>
 //        :label_i_done;
 //     }
 //
@@ -43,7 +43,7 @@ class debugOut {
 
 // in asm I need xor, sub, set, cmp, jcc, and the meta-instr LT
 // how will labels work?
-      
+
 
    }
 

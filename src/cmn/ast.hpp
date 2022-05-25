@@ -46,6 +46,11 @@ class assignmentNode;
 class bopNode;
 class indexNode;
 class ifNode;
+class loopIntrinsicNode;
+class forLoopNode;
+class loopStartNode;
+class loopBreakNode;
+class loopEndNode;
 class stringLiteralNode;
 class boolLiteralNode;
 class intLiteralNode;
@@ -91,6 +96,11 @@ public:
    virtual void visit(bopNode& n) = 0;
    virtual void visit(indexNode& n) = 0;
    virtual void visit(ifNode& n) = 0;
+   virtual void visit(loopIntrinsicNode& n) = 0;
+   virtual void visit(forLoopNode& n) = 0;
+   virtual void visit(loopStartNode& n) = 0;
+   virtual void visit(loopBreakNode& n) = 0;
+   virtual void visit(loopEndNode& n) = 0;
    virtual void visit(stringLiteralNode& n) = 0;
    virtual void visit(boolLiteralNode& n) = 0;
    virtual void visit(intLiteralNode& n) = 0;
@@ -506,6 +516,44 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class loopIntrinsicNode : public node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class forLoopNode : public node {
+public:
+   forLoopNode() : scoped(false) {}
+
+   std::string name;
+   bool scoped;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class loopStartNode : public node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class loopBreakNode : public node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class loopEndNode : public node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 // ----------------------- literals -----------------------
 
 class stringLiteralNode : public node {
@@ -597,6 +645,11 @@ public:
    virtual void visit(bopNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(indexNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(ifNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(loopIntrinsicNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(forLoopNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(loopStartNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(loopBreakNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(loopEndNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(stringLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(boolLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(intLiteralNode& n) { visit(static_cast<node&>(n)); }
@@ -642,6 +695,11 @@ public:
    virtual void visit(bopNode& n);
    virtual void visit(indexNode& n);
    virtual void visit(ifNode& n);
+   virtual void visit(loopIntrinsicNode& n);
+   virtual void visit(forLoopNode& n);
+   virtual void visit(loopStartNode& n);
+   virtual void visit(loopBreakNode& n);
+   virtual void visit(loopEndNode& n);
    virtual void visit(stringLiteralNode& n);
    virtual void visit(boolLiteralNode& n);
    virtual void visit(intLiteralNode& n);
@@ -757,6 +815,11 @@ public:
    virtual void visit(bopNode&) { inst.reset(new bopNode()); }
    virtual void visit(indexNode&) { inst.reset(new indexNode()); }
    virtual void visit(ifNode&) { inst.reset(new ifNode()); }
+   virtual void visit(loopIntrinsicNode&) { inst.reset(new loopIntrinsicNode()); }
+   virtual void visit(forLoopNode&) { inst.reset(new forLoopNode()); }
+   virtual void visit(loopStartNode&) { inst.reset(new loopStartNode()); }
+   virtual void visit(loopBreakNode&) { inst.reset(new loopBreakNode()); }
+   virtual void visit(loopEndNode&) { inst.reset(new loopEndNode()); }
    virtual void visit(stringLiteralNode&) { inst.reset(new stringLiteralNode()); }
    virtual void visit(boolLiteralNode&) { inst.reset(new boolLiteralNode()); }
    virtual void visit(intLiteralNode&) { inst.reset(new intLiteralNode()); }

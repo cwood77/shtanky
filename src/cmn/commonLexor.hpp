@@ -54,6 +54,7 @@ public:
       kIf,
       kElse,
       kWhile,
+      kFor,
 
       k_Reserved,
 
@@ -76,7 +77,6 @@ public:
       // reserved - maybe use later?
       kBreak,
       kContinue,
-      kFor,
       kDo,
       kInternal,
       kComponent,

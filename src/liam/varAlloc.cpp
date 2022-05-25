@@ -32,6 +32,8 @@ public:
    {
       if(pLhs->refs.size() != pRhs->refs.size())
          return (pLhs->refs.size() > pRhs->refs.size());
+      if(pLhs->name != pRhs->name)
+         return pLhs->name < pRhs->name;
       else
          return pLhs < pRhs;
    }

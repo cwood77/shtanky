@@ -1,3 +1,4 @@
+#include "loopIntrinsicDecomp.hpp"
 #include "nameUtil.hpp"
 #include "stlutil.hpp"
 #include "symbolTable.hpp"
@@ -458,6 +459,7 @@ bool nodeLinker::typePropLink(node& root, symbolTable& sTable)
 
 void nodeLinker::simpleLink(node& root, symbolTable& sTable)
 {
+   { loopIntrinsicDecomp v; root.acceptVisitor(v); }
    { nodePublisher p(sTable); treeVisitor t(p); root.acceptVisitor(t); }
    { nodeResolver r(sTable); treeVisitor t(r); root.acceptVisitor(t); }
    cdwVERBOSE("%lld published; %lld unresolved\n",

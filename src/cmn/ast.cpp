@@ -404,6 +404,57 @@ void diagVisitor::visit(ifNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(loopIntrinsicNode& n)
+{
+   cdwDEBUG("%sloopIntrinsic '%s'\n",
+      getIndent().c_str(),
+      n.name.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(forLoopNode& n)
+{
+   cdwDEBUG("%sforLoop '%s' '%s'\n",
+      getIndent().c_str(),
+      n.name.c_str(),
+      n.scoped ? "+" : "-");
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(loopStartNode& n)
+{
+   cdwDEBUG("%sloopStart '%s'\n",
+      getIndent().c_str(),
+      n.name.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(loopBreakNode& n)
+{
+   cdwDEBUG("%sloopBreak '%s'\n",
+      getIndent().c_str(),
+      n.name.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(loopEndNode& n)
+{
+   cdwDEBUG("%sloopEnd '%s'\n",
+      getIndent().c_str(),
+      n.name.c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 void diagVisitor::visit(stringLiteralNode& n)
 {
    cdwDEBUG("%sstrLit; value=%s\n",

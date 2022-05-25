@@ -276,6 +276,12 @@ void codegen::visit(cmn::indexNode& n)
    s.stream() << "]";
 }
 
+void codegen::visit(cmn::loopIntrinsicNode& n)
+{
+   auto& s = getOutStream();
+   s.stream() << "loop(" << n.name << ")";
+}
+
 void codegen::visit(cmn::stringLiteralNode& n)
 {
    auto& s = getOutStream();

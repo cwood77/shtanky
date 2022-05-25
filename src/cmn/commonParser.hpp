@@ -50,6 +50,7 @@ class lexorBase;
 //                 | e
 // <statement> ::== 'var' <var>
 //                | <if>
+//                | <loop>
 //                | <lvalue> '=' <assignment> ';'
 //                | <lvalue> <call-end-friends> ';'
 // <statement-or-body> ::== <statement>
@@ -68,6 +69,12 @@ class lexorBase;
 // <if'> ::== 'else' <if>
 //          | 'else' <statement-or-body>
 //          | e
+//
+// <loop> ::== 'for' <loop'>
+// <loop'> ::== <loop-name> '(' <rvalue> ')' <statement-or-body>
+// <loop-name> ::== '[' '+' <name> ']'
+//                | '[' '-' <name> ']'
+//                | e
 //
 // <lvalue> ::== <name> <lvalue'>
 // <lvalue'> ::== ':' <name> <lvalue'>         [fieldaccess]

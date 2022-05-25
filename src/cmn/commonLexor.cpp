@@ -52,6 +52,7 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kAlphanumeric, commonLexor::kIf,          "if",         "if"              },
    { lexemeInfo::kAlphanumeric, commonLexor::kElse,        "else",       "else"            },
    { lexemeInfo::kAlphanumeric, commonLexor::kWhile,       "while",      "while"           },
+   { lexemeInfo::kAlphanumeric, commonLexor::kFor,         "for",        "for"             },
 
    { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "base",       "reserved"        },
    { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "throw",      "reserved"        },
@@ -65,7 +66,6 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "out",        "reserved"        },
    { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "break",      "reserved"        },
    { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "continue",   "reserved"        },
-   { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "for",        "reserved"        },
    { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "do",         "reserved"        },
    { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "internal",   "reserved"        },
    { lexemeInfo::kAlphanumeric, commonLexor::k_Reserved,   "component",  "reserved"        },

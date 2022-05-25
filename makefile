@@ -78,6 +78,7 @@ CMN_SRC = \
 	src/cmn/i64asm.cpp \
 	src/cmn/intel64.cpp \
 	src/cmn/lexor.cpp \
+	src/cmn/loopIntrinsicDecomp.cpp \
 	src/cmn/nameUtil.cpp \
 	src/cmn/obj-fmt.cpp \
 	src/cmn/out.cpp \
