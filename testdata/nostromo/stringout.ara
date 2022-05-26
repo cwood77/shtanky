@@ -4,8 +4,8 @@ class debugOut {
    {
       var l : int;
       l = msg->length();
-      _uart->write8(msg[0]);
-
+//      for[+i](i < l)
+         _uart->write8(msg[0]);
 
 //     // here i disambiguates the loop for continue and break
 //     // statements, as well as being the loop counter
@@ -13,7 +13,7 @@ class debugOut {
 //     // inner scope
 //     for[+i](i < l)
 //     {
-//        _uart->write8(msg[loop]);
+//        _uart->write8(msg[i]);
 //
 //        loop(i)->break(); // loop() is some sort of keyword/instrinsic here
 //     }

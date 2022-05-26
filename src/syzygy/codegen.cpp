@@ -177,9 +177,13 @@ void codegen::visit(cmn::sequenceNode& n)
       cmn::autoIndent _i(s);
       for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       {
-         s.stream() << cmn::indent(s);
+         bool isSeq = (dynamic_cast<cmn::sequenceNode*>(*it));
+         if(!isSeq)
+            s.stream() << cmn::indent(s);
          (*it)->acceptVisitor(*this);
-         s.stream() << ";" << std::endl;
+         isSeq = isSeq || (dynamic_cast<cmn::forLoopNode*>(*it)); // TODO lame
+         if(!isSeq)
+            s.stream() << ";" << std::endl;
       }
    }
    s.stream() << cmn::indent(s) << "}" << std::endl;
@@ -280,6 +284,18 @@ void codegen::visit(cmn::loopIntrinsicNode& n)
 {
    auto& s = getOutStream();
    s.stream() << "loop(" << n.name << ")";
+}
+
+void codegen::visit(cmn::forLoopNode& n)
+{
+   if(n.getChildren().size() != 2)
+      cdwTHROW("forLoopNode children is %d != 2",n.getChildren().size());
+
+   auto& s = getOutStream();
+   s.stream() << "for(";
+   n.getChildren()[0]->acceptVisitor(*this);
+   s.stream() << ")" << std::endl;
+   n.getChildren()[1]->acceptVisitor(*this);
 }
 
 void codegen::visit(cmn::stringLiteralNode& n)

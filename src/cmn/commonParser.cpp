@@ -271,9 +271,6 @@ void commonParser::parseSequence(node& owner)
    auto& s = m_nFac.appendNewChild<sequenceNode>(owner);
    parseStatements(s);
 
-   if(m_l.getToken() == commonLexor::kLBrace)
-      parseSequence(owner);
-
    m_l.demandAndEat(cdwLoc,commonLexor::kRBrace);
 }
 
@@ -284,13 +281,16 @@ void commonParser::parseStatements(node& owner)
 
 bool commonParser::tryParseStatement(node& owner)
 {
-   if(m_l.getToken() == commonLexor::kLBrace) return false;
    if(m_l.getToken() == commonLexor::kRBrace) return false;
 
-   if(m_l.getToken() == commonLexor::kVar)
+   if(m_l.getToken() == commonLexor::kLBrace)
+      parseSequence(owner);
+   else if(m_l.getToken() == commonLexor::kVar)
       parseVar(owner);
    else if(m_l.getToken() == commonLexor::kIf)
       parseIf(owner);
+   else if(m_l.getToken() == commonLexor::kFor)
+      parseLoop(owner);
    else
    {
       std::unique_ptr<node> pInst(&parseLValue());
@@ -311,7 +311,8 @@ void commonParser::parseStatementOrBody(node& owner)
       parseSequence(owner);
    else
    {
-      bool success = tryParseStatement(owner);
+      auto& s = m_nFac.appendNewChild<sequenceNode>(owner);
+      bool success = tryParseStatement(s);
       if(!success)
          m_l.error(cdwLoc,"expected statement");
    }
@@ -454,6 +455,53 @@ void commonParser::parseIfPrime(node& owner)
       parseIf(owner);
    else
       parseStatementOrBody(owner);
+}
+
+void commonParser::parseLoop(node& owner)
+{
+   m_l.demandAndEat(cdwLoc,commonLexor::kFor);
+   auto& l = m_nFac.appendNewChild<forLoopNode>(owner);
+   parseLoopPrime(l);
+}
+
+void commonParser::parseLoopPrime(forLoopNode& l)
+{
+   parseLoopName(l);
+
+   m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
+
+   parseRValue(l);
+
+   m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+   parseStatementOrBody(l);
+}
+
+void commonParser::parseLoopName(forLoopNode& l)
+{
+   if(m_l.getToken() == commonLexor::kLBracket)
+   {
+      m_l.advance();
+
+      bool scoped = true;
+      if(m_l.getToken() == commonLexor::kPlus)
+      {
+         m_l.advance();
+         scoped = false;
+      }
+      l.scoped = scoped;
+
+      m_l.demand(cdwLoc,commonLexor::kName);
+      l.name = m_l.getLexeme();
+      m_l.advance();
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
+   }
+   else
+   {
+      l.name = "def";
+      l.scoped = true;
+   }
 }
 
 node& commonParser::parseLValue()

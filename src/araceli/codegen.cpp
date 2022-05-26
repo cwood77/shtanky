@@ -233,9 +233,13 @@ void sourceCodeGen::visit(cmn::sequenceNode& n)
       cmn::autoIndent _i(*m_pOut);
       for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       {
-         m_pOut->stream() << cmn::indent(*m_pOut);
+         bool isSeq = (dynamic_cast<cmn::sequenceNode*>(*it));
+         if(!isSeq)
+            m_pOut->stream() << cmn::indent(*m_pOut);
          (*it)->acceptVisitor(*this);
-         m_pOut->stream() << ";" << std::endl;
+         isSeq = isSeq || (dynamic_cast<cmn::forLoopNode*>(*it)); // TODO lame
+         if(!isSeq)
+            m_pOut->stream() << ";" << std::endl;
       }
    }
    m_pOut->stream() << cmn::indent(*m_pOut) << "}" << std::endl;
@@ -294,6 +298,17 @@ void sourceCodeGen::visit(cmn::bopNode& n)
 {
    n.getChildren()[0]->acceptVisitor(*this);
    m_pOut->stream() << " " << n.op << " ";
+   n.getChildren()[1]->acceptVisitor(*this);
+}
+
+void sourceCodeGen::visit(cmn::forLoopNode& n)
+{
+   if(n.getChildren().size() != 2)
+      cdwTHROW("forLoopNode children is %d != 2",n.getChildren().size());
+
+   m_pOut->stream() << "for(";
+   n.getChildren()[0]->acceptVisitor(*this);
+   m_pOut->stream() << ")" << std::endl;
    n.getChildren()[1]->acceptVisitor(*this);
 }
 

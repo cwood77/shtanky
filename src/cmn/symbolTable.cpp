@@ -134,6 +134,8 @@ void localFinder::visit(sequenceNode& n)
 
       pPtr = *it;
    }
+
+   hNodeVisitor::visit(n);
 }
 
 linkResolver::linkResolver(symbolTable& st, linkBase& l, size_t mode)
@@ -457,9 +459,24 @@ bool nodeLinker::typePropLink(node& root, symbolTable& sTable)
    return sTable.unresolved.size() != before;
 }
 
-void nodeLinker::simpleLink(node& root, symbolTable& sTable)
+void nodeLinker::decomposeLoops(node& root, symbolTable& sTable)
 {
    { loopIntrinsicDecomp v; root.acceptVisitor(v); }
+
+   if(decomposesLoopsDuringLink())
+   {
+      { loopVarRefFixup v; root.acceptVisitor(v); }
+      { loopInstDropper v; root.acceptVisitor(v); }
+   }
+   else
+   {
+      { markLoopPreDecomposed v; root.acceptVisitor(v); }
+   }
+}
+
+void nodeLinker::simpleLink(node& root, symbolTable& sTable)
+{
+   decomposeLoops(root,sTable);
    { nodePublisher p(sTable); treeVisitor t(p); root.acceptVisitor(t); }
    { nodeResolver r(sTable); treeVisitor t(r); root.acceptVisitor(t); }
    cdwVERBOSE("%lld published; %lld unresolved\n",

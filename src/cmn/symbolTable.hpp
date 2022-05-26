@@ -138,8 +138,10 @@ protected:
    virtual bool typePropLink(node& root, symbolTable& sTable);
    virtual bool tryFixUnresolved(node& root, symbolTable& sTable) { return false; }
    virtual bool loadAnotherSymbol(node& root, symbolTable& sTable) { return false; }
+   virtual bool decomposesLoopsDuringLink() { return false; }
 
 private:
+   void decomposeLoops(node& root, symbolTable& sTable);
    void simpleLink(node& root, symbolTable& sTable);
 };
 

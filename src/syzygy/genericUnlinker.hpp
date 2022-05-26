@@ -6,6 +6,10 @@ namespace syzygy {
 
 class genericUnlinker : public cmn::hNodeVisitor {
 public:
+   // removes any links going to a generic that are unresolved from the symbolTable
+   static size_t ignoreRefsToGenerics(cmn::symbolTable& sTable);
+
+   // removes any links inside a generic that are unresolved from the symbolTable
    explicit genericUnlinker(cmn::symbolTable& st)
    : nChanges(0), m_sTable(st), m_insideGeneric(false) {}
 
@@ -27,5 +31,7 @@ private:
    cmn::symbolTable& m_sTable;
    bool m_insideGeneric;
 };
+
+bool unlinkGenerics(cmn::node& root, cmn::symbolTable& sTable);
 
 } // namespace syzygy

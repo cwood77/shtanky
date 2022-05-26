@@ -36,6 +36,21 @@ void node::insertChild(size_t i, node& n)
    n.m_pParent = this;
 }
 
+void node::insertChildBefore(node& noob, node& antecedent)
+{
+   for(auto it=m_children.begin();it!=m_children.end();++it)
+   {
+      if(*it == &antecedent)
+      {
+         m_children.insert(it,&noob);
+         noob.m_pParent = this;
+         return;
+      }
+   }
+
+   cdwTHROW("can't find antecedent in insert");
+}
+
 void node::insertChildAfter(node& noob, node& antecedent)
 {
    for(auto it=m_children.begin();it!=m_children.end();++it)
@@ -416,10 +431,11 @@ void diagVisitor::visit(loopIntrinsicNode& n)
 
 void diagVisitor::visit(forLoopNode& n)
 {
-   cdwDEBUG("%sforLoop '%s' '%s'\n",
+   cdwDEBUG("%sforLoop '%s' '%s', decomposed?=\n",
       getIndent().c_str(),
       n.name.c_str(),
-      n.scoped ? "+" : "-");
+      n.scoped ? "-" : "+",
+      n.decomposed ? "Y" : "N");
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);

@@ -180,6 +180,9 @@ private:
 
    void parseIf(node& owner);
    void parseIfPrime(node& owner);
+   void parseLoop(node& owner);
+   void parseLoopPrime(forLoopNode& l);
+   void parseLoopName(forLoopNode& l);
 
    node& parseLValue();
    node& parseLValuePrime(node& n);

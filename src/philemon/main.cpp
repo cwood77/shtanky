@@ -55,7 +55,7 @@ int _main(int argc, const char *argv[])
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
-   // run the instantiator, so it's guaranteed at least one run
+   // run the instantiator
    classInstantiator().run(*pPrj.get());
    { genericStripper v; pPrj->acceptVisitor(v); }
 

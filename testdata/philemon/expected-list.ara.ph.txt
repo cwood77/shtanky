@@ -12,7 +12,7 @@ class bootstrap : .sht.cons.program {
 
 class list<str> {
 
-   private _field : .sht.core.string;
+   private _field : str;
 
 }
 
