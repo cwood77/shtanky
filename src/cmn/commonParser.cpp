@@ -357,11 +357,13 @@ bool commonParser::parseCallAndFriends(std::unique_ptr<node>& inst, node& owner,
    {
       m_l.advance();
 
-      auto& i = m_nFac.appendNewChild<cmn::invokeFuncPtrNode>(owner);
-      i.appendChild(*inst.release());
+      std::unique_ptr<node> pI(m_nFac.create<invokeFuncPtrNode>());
+      pI->appendChild(*inst.release());
 
-      parsePassedArgList(i);
+      parsePassedArgList(*pI.get());
       m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+      parseRValuePrime(pI,owner,&owner);
    }
    else if(m_l.getToken() == commonLexor::kLParen)
       parseCall(inst,owner);
@@ -386,13 +388,15 @@ void commonParser::parseInvoke(std::unique_ptr<node>& inst, node& owner)
 
    m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
 
-   auto& i = m_nFac.appendNewChild<invokeNode>(owner);
-   i.proto.ref = name;
-   i.appendChild(*inst.release());
+   std::unique_ptr<node> pI(m_nFac.create<invokeNode>());
+   dynamic_cast<invokeNode*>(pI.get())->proto.ref = name;
+   pI->appendChild(*inst.release());
 
-   parsePassedArgList(i);
+   parsePassedArgList(*pI.get());
 
    m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+   parseRValuePrime(pI,owner,&owner);
 }
 
 void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
@@ -401,12 +405,15 @@ void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
 
    varRefNode& func = dynamic_cast<varRefNode&>(*inst.get());
 
-   auto& c = m_nFac.appendNewChild<callNode>(owner);
-   c.pTarget.ref = func.pSrc.ref;
+   std::unique_ptr<node> pC(m_nFac.create<callNode>());
+   dynamic_cast<callNode&>(*pC.get()).pTarget.ref = func.pSrc.ref;
+   inst.reset();
 
-   parsePassedArgList(c);
+   parsePassedArgList(*pC.get());
 
    m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+   parseRValuePrime(pC,owner,&owner);
 }
 
 void commonParser::parseAssignment(std::unique_ptr<node>& inst, node& owner)
@@ -550,7 +557,7 @@ node& commonParser::parseLValuePrime(node& n)
 
 void commonParser::parseRValue(node& owner, node *pExprRoot)
 {
-#if 1
+#if 0
    if(!parseLiteral(owner))
    {
       std::unique_ptr<node> pInst(&parseLValue());
@@ -561,74 +568,70 @@ void commonParser::parseRValue(node& owner, node *pExprRoot)
    if(m_l.getTokenClass() & commonLexor::kClassBop)
       parseBop(owner,pExprRoot);
 #else
-   node *pLit = parseLiteral(owner);
-   if(!pLit)
-   {
-      std::unique_ptr<node> pInst(&parseLValue());
-      if(!parseRValuePrime(pInst,owner))
-         owner.appendChild(*pInst.release());
-   }
-
-   if(m_l.getTokenClass() & commonLexor::kClassBop)
-      parseBop(owner,pExprRoot);
+   std::unique_ptr<node> pInst(parseLiteral());
+   if(!pInst.get())
+      pInst.reset(&parseLValue());
+   parseRValuePrime(pInst,owner,pExprRoot);
 #endif
 }
 
-#if 0
-bool commonParser::parseRValuePrime(std::unique_ptr<node>& inst, node& owner)
+#if 1
+// this API sucks
+// unused rval
+bool commonParser::parseRValuePrime(std::unique_ptr<node>& inst, node& owner, node *pExprRoot)
 {
-   if(parseCallAndFriends(pInst,owner,false))
+   if(parseCallAndFriends(inst,owner,false))
       return true;
 
    if(m_l.getTokenClass() & commonLexor::kClassBop)
    {
-      parseBop(owner,&owner);
+      owner.appendChild(*inst.release());
+      parseBop(owner,pExprRoot);
       return true;
    }
-   else
-   {
-      auto& n = parseLValuePrime(owner);
-      return &n != &owner; // did something
-   }
+   // TODO FA/[]
+
+   owner.appendChild(*inst.release());
+   return true;
 }
 #endif
 
-node *commonParser::parseLiteral(node& owner)
+node *commonParser::parseLiteral()
 {
    if(m_l.getToken() == commonLexor::kStringLiteral)
    {
-      auto& l = m_nFac.appendNewChild<stringLiteralNode>(owner);
-      l.value = m_l.getLexeme();
+      auto *l = m_nFac.create<stringLiteralNode>();
+      l->value = m_l.getLexeme();
       m_l.advance();
-      return &l;
+      return l;
    }
    else if(m_l.getToken() == commonLexor::kBoolLiteral)
    {
-      auto& l = m_nFac.appendNewChild<boolLiteralNode>(owner);
+      auto *l = m_nFac.create<boolLiteralNode>();
       if(m_l.getLexeme() == "false")
-         l.value = false;
+         l->value = false;
       else
-         l.value = true;
+         l->value = true;
       m_l.advance();
-      return &l;
+      return l;
    }
    else if(m_l.getToken() == commonLexor::kIntLiteral)
    {
-      auto& l = m_nFac.appendNewChild<intLiteralNode>(owner);
-      l.lexeme = m_l.getLexeme();
+      auto *l = m_nFac.create<intLiteralNode>();
+      l->lexeme = m_l.getLexeme();
       m_l.advance();
-      return &l;
+      return l;
    }
    else if(m_l.getToken() == commonLexor::kLBrace)
    {
       m_l.advance();
 
-      auto& n = m_nFac.appendNewChild<structLiteralNode>(owner);
-      parseStructLiteralPart(n);
+      auto *n = m_nFac.create<structLiteralNode>();
+      parseStructLiteralPart(*n);
 
       m_l.demandAndEat(cdwLoc,commonLexor::kRBrace);
 
-      return &n;
+      return n;
    }
    else
       return NULL;
@@ -639,7 +642,10 @@ void commonParser::parseStructLiteralPart(node& owner)
    if(m_l.getToken() == commonLexor::kRBrace)
       return;
 
-   if(!parseLiteral(owner))
+   node *pLit = parseLiteral();
+   if(pLit)
+      owner.appendChild(*pLit);
+   else
    {
       m_l.demand(cdwLoc,commonLexor::kName);
       auto name = m_l.getLexeme();

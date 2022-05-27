@@ -526,11 +526,34 @@ araceliProjectNode targetType=ca
             classNode name=loopInst baseClasses=[ ] lineNumber=1
                fieldNode memberNode name=_vtbl
                   userTypeNode pDef=loopInst_vtbl->0 typeNode
+               fieldNode memberNode name=_count lineNumber=3 flags=-
+                  intTypeNode typeNode lineNumber=3
+               fieldNode memberNode name=_breakReason lineNumber=4 flags=-
+                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=4
+               fieldNode memberNode name=_exitedNormally lineNumber=5 flags=-
+                  boolTypeNode typeNode lineNumber=5
             funcNode name=loopInst.getCount
                argNode name=self
                   userTypeNode pDef=.sht.core.loopInst->0 typeNode
-               intTypeNode typeNode lineNumber=3
-               sequenceNode lineNumber=5
+               intTypeNode typeNode lineNumber=6
+               sequenceNode lineNumber=8
+            funcNode name=loopInst.break
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInst->0 typeNode
+               voidTypeNode typeNode lineNumber=9
+               sequenceNode lineNumber=11
+            funcNode name=loopInst.breakWithReason
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInst->0 typeNode
+               argNode name=reason lineNumber=12
+                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=12
+               voidTypeNode typeNode lineNumber=12
+               sequenceNode lineNumber=14
+            funcNode name=loopInst.continue
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInst->0 typeNode
+               voidTypeNode typeNode lineNumber=15
+               sequenceNode lineNumber=17
             funcNode name=loopInst.cctor
                argNode name=self
                   userTypeNode pDef=.sht.core.loopInst->0 typeNode

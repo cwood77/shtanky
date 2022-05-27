@@ -84,13 +84,15 @@ class lexorBase;
 //
 // <rvalue'> ::== <call-and-friends>
 //              | <bop>
-//              | <lvalue'>
+//              | ':' <name> <rvalue'>
+//              | '[' <rvalue ']' <rvalue'>
+//              | e
 //
 // <call-and-friends> ::== '->' <invoke> <rvalue'>
 //                       | '->(' <passed-arg-list> ')' <rvalue'>
 //                       | '(' <call> <rvalue'>
-// <invoke>     ::== <name> '(' <passed-arg-list> ')'
-// <call>       ::== <passed-arg-list> ')'
+// <invoke>     ::== <name> '(' <passed-arg-list> ')' <rvalue'>
+// <call>       ::== <passed-arg-list> ')' <rvalue'>
 // <passed-arg-list> ::== <rvalue> ',' <passed-arg-list>
 //                      | <rvalue>
 //                      | e
@@ -180,6 +182,7 @@ private:
    node& parseLValuePrime(node& n);
    void parseRValue(node& owner) { parseRValue(owner,&owner); }
    void parseRValue(node& owner, node *pExprRoot);
+   bool parseRValuePrime(std::unique_ptr<node>& inst, node& owner, node *pExprRoot);
    bool parseCallAndFriends(std::unique_ptr<node>& inst, node& owner, bool require);
    void parseInvoke(std::unique_ptr<node>& inst, node& owner);
    void parseCall(std::unique_ptr<node>& inst, node& owner);
@@ -187,7 +190,7 @@ private:
    void parseBop(node& owner, node *pExprRoot);
 
    // ------------------------- literals
-   node *parseLiteral(node& owner);
+   node *parseLiteral();
    void parseStructLiteralPart(node& owner);
 
    // ------------------------- type

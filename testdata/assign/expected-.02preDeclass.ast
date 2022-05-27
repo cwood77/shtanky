@@ -131,9 +131,26 @@ araceliProjectNode targetType=ca
                   sequenceNode lineNumber=8
          fileNode fullPath=.\testdata\sht\core\loopInst.ara.ph lineNumber=1
             classNode name=loopInst baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=1
-               methodNode baseImpl=getCount->0 memberNode name=getCount lineNumber=3 flags=+
+               fieldNode memberNode name=_count lineNumber=3 flags=-
                   intTypeNode typeNode lineNumber=3
-                  sequenceNode lineNumber=5
+               fieldNode memberNode name=_breakReason lineNumber=4 flags=-
+                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=4
+               fieldNode memberNode name=_exitedNormally lineNumber=5 flags=-
+                  boolTypeNode typeNode lineNumber=5
+               methodNode baseImpl=getCount->0 memberNode name=getCount lineNumber=6 flags=+
+                  intTypeNode typeNode lineNumber=6
+                  sequenceNode lineNumber=8
+               methodNode baseImpl=break->0 memberNode name=break lineNumber=9 flags=+
+                  voidTypeNode typeNode lineNumber=9
+                  sequenceNode lineNumber=11
+               methodNode baseImpl=breakWithReason->0 memberNode name=breakWithReason lineNumber=12 flags=+
+                  argNode name=reason lineNumber=12
+                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=12
+                  voidTypeNode typeNode lineNumber=12
+                  sequenceNode lineNumber=14
+               methodNode baseImpl=continue->0 memberNode name=continue lineNumber=15 flags=+
+                  voidTypeNode typeNode lineNumber=15
+                  sequenceNode lineNumber=17
          fileNode fullPath=.\testdata\sht\core\object.ara.ph lineNumber=1
             classNode name=object baseClasses=[ ] lineNumber=1
          fileNode fullPath=.\testdata\sht\core\string.ara.ph lineNumber=1
