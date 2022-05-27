@@ -44,5 +44,6 @@ testdata/**/.target.ara
 testdata/**/*.app
 testdata/**/*.app.list
 testdata/**/*.app.log
+testdata/**/*.ast
 testdata/**/.classInfo
 !testdata/**/expected-*

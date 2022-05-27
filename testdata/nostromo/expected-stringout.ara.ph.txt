@@ -4,7 +4,9 @@ class debugOut {
    {
       var l : int;
       l = msg->length();
-      _uart->write8(msg[0]);
+      {
+         _uart->write8(msg[0]);
+      }
    }
    private _uart : uart16550.driver;
 

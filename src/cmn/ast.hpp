@@ -13,6 +13,8 @@
 
 namespace cmn {
 
+class outStream;
+
 class node;
 class araceliProjectNode;
 class liamProjectNode;
@@ -725,6 +727,62 @@ private:
    std::string getIndent() const;
 
    size_t m_nIndents;
+};
+
+class astFormatter : public hNodeVisitor {
+public:
+   explicit astFormatter(outStream& s) : m_s(s) {}
+
+   virtual void visit(node& n);
+   virtual void visit(araceliProjectNode& n);
+   virtual void visit(liamProjectNode& n);
+   virtual void visit(scopeNode& n);
+   virtual void visit(fileNode& n);
+   virtual void visit(fileRefNode& n);
+   virtual void visit(classNode& n);
+   virtual void visit(memberNode& n);
+   virtual void visit(methodNode& n);
+   virtual void visit(fieldNode& n);
+   virtual void visit(constNode& n);
+   virtual void visit(funcNode& n);
+   virtual void visit(intrinsicNode& n);
+   virtual void visit(argNode& n);
+   virtual void visit(typeNode& n);
+   virtual void visit(strTypeNode& n);
+   virtual void visit(boolTypeNode& n);
+   virtual void visit(intTypeNode& n);
+   virtual void visit(arrayTypeNode& n);
+   virtual void visit(voidTypeNode& n);
+   virtual void visit(userTypeNode& n);
+   virtual void visit(ptrTypeNode& n);
+   virtual void visit(sequenceNode& n);
+   virtual void visit(invokeNode& n);
+   virtual void visit(invokeFuncPtrNode& n);
+   virtual void visit(fieldAccessNode& n);
+   virtual void visit(callNode& n);
+   virtual void visit(localDeclNode& n);
+   virtual void visit(varRefNode& n);
+   virtual void visit(assignmentNode& n);
+   virtual void visit(bopNode& n);
+   virtual void visit(indexNode& n);
+   virtual void visit(ifNode& n);
+   virtual void visit(loopIntrinsicNode& n);
+   virtual void visit(forLoopNode& n);
+   virtual void visit(loopStartNode& n);
+   virtual void visit(loopBreakNode& n);
+   virtual void visit(loopEndNode& n);
+   virtual void visit(stringLiteralNode& n);
+   virtual void visit(boolLiteralNode& n);
+   virtual void visit(intLiteralNode& n);
+   virtual void visit(structLiteralNode& n);
+   virtual void visit(genericNode& n);
+   virtual void visit(constraintNode& n);
+   virtual void visit(instantiateNode& n);
+
+   virtual void _implementLanguage() {} // all
+
+private:
+   outStream& m_s;
 };
 
 template<class T = hNodeVisitor>

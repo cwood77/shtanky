@@ -1,4 +1,5 @@
 #include "ast.hpp"
+#include "out.hpp"
 #include "trace.hpp"
 
 namespace cmn {
@@ -554,6 +555,412 @@ diagVisitor::autoIndent::~autoIndent()
 std::string diagVisitor::getIndent() const
 {
    return std::string(m_nIndents*3,' ');
+}
+
+// TODO astFormatter
+
+namespace {
+
+void dumpAstLink(outStream& s, linkBase& field)
+{
+   s.stream() << field.ref << "->";
+   node *pT = field._getRefee();
+   if(!pT)
+      s.stream() << "0";
+   else
+      s.stream() << typeid(*pT).name();
+}
+
+template<class T>
+void dumpAstField(outStream& s, const char *name, T& field, bool omitIfEmpty)
+{
+   if(omitIfEmpty && (field == T()))
+      return;
+   s.stream() << " " << name << "=" << field;
+}
+
+template<>
+void dumpAstField(outStream& s, const char *name, std::set<std::string>& field, bool omitIfEmpty)
+{
+   if(omitIfEmpty && field.size() == 0)
+      return;
+   s.stream() << " " << name << "=[";
+   for(auto& v : field)
+      s.stream() << " " << v;
+   s.stream() << " ]";
+}
+
+void dumpAstLinkField(outStream& s, const char *name, linkBase& field)
+{
+   s.stream() << " " << name << "=";
+   dumpAstLink(s,field);
+}
+
+template<>
+void dumpAstField(outStream& s, const char *name, std::vector<link<classNode> >& field, bool omitIfEmpty)
+{
+   s.stream() << " " << name << "=[";
+   for(auto& v : field)
+   {
+      s.stream() << " ";
+      dumpAstLink(s,v);
+   }
+   s.stream() << " ]";
+}
+
+void dumpAstFlagsOpt(outStream& s, const char *name, size_t& field)
+{
+   if(field == 0)
+      return;
+   s.stream() << " " << name << "=";
+   if(field & nodeFlags::kVirtual) s.stream()             << "v";
+   if(field & nodeFlags::kOverride) s.stream()            << "o";
+   if(field & nodeFlags::kAbstract) s.stream()            << "a";
+   if(field & nodeFlags::kStatic) s.stream()              << "s";
+   if(field & nodeFlags::kInterface) s.stream()           << "i";
+   if(field & nodeFlags::kPublic) s.stream()              << "+";
+   if(field & nodeFlags::kProtected) s.stream()           << "#";
+   if(field & nodeFlags::kPrivate) s.stream()             << "-";
+   if(field & nodeFlags::kAddressableForWrite) s.stream() << "W";
+   if(field == 0) s.stream()                              << "0";
+}
+
+}
+
+#define cdwDumpAstField_(__fmtfunc__,__name__) \
+   __fmtfunc__(m_s,#__name__,n.__name__);
+
+#define cdwDumpAstField(__name__) \
+   dumpAstField<>(m_s,#__name__,n.__name__,false);
+
+#define cdwDumpAstFieldOpt(__name__) \
+   dumpAstField<>(m_s,#__name__,n.__name__,true);
+
+#define cdwDumpAstStart(__type__) \
+   m_s.stream() << indent(m_s) << #__type__;
+
+#define cdwDumpAstStartAbstract(__type__) \
+   m_s.stream() << " " << #__type__;
+
+#define cdwDumpAstStartSilent(__type__)
+
+#define cdwDumpAstEnd() \
+   hNodeVisitor::visit(n);
+
+#define cdwDumpAstEndSilent() \
+   m_s.stream() << std::endl; \
+   hNodeVisitor::visit(n);
+
+void astFormatter::visit(node& n)
+{
+   cdwDumpAstStartSilent(node)
+   cdwDumpAstFieldOpt(lineNumber)
+   cdwDumpAstFieldOpt(attributes)
+   cdwDumpAstField_(dumpAstFlagsOpt,flags)
+   cdwDumpAstEndSilent()
+
+   autoIndent _i(m_s);
+   visitChildren(n);
+}
+
+void astFormatter::visit(araceliProjectNode& n)
+{
+   cdwDumpAstStart(araceliProjectNode)
+   cdwDumpAstField(targetType)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(liamProjectNode& n)
+{
+   cdwDumpAstStart(liamProjectNode)
+   cdwDumpAstField(sourceFullPath)
+   cdwDumpAstField(loadedPaths)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(scopeNode& n)
+{
+   cdwDumpAstStart(scopeNode)
+   cdwDumpAstField(path)
+   cdwDumpAstField(scopeName)
+   cdwDumpAstField(inProject)
+   cdwDumpAstField(loaded)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(fileNode& n)
+{
+   cdwDumpAstStart(fileNode)
+   cdwDumpAstField(fullPath)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(fileRefNode& n)
+{
+   cdwDumpAstStart(fileRefNode)
+   cdwDumpAstField(ref)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(classNode& n)
+{
+   cdwDumpAstStart(classNode)
+   cdwDumpAstField(name)
+   cdwDumpAstField(baseClasses)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(memberNode& n)
+{
+   cdwDumpAstStartAbstract(memberNode)
+   cdwDumpAstField(name)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(methodNode& n)
+{
+   cdwDumpAstStart(methodNode)
+   cdwDumpAstField_(dumpAstLinkField,baseImpl)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(fieldNode& n)
+{
+   cdwDumpAstStart(fieldNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(constNode& n)
+{
+   cdwDumpAstStart(constNode)
+   cdwDumpAstField(name)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(funcNode& n)
+{
+   cdwDumpAstStart(funcNode)
+   cdwDumpAstField(name)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(intrinsicNode& n)
+{
+   cdwDumpAstStart(intrinsicNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(argNode& n)
+{
+   cdwDumpAstStart(argNode)
+   cdwDumpAstField(name)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(typeNode& n)
+{
+   cdwDumpAstStartAbstract(typeNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(strTypeNode& n)
+{
+   cdwDumpAstStart(strTypeNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(boolTypeNode& n)
+{
+   cdwDumpAstStart(boolTypeNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(intTypeNode& n)
+{
+   cdwDumpAstStart(intTypeNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(arrayTypeNode& n)
+{
+   cdwDumpAstStart(arrayTypeNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(voidTypeNode& n)
+{
+   cdwDumpAstStart(voidTypeNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(userTypeNode& n)
+{
+   cdwDumpAstStart(userTypeNode)
+   cdwDumpAstField_(dumpAstLinkField,pDef)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(ptrTypeNode& n)
+{
+   cdwDumpAstStart(ptrTypeNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(sequenceNode& n)
+{
+   cdwDumpAstStart(sequenceNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(invokeNode& n)
+{
+   cdwDumpAstStart(invokeNode)
+   cdwDumpAstField_(dumpAstLinkField,proto)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(invokeFuncPtrNode& n)
+{
+   cdwDumpAstStart(invokeFuncPtrNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(fieldAccessNode& n)
+{
+   cdwDumpAstStart(fieldAccessNode)
+   cdwDumpAstField(name)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(callNode& n)
+{
+   cdwDumpAstStart(callNode)
+   cdwDumpAstField_(dumpAstLinkField,pTarget)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(localDeclNode& n)
+{
+   cdwDumpAstStart(localDeclNode)
+   cdwDumpAstField(name)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(varRefNode& n)
+{
+   cdwDumpAstStart(varRefNode)
+   cdwDumpAstField_(dumpAstLinkField,pSrc)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(assignmentNode& n)
+{
+   cdwDumpAstStart(assignmentNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(bopNode& n)
+{
+   cdwDumpAstStart(bopNode)
+   cdwDumpAstField(op)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(indexNode& n)
+{
+   cdwDumpAstStart(indexNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(ifNode& n)
+{
+   cdwDumpAstStart(ifNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(loopIntrinsicNode& n)
+{
+   cdwDumpAstStart(loopIntrinsicNode)
+   cdwDumpAstField(name)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(forLoopNode& n)
+{
+   cdwDumpAstStart(forLoopNode)
+   cdwDumpAstField(name)
+   cdwDumpAstField(scoped)
+   cdwDumpAstField(decomposed)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(loopStartNode& n)
+{
+   cdwDumpAstStart(loopStartNode)
+   cdwDumpAstField(name)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(loopBreakNode& n)
+{
+   cdwDumpAstStart(loopBreakNode)
+   cdwDumpAstField(name)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(loopEndNode& n)
+{
+   cdwDumpAstStart(loopEndNode)
+   cdwDumpAstField(name)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(stringLiteralNode& n)
+{
+   cdwDumpAstStart(stringLiteralNode)
+   cdwDumpAstField(value)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(boolLiteralNode& n)
+{
+   cdwDumpAstStart(boolLiteralNode)
+   cdwDumpAstField(value)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(intLiteralNode& n)
+{
+   cdwDumpAstStart(intLiteralNode)
+   cdwDumpAstField(lexeme)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(structLiteralNode& n)
+{
+   cdwDumpAstStart(structLiteralNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(genericNode& n)
+{
+   cdwDumpAstStart(genericNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(constraintNode& n)
+{
+   cdwDumpAstStart(constraintNode)
+   cdwDumpAstField(name)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(instantiateNode& n)
+{
+   cdwDumpAstStart(instantiateNode)
+   cdwDumpAstField(impled)
+   cdwDumpAstField(text)
+   cdwDumpAstEnd()
 }
 
 std::string fullyQualifiedName::build(cmn::node& n, const std::string& start)

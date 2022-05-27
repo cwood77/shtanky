@@ -1,0 +1,684 @@
+araceliProjectNode targetType=ca
+   scopeNode path=.\testdata\assign scopeName=assign inProject=1 loaded=1
+      fileNode fullPath=.\testdata\assign\main.ara.ph lineNumber=1
+         classNode name=assignTester baseClasses=[ ] lineNumber=2 attributes=[ program ]
+            fieldNode memberNode name=_vtbl
+               userTypeNode pDef=assignTester_vtbl->0 typeNode
+            fieldNode memberNode name=_out lineNumber=19 attributes=[ allow:consoleTarget ] flags=-
+               userTypeNode pDef=iStream->N3cmn9classNodeE typeNode lineNumber=19
+         classNode name=A baseClasses=[ ] lineNumber=33
+            fieldNode memberNode name=_vtbl
+               userTypeNode pDef=A_vtbl->0 typeNode
+            fieldNode memberNode name=_x lineNumber=36 attributes=[ allow:assignTester ] flags=-
+               voidTypeNode typeNode lineNumber=36
+            fieldNode memberNode name=_b lineNumber=38 attributes=[ allow:assignTester ] flags=-
+               userTypeNode pDef=B->N3cmn9classNodeE typeNode lineNumber=38
+         classNode name=B baseClasses=[ ] lineNumber=42
+            fieldNode memberNode name=_vtbl
+               userTypeNode pDef=B_vtbl->0 typeNode
+            fieldNode memberNode name=_unused lineNumber=45 attributes=[ allow:assignTester ] flags=-
+               voidTypeNode typeNode lineNumber=45
+            fieldNode memberNode name=_x lineNumber=47 attributes=[ allow:assignTester ] flags=-
+               voidTypeNode typeNode lineNumber=47
+         funcNode name=assignTester.run
+            argNode name=self
+               userTypeNode pDef=.assign.assignTester->0 typeNode
+            argNode name=args lineNumber=4
+               userTypeNode pDef=.sht.core.array<.sht.core.string>->N3cmn9classNodeE typeNode lineNumber=4
+            voidTypeNode typeNode lineNumber=4
+            sequenceNode lineNumber=6
+         funcNode name=assignTester.readFromSubObject
+            argNode name=self
+               userTypeNode pDef=.assign.assignTester->0 typeNode
+            argNode name=a lineNumber=7
+               userTypeNode pDef=A->N3cmn9classNodeE typeNode lineNumber=7
+            argNode name=v lineNumber=7
+               voidTypeNode typeNode lineNumber=7
+            voidTypeNode typeNode lineNumber=7
+            sequenceNode lineNumber=9
+               assignmentNode lineNumber=9
+                  varRefNode pSrc=v->N3cmn7argNodeE lineNumber=9 flags=W
+                  fieldAccessNode name=_b lineNumber=9
+                     varRefNode pSrc=a->N3cmn7argNodeE lineNumber=9
+         funcNode name=assignTester.writeIntoSubObject
+            argNode name=self
+               userTypeNode pDef=.assign.assignTester->0 typeNode
+            voidTypeNode typeNode lineNumber=11
+            sequenceNode lineNumber=13
+               localDeclNode name=a lineNumber=13
+                  userTypeNode pDef=A->N3cmn9classNodeE typeNode lineNumber=13
+               callNode pTarget=.assign.A_sctor->0
+                  varRefNode pSrc=a->0
+               assignmentNode lineNumber=14
+                  fieldAccessNode name=_b lineNumber=14 flags=W
+                     varRefNode pSrc=a->N3cmn13localDeclNodeE lineNumber=14
+                  intLiteralNode lexeme=7 lineNumber=14
+               callNode pTarget=.assign.A_sdtor->0
+                  varRefNode pSrc=a->0
+         funcNode name=assignTester.readFromSubSubObject
+            argNode name=self
+               userTypeNode pDef=.assign.assignTester->0 typeNode
+            argNode name=a lineNumber=16
+               userTypeNode pDef=A->N3cmn9classNodeE typeNode lineNumber=16
+            argNode name=wrong lineNumber=16
+               voidTypeNode typeNode lineNumber=16
+            voidTypeNode typeNode lineNumber=16
+            sequenceNode lineNumber=18
+               assignmentNode lineNumber=18
+                  varRefNode pSrc=wrong->N3cmn7argNodeE lineNumber=18 flags=W
+                  fieldAccessNode name=_x lineNumber=18
+                     fieldAccessNode name=_b lineNumber=18
+                        varRefNode pSrc=a->N3cmn7argNodeE lineNumber=18
+         funcNode name=assignTester.writeIntoSubSubObject
+            argNode name=self
+               userTypeNode pDef=.assign.assignTester->0 typeNode
+            voidTypeNode typeNode lineNumber=20
+            sequenceNode lineNumber=22
+               localDeclNode name=wrong lineNumber=22
+                  userTypeNode pDef=A->N3cmn9classNodeE typeNode lineNumber=22
+               callNode pTarget=.assign.A_sctor->0
+                  varRefNode pSrc=wrong->0
+               assignmentNode lineNumber=23
+                  fieldAccessNode name=_x lineNumber=23 flags=W
+                     fieldAccessNode name=_b lineNumber=23
+                        varRefNode pSrc=wrong->N3cmn13localDeclNodeE lineNumber=23
+                  intLiteralNode lexeme=7 lineNumber=23
+               callNode pTarget=.assign.A_sdtor->0
+                  varRefNode pSrc=wrong->0
+         funcNode name=assignTester.bopAssociativity
+            argNode name=self
+               userTypeNode pDef=.assign.assignTester->0 typeNode
+            voidTypeNode typeNode lineNumber=25
+            sequenceNode lineNumber=27
+               localDeclNode name=v lineNumber=27
+                  voidTypeNode typeNode lineNumber=27
+               assignmentNode lineNumber=28
+                  varRefNode pSrc=v->N3cmn13localDeclNodeE lineNumber=28 flags=W
+                  bopNode op=+ lineNumber=28
+                     bopNode op=+ lineNumber=28
+                        intLiteralNode lexeme=1 lineNumber=28
+                        intLiteralNode lexeme=2 lineNumber=28
+                     intLiteralNode lexeme=3 lineNumber=28
+         funcNode name=assignTester.cctor
+            argNode name=self
+               userTypeNode pDef=.assign.assignTester->0 typeNode
+            sequenceNode
+            userTypeNode pDef=.assign.assignTester->0 typeNode
+         funcNode name=assignTester.cdtor
+            argNode name=self
+               userTypeNode pDef=.assign.assignTester->0 typeNode
+            sequenceNode
+            userTypeNode pDef=.assign.assignTester->0 typeNode
+         funcNode name=A.cctor
+            argNode name=self
+               userTypeNode pDef=.assign.A->0 typeNode
+            sequenceNode
+            userTypeNode pDef=.assign.A->0 typeNode
+         funcNode name=A.cdtor
+            argNode name=self
+               userTypeNode pDef=.assign.A->0 typeNode
+            sequenceNode
+            userTypeNode pDef=.assign.A->0 typeNode
+         funcNode name=B.cctor
+            argNode name=self
+               userTypeNode pDef=.assign.B->0 typeNode
+            sequenceNode
+            userTypeNode pDef=.assign.B->0 typeNode
+         funcNode name=B.cdtor
+            argNode name=self
+               userTypeNode pDef=.assign.B->0 typeNode
+            sequenceNode
+            userTypeNode pDef=.assign.B->0 typeNode
+         classNode name=A_vtbl baseClasses=[ ]
+         constNode name=A_vtbl_inst
+            userTypeNode pDef=A_vtbl->0 typeNode
+            structLiteralNode
+         classNode name=B_vtbl baseClasses=[ ]
+         constNode name=B_vtbl_inst
+            userTypeNode pDef=B_vtbl->0 typeNode
+            structLiteralNode
+         classNode name=assignTester_vtbl baseClasses=[ ]
+            fieldNode memberNode name=run
+               ptrTypeNode typeNode
+         constNode name=assignTester_vtbl_inst
+            userTypeNode pDef=assignTester_vtbl->0 typeNode
+            structLiteralNode
+               varRefNode pSrc=.assign.assignTester.run->0
+         funcNode name=A_sctor
+            argNode name=self
+               userTypeNode pDef=.assign.A->0 typeNode
+            voidTypeNode typeNode
+            sequenceNode
+               callNode pTarget=.sht.core.object_sctor->0
+                  varRefNode pSrc=self->0
+               assignmentNode
+                  fieldAccessNode name=_vtbl
+                     varRefNode pSrc=self->0
+                  varRefNode pSrc=.assign.A_vtbl_inst->0
+               callNode pTarget=.assign.A.cctor->0
+                  varRefNode pSrc=self->0
+         funcNode name=A_sdtor
+            argNode name=self
+               userTypeNode pDef=.assign.A->0 typeNode
+            voidTypeNode typeNode
+            sequenceNode
+               assignmentNode
+                  fieldAccessNode name=_vtbl
+                     varRefNode pSrc=self->0
+                  varRefNode pSrc=.assign.A_vtbl_inst->0
+               callNode pTarget=.assign.A.cdtor->0
+                  varRefNode pSrc=self->0
+               callNode pTarget=.sht.core.object_sdtor->0
+                  varRefNode pSrc=self->0
+         funcNode name=B_sctor
+            argNode name=self
+               userTypeNode pDef=.assign.B->0 typeNode
+            voidTypeNode typeNode
+            sequenceNode
+               callNode pTarget=.sht.core.object_sctor->0
+                  varRefNode pSrc=self->0
+               assignmentNode
+                  fieldAccessNode name=_vtbl
+                     varRefNode pSrc=self->0
+                  varRefNode pSrc=.assign.B_vtbl_inst->0
+               callNode pTarget=.assign.B.cctor->0
+                  varRefNode pSrc=self->0
+         funcNode name=B_sdtor
+            argNode name=self
+               userTypeNode pDef=.assign.B->0 typeNode
+            voidTypeNode typeNode
+            sequenceNode
+               assignmentNode
+                  fieldAccessNode name=_vtbl
+                     varRefNode pSrc=self->0
+                  varRefNode pSrc=.assign.B_vtbl_inst->0
+               callNode pTarget=.assign.B.cdtor->0
+                  varRefNode pSrc=self->0
+               callNode pTarget=.sht.core.object_sdtor->0
+                  varRefNode pSrc=self->0
+         funcNode name=assignTester_sctor
+            argNode name=self
+               userTypeNode pDef=.assign.assignTester->0 typeNode
+            voidTypeNode typeNode
+            sequenceNode
+               callNode pTarget=.sht.cons.program_sctor->0
+                  varRefNode pSrc=self->0
+               assignmentNode
+                  fieldAccessNode name=_vtbl
+                     varRefNode pSrc=self->0
+                  varRefNode pSrc=.assign.assignTester_vtbl_inst->0
+               callNode pTarget=.assign.assignTester.cctor->0
+                  varRefNode pSrc=self->0
+         funcNode name=assignTester_sdtor
+            argNode name=self
+               userTypeNode pDef=.assign.assignTester->0 typeNode
+            voidTypeNode typeNode
+            sequenceNode
+               assignmentNode
+                  fieldAccessNode name=_vtbl
+                     varRefNode pSrc=self->0
+                  varRefNode pSrc=.assign.assignTester_vtbl_inst->0
+               callNode pTarget=.assign.assignTester.cdtor->0
+                  varRefNode pSrc=self->0
+               callNode pTarget=.sht.cons.program_sdtor->0
+                  varRefNode pSrc=self->0
+      fileNode fullPath=.\testdata\assign\.target.ara lineNumber=1
+         classNode name=consoleTarget baseClasses=[ ] lineNumber=1
+            fieldNode memberNode name=_vtbl
+               userTypeNode pDef=consoleTarget_vtbl->0 typeNode
+         funcNode name=consoleTarget.main attributes=[ entrypoint ]
+            argNode name=args lineNumber=4
+               userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=4
+                  arrayTypeNode typeNode lineNumber=4
+            voidTypeNode typeNode lineNumber=4
+            sequenceNode lineNumber=6
+               localDeclNode name=cout lineNumber=6
+                  userTypeNode pDef=.sht.cons.stdout->N3cmn9classNodeE typeNode lineNumber=6
+               callNode pTarget=.sht.cons.stdout_sctor->0
+                  varRefNode pSrc=cout->0
+               localDeclNode name=obj0 lineNumber=8
+                  userTypeNode pDef=.assign.assignTester->N3cmn9classNodeE typeNode lineNumber=8
+               callNode pTarget=.assign.assignTester_sctor->0
+                  varRefNode pSrc=obj0->0
+               assignmentNode lineNumber=9
+                  fieldAccessNode name=_out lineNumber=9 flags=W
+                     varRefNode pSrc=obj0->N3cmn13localDeclNodeE lineNumber=9
+                  varRefNode pSrc=cout->N3cmn13localDeclNodeE lineNumber=9
+               invokeFuncPtrNode
+                  fieldAccessNode name=run
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=obj0->N3cmn13localDeclNodeE lineNumber=11
+                  varRefNode pSrc=obj0->N3cmn13localDeclNodeE lineNumber=11
+                  varRefNode pSrc=args->N3cmn7argNodeE lineNumber=11
+               callNode pTarget=.assign.assignTester_sdtor->0
+                  varRefNode pSrc=obj0->0
+               callNode pTarget=.sht.cons.stdout_sdtor->0
+                  varRefNode pSrc=cout->0
+         funcNode name=consoleTarget.cctor
+            argNode name=self
+               userTypeNode pDef=.assign.consoleTarget->0 typeNode
+            sequenceNode
+            userTypeNode pDef=.assign.consoleTarget->0 typeNode
+         funcNode name=consoleTarget.cdtor
+            argNode name=self
+               userTypeNode pDef=.assign.consoleTarget->0 typeNode
+            sequenceNode
+            userTypeNode pDef=.assign.consoleTarget->0 typeNode
+         classNode name=consoleTarget_vtbl baseClasses=[ ]
+         constNode name=consoleTarget_vtbl_inst
+            userTypeNode pDef=consoleTarget_vtbl->0 typeNode
+            structLiteralNode
+         funcNode name=consoleTarget_sctor
+            argNode name=self
+               userTypeNode pDef=.assign.consoleTarget->0 typeNode
+            voidTypeNode typeNode
+            sequenceNode
+               callNode pTarget=.sht.core.object_sctor->0
+                  varRefNode pSrc=self->0
+               assignmentNode
+                  fieldAccessNode name=_vtbl
+                     varRefNode pSrc=self->0
+                  varRefNode pSrc=.assign.consoleTarget_vtbl_inst->0
+               callNode pTarget=.assign.consoleTarget.cctor->0
+                  varRefNode pSrc=self->0
+         funcNode name=consoleTarget_sdtor
+            argNode name=self
+               userTypeNode pDef=.assign.consoleTarget->0 typeNode
+            voidTypeNode typeNode
+            sequenceNode
+               assignmentNode
+                  fieldAccessNode name=_vtbl
+                     varRefNode pSrc=self->0
+                  varRefNode pSrc=.assign.consoleTarget_vtbl_inst->0
+               callNode pTarget=.assign.consoleTarget.cdtor->0
+                  varRefNode pSrc=self->0
+               callNode pTarget=.sht.core.object_sdtor->0
+                  varRefNode pSrc=self->0
+   scopeNode path=.\testdata\sht scopeName=sht inProject=0 loaded=0
+      scopeNode path=.\testdata\sht\cons scopeName=cons inProject=0 loaded=1
+         fileNode fullPath=.\testdata\sht\cons\program.ara.ph lineNumber=1
+            classNode name=iStream baseClasses=[ ] lineNumber=1 flags=i
+               fieldNode memberNode name=_vtbl
+                  userTypeNode pDef=iStream_vtbl->0 typeNode
+            classNode name=stdout baseClasses=[ ] lineNumber=7
+               fieldNode memberNode name=_vtbl
+                  userTypeNode pDef=stdout_vtbl->0 typeNode
+            classNode name=program baseClasses=[ ] lineNumber=16 flags=a
+               fieldNode memberNode name=_vtbl
+                  userTypeNode pDef=program_vtbl->0 typeNode
+               fieldNode memberNode name=_out lineNumber=19 attributes=[ allow:consoleTarget ] flags=-
+                  userTypeNode pDef=iStream->N3cmn9classNodeE typeNode lineNumber=19
+            funcNode name=iStream.printLn
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.iStream->0 typeNode
+               argNode name=msg lineNumber=3
+                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=3
+               voidTypeNode typeNode lineNumber=3
+               sequenceNode
+            funcNode name=iStream.cctor
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.iStream->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.cons.iStream->0 typeNode
+            funcNode name=iStream.cdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.iStream->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.cons.iStream->0 typeNode
+            funcNode name=stdout.printLn
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.stdout->0 typeNode
+               argNode name=msg lineNumber=9
+                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=9
+               voidTypeNode typeNode lineNumber=9
+               sequenceNode lineNumber=11
+                  callNode pTarget=._osCall->N3cmn13intrinsicNodeE lineNumber=11
+                     intLiteralNode lexeme=1 lineNumber=11
+                     varRefNode pSrc=msg->N3cmn7argNodeE lineNumber=11
+            funcNode name=stdout.cctor
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.stdout->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.cons.stdout->0 typeNode
+            funcNode name=stdout.cdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.stdout->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.cons.stdout->0 typeNode
+            funcNode name=program.run
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.program->0 typeNode
+               argNode name=args lineNumber=20
+                  userTypeNode pDef=.sht.core.array<.sht.core.string>->N3cmn9classNodeE typeNode lineNumber=20
+               voidTypeNode typeNode lineNumber=20
+               sequenceNode
+            funcNode name=program.cctor
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.program->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.cons.program->0 typeNode
+            funcNode name=program.cdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.program->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.cons.program->0 typeNode
+            classNode name=iStream_vtbl baseClasses=[ ]
+               fieldNode memberNode name=printLn
+                  ptrTypeNode typeNode
+            constNode name=iStream_vtbl_inst
+               userTypeNode pDef=iStream_vtbl->0 typeNode
+               structLiteralNode
+                  varRefNode pSrc=.sht.cons.iStream.printLn->0
+            classNode name=program_vtbl baseClasses=[ ]
+               fieldNode memberNode name=run
+                  ptrTypeNode typeNode
+            constNode name=program_vtbl_inst
+               userTypeNode pDef=program_vtbl->0 typeNode
+               structLiteralNode
+                  varRefNode pSrc=.sht.cons.program.run->0
+            classNode name=stdout_vtbl baseClasses=[ ]
+               fieldNode memberNode name=printLn
+                  ptrTypeNode typeNode
+            constNode name=stdout_vtbl_inst
+               userTypeNode pDef=stdout_vtbl->0 typeNode
+               structLiteralNode
+                  varRefNode pSrc=.sht.cons.stdout.printLn->0
+            funcNode name=iStream_sctor
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.iStream->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  callNode pTarget=.sht.core.object_sctor->0
+                     varRefNode pSrc=self->0
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.cons.iStream_vtbl_inst->0
+                  callNode pTarget=.sht.cons.iStream.cctor->0
+                     varRefNode pSrc=self->0
+            funcNode name=iStream_sdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.iStream->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.cons.iStream_vtbl_inst->0
+                  callNode pTarget=.sht.cons.iStream.cdtor->0
+                     varRefNode pSrc=self->0
+                  callNode pTarget=.sht.core.object_sdtor->0
+                     varRefNode pSrc=self->0
+            funcNode name=program_sctor
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.program->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  callNode pTarget=.sht.core.object_sctor->0
+                     varRefNode pSrc=self->0
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.cons.program_vtbl_inst->0
+                  callNode pTarget=.sht.cons.program.cctor->0
+                     varRefNode pSrc=self->0
+            funcNode name=program_sdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.program->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.cons.program_vtbl_inst->0
+                  callNode pTarget=.sht.cons.program.cdtor->0
+                     varRefNode pSrc=self->0
+                  callNode pTarget=.sht.core.object_sdtor->0
+                     varRefNode pSrc=self->0
+            funcNode name=stdout_sctor
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.stdout->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  callNode pTarget=.sht.cons.iStream_sctor->0
+                     varRefNode pSrc=self->0
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.cons.stdout_vtbl_inst->0
+                  callNode pTarget=.sht.cons.stdout.cctor->0
+                     varRefNode pSrc=self->0
+            funcNode name=stdout_sdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.cons.stdout->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.cons.stdout_vtbl_inst->0
+                  callNode pTarget=.sht.cons.stdout.cdtor->0
+                     varRefNode pSrc=self->0
+                  callNode pTarget=.sht.cons.iStream_sdtor->0
+                     varRefNode pSrc=self->0
+      scopeNode path=.\testdata\sht\core scopeName=core inProject=0 loaded=1
+         fileNode fullPath=.\testdata\sht\core\array.ara.ph lineNumber=1
+            classNode name=array<.sht.core.string> baseClasses=[ ] lineNumber=1
+               fieldNode memberNode name=_vtbl
+                  userTypeNode pDef=array<.sht.core.string>_vtbl->0 typeNode
+            funcNode name=array<.sht.core.string>.indexOpGet
+               argNode name=self
+                  userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
+               argNode name=i lineNumber=3
+                  intTypeNode typeNode lineNumber=3
+               userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=3
+               sequenceNode lineNumber=5
+            funcNode name=array<.sht.core.string>.indexOpSet
+               argNode name=self
+                  userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
+               argNode name=i lineNumber=6
+                  intTypeNode typeNode lineNumber=6
+               argNode name=val lineNumber=6
+                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=6
+               voidTypeNode typeNode lineNumber=6
+               sequenceNode lineNumber=8
+            funcNode name=array<.sht.core.string>.cctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
+            funcNode name=array<.sht.core.string>.cdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
+            classNode name=array<.sht.core.string>_vtbl baseClasses=[ ]
+            constNode name=array<.sht.core.string>_vtbl_inst
+               userTypeNode pDef=array<.sht.core.string>_vtbl->0 typeNode
+               structLiteralNode
+            funcNode name=array<.sht.core.string>_sctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  callNode pTarget=.sht.core.object_sctor->0
+                     varRefNode pSrc=self->0
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.array<.sht.core.string>_vtbl_inst->0
+                  callNode pTarget=.sht.core.array<.sht.core.string>.cctor->0
+                     varRefNode pSrc=self->0
+            funcNode name=array<.sht.core.string>_sdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.array<.sht.core.string>_vtbl_inst->0
+                  callNode pTarget=.sht.core.array<.sht.core.string>.cdtor->0
+                     varRefNode pSrc=self->0
+                  callNode pTarget=.sht.core.object_sdtor->0
+                     varRefNode pSrc=self->0
+         fileNode fullPath=.\testdata\sht\core\loopInst.ara.ph lineNumber=1
+            classNode name=loopInst baseClasses=[ ] lineNumber=1
+               fieldNode memberNode name=_vtbl
+                  userTypeNode pDef=loopInst_vtbl->0 typeNode
+            funcNode name=loopInst.getCount
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInst->0 typeNode
+               intTypeNode typeNode lineNumber=3
+               sequenceNode lineNumber=5
+            funcNode name=loopInst.cctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInst->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.core.loopInst->0 typeNode
+            funcNode name=loopInst.cdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInst->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.core.loopInst->0 typeNode
+            classNode name=loopInst_vtbl baseClasses=[ ]
+            constNode name=loopInst_vtbl_inst
+               userTypeNode pDef=loopInst_vtbl->0 typeNode
+               structLiteralNode
+            funcNode name=loopInst_sctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInst->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  callNode pTarget=.sht.core.object_sctor->0
+                     varRefNode pSrc=self->0
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.loopInst_vtbl_inst->0
+                  callNode pTarget=.sht.core.loopInst.cctor->0
+                     varRefNode pSrc=self->0
+            funcNode name=loopInst_sdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInst->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.loopInst_vtbl_inst->0
+                  callNode pTarget=.sht.core.loopInst.cdtor->0
+                     varRefNode pSrc=self->0
+                  callNode pTarget=.sht.core.object_sdtor->0
+                     varRefNode pSrc=self->0
+         fileNode fullPath=.\testdata\sht\core\object.ara.ph lineNumber=1
+            classNode name=object baseClasses=[ ] lineNumber=1
+               fieldNode memberNode name=_vtbl
+                  userTypeNode pDef=object_vtbl->0 typeNode
+            funcNode name=object.cctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.object->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.core.object->0 typeNode
+            funcNode name=object.cdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.object->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.core.object->0 typeNode
+            classNode name=object_vtbl baseClasses=[ ]
+            constNode name=object_vtbl_inst
+               userTypeNode pDef=object_vtbl->0 typeNode
+               structLiteralNode
+            funcNode name=object_sctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.object->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.object_vtbl_inst->0
+                  callNode pTarget=.sht.core.object.cctor->0
+                     varRefNode pSrc=self->0
+            funcNode name=object_sdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.object->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.object_vtbl_inst->0
+                  callNode pTarget=.sht.core.object.cdtor->0
+                     varRefNode pSrc=self->0
+         fileNode fullPath=.\testdata\sht\core\string.ara.ph lineNumber=1
+            classNode name=string baseClasses=[ ] lineNumber=1
+               fieldNode memberNode name=_vtbl
+                  userTypeNode pDef=string_vtbl->0 typeNode
+            funcNode name=string.length
+               argNode name=self
+                  userTypeNode pDef=.sht.core.string->0 typeNode
+               intTypeNode typeNode lineNumber=3
+               sequenceNode lineNumber=5
+            funcNode name=string.indexOpGet
+               argNode name=self
+                  userTypeNode pDef=.sht.core.string->0 typeNode
+               argNode name=i lineNumber=6
+                  intTypeNode typeNode lineNumber=6
+               intTypeNode typeNode lineNumber=6
+               sequenceNode lineNumber=8
+            funcNode name=string.indexOpSet
+               argNode name=self
+                  userTypeNode pDef=.sht.core.string->0 typeNode
+               argNode name=i lineNumber=9
+                  intTypeNode typeNode lineNumber=9
+               argNode name=val lineNumber=9
+                  intTypeNode typeNode lineNumber=9
+               voidTypeNode typeNode lineNumber=9
+               sequenceNode lineNumber=11
+            funcNode name=string.cctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.string->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.core.string->0 typeNode
+            funcNode name=string.cdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.string->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.core.string->0 typeNode
+            classNode name=string_vtbl baseClasses=[ ]
+            constNode name=string_vtbl_inst
+               userTypeNode pDef=string_vtbl->0 typeNode
+               structLiteralNode
+            funcNode name=string_sctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.string->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  callNode pTarget=.sht.core.object_sctor->0
+                     varRefNode pSrc=self->0
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.string_vtbl_inst->0
+                  callNode pTarget=.sht.core.string.cctor->0
+                     varRefNode pSrc=self->0
+            funcNode name=string_sdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.string->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.string_vtbl_inst->0
+                  callNode pTarget=.sht.core.string.cdtor->0
+                     varRefNode pSrc=self->0
+                  callNode pTarget=.sht.core.object_sdtor->0
+                     varRefNode pSrc=self->0
+   intrinsicNode   funcNode name=._osCall
+      argNode name=code
+         intTypeNode typeNode
+      argNode name=payload
+         ptrTypeNode typeNode
+      voidTypeNode typeNode

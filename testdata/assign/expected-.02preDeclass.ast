@@ -1,0 +1,161 @@
+araceliProjectNode targetType=ca
+   scopeNode path=.\testdata\assign scopeName=assign inProject=1 loaded=1
+      fileNode fullPath=.\testdata\assign\main.ara.ph lineNumber=1
+         classNode name=assignTester baseClasses=[ .sht.cons.program->N3cmn9classNodeE ] lineNumber=2 attributes=[ program ]
+            methodNode baseImpl=run->N3cmn10methodNodeE memberNode name=run lineNumber=4 flags=o+
+               argNode name=args lineNumber=4
+                  userTypeNode pDef=.sht.core.array<.sht.core.string>->N3cmn9classNodeE typeNode lineNumber=4
+               voidTypeNode typeNode lineNumber=4
+               sequenceNode lineNumber=6
+            methodNode baseImpl=readFromSubObject->0 memberNode name=readFromSubObject lineNumber=7 flags=-
+               argNode name=a lineNumber=7
+                  userTypeNode pDef=A->N3cmn9classNodeE typeNode lineNumber=7
+               argNode name=v lineNumber=7
+                  voidTypeNode typeNode lineNumber=7
+               voidTypeNode typeNode lineNumber=7
+               sequenceNode lineNumber=9
+                  assignmentNode lineNumber=9
+                     varRefNode pSrc=v->N3cmn7argNodeE lineNumber=9 flags=W
+                     fieldAccessNode name=_b lineNumber=9
+                        varRefNode pSrc=a->N3cmn7argNodeE lineNumber=9
+            methodNode baseImpl=writeIntoSubObject->0 memberNode name=writeIntoSubObject lineNumber=11 flags=-
+               voidTypeNode typeNode lineNumber=11
+               sequenceNode lineNumber=13
+                  localDeclNode name=a lineNumber=13
+                     userTypeNode pDef=A->N3cmn9classNodeE typeNode lineNumber=13
+                  assignmentNode lineNumber=14
+                     fieldAccessNode name=_b lineNumber=14 flags=W
+                        varRefNode pSrc=a->N3cmn13localDeclNodeE lineNumber=14
+                     intLiteralNode lexeme=7 lineNumber=14
+            methodNode baseImpl=readFromSubSubObject->0 memberNode name=readFromSubSubObject lineNumber=16 flags=-
+               argNode name=a lineNumber=16
+                  userTypeNode pDef=A->N3cmn9classNodeE typeNode lineNumber=16
+               argNode name=wrong lineNumber=16
+                  voidTypeNode typeNode lineNumber=16
+               voidTypeNode typeNode lineNumber=16
+               sequenceNode lineNumber=18
+                  assignmentNode lineNumber=18
+                     varRefNode pSrc=wrong->N3cmn7argNodeE lineNumber=18 flags=W
+                     fieldAccessNode name=_x lineNumber=18
+                        fieldAccessNode name=_b lineNumber=18
+                           varRefNode pSrc=a->N3cmn7argNodeE lineNumber=18
+            methodNode baseImpl=writeIntoSubSubObject->0 memberNode name=writeIntoSubSubObject lineNumber=20 flags=-
+               voidTypeNode typeNode lineNumber=20
+               sequenceNode lineNumber=22
+                  localDeclNode name=wrong lineNumber=22
+                     userTypeNode pDef=A->N3cmn9classNodeE typeNode lineNumber=22
+                  assignmentNode lineNumber=23
+                     fieldAccessNode name=_x lineNumber=23 flags=W
+                        fieldAccessNode name=_b lineNumber=23
+                           varRefNode pSrc=wrong->N3cmn13localDeclNodeE lineNumber=23
+                     intLiteralNode lexeme=7 lineNumber=23
+            methodNode baseImpl=bopAssociativity->0 memberNode name=bopAssociativity lineNumber=25 flags=-
+               voidTypeNode typeNode lineNumber=25
+               sequenceNode lineNumber=27
+                  localDeclNode name=v lineNumber=27
+                     voidTypeNode typeNode lineNumber=27
+                  assignmentNode lineNumber=28
+                     varRefNode pSrc=v->N3cmn13localDeclNodeE lineNumber=28 flags=W
+                     bopNode op=+ lineNumber=28
+                        bopNode op=+ lineNumber=28
+                           intLiteralNode lexeme=1 lineNumber=28
+                           intLiteralNode lexeme=2 lineNumber=28
+                        intLiteralNode lexeme=3 lineNumber=28
+         classNode name=A baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=33
+            fieldNode memberNode name=_x lineNumber=36 attributes=[ allow:assignTester ] flags=-
+               voidTypeNode typeNode lineNumber=36
+            fieldNode memberNode name=_b lineNumber=38 attributes=[ allow:assignTester ] flags=-
+               userTypeNode pDef=B->N3cmn9classNodeE typeNode lineNumber=38
+         classNode name=B baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=42
+            fieldNode memberNode name=_unused lineNumber=45 attributes=[ allow:assignTester ] flags=-
+               voidTypeNode typeNode lineNumber=45
+            fieldNode memberNode name=_x lineNumber=47 attributes=[ allow:assignTester ] flags=-
+               voidTypeNode typeNode lineNumber=47
+      fileNode fullPath=.\testdata\assign\.target.ara lineNumber=1
+         classNode name=consoleTarget baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=1
+            methodNode baseImpl=main->0 memberNode name=main lineNumber=4 attributes=[ entrypoint ] flags=s
+               argNode name=args lineNumber=4
+                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=4
+                     arrayTypeNode typeNode lineNumber=4
+               voidTypeNode typeNode lineNumber=4
+               sequenceNode lineNumber=6
+                  localDeclNode name=cout lineNumber=6
+                     userTypeNode pDef=.sht.cons.stdout->N3cmn9classNodeE typeNode lineNumber=6
+                  localDeclNode name=obj0 lineNumber=8
+                     userTypeNode pDef=.assign.assignTester->N3cmn9classNodeE typeNode lineNumber=8
+                  assignmentNode lineNumber=9
+                     fieldAccessNode name=_out lineNumber=9 flags=W
+                        varRefNode pSrc=obj0->N3cmn13localDeclNodeE lineNumber=9
+                     varRefNode pSrc=cout->N3cmn13localDeclNodeE lineNumber=9
+                  invokeNode proto=run->N3cmn10methodNodeE lineNumber=11
+                     varRefNode pSrc=obj0->N3cmn13localDeclNodeE lineNumber=11
+                     varRefNode pSrc=args->N3cmn7argNodeE lineNumber=11
+   scopeNode path=.\testdata\sht scopeName=sht inProject=0 loaded=0
+      scopeNode path=.\testdata\sht\cons scopeName=cons inProject=0 loaded=1
+         fileNode fullPath=.\testdata\sht\cons\program.ara.ph lineNumber=1
+            classNode name=iStream baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=1 flags=i
+               methodNode baseImpl=printLn->0 memberNode name=printLn lineNumber=3 flags=a+
+                  argNode name=msg lineNumber=3
+                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=3
+                  voidTypeNode typeNode lineNumber=3
+            classNode name=stdout baseClasses=[ iStream->N3cmn9classNodeE ] lineNumber=7
+               methodNode baseImpl=printLn->N3cmn10methodNodeE memberNode name=printLn lineNumber=9 flags=o+
+                  argNode name=msg lineNumber=9
+                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=9
+                  voidTypeNode typeNode lineNumber=9
+                  sequenceNode lineNumber=11
+                     callNode pTarget=._osCall->N3cmn13intrinsicNodeE lineNumber=11
+                        intLiteralNode lexeme=1 lineNumber=11
+                        varRefNode pSrc=msg->N3cmn7argNodeE lineNumber=11
+            classNode name=program baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=16 flags=a
+               fieldNode memberNode name=_out lineNumber=19 attributes=[ allow:consoleTarget ] flags=-
+                  userTypeNode pDef=iStream->N3cmn9classNodeE typeNode lineNumber=19
+               methodNode baseImpl=run->0 memberNode name=run lineNumber=20 flags=a+
+                  argNode name=args lineNumber=20
+                     userTypeNode pDef=.sht.core.array<.sht.core.string>->N3cmn9classNodeE typeNode lineNumber=20
+                  voidTypeNode typeNode lineNumber=20
+      scopeNode path=.\testdata\sht\core scopeName=core inProject=0 loaded=1
+         fileNode fullPath=.\testdata\sht\core\array.ara.ph lineNumber=1
+            classNode name=array<.sht.core.string> baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=1
+               methodNode baseImpl=indexOpGet->0 memberNode name=indexOpGet lineNumber=3 flags=+
+                  argNode name=i lineNumber=3
+                     intTypeNode typeNode lineNumber=3
+                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=3
+                  sequenceNode lineNumber=5
+               methodNode baseImpl=indexOpSet->0 memberNode name=indexOpSet lineNumber=6 flags=+
+                  argNode name=i lineNumber=6
+                     intTypeNode typeNode lineNumber=6
+                  argNode name=val lineNumber=6
+                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=6
+                  voidTypeNode typeNode lineNumber=6
+                  sequenceNode lineNumber=8
+         fileNode fullPath=.\testdata\sht\core\loopInst.ara.ph lineNumber=1
+            classNode name=loopInst baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=1
+               methodNode baseImpl=getCount->0 memberNode name=getCount lineNumber=3 flags=+
+                  intTypeNode typeNode lineNumber=3
+                  sequenceNode lineNumber=5
+         fileNode fullPath=.\testdata\sht\core\object.ara.ph lineNumber=1
+            classNode name=object baseClasses=[ ] lineNumber=1
+         fileNode fullPath=.\testdata\sht\core\string.ara.ph lineNumber=1
+            classNode name=string baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=1
+               methodNode baseImpl=length->0 memberNode name=length lineNumber=3 flags=+
+                  intTypeNode typeNode lineNumber=3
+                  sequenceNode lineNumber=5
+               methodNode baseImpl=indexOpGet->0 memberNode name=indexOpGet lineNumber=6 flags=+
+                  argNode name=i lineNumber=6
+                     intTypeNode typeNode lineNumber=6
+                  intTypeNode typeNode lineNumber=6
+                  sequenceNode lineNumber=8
+               methodNode baseImpl=indexOpSet->0 memberNode name=indexOpSet lineNumber=9 flags=+
+                  argNode name=i lineNumber=9
+                     intTypeNode typeNode lineNumber=9
+                  argNode name=val lineNumber=9
+                     intTypeNode typeNode lineNumber=9
+                  voidTypeNode typeNode lineNumber=9
+                  sequenceNode lineNumber=11
+   intrinsicNode   funcNode name=._osCall
+      argNode name=code
+         intTypeNode typeNode
+      argNode name=payload
+         ptrTypeNode typeNode
+      voidTypeNode typeNode

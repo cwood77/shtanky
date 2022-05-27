@@ -61,6 +61,9 @@ int _main(int argc, const char *argv[])
    cmn::cmdLine cl(argc,argv);
    std::string projectDir = cmn::pathUtil::toWindows(cl.getNextArg(".\\testdata\\test"));
    std::string batchBuild = projectDir + "\\.build.bat";
+   cmn::outBundle dbgOut;
+   cmn::unconditionalWriter wr;
+   dbgOut.scheduleAutoUpdate(wr);
 
    // invoke salome
    invokeSubProcess("salome","ara","ara",projectDir);
@@ -76,6 +79,8 @@ int _main(int argc, const char *argv[])
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
    std::unique_ptr<araceli::iTarget> pTgt;
    syzygy::frontend(projectDir,pPrj,pTgt).run();
+   { auto& s = dbgOut.get<cmn::outStream>(projectDir + "\\.00init.ast");
+     cmn::astFormatter v(s); pPrj->acceptVisitor(v); }
 
    // gather metadata
    metadata md;
@@ -108,13 +113,12 @@ int _main(int argc, const char *argv[])
    nodeLinker().linkGraph(*pPrj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+   { auto& s = dbgOut.get<cmn::outStream>(projectDir + "\\.01postlink.ast");
+     cmn::astFormatter v(s); pPrj->acceptVisitor(v); }
 
    // capture class info
    classCatalog cc;
    { classInfoBuilder v(cc); pPrj->acceptVisitor(v); }
-   cmn::outBundle dbgOut;
-   cmn::unconditionalWriter wr;
-   dbgOut.scheduleAutoUpdate(wr);
    {
       classInfoFormatter fmt(dbgOut.get<cmn::outStream>(
          projectDir + "\\.classInfo"));
@@ -146,6 +150,8 @@ int _main(int argc, const char *argv[])
    { constHoister v; pPrj->acceptVisitor(v); }
    cdwVERBOSE("graph after const hoist ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+   { auto& s = dbgOut.get<cmn::outStream>(projectDir + "\\.02preDeclass.ast");
+     cmn::astFormatter v(s); pPrj->acceptVisitor(v); }
 
    // --- compile-away classes ---
    { ctorDtorGenerator v; pPrj->acceptVisitor(v); } // write cctor/cdtor
@@ -161,6 +167,8 @@ int _main(int argc, const char *argv[])
      pPrj->acceptVisitor(v); v.inject(); }          //   allocated classes
    cdwVERBOSE("graph after declassing transforms ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+   { auto& s = dbgOut.get<cmn::outStream>(projectDir + "\\.03postDeclass.ast");
+     cmn::astFormatter v(s); pPrj->acceptVisitor(v); }
 
    // -----------------------------------------------------
 

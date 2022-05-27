@@ -550,6 +550,7 @@ node& commonParser::parseLValuePrime(node& n)
 
 void commonParser::parseRValue(node& owner, node *pExprRoot)
 {
+#if 1
    if(!parseLiteral(owner))
    {
       std::unique_ptr<node> pInst(&parseLValue());
@@ -559,15 +560,47 @@ void commonParser::parseRValue(node& owner, node *pExprRoot)
 
    if(m_l.getTokenClass() & commonLexor::kClassBop)
       parseBop(owner,pExprRoot);
+#else
+   node *pLit = parseLiteral(owner);
+   if(!pLit)
+   {
+      std::unique_ptr<node> pInst(&parseLValue());
+      if(!parseRValuePrime(pInst,owner))
+         owner.appendChild(*pInst.release());
+   }
+
+   if(m_l.getTokenClass() & commonLexor::kClassBop)
+      parseBop(owner,pExprRoot);
+#endif
 }
 
-bool commonParser::parseLiteral(node& owner)
+#if 0
+bool commonParser::parseRValuePrime(std::unique_ptr<node>& inst, node& owner)
+{
+   if(parseCallAndFriends(pInst,owner,false))
+      return true;
+
+   if(m_l.getTokenClass() & commonLexor::kClassBop)
+   {
+      parseBop(owner,&owner);
+      return true;
+   }
+   else
+   {
+      auto& n = parseLValuePrime(owner);
+      return &n != &owner; // did something
+   }
+}
+#endif
+
+node *commonParser::parseLiteral(node& owner)
 {
    if(m_l.getToken() == commonLexor::kStringLiteral)
    {
       auto& l = m_nFac.appendNewChild<stringLiteralNode>(owner);
       l.value = m_l.getLexeme();
       m_l.advance();
+      return &l;
    }
    else if(m_l.getToken() == commonLexor::kBoolLiteral)
    {
@@ -577,12 +610,14 @@ bool commonParser::parseLiteral(node& owner)
       else
          l.value = true;
       m_l.advance();
+      return &l;
    }
    else if(m_l.getToken() == commonLexor::kIntLiteral)
    {
       auto& l = m_nFac.appendNewChild<intLiteralNode>(owner);
       l.lexeme = m_l.getLexeme();
       m_l.advance();
+      return &l;
    }
    else if(m_l.getToken() == commonLexor::kLBrace)
    {
@@ -592,11 +627,11 @@ bool commonParser::parseLiteral(node& owner)
       parseStructLiteralPart(n);
 
       m_l.demandAndEat(cdwLoc,commonLexor::kRBrace);
+
+      return &n;
    }
    else
-      return false;
-
-   return true;
+      return NULL;
 }
 
 void commonParser::parseStructLiteralPart(node& owner)

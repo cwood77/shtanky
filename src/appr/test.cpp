@@ -36,6 +36,14 @@ testBase::~testBase()
       m_pLTest->test();
 }
 
+void testBase::verifyAdditionalArtifact(const std::string& path, const std::string& cuz)
+{
+   m_stream.appendNew<compareInstr>()
+      .withControl(cmn::pathUtil::addPrefixToFilePart(path,"expected-"))
+      .withVariable(path)
+      .because(cuz);
+}
+
 void testBase::setupAutoShlink(const std::string& appPath)
 {
    m_appPath = appPath;

@@ -1,6 +1,22 @@
 class loopInst {
 
+   _count : int;
+   _breakReason : str;
+   _exitedNormally : bool;
+
    public getCount() : int
+   {
+   }
+
+   public break() : void
+   {
+   }
+
+   public breakWithReason(reason : str) : void
+   {
+   }
+
+   public continue() : void
    {
    }
 

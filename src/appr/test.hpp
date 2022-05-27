@@ -34,6 +34,8 @@ public:
 protected:
    explicit testBase(instrStream& s) : m_stream(s) {}
 
+   void verifyAdditionalArtifact(const std::string& path, const std::string& cuz);
+
    virtual void setupAutoShlink(const std::string& appPath);
    void emulateAndCheckOutput();
 
@@ -49,6 +51,8 @@ public:
    araceliTest(instrStream& s, const std::string& folder);
 
    araceliTest& wholeApp() { setupAutoShlink(m_folder + "\\.app"); return *this; }
+   araceliTest& verifyAdditionalArtifact(const std::string& path, const std::string& cuz)
+   { testBase::verifyAdditionalArtifact(path,cuz); return *this; }
    araceliTest& expectLiamOf(const std::string& path, bool hasPhilemon = true);
 
 private:
