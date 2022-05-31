@@ -167,21 +167,38 @@ araceliProjectNode targetType=ca
             classNode name=object baseClasses=[ ] lineNumber=1
          fileNode fullPath=.\testdata\sht\core\string.ara.ph lineNumber=1
             classNode name=string baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=1
-               methodNode baseImpl=length->0 memberNode name=length lineNumber=3 flags=+
-                  intTypeNode typeNode lineNumber=3
+               methodNode baseImpl=ctor->0 memberNode name=ctor lineNumber=3 flags=+
+                  argNode name=lit lineNumber=3
+                     ptrTypeNode typeNode lineNumber=3
+                  voidTypeNode typeNode lineNumber=3
                   sequenceNode lineNumber=5
-               methodNode baseImpl=indexOpGet->0 memberNode name=indexOpGet lineNumber=6 flags=+
-                  argNode name=i lineNumber=6
-                     intTypeNode typeNode lineNumber=6
-                  intTypeNode typeNode lineNumber=6
-                  sequenceNode lineNumber=8
-               methodNode baseImpl=indexOpSet->0 memberNode name=indexOpSet lineNumber=9 flags=+
-                  argNode name=i lineNumber=9
-                     intTypeNode typeNode lineNumber=9
-                  argNode name=val lineNumber=9
-                     intTypeNode typeNode lineNumber=9
-                  voidTypeNode typeNode lineNumber=9
-                  sequenceNode lineNumber=11
+                     assignmentNode lineNumber=5
+                        varRefNode pSrc=_p->N3cmn9fieldNodeE lineNumber=5 flags=W
+                        callNode pTarget=._strld->N3cmn13intrinsicNodeE lineNumber=5
+                           varRefNode pSrc=lit->N3cmn7argNodeE lineNumber=5
+               methodNode baseImpl=length->0 memberNode name=length lineNumber=7 flags=+
+                  intTypeNode typeNode lineNumber=7
+                  sequenceNode lineNumber=9
+                     callNode pTarget=._strlen->N3cmn13intrinsicNodeE lineNumber=9
+                        varRefNode pSrc=_p->N3cmn9fieldNodeE lineNumber=9
+               methodNode baseImpl=indexOpGet->0 memberNode name=indexOpGet lineNumber=11 flags=+
+                  argNode name=i lineNumber=11
+                     intTypeNode typeNode lineNumber=11
+                  intTypeNode typeNode lineNumber=11
+                  sequenceNode lineNumber=13
+                     callNode pTarget=._strgidx->N3cmn13intrinsicNodeE lineNumber=13
+                        varRefNode pSrc=_p->N3cmn9fieldNodeE lineNumber=13
+               methodNode baseImpl=indexOpSet->0 memberNode name=indexOpSet lineNumber=15 flags=+
+                  argNode name=i lineNumber=15
+                     intTypeNode typeNode lineNumber=15
+                  argNode name=val lineNumber=15
+                     intTypeNode typeNode lineNumber=15
+                  voidTypeNode typeNode lineNumber=15
+                  sequenceNode lineNumber=17
+                     callNode pTarget=._strsidx->N3cmn13intrinsicNodeE lineNumber=17
+                        varRefNode pSrc=_p->N3cmn9fieldNodeE lineNumber=17
+               fieldNode memberNode name=_p lineNumber=19 flags=-
+                  ptrTypeNode typeNode lineNumber=19
       scopeNode path=.\testdata\sht\mem scopeName=mem inProject=0 loaded=0
          scopeNode path=.\testdata\sht\mem\map scopeName=map inProject=0 loaded=0
    intrinsicNode   funcNode name=._osCall
@@ -190,3 +207,25 @@ araceliProjectNode targetType=ca
       argNode name=payload
          ptrTypeNode typeNode
       voidTypeNode typeNode
+   intrinsicNode   funcNode name=._strld
+      argNode name=litoff
+         ptrTypeNode typeNode
+      ptrTypeNode typeNode
+   intrinsicNode   funcNode name=._strlen
+      argNode name=s
+         ptrTypeNode typeNode
+      intTypeNode typeNode
+   intrinsicNode   funcNode name=._strgidx
+      argNode name=s
+         ptrTypeNode typeNode
+      argNode name=i
+         intTypeNode typeNode
+      intTypeNode typeNode
+   intrinsicNode   funcNode name=._strsidx
+      argNode name=s
+         ptrTypeNode typeNode
+      argNode name=i
+         intTypeNode typeNode
+      argNode name=c
+         intTypeNode typeNode
+      ptrTypeNode typeNode

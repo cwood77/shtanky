@@ -8,22 +8,35 @@ namespace araceli {
 
 void fieldInitializer::visit(cmn::boolTypeNode& n)
 {
-}
-
-void fieldInitializer::visit(cmn::intTypeNode& n)
-{
-}
-
-void fieldInitializer::visit(cmn::voidTypeNode& n)
-{
+   cmn::treeWriter(m_seq)
+   .append<cmn::assignmentNode>()
+      .append<cmn::fieldAccessNode>([&](auto& f){ f.name = m_fname; })
+         .append<cmn::varRefNode>([](auto& vr){ vr.pSrc.ref = "self"; })
+            .backTo<cmn::assignmentNode>()
+      .append<cmn::boolLiteralNode>();
 }
 
 void fieldInitializer::visit(cmn::userTypeNode& n)
 {
+   // usertypes are ptrs here, so.... skip sctor calls
+   /*
+   auto fqn = cmn::fullyQualifiedName::build(*n.pDef.getRefee()) + "_sctor";
+
+   cmn::treeWriter(m_seq)
+   .append<cmn::callNode>([&](auto& c){ c.pTarget.ref = fqn; })
+      .append<cmn::fieldAccessNode>([&](auto& f){ f.name = m_fname; })
+         .append<cmn::varRefNode>([](auto& vr){ vr.pSrc.ref = "self"; });
+   */
 }
 
-void fieldInitializer::visit(cmn::ptrTypeNode& n)
+void fieldInitializer::setToZero()
 {
+   cmn::treeWriter(m_seq)
+   .append<cmn::assignmentNode>()
+      .append<cmn::fieldAccessNode>([&](auto& f){ f.name = m_fname; })
+         .append<cmn::varRefNode>([](auto& vr){ vr.pSrc.ref = "self"; })
+            .backTo<cmn::assignmentNode>()
+      .append<cmn::intLiteralNode>([](auto& l){ l.lexeme = "0"; });
 }
 
 void inheritImplementor::generate(classCatalog& cc)
@@ -89,7 +102,7 @@ void inheritImplementor::initializeFields(classCatalog& cc)
          else
          {
             auto& ty = pF->demandSoleChild<cmn::typeNode>();
-            fieldInitializer v(cctor);
+            fieldInitializer v(cctor,pF->name);
             ty.acceptVisitor(v);
          }
       }

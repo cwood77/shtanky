@@ -104,11 +104,14 @@
 
 .seg code        
 .assign.A.cctor: 
-                 push, rbp
-                 mov, rbp, rsp
-                 mov, rsp, rbp
-                 pop, rbp
-                 ret
+                 push, rbp       
+                 push, rbx       
+                 mov, rbp, rsp   
+                 mov, [rbx+8], 0 ; =
+                 mov, rsp, rbp   
+                 pop, rbx        
+                 pop, rbp        
+                 ret             
 
 .seg code        
 .assign.A.cdtor: 
@@ -120,11 +123,15 @@
 
 .seg code        
 .assign.B.cctor: 
-                 push, rbp
-                 mov, rbp, rsp
-                 mov, rsp, rbp
-                 pop, rbp
-                 ret
+                 push, rbp        
+                 push, rbx        
+                 mov, rbp, rsp    
+                 mov, [rbx+8], 0  ; =
+                 mov, [rbx+16], 0 ; =
+                 mov, rsp, rbp    
+                 pop, rbx         
+                 pop, rbp         
+                 ret              
 
 .seg code        
 .assign.B.cdtor: 

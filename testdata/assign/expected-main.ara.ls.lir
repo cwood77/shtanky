@@ -48,12 +48,15 @@
 
 ----- start stream .assign.A.cctor
 0 <enterFunc> ~rval11/0, $self7/0 ;;; .assign.A.cctor
+0 mov         [~self+8]/0, @0/1   ;;; =
 
 ----- start stream .assign.A.cdtor
 0 <enterFunc> ~rval12/0, $self8/0 ;;; .assign.A.cdtor
 
 ----- start stream .assign.B.cctor
 0 <enterFunc> ~rval13/0, $self9/0 ;;; .assign.B.cctor
+0 mov         [~self+8]/0, @0/1   ;;; =
+0 mov         [~self+16]/0, @0/1  ;;; =
 
 ----- start stream .assign.B.cdtor
 0 <enterFunc> ~rval14/0, $self10/0 ;;; .assign.B.cdtor

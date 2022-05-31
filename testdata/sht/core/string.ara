@@ -1,15 +1,25 @@
 class string {
 
+   public ctor(lit : ptr) : void
+   {
+      _p = ._strld(lit);
+   }
+
    public length() : int
    {
+      ._strlen(_p);
    }
 
    public indexOpGet(i : int) : int
    {
+      ._strgidx(_p);
    }
 
    public indexOpSet(i : int, val : int) : void
    {
+      ._strsidx(_p);
    }
+
+   private _p : ptr;
 
 }

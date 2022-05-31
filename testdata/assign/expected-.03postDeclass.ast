@@ -113,6 +113,10 @@ araceliProjectNode targetType=ca
             argNode name=self
                userTypeNode pDef=.assign.A->0 typeNode
             sequenceNode
+               assignmentNode
+                  fieldAccessNode name=_x
+                     varRefNode pSrc=self->0
+                  intLiteralNode lexeme=0
             userTypeNode pDef=.assign.A->0 typeNode
          funcNode name=A.cdtor
             argNode name=self
@@ -123,6 +127,14 @@ araceliProjectNode targetType=ca
             argNode name=self
                userTypeNode pDef=.assign.B->0 typeNode
             sequenceNode
+               assignmentNode
+                  fieldAccessNode name=_unused
+                     varRefNode pSrc=self->0
+                  intLiteralNode lexeme=0
+               assignmentNode
+                  fieldAccessNode name=_x
+                     varRefNode pSrc=self->0
+                  intLiteralNode lexeme=0
             userTypeNode pDef=.assign.B->0 typeNode
          funcNode name=B.cdtor
             argNode name=self
@@ -502,6 +514,14 @@ araceliProjectNode targetType=ca
                argNode name=self
                   userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
                sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_length
+                        varRefNode pSrc=self->0
+                     intLiteralNode lexeme=0
+                  assignmentNode
+                     fieldAccessNode name=_ptr
+                        varRefNode pSrc=self->0
+                     intLiteralNode lexeme=0
                userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
             funcNode name=array<.sht.core.string>.cdtor
                argNode name=self
@@ -574,6 +594,14 @@ araceliProjectNode targetType=ca
                argNode name=self
                   userTypeNode pDef=.sht.core.loopInst->0 typeNode
                sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_count
+                        varRefNode pSrc=self->0
+                     intLiteralNode lexeme=0
+                  assignmentNode
+                     fieldAccessNode name=_exitedNormally
+                        varRefNode pSrc=self->0
+                     boolLiteralNode value=0
                userTypeNode pDef=.sht.core.loopInst->0 typeNode
             funcNode name=loopInst.cdtor
                argNode name=self
@@ -654,31 +682,58 @@ araceliProjectNode targetType=ca
             classNode name=string baseClasses=[ ] lineNumber=1
                fieldNode memberNode name=_vtbl
                   userTypeNode pDef=string_vtbl->0 typeNode
+               fieldNode memberNode name=_p lineNumber=19 flags=-
+                  ptrTypeNode typeNode lineNumber=19
+            funcNode name=string.ctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.string->0 typeNode
+               argNode name=lit lineNumber=3
+                  ptrTypeNode typeNode lineNumber=3
+               voidTypeNode typeNode lineNumber=3
+               sequenceNode lineNumber=5
+                  assignmentNode lineNumber=5
+                     fieldAccessNode name=_p
+                        varRefNode pSrc=self->0
+                     callNode pTarget=._strld->N3cmn13intrinsicNodeE lineNumber=5
+                        varRefNode pSrc=lit->N3cmn7argNodeE lineNumber=5
             funcNode name=string.length
                argNode name=self
                   userTypeNode pDef=.sht.core.string->0 typeNode
-               intTypeNode typeNode lineNumber=3
-               sequenceNode lineNumber=5
+               intTypeNode typeNode lineNumber=7
+               sequenceNode lineNumber=9
+                  callNode pTarget=._strlen->N3cmn13intrinsicNodeE lineNumber=9
+                     fieldAccessNode name=_p
+                        varRefNode pSrc=self->0
             funcNode name=string.indexOpGet
                argNode name=self
                   userTypeNode pDef=.sht.core.string->0 typeNode
-               argNode name=i lineNumber=6
-                  intTypeNode typeNode lineNumber=6
-               intTypeNode typeNode lineNumber=6
-               sequenceNode lineNumber=8
+               argNode name=i lineNumber=11
+                  intTypeNode typeNode lineNumber=11
+               intTypeNode typeNode lineNumber=11
+               sequenceNode lineNumber=13
+                  callNode pTarget=._strgidx->N3cmn13intrinsicNodeE lineNumber=13
+                     fieldAccessNode name=_p
+                        varRefNode pSrc=self->0
             funcNode name=string.indexOpSet
                argNode name=self
                   userTypeNode pDef=.sht.core.string->0 typeNode
-               argNode name=i lineNumber=9
-                  intTypeNode typeNode lineNumber=9
-               argNode name=val lineNumber=9
-                  intTypeNode typeNode lineNumber=9
-               voidTypeNode typeNode lineNumber=9
-               sequenceNode lineNumber=11
+               argNode name=i lineNumber=15
+                  intTypeNode typeNode lineNumber=15
+               argNode name=val lineNumber=15
+                  intTypeNode typeNode lineNumber=15
+               voidTypeNode typeNode lineNumber=15
+               sequenceNode lineNumber=17
+                  callNode pTarget=._strsidx->N3cmn13intrinsicNodeE lineNumber=17
+                     fieldAccessNode name=_p
+                        varRefNode pSrc=self->0
             funcNode name=string.cctor
                argNode name=self
                   userTypeNode pDef=.sht.core.string->0 typeNode
                sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_p
+                        varRefNode pSrc=self->0
+                     intLiteralNode lexeme=0
                userTypeNode pDef=.sht.core.string->0 typeNode
             funcNode name=string.cdtor
                argNode name=self
@@ -723,3 +778,25 @@ araceliProjectNode targetType=ca
       argNode name=payload
          ptrTypeNode typeNode
       voidTypeNode typeNode
+   intrinsicNode   funcNode name=._strld
+      argNode name=litoff
+         ptrTypeNode typeNode
+      ptrTypeNode typeNode
+   intrinsicNode   funcNode name=._strlen
+      argNode name=s
+         ptrTypeNode typeNode
+      intTypeNode typeNode
+   intrinsicNode   funcNode name=._strgidx
+      argNode name=s
+         ptrTypeNode typeNode
+      argNode name=i
+         intTypeNode typeNode
+      intTypeNode typeNode
+   intrinsicNode   funcNode name=._strsidx
+      argNode name=s
+         ptrTypeNode typeNode
+      argNode name=i
+         intTypeNode typeNode
+      argNode name=c
+         intTypeNode typeNode
+      ptrTypeNode typeNode

@@ -24,6 +24,45 @@ void consoleAppTarget::populateIntrinsics(cmn::araceliProjectNode& root)
             .append<cmn::ptrTypeNode>()
                .backTo<cmn::intrinsicNode>()
          .append<cmn::voidTypeNode>()
+            .backTo<cmn::araceliProjectNode>()
+
+      .append<cmn::intrinsicNode>([](auto& i){ i.name = "._strld"; })
+         .append<cmn::argNode>([](auto& a){ a.name = "litoff"; })
+            .append<cmn::ptrTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::ptrTypeNode>()
+            .backTo<cmn::araceliProjectNode>()
+
+      .append<cmn::intrinsicNode>([](auto& i){ i.name = "._strlen"; })
+         .append<cmn::argNode>([](auto& a){ a.name = "s"; })
+            .append<cmn::ptrTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::intTypeNode>()
+            .backTo<cmn::araceliProjectNode>()
+
+      .append<cmn::intrinsicNode>([](auto& i){ i.name = "._strgidx"; })
+         .append<cmn::argNode>([](auto& a){ a.name = "s"; })
+            .append<cmn::ptrTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::argNode>([](auto& a){ a.name = "i"; })
+            .append<cmn::intTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::intTypeNode>()
+            .backTo<cmn::araceliProjectNode>()
+
+      .append<cmn::intrinsicNode>([](auto& i){ i.name = "._strsidx"; })
+         .append<cmn::argNode>([](auto& a){ a.name = "s"; })
+            .append<cmn::ptrTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::argNode>([](auto& a){ a.name = "i"; })
+            .append<cmn::intTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::argNode>([](auto& a){ a.name = "c"; })
+            .append<cmn::intTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::ptrTypeNode>()
+            .backTo<cmn::araceliProjectNode>()
+
    ;
 }
 
@@ -93,14 +132,24 @@ void consoleAppTarget::liamCodegen(cmn::outStream& sourceStream)
 {
    sourceStream.stream() << std::endl;
    sourceStream.stream() << "func ._osCall(code : str, payload : str) : void;" << std::endl;
+   sourceStream.stream() << "func ._strld(litoff : ptr) : ptr;" << std::endl;
+   sourceStream.stream() << "func ._strlen(s : ptr) : int;" << std::endl;
+   sourceStream.stream() << "func ._strgidx(s : ptr, i : int) : int;" << std::endl;
+   sourceStream.stream() << "func ._strsidx(s : ptr, i : int, c : int) : ptr;" << std::endl;
 }
 
 void consoleAppTarget::adjustBatchFileFiles(phase p, std::list<std::string>& files)
 {
    if(p == iTarget::kShtasmPhase)
+   {
       files.push_back("testdata\\sht\\oscall.asm");
+      files.push_back("testdata\\sht\\string.asm");
+   }
    else if(p == iTarget::kShlinkPhase)
+   {
       files.push_back("testdata\\sht\\oscall.asm.o");
+      files.push_back("testdata\\sht\\string.asm.o");
+   }
 }
 
 cmn::scopeNode& consoleAppTarget::findProjectScope(cmn::araceliProjectNode& root)

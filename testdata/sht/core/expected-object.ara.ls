@@ -26,5 +26,9 @@ func .sht.core.object_sdtor(
 
 
 func ._osCall(code : str, payload : str) : void;
+func ._strld(litoff : ptr) : ptr;
+func ._strlen(s : ptr) : int;
+func ._strgidx(s : ptr, i : int) : int;
+func ._strsidx(s : ptr, i : int, c : int) : ptr;
 
 ref "object.ara.lh";

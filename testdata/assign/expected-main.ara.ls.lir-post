@@ -72,7 +72,8 @@
 ----- start stream .assign.A.cctor
 10 <selectSegment> @code/0             
 20 <enterFunc>     ~rval11/0, $self7/0 ;;; .assign.A.cctor
-30 <exitFunc>      
+30 mov             [~self+8]/0, @0/1   ;;; =
+40 <exitFunc>      
 
 ----- start stream .assign.A.cdtor
 10 <selectSegment> @code/0             
@@ -82,7 +83,9 @@
 ----- start stream .assign.B.cctor
 10 <selectSegment> @code/0             
 20 <enterFunc>     ~rval13/0, $self9/0 ;;; .assign.B.cctor
-30 <exitFunc>      
+30 mov             [~self+8]/0, @0/1   ;;; =
+40 mov             [~self+16]/0, @0/1  ;;; =
+50 <exitFunc>      
 
 ----- start stream .assign.B.cdtor
 10 <selectSegment> @code/0              

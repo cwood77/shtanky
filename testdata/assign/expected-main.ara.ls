@@ -58,6 +58,7 @@ func .assign.assignTester.cdtor(
 func .assign.A.cctor(
    self : .assign.A) : .assign.A
 {
+   self:_x = 0;
 }
 
 func .assign.A.cdtor(
@@ -68,6 +69,8 @@ func .assign.A.cdtor(
 func .assign.B.cctor(
    self : .assign.B) : .assign.B
 {
+   self:_unused = 0;
+   self:_x = 0;
 }
 
 func .assign.B.cdtor(
@@ -131,6 +134,10 @@ func .assign.assignTester_sdtor(
 
 
 func ._osCall(code : str, payload : str) : void;
+func ._strld(litoff : ptr) : ptr;
+func ._strlen(s : ptr) : int;
+func ._strgidx(s : ptr, i : int) : int;
+func ._strsidx(s : ptr, i : int, c : int) : ptr;
 
 ref "main.ara.lh";
 ref "..\sht\cons\program.ara.lh";
