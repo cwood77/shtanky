@@ -8,7 +8,7 @@ using namespace shtemu;
 
 int _main(int argc, const char *argv[])
 {
-   cdwINFO("win64 shtanky emulator\r\n");
+   cdwINFO("--- win64 shtanky emulator ---\r\n");
    cmn::cmdLine cl(argc,argv);
    std::string appPath = cl.getNextArg(".\\testdata\\shtemu\\basic.app");
 

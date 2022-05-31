@@ -5,7 +5,7 @@ class .philemon.bootstrap {
 
 class .philemon.list<str> {
    _vtbl : .philemon.list<str>_vtbl;
-   _field : str;
+   _field : .sht.core.string;
 }
 
 func .philemon.bootstrap.run(
@@ -45,3 +45,4 @@ func .philemon.list<str>_sdtor(
 
 ref "..\sht\cons\program.ara.lh";
 ref "..\sht\core\array.ara.lh";
+ref "..\sht\core\string.ara.lh";

@@ -44,6 +44,10 @@ int _main(int argc, const char *argv[])
       araceli::loader::findScopeAndLoadFile(*pPrj.get(),path);
    }
 
+   // run the instantiator to expand user generics
+   // this allows string and array passes to find everything
+   classInstantiator().run(*pPrj.get());
+
    // transform native string type to class
    { stringDecomposition v; pPrj->acceptVisitor(v); v.run(); }
 
@@ -55,8 +59,10 @@ int _main(int argc, const char *argv[])
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
-   // run the instantiator
+   // run the instantiator a second time, to implement arrays
    classInstantiator().run(*pPrj.get());
+
+   // generics are now done; remove them
    { genericStripper v; pPrj->acceptVisitor(v); }
 
    // codegen

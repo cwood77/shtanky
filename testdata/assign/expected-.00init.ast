@@ -98,18 +98,30 @@ araceliProjectNode targetType=ca
       scopeNode path=.\testdata\sht\core scopeName=core inProject=0 loaded=1
          fileNode fullPath=.\testdata\sht\core\array.ara.ph lineNumber=1
             classNode name=array<.sht.core.string> baseClasses=[ ] lineNumber=1
-               methodNode baseImpl=indexOpGet->0 memberNode name=indexOpGet lineNumber=3 flags=+
-                  argNode name=i lineNumber=3
-                     intTypeNode typeNode lineNumber=3
-                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=3
+               methodNode baseImpl=getLength->0 memberNode name=getLength lineNumber=3 flags=+
+                  intTypeNode typeNode lineNumber=3
                   sequenceNode lineNumber=5
-               methodNode baseImpl=indexOpSet->0 memberNode name=indexOpSet lineNumber=6 flags=+
-                  argNode name=i lineNumber=6
-                     intTypeNode typeNode lineNumber=6
-                  argNode name=val lineNumber=6
+               methodNode baseImpl=append->0 memberNode name=append lineNumber=6 flags=+
+                  argNode name=value lineNumber=6
                      userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=6
                   voidTypeNode typeNode lineNumber=6
                   sequenceNode lineNumber=8
+               methodNode baseImpl=indexOpGet->0 memberNode name=indexOpGet lineNumber=9 flags=+
+                  argNode name=i lineNumber=9
+                     intTypeNode typeNode lineNumber=9
+                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=9
+                  sequenceNode lineNumber=11
+               methodNode baseImpl=indexOpSet->0 memberNode name=indexOpSet lineNumber=12 flags=+
+                  argNode name=i lineNumber=12
+                     intTypeNode typeNode lineNumber=12
+                  argNode name=val lineNumber=12
+                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=12
+                  voidTypeNode typeNode lineNumber=12
+                  sequenceNode lineNumber=14
+               fieldNode memberNode name=_length lineNumber=15 flags=-
+                  intTypeNode typeNode lineNumber=15
+               fieldNode memberNode name=_ptr lineNumber=16 flags=-
+                  ptrTypeNode typeNode lineNumber=16
          fileNode fullPath=.\testdata\sht\core\loopInst.ara.ph lineNumber=1
             classNode name=loopInst baseClasses=[ ] lineNumber=1
                fieldNode memberNode name=_count lineNumber=3 flags=-

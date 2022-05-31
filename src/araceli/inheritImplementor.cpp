@@ -6,9 +6,30 @@
 
 namespace araceli {
 
+void fieldInitializer::visit(cmn::boolTypeNode& n)
+{
+}
+
+void fieldInitializer::visit(cmn::intTypeNode& n)
+{
+}
+
+void fieldInitializer::visit(cmn::voidTypeNode& n)
+{
+}
+
+void fieldInitializer::visit(cmn::userTypeNode& n)
+{
+}
+
+void fieldInitializer::visit(cmn::ptrTypeNode& n)
+{
+}
+
 void inheritImplementor::generate(classCatalog& cc)
 {
    combineFieldsAndRemoveBases(cc);
+   initializeFields(cc);
    addVPtrs(cc);
 }
 
@@ -36,6 +57,42 @@ void inheritImplementor::combineFieldsAndRemoveBases(classCatalog& cc)
 
       // now, remove the base classes
       ci.pNode->baseClasses.clear();
+   }
+}
+
+void inheritImplementor::initializeFields(classCatalog& cc)
+{
+   for(auto cit=cc.classes.begin();cit!=cc.classes.end();++cit)
+   {
+      classInfo& ci = cit->second;
+
+      // fill in the compiler-generated ctor
+      auto& cctor = ci.pNode->getAncestor<cmn::fileNode>()
+         .filterSoleChild<cmn::funcNode>(
+            [&](auto& f){ return f.name == ci.name + ".cctor"; })
+         .demandSoleChild<cmn::sequenceNode>();
+
+      std::vector<cmn::fieldNode*> totalFields = ci.pNode->getChildrenOf<cmn::fieldNode>();
+      for(auto *pF : totalFields)
+      {
+         bool hasInitializer = (pF->getChildren().size() > 1);
+         if(hasInitializer)
+         {
+            cmn::treeWriter(cctor)
+            .append<cmn::assignmentNode>()
+               .append<cmn::fieldAccessNode>([&](auto& f){ f.name = pF->name; })
+                  .append<cmn::varRefNode>([](auto& vr){ vr.pSrc.ref = "self"; })
+                     .backTo<cmn::assignmentNode>().get()
+            .appendChild(*pF->getChildren()[1]);
+            pF->getChildren().resize(1);
+         }
+         else
+         {
+            auto& ty = pF->demandSoleChild<cmn::typeNode>();
+            fieldInitializer v(cctor);
+            ty.acceptVisitor(v);
+         }
+      }
    }
 }
 

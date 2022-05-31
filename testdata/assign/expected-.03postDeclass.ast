@@ -466,22 +466,38 @@ araceliProjectNode targetType=ca
             classNode name=array<.sht.core.string> baseClasses=[ ] lineNumber=1
                fieldNode memberNode name=_vtbl
                   userTypeNode pDef=array<.sht.core.string>_vtbl->0 typeNode
-            funcNode name=array<.sht.core.string>.indexOpGet
+               fieldNode memberNode name=_length lineNumber=15 flags=-
+                  intTypeNode typeNode lineNumber=15
+               fieldNode memberNode name=_ptr lineNumber=16 flags=-
+                  ptrTypeNode typeNode lineNumber=16
+            funcNode name=array<.sht.core.string>.getLength
                argNode name=self
                   userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
-               argNode name=i lineNumber=3
-                  intTypeNode typeNode lineNumber=3
-               userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=3
+               intTypeNode typeNode lineNumber=3
                sequenceNode lineNumber=5
-            funcNode name=array<.sht.core.string>.indexOpSet
+            funcNode name=array<.sht.core.string>.append
                argNode name=self
                   userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
-               argNode name=i lineNumber=6
-                  intTypeNode typeNode lineNumber=6
-               argNode name=val lineNumber=6
+               argNode name=value lineNumber=6
                   userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=6
                voidTypeNode typeNode lineNumber=6
                sequenceNode lineNumber=8
+            funcNode name=array<.sht.core.string>.indexOpGet
+               argNode name=self
+                  userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
+               argNode name=i lineNumber=9
+                  intTypeNode typeNode lineNumber=9
+               userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=9
+               sequenceNode lineNumber=11
+            funcNode name=array<.sht.core.string>.indexOpSet
+               argNode name=self
+                  userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
+               argNode name=i lineNumber=12
+                  intTypeNode typeNode lineNumber=12
+               argNode name=val lineNumber=12
+                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=12
+               voidTypeNode typeNode lineNumber=12
+               sequenceNode lineNumber=14
             funcNode name=array<.sht.core.string>.cctor
                argNode name=self
                   userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode

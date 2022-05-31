@@ -1,6 +1,14 @@
 generic<T>
 class array {
 
+   public getLength() : int
+   {
+   }
+
+   public append(value : T) : void
+   {
+   }
+
    public indexOpGet(i : int) : T
    {
    }
@@ -8,5 +16,8 @@ class array {
    public indexOpSet(i : int, val : T) : void
    {
    }
+
+   _length : int;
+   _ptr : ptr;
 
 }
