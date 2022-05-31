@@ -170,6 +170,8 @@ araceliProjectNode targetType=ca
                      intTypeNode typeNode lineNumber=9
                   voidTypeNode typeNode lineNumber=9
                   sequenceNode lineNumber=11
+      scopeNode path=.\testdata\sht\mem scopeName=mem inProject=0 loaded=0
+         scopeNode path=.\testdata\sht\mem\map scopeName=map inProject=0 loaded=0
    intrinsicNode   funcNode name=._osCall
       argNode name=code
          intTypeNode typeNode

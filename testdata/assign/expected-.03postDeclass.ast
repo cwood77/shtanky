@@ -699,6 +699,8 @@ araceliProjectNode targetType=ca
                      varRefNode pSrc=self->0
                   callNode pTarget=.sht.core.object_sdtor->0
                      varRefNode pSrc=self->0
+      scopeNode path=.\testdata\sht\mem scopeName=mem inProject=0 loaded=0
+         scopeNode path=.\testdata\sht\mem\map scopeName=map inProject=0 loaded=0
    intrinsicNode   funcNode name=._osCall
       argNode name=code
          intTypeNode typeNode
