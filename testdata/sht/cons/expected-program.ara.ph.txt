@@ -8,7 +8,7 @@ class stdout : iStream {
 
    override printLn(msg : .sht.core.string) : void
    {
-      ._osCall(1,msg);
+      ._print(msg);
    }
 
 }

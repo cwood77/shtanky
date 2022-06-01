@@ -24,15 +24,14 @@
 
 .seg code                 
 .sht.cons.stdout.printLn: 
-                          push, rbp      
-                          mov, rbp, rsp  
-                          sub, rsp, 32   
-                          mov, rcx, 1    ; shape:hoist imm from call
-                          call, ._osCall ; (call label)
-                          add, rsp, 32   
-                          mov, rsp, rbp  
-                          pop, rbp       
-                          ret            
+                          push, rbp     
+                          mov, rbp, rsp 
+                          sub, rsp, 32  
+                          call, ._print ; (call label)
+                          add, rsp, 32  
+                          mov, rsp, rbp 
+                          pop, rbp      
+                          ret           
 
 .seg code               
 .sht.cons.stdout.cctor: 

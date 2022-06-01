@@ -18,7 +18,7 @@ func .sht.cons.stdout.printLn(
    self : .sht.cons.stdout,
    msg : .sht.core.string) : void
 {
-   ._osCall(1,msg);
+   ._print(msg);
 }
 
 func .sht.cons.stdout.cctor(

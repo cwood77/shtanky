@@ -4,11 +4,12 @@ const .const0 : str = "hello world!";
 func .whatever() : void
 {
    if(0 < 7)
-      ._osCall(1,.const0);
+      ._print(.const0);
    else if(false)
-      ._osCall(1,.const0);
+      ._print(.const0);
    else
-      ._osCall(1,.const0);
+      ._print(.const0);
 }
 
 func ._osCall(code : str, payload : str) : void;
+func ._print(msg : str) : void;

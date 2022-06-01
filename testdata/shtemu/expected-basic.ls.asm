@@ -13,9 +13,8 @@
                      cmp, rbx, 0                
                      je, .entrypoint.else.0     
                      sub, rsp, 32               
-                     lea, rdx, qwordptr .const0 
-                     mov, rcx, 1                ; shape:hoist imm from call
-                     call, ._osCall             ; (call label)
+                     lea, rcx, qwordptr .const0 
+                     call, ._print              ; (call label)
                      add, rsp, 32               
                      goto, .entrypoint.endif.1  
 .seg code            
@@ -24,17 +23,15 @@
                      cmp, r10, 0                
                      je, .entrypoint.else.2     
                      sub, rsp, 32               
-                     lea, rdx, qwordptr .const0 
-                     mov, rcx, 1                ; shape:hoist imm from call
-                     call, ._osCall             ; (call label)
+                     lea, rcx, qwordptr .const0 
+                     call, ._print              ; (call label)
                      add, rsp, 32               
                      goto, .entrypoint.endif.3  
 .seg code            
 .entrypoint.else.2:  
                      sub, rsp, 32               
-                     lea, rdx, qwordptr .const0 
-                     mov, rcx, 1                ; shape:hoist imm from call
-                     call, ._osCall             ; (call label)
+                     lea, rcx, qwordptr .const0 
+                     call, ._print              ; (call label)
                      add, rsp, 32               
                      goto, .entrypoint.endif.3  
 .seg code            

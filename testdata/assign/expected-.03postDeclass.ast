@@ -344,8 +344,7 @@ araceliProjectNode targetType=ca
                   userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=9
                voidTypeNode typeNode lineNumber=9
                sequenceNode lineNumber=11
-                  callNode pTarget=._osCall->N3cmn13intrinsicNodeE lineNumber=11
-                     intLiteralNode lexeme=1 lineNumber=11
+                  callNode pTarget=._print->N3cmn13intrinsicNodeE lineNumber=11
                      varRefNode pSrc=msg->N3cmn7argNodeE lineNumber=11
             funcNode name=stdout.cctor
                argNode name=self
