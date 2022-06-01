@@ -22,6 +22,7 @@
                      call, ._getflg            ; (call label)
                      add, rsp, 32              
                      mov, [rbp-8], rax         ; =
+                     xor, rbx, rbx             
                      cmp, [rbp-8], 1           
                      setlts, rbx               
                      cmp, rbx, 0               
@@ -33,6 +34,7 @@
                      goto, .entrypoint.endif.1 
 .seg code            
 .entrypoint.else.0:  
+                     xor, rbx, rbx             
                      cmp, [rbp-8], 2           
                      setlts, rbx               
                      cmp, rbx, 0               
