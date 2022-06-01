@@ -102,13 +102,9 @@ func .sht.cons.stdout_sdtor(
 }
 
 
-func ._osCall(code : str, payload : str) : void;
-func ._strld(litoff : ptr) : ptr;
-func ._strlen(s : ptr) : int;
-func ._strgidx(s : ptr, i : int) : int;
-func ._strsidx(s : ptr, i : int, c : int) : ptr;
+ref "..\prims.lh";
 
-ref "program.ara.lh";
+ref ".\program.ara.lh";
 ref "..\core\array.ara.lh";
 ref "..\core\object.ara.lh";
 ref "..\core\string.ara.lh";

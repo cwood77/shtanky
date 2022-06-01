@@ -1,0 +1,5 @@
+// handwritten assembly prims
+
+func ._arrresize(arr : ptr, oldSize : int, newSize : int) : ptr;
+func ._arrgidx(arr : ptr, offset : int) : ptr;
+func ._arrsidx(arr : ptr, offset : int, value : ptr) : void;

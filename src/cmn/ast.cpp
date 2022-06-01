@@ -1052,8 +1052,16 @@ void cloningNodeVisitor::visit(argNode& n)
 void cloningNodeVisitor::visit(userTypeNode& n)
 {
    as<userTypeNode>().pDef.ref = n.pDef.ref;
-   if(n.pDef.getRefee())
-      as<userTypeNode>().pDef.bind(*n.pDef.getRefee());
+   if(n.pDef._getRefee())
+      as<userTypeNode>().pDef.bind(*n.pDef._getRefee());
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(callNode& n)
+{
+   as<callNode>().pTarget.ref = n.pTarget.ref;
+   if(n.pTarget._getRefee())
+      as<callNode>().pTarget.bind(*n.pTarget._getRefee());
    hNodeVisitor::visit(n);
 }
 
@@ -1061,7 +1069,8 @@ void cloningNodeVisitor::visit(varRefNode& n)
 {
    hNodeVisitor::visit(n);
    as<varRefNode>().pSrc.ref = n.pSrc.ref;
-   as<varRefNode>().pSrc.bind(*n.pSrc._getRefee());
+   if(n.pSrc._getRefee())
+      as<varRefNode>().pSrc.bind(*n.pSrc._getRefee());
 }
 
 node& cloneTree(node& n)

@@ -118,6 +118,8 @@ void pathUtil::loadFileContents(const std::string& path, std::string& contents)
    std::stringstream stream;
 
    std::ifstream src(path.c_str());
+   if(!src.good())
+      cdwTHROW("can't load path '%s'; does file exist?",path.c_str());
    while(src.good())
    {
       std::string line;

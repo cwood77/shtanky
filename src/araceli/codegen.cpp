@@ -17,6 +17,8 @@ void fileRefs::flush(std::ostream& stream)
          continue; // don't depend on yourself... duh.
 
       auto resolvedPath = cmn::pathUtil::computeRefPath(destPath,*it);
+      if(resolvedPath.c_str()[0] != '.')
+         resolvedPath = std::string(".\\") + resolvedPath;
 
       stream << "ref \"" << resolvedPath << "\";" << std::endl;
    }

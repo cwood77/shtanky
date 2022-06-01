@@ -9,7 +9,10 @@ namespace liam {
 void fileRefFinder::visit(cmn::fileRefNode& n)
 {
    cdwVERBOSE("found reference to file %s\n",n.ref.c_str());
-   m_filesToLoad.insert(cmn::pathUtil::absolutize(m_pFile->fullPath,n.ref));
+   std::string path = n.ref;
+   if(path.c_str()[0] == '.')
+      path = cmn::pathUtil::absolutize(m_pFile->fullPath,path);
+   m_filesToLoad.insert(path);
 }
 
 void projectBuilder::build(cmn::liamProjectNode& p)

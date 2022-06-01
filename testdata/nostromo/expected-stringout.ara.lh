@@ -22,5 +22,5 @@ func .nostromo.debugOut_sctor(
 func .nostromo.debugOut_sdtor(
    self : .nostromo.debugOut) : void;
 
-ref "uart16550\driver.ara.lh";
+ref ".\uart16550\driver.ara.lh";
 ref "..\sht\core\string.ara.lh";

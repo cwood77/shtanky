@@ -924,7 +924,7 @@ public:
    virtual void visit(invokeNode& n) { unexpected(n); }
    //virtual void visit(invokeFuncPtrNode& n) { unexpected(n); }
    virtual void visit(fieldAccessNode& n) { unexpected(n); }
-   virtual void visit(callNode& n) { unexpected(n); }
+   virtual void visit(callNode& n);
    virtual void visit(localDeclNode& n) { unexpected(n); }
    virtual void visit(varRefNode& n);
    //virtual void visit(assignmentNode& n) { unexpected(n); }

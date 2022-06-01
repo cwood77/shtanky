@@ -15,3 +15,12 @@ rex(48)op(89)modR/M(ec)
 rex(48)op(8f)modR/M(c5)
 // 14:    ret
 op(c3)
+// 17: ._print:
+// 18:    mov, rdx, rcx
+rex(48)op(89)modR/M(ca)
+// 19:    mov, rcx, 1
+rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
+// 20:    call, ._osCall
+op(e8)co32(00-00-00-00)
+// 21:    ret
+op(c3)

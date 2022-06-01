@@ -1,5 +1,6 @@
 #include "../cmn/ast.hpp"
 #include "../cmn/out.hpp"
+#include "../cmn/pathUtil.hpp"
 #include "../cmn/throw.hpp"
 #include "consoleAppTarget.hpp"
 #include "loader.hpp"
@@ -15,6 +16,18 @@ void consoleAppTarget::addAraceliStandardLibrary(cmn::araceliProjectNode& root)
 
 void consoleAppTarget::populateIntrinsics(cmn::araceliProjectNode& root)
 {
+   // there are generally two classes of magical prims in shtanky
+   // (1) oscall, which is a hookable syscall, along with various
+   //     wrappers for its different functions, and
+   // (2) prims, which are core syslib routines implemented in assembly,
+   //     and aren't oscall callbacks
+   //
+   // examples
+   // - strings
+   // - arrays
+   // - oscall: memory alloc
+   // - oscall: print, getkey, exit, version(?), file I/O
+
    cmn::treeWriter(root)
       .append<cmn::intrinsicNode>([](auto& i){ i.name = "._osCall"; })
          .append<cmn::argNode>([](auto& a){ a.name = "code"; })
@@ -22,6 +35,12 @@ void consoleAppTarget::populateIntrinsics(cmn::araceliProjectNode& root)
                .backTo<cmn::intrinsicNode>()
          .append<cmn::argNode>([](auto& a){ a.name = "payload"; })
             .append<cmn::ptrTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::ptrTypeNode>()
+            .backTo<cmn::araceliProjectNode>()
+      .append<cmn::intrinsicNode>([](auto& i){ i.name = "._print"; })
+         .append<cmn::argNode>([](auto& a){ a.name = "text"; })
+            .append<cmn::strTypeNode>()
                .backTo<cmn::intrinsicNode>()
          .append<cmn::voidTypeNode>()
             .backTo<cmn::araceliProjectNode>()
@@ -32,14 +51,12 @@ void consoleAppTarget::populateIntrinsics(cmn::araceliProjectNode& root)
                .backTo<cmn::intrinsicNode>()
          .append<cmn::ptrTypeNode>()
             .backTo<cmn::araceliProjectNode>()
-
       .append<cmn::intrinsicNode>([](auto& i){ i.name = "._strlen"; })
          .append<cmn::argNode>([](auto& a){ a.name = "s"; })
             .append<cmn::ptrTypeNode>()
                .backTo<cmn::intrinsicNode>()
          .append<cmn::intTypeNode>()
             .backTo<cmn::araceliProjectNode>()
-
       .append<cmn::intrinsicNode>([](auto& i){ i.name = "._strgidx"; })
          .append<cmn::argNode>([](auto& a){ a.name = "s"; })
             .append<cmn::ptrTypeNode>()
@@ -49,7 +66,6 @@ void consoleAppTarget::populateIntrinsics(cmn::araceliProjectNode& root)
                .backTo<cmn::intrinsicNode>()
          .append<cmn::intTypeNode>()
             .backTo<cmn::araceliProjectNode>()
-
       .append<cmn::intrinsicNode>([](auto& i){ i.name = "._strsidx"; })
          .append<cmn::argNode>([](auto& a){ a.name = "s"; })
             .append<cmn::ptrTypeNode>()
@@ -60,7 +76,41 @@ void consoleAppTarget::populateIntrinsics(cmn::araceliProjectNode& root)
          .append<cmn::argNode>([](auto& a){ a.name = "c"; })
             .append<cmn::intTypeNode>()
                .backTo<cmn::intrinsicNode>()
+         .append<cmn::voidTypeNode>()
+            .backTo<cmn::araceliProjectNode>()
+
+      .append<cmn::intrinsicNode>([](auto& i){ i.name = "._arrresize"; })
+         .append<cmn::argNode>([](auto& a){ a.name = "arr"; })
+            .append<cmn::ptrTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::argNode>([](auto& a){ a.name = "oldSize"; })
+            .append<cmn::intTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::argNode>([](auto& a){ a.name = "newSize"; })
+            .append<cmn::intTypeNode>()
+               .backTo<cmn::intrinsicNode>()
          .append<cmn::ptrTypeNode>()
+            .backTo<cmn::araceliProjectNode>()
+      .append<cmn::intrinsicNode>([](auto& i){ i.name = "._arrgidx"; })
+         .append<cmn::argNode>([](auto& a){ a.name = "arr"; })
+            .append<cmn::ptrTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::argNode>([](auto& a){ a.name = "offset"; })
+            .append<cmn::intTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::ptrTypeNode>()
+            .backTo<cmn::araceliProjectNode>()
+      .append<cmn::intrinsicNode>([](auto& i){ i.name = "._arrsidx"; })
+         .append<cmn::argNode>([](auto& a){ a.name = "arr"; })
+            .append<cmn::ptrTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::argNode>([](auto& a){ a.name = "offset"; })
+            .append<cmn::intTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::argNode>([](auto& a){ a.name = "value"; })
+            .append<cmn::ptrTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::voidTypeNode>()
             .backTo<cmn::araceliProjectNode>()
 
    ;
@@ -131,11 +181,12 @@ void consoleAppTarget::araceliCodegen(cmn::araceliProjectNode& root, metadata& m
 void consoleAppTarget::liamCodegen(cmn::outStream& sourceStream)
 {
    sourceStream.stream() << std::endl;
-   sourceStream.stream() << "func ._osCall(code : str, payload : str) : void;" << std::endl;
-   sourceStream.stream() << "func ._strld(litoff : ptr) : ptr;" << std::endl;
-   sourceStream.stream() << "func ._strlen(s : ptr) : int;" << std::endl;
-   sourceStream.stream() << "func ._strgidx(s : ptr, i : int) : int;" << std::endl;
-   sourceStream.stream() << "func ._strsidx(s : ptr, i : int, c : int) : ptr;" << std::endl;
+   sourceStream.stream()
+      << "ref \""
+      << cmn::pathUtil::computeRefPath(
+         sourceStream.getFullPath(),
+         ".\\testdata\\sht\\prims.lh")
+      << "\";" << std::endl;
 }
 
 void consoleAppTarget::adjustBatchFileFiles(phase p, std::list<std::string>& files)
@@ -144,11 +195,13 @@ void consoleAppTarget::adjustBatchFileFiles(phase p, std::list<std::string>& fil
    {
       files.push_back("testdata\\sht\\oscall.asm");
       files.push_back("testdata\\sht\\string.asm");
+      files.push_back("testdata\\sht\\array.asm");
    }
    else if(p == iTarget::kShlinkPhase)
    {
       files.push_back("testdata\\sht\\oscall.asm.o");
       files.push_back("testdata\\sht\\string.asm.o");
+      files.push_back("testdata\\sht\\array.asm.o");
    }
 }
 

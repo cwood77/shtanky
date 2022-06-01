@@ -12,3 +12,10 @@
    mov, rsp, rbp
    pop, rbp
    ret
+
+.seg code
+._print:
+   mov, rdx, rcx
+   mov, rcx, 1
+   call, ._osCall
+   ret

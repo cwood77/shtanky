@@ -117,30 +117,51 @@ araceliProjectNode targetType=ca
       scopeNode path=.\testdata\sht\core scopeName=core inProject=0 loaded=1
          fileNode fullPath=.\testdata\sht\core\array.ara.ph lineNumber=1
             classNode name=array<.sht.core.string> baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=1
-               methodNode baseImpl=getLength->0 memberNode name=getLength lineNumber=3 flags=+
-                  intTypeNode typeNode lineNumber=3
+               methodNode baseImpl=resize->0 memberNode name=resize lineNumber=3 flags=+
+                  argNode name=size lineNumber=3
+                     intTypeNode typeNode lineNumber=3
+                  voidTypeNode typeNode lineNumber=3
                   sequenceNode lineNumber=5
-               methodNode baseImpl=append->0 memberNode name=append lineNumber=6 flags=+
-                  argNode name=value lineNumber=6
-                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=6
-                  voidTypeNode typeNode lineNumber=6
-                  sequenceNode lineNumber=8
-               methodNode baseImpl=indexOpGet->0 memberNode name=indexOpGet lineNumber=9 flags=+
-                  argNode name=i lineNumber=9
-                     intTypeNode typeNode lineNumber=9
-                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=9
-                  sequenceNode lineNumber=11
-               methodNode baseImpl=indexOpSet->0 memberNode name=indexOpSet lineNumber=12 flags=+
-                  argNode name=i lineNumber=12
-                     intTypeNode typeNode lineNumber=12
-                  argNode name=val lineNumber=12
-                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=12
-                  voidTypeNode typeNode lineNumber=12
-                  sequenceNode lineNumber=14
-               fieldNode memberNode name=_length lineNumber=15 flags=-
-                  intTypeNode typeNode lineNumber=15
-               fieldNode memberNode name=_ptr lineNumber=16 flags=-
-                  ptrTypeNode typeNode lineNumber=16
+                     assignmentNode lineNumber=5
+                        varRefNode pSrc=_ptr->N3cmn9fieldNodeE lineNumber=5
+                        callNode pTarget=._arrresize->N3cmn13intrinsicNodeE lineNumber=5
+                           varRefNode pSrc=_ptr->N3cmn9fieldNodeE lineNumber=5
+                           varRefNode pSrc=_length->N3cmn9fieldNodeE lineNumber=5
+                           varRefNode pSrc=size->N3cmn7argNodeE lineNumber=5
+                     assignmentNode lineNumber=6
+                        varRefNode pSrc=_length->N3cmn9fieldNodeE lineNumber=6
+                        varRefNode pSrc=size->N3cmn7argNodeE lineNumber=6
+               methodNode baseImpl=getLength->0 memberNode name=getLength lineNumber=8 flags=+
+                  intTypeNode typeNode lineNumber=8
+                  sequenceNode lineNumber=10
+               methodNode baseImpl=append->0 memberNode name=append lineNumber=11 flags=+
+                  argNode name=value lineNumber=11
+                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=11
+                  voidTypeNode typeNode lineNumber=11
+                  sequenceNode lineNumber=13
+               methodNode baseImpl=indexOpGet->0 memberNode name=indexOpGet lineNumber=14 flags=+
+                  argNode name=i lineNumber=14
+                     intTypeNode typeNode lineNumber=14
+                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=14
+                  sequenceNode lineNumber=16
+                     callNode pTarget=._arrgidx->N3cmn13intrinsicNodeE lineNumber=16
+                        varRefNode pSrc=_ptr->N3cmn9fieldNodeE lineNumber=16
+                        varRefNode pSrc=i->N3cmn7argNodeE lineNumber=16
+               methodNode baseImpl=indexOpSet->0 memberNode name=indexOpSet lineNumber=18 flags=+
+                  argNode name=i lineNumber=18
+                     intTypeNode typeNode lineNumber=18
+                  argNode name=val lineNumber=18
+                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=18
+                  voidTypeNode typeNode lineNumber=18
+                  sequenceNode lineNumber=20
+                     callNode pTarget=._arrsidx->N3cmn13intrinsicNodeE lineNumber=20
+                        varRefNode pSrc=_ptr->N3cmn9fieldNodeE lineNumber=20
+                        varRefNode pSrc=i->N3cmn7argNodeE lineNumber=20
+                        varRefNode pSrc=val->N3cmn7argNodeE lineNumber=20
+               fieldNode memberNode name=_length lineNumber=22 flags=-
+                  intTypeNode typeNode lineNumber=22
+               fieldNode memberNode name=_ptr lineNumber=23 flags=-
+                  ptrTypeNode typeNode lineNumber=23
          fileNode fullPath=.\testdata\sht\core\loopInst.ara.ph lineNumber=1
             classNode name=loopInst baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=1
                fieldNode memberNode name=_count lineNumber=3 flags=-
@@ -167,15 +188,15 @@ araceliProjectNode targetType=ca
             classNode name=object baseClasses=[ ] lineNumber=1
          fileNode fullPath=.\testdata\sht\core\string.ara.ph lineNumber=1
             classNode name=string baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=1
-               methodNode baseImpl=ctor->0 memberNode name=ctor lineNumber=3 flags=+
-                  argNode name=lit lineNumber=3
+               methodNode baseImpl=set->0 memberNode name=set lineNumber=3 flags=+
+                  argNode name=literal lineNumber=3
                      ptrTypeNode typeNode lineNumber=3
                   voidTypeNode typeNode lineNumber=3
                   sequenceNode lineNumber=5
                      assignmentNode lineNumber=5
                         varRefNode pSrc=_p->N3cmn9fieldNodeE lineNumber=5
                         callNode pTarget=._strld->N3cmn13intrinsicNodeE lineNumber=5
-                           varRefNode pSrc=lit->N3cmn7argNodeE lineNumber=5
+                           varRefNode pSrc=literal->N3cmn7argNodeE lineNumber=5
                methodNode baseImpl=length->0 memberNode name=length lineNumber=7 flags=+
                   intTypeNode typeNode lineNumber=7
                   sequenceNode lineNumber=9
@@ -197,6 +218,8 @@ araceliProjectNode targetType=ca
                   sequenceNode lineNumber=17
                      callNode pTarget=._strsidx->N3cmn13intrinsicNodeE lineNumber=17
                         varRefNode pSrc=_p->N3cmn9fieldNodeE lineNumber=17
+                        varRefNode pSrc=i->N3cmn7argNodeE lineNumber=17
+                        varRefNode pSrc=val->N3cmn7argNodeE lineNumber=17
                fieldNode memberNode name=_p lineNumber=19 flags=-
                   ptrTypeNode typeNode lineNumber=19
       scopeNode path=.\testdata\sht\mem scopeName=mem inProject=0 loaded=0
@@ -206,6 +229,10 @@ araceliProjectNode targetType=ca
          intTypeNode typeNode
       argNode name=payload
          ptrTypeNode typeNode
+      ptrTypeNode typeNode
+   intrinsicNode   funcNode name=._print
+      argNode name=text
+         strTypeNode typeNode
       voidTypeNode typeNode
    intrinsicNode   funcNode name=._strld
       argNode name=litoff
@@ -228,4 +255,26 @@ araceliProjectNode targetType=ca
          intTypeNode typeNode
       argNode name=c
          intTypeNode typeNode
+      voidTypeNode typeNode
+   intrinsicNode   funcNode name=._arrresize
+      argNode name=arr
+         ptrTypeNode typeNode
+      argNode name=oldSize
+         intTypeNode typeNode
+      argNode name=newSize
+         intTypeNode typeNode
       ptrTypeNode typeNode
+   intrinsicNode   funcNode name=._arrgidx
+      argNode name=arr
+         ptrTypeNode typeNode
+      argNode name=offset
+         intTypeNode typeNode
+      ptrTypeNode typeNode
+   intrinsicNode   funcNode name=._arrsidx
+      argNode name=arr
+         ptrTypeNode typeNode
+      argNode name=offset
+         intTypeNode typeNode
+      argNode name=value
+         ptrTypeNode typeNode
+      voidTypeNode typeNode

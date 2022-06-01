@@ -33,12 +33,8 @@ func .nostromo.bootstrapper_sdtor(
 }
 
 
-func ._osCall(code : str, payload : str) : void;
-func ._strld(litoff : ptr) : ptr;
-func ._strlen(s : ptr) : int;
-func ._strgidx(s : ptr, i : int) : int;
-func ._strsidx(s : ptr, i : int, c : int) : ptr;
+ref "..\sht\prims.lh";
 
-ref "boot.ara.lh";
+ref ".\boot.ara.lh";
 ref "..\sht\cons\program.ara.lh";
 ref "..\sht\core\array.ara.lh";
