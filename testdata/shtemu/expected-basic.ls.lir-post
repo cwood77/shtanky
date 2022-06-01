@@ -1,43 +1,60 @@
-=== LIR bundle has 2 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
+=== LIR bundle has 4 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
 
------ start stream .const0
-10 <selectSegment>   @const/0                 
-20 <globalConstData> @"hello world!" <b> 0 /0 ;;; .const0
+----- start stream .zero
+10 <selectSegment>   @const/0      
+20 <globalConstData> @"0" <b> 0 /0 ;;; .zero
+
+----- start stream .one
+10 <selectSegment>   @const/0      
+20 <globalConstData> @"1" <b> 0 /0 ;;; .one
+
+----- start stream .other
+10 <selectSegment>   @const/0           
+20 <globalConstData> @"other!" <b> 0 /0 ;;; .other
 
 ----- start stream .entrypoint
-10  <selectSegment> @code/0                                                                                             
-20  <enterFunc>     ~rval/0                                                                                             ;;; .entrypoint
-30  cmp             @0/1, @7/1                                                                                          
-40  setlts          ~lt/0                                                                                               
-50  cmp             ~lt/0, @0/1                                                                                         
-60  je              !.entrypoint.else.0/0                                                                               
-70  <precall>       @totalStackSize/32                                                                                  
-80  lea             ~str/0, !.const0/0                                                                                  
-90  call            ~rval0/0, !._print/0, ~str/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0       ;;; (call label)
-100 <postcall>      @totalStackSize/32                                                                                  
-110 goto            !.entrypoint.endif.1/0                                                                              
-120 <selectSegment> @code/0                                                                                             
-130 <label>         !.entrypoint.else.0/0                                                                               
-140 cmp             @0/1, @0/1                                                                                          
-150 je              !.entrypoint.else.2/0                                                                               
-160 <precall>       @totalStackSize/32                                                                                  
-170 lea             ~str0/0, !.const0/0                                                                                 
-180 call            ~rval1/0, !._print/0, ~str0/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
-190 <postcall>      @totalStackSize/32                                                                                  
-200 goto            !.entrypoint.endif.3/0                                                                              
-210 <selectSegment> @code/0                                                                                             
-220 <label>         !.entrypoint.else.2/0                                                                               
-230 <precall>       @totalStackSize/32                                                                                  
-240 lea             ~str1/0, !.const0/0                                                                                 
-250 call            ~rval2/0, !._print/0, ~str1/0, ~rdx_burn1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0 ;;; (call label)
-260 <postcall>      @totalStackSize/32                                                                                  
-270 goto            !.entrypoint.endif.3/0                                                                              
-280 <selectSegment> @code/0                                                                                             
-290 <label>         !.entrypoint.endif.3/0                                                                              
-300 goto            !.entrypoint.endif.1/0                                                                              
-310 <selectSegment> @code/0                                                                                             
-320 <label>         !.entrypoint.endif.1/0                                                                              
-330 <exitFunc>      
+10  <selectSegment>  @code/0                                                                                             
+20  <enterFunc>      ~rval/0                                                                                             ;;; .entrypoint
+30  <reserveLocal>   $f/8                                                                                                ;;; f
+40  <precall>        @totalStackSize/32                                                                                  
+50  mov              ~t/1, @8/1                                                                                          ;;; shape:hoist imm from call
+60  call             ~rval0/0, !._getflg/0, ~t/1, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0        ;;; (call label)
+70  <postcall>       @totalStackSize/32                                                                                  
+80  mov              $f/0, ~rval0/0                                                                                      ;;; =
+90  cmp              $f/0, @1/1                                                                                          
+100 setlts           ~lt/0                                                                                               
+110 cmp              ~lt/0, @0/1                                                                                         
+120 je               !.entrypoint.else.0/0                                                                               
+130 <precall>        @totalStackSize/32                                                                                  
+140 lea              ~str/0, !.zero/0                                                                                    
+150 call             ~rval1/0, !._print/0, ~str/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0  ;;; (call label)
+160 <postcall>       @totalStackSize/32                                                                                  
+170 goto             !.entrypoint.endif.1/0                                                                              
+180 <selectSegment>  @code/0                                                                                             
+190 <label>          !.entrypoint.else.0/0                                                                               
+200 cmp              $f/0, @2/1                                                                                          
+210 setlts           ~lt0/0                                                                                              
+220 cmp              ~lt0/0, @0/1                                                                                        
+230 je               !.entrypoint.else.2/0                                                                               
+240 <precall>        @totalStackSize/32                                                                                  
+250 lea              ~str0/0, !.one/0                                                                                    
+260 call             ~rval2/0, !._print/0, ~str0/0, ~rdx_burn1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0 ;;; (call label)
+270 <postcall>       @totalStackSize/32                                                                                  
+280 goto             !.entrypoint.endif.3/0                                                                              
+290 <selectSegment>  @code/0                                                                                             
+300 <label>          !.entrypoint.else.2/0                                                                               
+310 <precall>        @totalStackSize/32                                                                                  
+320 lea              ~str1/0, !.other/0                                                                                  
+330 call             ~rval3/0, !._print/0, ~str1/0, ~rdx_burn2/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0 ;;; (call label)
+340 <postcall>       @totalStackSize/32                                                                                  
+350 goto             !.entrypoint.endif.3/0                                                                              
+360 <selectSegment>  @code/0                                                                                             
+370 <label>          !.entrypoint.endif.3/0                                                                              
+380 goto             !.entrypoint.endif.1/0                                                                              
+390 <selectSegment>  @code/0                                                                                             
+400 <label>          !.entrypoint.endif.1/0                                                                              
+410 <unreserveLocal> $f/8                                                                                                
+420 <exitFunc>       
 
 === end of LIR bundle dump ===
 

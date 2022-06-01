@@ -50,6 +50,9 @@ void testBase::setupAutoShlink(const std::string& appPath)
    m_pLTest.reset(new shlinkTest(m_stream,appPath));
 
    shtasmTest(m_stream,".\\testdata\\sht\\oscall.asm").andLink(*m_pLTest.get());
+   shtasmTest(m_stream,".\\testdata\\sht\\flags.asm").andLink(*m_pLTest.get());
+   shtasmTest(m_stream,".\\testdata\\sht\\string.asm").andLink(*m_pLTest.get());
+   shtasmTest(m_stream,".\\testdata\\sht\\array.asm").andLink(*m_pLTest.get());
 }
 
 void testBase::emulateAndCheckOutput()

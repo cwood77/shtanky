@@ -35,6 +35,10 @@ static const instrFmt addFmts[] = {
       kR64 | kM64,
       kI8,
       kArgTypeNone, kArgTypeNone, "br", false },
+   { "ADD{REX.W + 01 /r}",
+      kR64 | kM64,
+      kR64,
+      kArgTypeNone, kArgTypeNone, "br", false },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 

@@ -13,6 +13,8 @@ void shtankyAppSymbolIndex::reportSymbolLocation(const std::string& name, unsign
       entrypointOffset = finalOffset;
    if(name == "._osCall_impl")
       osCallImplOffset = finalOffset;
+   if(name == "._getflg_flags")
+      flagsOffset = finalOffset;
 }
 
 void shtankyAppTarget::readArguments(cmn::cmdLine& cl)
@@ -23,6 +25,7 @@ void shtankyAppTarget::readArguments(cmn::cmdLine& cl)
 void shtankyAppTarget::seedRequirements(layoutProgress& lProg)
 {
    lProg.seedRequiredObject(".entrypoint");
+   lProg.seedRequiredObject("._getflg_flags");
 }
 
 void shtankyAppTarget::write(const layout& l, iSymbolIndex& x)

@@ -812,6 +812,10 @@ araceliProjectNode targetType=ca
       argNode name=text
          strTypeNode typeNode
       voidTypeNode typeNode
+   intrinsicNode   funcNode name=._getflg
+      argNode name=offset
+         intTypeNode typeNode
+      intTypeNode typeNode
    intrinsicNode   funcNode name=._strld
       argNode name=litoff
          ptrTypeNode typeNode

@@ -45,6 +45,13 @@ void consoleAppTarget::populateIntrinsics(cmn::araceliProjectNode& root)
          .append<cmn::voidTypeNode>()
             .backTo<cmn::araceliProjectNode>()
 
+      .append<cmn::intrinsicNode>([](auto& i){ i.name = "._getflg"; })
+         .append<cmn::argNode>([](auto& a){ a.name = "offset"; })
+            .append<cmn::intTypeNode>()
+               .backTo<cmn::intrinsicNode>()
+         .append<cmn::intTypeNode>()
+            .backTo<cmn::araceliProjectNode>()
+
       .append<cmn::intrinsicNode>([](auto& i){ i.name = "._strld"; })
          .append<cmn::argNode>([](auto& a){ a.name = "litoff"; })
             .append<cmn::ptrTypeNode>()
@@ -194,12 +201,14 @@ void consoleAppTarget::adjustBatchFileFiles(phase p, std::list<std::string>& fil
    if(p == iTarget::kShtasmPhase)
    {
       files.push_back("testdata\\sht\\oscall.asm");
+      files.push_back("testdata\\sht\\flags.asm");
       files.push_back("testdata\\sht\\string.asm");
       files.push_back("testdata\\sht\\array.asm");
    }
    else if(p == iTarget::kShlinkPhase)
    {
       files.push_back("testdata\\sht\\oscall.asm.o");
+      files.push_back("testdata\\sht\\flags.asm.o");
       files.push_back("testdata\\sht\\string.asm.o");
       files.push_back("testdata\\sht\\array.asm.o");
    }

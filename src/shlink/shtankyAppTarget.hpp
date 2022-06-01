@@ -6,13 +6,15 @@ class shtankyAppSymbolIndex : public iSymbolIndex {
 public:
    enum { kUnset = 0xFFFFFFFF };
 
-   shtankyAppSymbolIndex() : osCallImplOffset(kUnset), entrypointOffset(kUnset) {}
+   shtankyAppSymbolIndex()
+   : osCallImplOffset(kUnset), entrypointOffset(kUnset), flagsOffset(kUnset) {}
 
    virtual void reportSymbolLocation(
       const std::string& name, unsigned long finalOffset);
 
    unsigned long osCallImplOffset;
    unsigned long entrypointOffset;
+   unsigned long flagsOffset;
 };
 
 class shtankyAppTarget : public iTarget {

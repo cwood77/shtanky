@@ -15,10 +15,21 @@ image::entrypoint_t image::findEntrypoint()
 
 void image::patch(osCall_t hook)
 {
-   //*findOsCallImpl() = hook;
    unsigned long offset = *(unsigned long *)(m_pPtr->getBasePtr() + kOsCallOffset);
    cdwDEBUG("  osCall is offset %lu\r\n",offset);
    *(osCall_t*)(m_pPtr->getBasePtr() + offset) = hook;
+}
+
+void image::setFlags(__int64 f0, __int64 f1, __int64 f2, __int64 f3)
+{
+   unsigned long offset = *(unsigned long *)(m_pPtr->getBasePtr() + kFlagsOffset);
+   cdwDEBUG("  flags is offset %lu\r\n",offset);
+   __int64 *pArray = (__int64*)(m_pPtr->getBasePtr() + offset);
+   pArray[0] = f0;
+   pArray[1] = f1;
+   pArray[2] = f2;
+   pArray[3] = f3;
+   cdwDEBUG("    setting flags to {%lld,%lld,%lld,%lld}\r\n",f0,f1,f2,f3);
 }
 
 image::osCall_t image::findOsCallImpl()

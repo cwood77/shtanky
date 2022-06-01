@@ -2,5 +2,6 @@
 // included by all araceli-generated liam files
 
 ref ".\oscall.lh";
+ref ".\flags.lh";
 ref ".\string.lh";
 ref ".\array.lh";

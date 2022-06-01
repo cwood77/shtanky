@@ -28,6 +28,7 @@ public:
 
    entrypoint_t findEntrypoint();
    void patch(osCall_t hook);
+   void setFlags(__int64 f0, __int64 f1, __int64 f2, __int64 f3);
 
 private:
    osCall_t findOsCallImpl();

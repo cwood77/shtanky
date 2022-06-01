@@ -24,6 +24,13 @@ static const genInfo kGenInfo[] = {
    },
    { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
+   { "ADD{REX.W + 01 /r}", (unsigned char[]){
+      genInfo::kOpcode1, 0x01,
+      genInfo::kArgFmtBytes,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kModRmRm, genInfo::kModRmReg, genInfo::kNa, genInfo::kNa } },
+
    { "CALL{E8 cd}", (unsigned char[]){
       genInfo::kOpcode1, 0xE8,
       genInfo::kCodeOffset32,

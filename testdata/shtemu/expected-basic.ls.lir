@@ -1,30 +1,41 @@
-=== LIR bundle has 2 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
+=== LIR bundle has 4 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
 
------ start stream .const0
-0 <globalConstData> @"hello world!" <b> 0 /0 ;;; .const0
+----- start stream .zero
+0 <globalConstData> @"0" <b> 0 /0 ;;; .zero
+
+----- start stream .one
+0 <globalConstData> @"1" <b> 0 /0 ;;; .one
+
+----- start stream .other
+0 <globalConstData> @"other!" <b> 0 /0 ;;; .other
 
 ----- start stream .entrypoint
-0 <enterFunc>   ~rval/0                                                                                             ;;; .entrypoint
-0 <isLessThan?> ~lt/0, @0/1, @7/1                                                                                   
-0 <ifFalse>     ~lt/0, !.entrypoint.else.0/0                                                                        
-0 <precall>     
-0 lea           ~str/0, !.const0/0                                                                                  
-0 call          ~rval0/0, !._print/0, ~str/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0       ;;; (call label)
-0 goto          !.entrypoint.endif.1/0                                                                              
-0 <label>       !.entrypoint.else.0/0                                                                               
-0 <ifFalse>     @0/1, !.entrypoint.else.2/0                                                                         
-0 <precall>     
-0 lea           ~str0/0, !.const0/0                                                                                 
-0 call          ~rval1/0, !._print/0, ~str0/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
-0 goto          !.entrypoint.endif.3/0                                                                              
-0 <label>       !.entrypoint.else.2/0                                                                               
-0 <precall>     
-0 lea           ~str1/0, !.const0/0                                                                                 
-0 call          ~rval2/0, !._print/0, ~str1/0, ~rdx_burn1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0 ;;; (call label)
-0 goto          !.entrypoint.endif.3/0                                                                              
-0 <label>       !.entrypoint.endif.3/0                                                                              
-0 goto          !.entrypoint.endif.1/0                                                                              
-0 <label>       !.entrypoint.endif.1/0                                                                              
+0 <enterFunc>    ~rval/0                                                                                             ;;; .entrypoint
+0 <reserveLocal> $f/8                                                                                                ;;; f
+0 <precall>      
+0 call           ~rval0/0, !._getflg/0, @8/1, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0        ;;; (call label)
+0 mov            $f/0, ~rval0/0                                                                                      ;;; =
+0 <isLessThan?>  ~lt/0, $f/0, @1/1                                                                                   
+0 <ifFalse>      ~lt/0, !.entrypoint.else.0/0                                                                        
+0 <precall>      
+0 lea            ~str/0, !.zero/0                                                                                    
+0 call           ~rval1/0, !._print/0, ~str/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0  ;;; (call label)
+0 goto           !.entrypoint.endif.1/0                                                                              
+0 <label>        !.entrypoint.else.0/0                                                                               
+0 <isLessThan?>  ~lt0/0, $f/0, @2/1                                                                                  
+0 <ifFalse>      ~lt0/0, !.entrypoint.else.2/0                                                                       
+0 <precall>      
+0 lea            ~str0/0, !.one/0                                                                                    
+0 call           ~rval2/0, !._print/0, ~str0/0, ~rdx_burn1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0 ;;; (call label)
+0 goto           !.entrypoint.endif.3/0                                                                              
+0 <label>        !.entrypoint.else.2/0                                                                               
+0 <precall>      
+0 lea            ~str1/0, !.other/0                                                                                  
+0 call           ~rval3/0, !._print/0, ~str1/0, ~rdx_burn2/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0 ;;; (call label)
+0 goto           !.entrypoint.endif.3/0                                                                              
+0 <label>        !.entrypoint.endif.3/0                                                                              
+0 goto           !.entrypoint.endif.1/0                                                                              
+0 <label>        !.entrypoint.endif.1/0                                                                              
 
 === end of LIR bundle dump ===
 

@@ -1,0 +1,11 @@
+// 2: ._getflg_flags: .data, <qw> 0 <qw> 1 <qw> 2 <qw> 3
+_intdata(00-00-00-00,00-00-00-00)_intdata(01-00-00-00,00-00-00-00)_intdata(02-00-00-00,00-00-00-00)_intdata(03-00-00-00,00-00-00-00)
+// 5: ._getflg:
+// 6:    lea, r10, qwordptr ._getflg_flags
+rex(4c)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
+// 7:    add, r10, rcx
+rex(49)op(01)modR/M(ca)
+// 8:    mov, rax, [r10]
+rex(49)op(8b)modR/M(02)
+// 10:    ret
+op(c3)
