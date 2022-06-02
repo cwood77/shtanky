@@ -28,7 +28,7 @@ size_t varFinder::chooseFreeStorage(size_t pseudoSize)
 size_t varFinder::decideStackStorage(size_t pseudoSize)
 {
    size_t actualSize = m_t.getRealSize(pseudoSize);
-   size_t s =  cmn::tgt::makeStackStorage(m_stackLocalSpace-actualSize);
+   size_t s =  cmn::tgt::makeStackStorage(0-(m_stackLocalSpace+actualSize));
    m_stackLocalSpace += actualSize;
    recordStorageUsed(cmn::tgt::kStorageStackFramePtr);
    return s;
