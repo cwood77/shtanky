@@ -2,11 +2,6 @@ const .zero : str = "0";
 const .one : str = "1";
 const .other : str = "other!";
 
-// BUGS!
-// - ifs need XOR
-// - locals are double-allocated (but only once cleaned)
-// - local clean-up is technically unnecessary
-
 [entrypoint]
 func .whatever() : void
 {

@@ -8,7 +8,6 @@
                           push, rbx                         
                           mov, rbp, rsp                     
                           sub, rsp, 8                       
-                          sub, rsp, 8                       
                           sub, rsp, 32                      
                           mov, rbx, rcx                     ; (preserve) [combiner]
                           mov, rcx, rdx                     ;       (msg req for rcx) [splitter]
@@ -26,7 +25,6 @@
                           mov, rdx, rax                     ;       (rval1 req for rdx) [splitter]
                           call, [rbx]                       ; (call ptr)
                           add, rsp, 32                      
-                          add, rsp, 8                       
                           mov, rsp, rbp                     
                           pop, rbx                          
                           pop, rbp                          

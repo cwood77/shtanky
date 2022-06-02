@@ -162,23 +162,10 @@ void asmCodeGen::handleInstr(lirInstr& i)
             m_w.advanceLine();
          }
          break;
-      case cmn::tgt::kReserveLocal: // TODO this stack space is duplicated by enter/exit func?
-         {
-            m_w[1]
-               << "sub, "
-               << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
-               << i.getArgs()[0]->getSize(); // this size is already real
-            m_w.advanceLine();
-         }
-         break;
+      // no ops: any space has already be calculated and
+      //         reserved by kEnterFunc
+      case cmn::tgt::kReserveLocal:
       case cmn::tgt::kUnreserveLocal:
-         {
-            m_w[1]
-               << "add, "
-               << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
-               << i.getArgs()[0]->getSize(); // this size is already real
-            m_w.advanceLine();
-         }
          break;
       case cmn::tgt::kGlobalConstData:
          {

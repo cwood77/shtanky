@@ -5,13 +5,11 @@
              push, rdi                          
              mov, rbp, rsp                      
              sub, rsp, 24                       
-             sub, rsp, 8                        
              sub, rsp, 32                       
              mov, rbx, rcx                      ; (preserve) [combiner]
              mov, rcx, [rbp-8]                  ;       (cout req for rcx) [splitter]
              call, .sht.cons.stdout_sctor       ; (call label)
              add, rsp, 32                       
-             sub, rsp, 16                       
              sub, rsp, 32                       
              mov, rdi, rcx                      ; (preserve) [combiner]
              mov, rcx, [rbp-8]                  ;       (obj0 req for rcx) [splitter]
@@ -31,8 +29,6 @@
              mov, rcx, rdi                      ; (restore [combiner])
              call, .sht.cons.stdout_sdtor       ; (call label)
              add, rsp, 32                       
-             add, rsp, 16                       
-             add, rsp, 8                        
              mov, rsp, rbp                      
              pop, rdi                           
              pop, rbx                           

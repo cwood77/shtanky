@@ -198,7 +198,7 @@ Propsed changes
     - shtemu -> **sandbox**
     - test -> **helloWorld**
     - nostromo -> _no change_
-1. [ ] Exercise branches by passing command-line input through shtemu
+1. [x] Exercise branches by passing command-line input through shtemu
 1. [ ] Strive to get execution of nostromo.
 
 [^1]: The name "shtanky" was suggested by my son, Ethan (age 11).  I selected the first of his suggestions that didn't include "my dad's butt" somewhere in the title.

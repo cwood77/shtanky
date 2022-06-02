@@ -16,7 +16,6 @@
                      push, rbx                 
                      mov, rbp, rsp             
                      sub, rsp, 8               
-                     sub, rsp, 8               
                      sub, rsp, 32              
                      mov, rcx, 8               ; shape:hoist imm from call
                      call, ._getflg            ; (call label)
@@ -56,7 +55,6 @@
                      goto, .entrypoint.endif.1 
 .seg code            
 .entrypoint.endif.1: 
-                     add, rsp, 8               
                      mov, rsp, rbp             
                      pop, rbx                  
                      pop, rbp                  

@@ -20,7 +20,6 @@
                                          push, rbp             
                                          mov, rbp, rsp         
                                          sub, rsp, 24          
-                                         sub, rsp, 24          
                                          sub, rsp, 32          
                                          call, .assign.A_sctor ; (call label)
                                          add, rsp, 32          
@@ -28,7 +27,6 @@
                                          sub, rsp, 32          
                                          call, .assign.A_sdtor ; (call label)
                                          add, rsp, 32          
-                                         add, rsp, 24          
                                          mov, rsp, rbp         
                                          pop, rbp              
                                          ret                   
@@ -53,7 +51,6 @@
                                             push, rbx             
                                             mov, rbp, rsp         
                                             sub, rsp, 24          
-                                            sub, rsp, 24          
                                             sub, rsp, 32          
                                             call, .assign.A_sctor ; (call label)
                                             add, rsp, 32          
@@ -62,7 +59,6 @@
                                             sub, rsp, 32          
                                             call, .assign.A_sdtor ; (call label)
                                             add, rsp, 32          
-                                            add, rsp, 24          
                                             mov, rsp, rbp         
                                             pop, rbx              
                                             pop, rbp              
@@ -74,13 +70,11 @@
                                        push, rbx     
                                        mov, rbp, rsp 
                                        sub, rsp, 8   
-                                       sub, rsp, 8   
                                        mov, rbx, 1   
                                        add, rbx, 2   
                                        mov, rbx, rbx 
                                        add, rbx, 3   
                                        mov, rbx, rbx ; =
-                                       add, rsp, 8   
                                        mov, rsp, rbp 
                                        pop, rbx      
                                        pop, rbp      
