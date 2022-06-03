@@ -20,6 +20,7 @@
                                          push, rbp             
                                          mov, rbp, rsp         
                                          sub, rsp, 24          
+                                         lea, rcx, [rbp-24]    ; a
                                          sub, rsp, 32          
                                          call, .assign.A_sctor ; (call label)
                                          add, rsp, 32          
@@ -51,6 +52,7 @@
                                             push, rbx             
                                             mov, rbp, rsp         
                                             sub, rsp, 24          
+                                            lea, rcx, [rbp-24]    ; wrong
                                             sub, rsp, 32          
                                             call, .assign.A_sctor ; (call label)
                                             add, rsp, 32          
@@ -66,19 +68,19 @@
 
 .seg code                              
 .assign.assignTester.bopAssociativity: 
-                                       push, rbp     
-                                       push, rbx     
-                                       mov, rbp, rsp 
-                                       sub, rsp, 8   
-                                       mov, rbx, 1   
-                                       add, rbx, 2   
-                                       mov, rbx, rbx 
-                                       add, rbx, 3   
-                                       mov, rbx, rbx ; =
-                                       mov, rsp, rbp 
-                                       pop, rbx      
-                                       pop, rbp      
-                                       ret           
+                                       push, rbp         
+                                       push, rbx         
+                                       mov, rbp, rsp     
+                                       sub, rsp, 8       
+                                       mov, rbx, 1       
+                                       add, rbx, 2       
+                                       mov, rbx, rbx     
+                                       add, rbx, 3       
+                                       mov, [rbp-8], rbx ; =
+                                       mov, rsp, rbp     
+                                       pop, rbx          
+                                       pop, rbp          
+                                       ret               
 
 .seg code                   
 .assign.assignTester.cctor: 

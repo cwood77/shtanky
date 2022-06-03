@@ -9,7 +9,8 @@
 
 ----- start stream .assign.assignTester.writeIntoSubObject
 0 <enterFunc>    ~rval1/0, $self1/0                                                                                       ;;; .assign.assignTester.writeIntoSubObject
-0 <reserveLocal> $a0/24                                                                                                   ;;; a
+0 <reserveLocal> $a_alloc/24                                                                                              ;;; a
+0 lea            $a/24, $a_alloc/24                                                                                       ;;; a
 0 <precall>      
 0 call           ~rval2/0, !.assign.A_sctor/0, $a/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0      ;;; (call label)
 0 mov            [~a+16]/0, @7/1                                                                                          ;;; =
@@ -17,13 +18,14 @@
 0 call           ~rval3/0, !.assign.A_sdtor/0, $a/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
 
 ----- start stream .assign.assignTester.readFromSubSubObject
-0 <enterFunc> ~rval4/0, $self2/0, $a1/0, $wrong/0 ;;; .assign.assignTester.readFromSubSubObject
+0 <enterFunc> ~rval4/0, $self2/0, $a0/0, $wrong/0 ;;; .assign.assignTester.readFromSubSubObject
 0 mov         ~_x/0, [~a+16]/0                    ;;; fieldaccess: owner of _x
 0 mov         $wrong/0, [~_x+16]/0                ;;; =
 
 ----- start stream .assign.assignTester.writeIntoSubSubObject
 0 <enterFunc>    ~rval5/0, $self3/0                                                                                           ;;; .assign.assignTester.writeIntoSubSubObject
-0 <reserveLocal> $wrong0/24                                                                                                   ;;; wrong
+0 <reserveLocal> $wrong_alloc/24                                                                                              ;;; wrong
+0 lea            $wrong/24, $wrong_alloc/24                                                                                   ;;; wrong
 0 <precall>      
 0 call           ~rval6/0, !.assign.A_sctor/0, $wrong/0, ~rdx_burn1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0 ;;; (call label)
 0 mov            ~_x0/0, [~wrong+16]/0                                                                                        ;;; fieldaccess: owner of _x
@@ -33,7 +35,7 @@
 
 ----- start stream .assign.assignTester.bopAssociativity
 0 <enterFunc>    ~rval8/0, $self4/0 ;;; .assign.assignTester.bopAssociativity
-0 <reserveLocal> $v0/8              ;;; v
+0 <reserveLocal> $v/8               ;;; v
 0 mov            ~agg/1, @1/1       
 0 add            ~agg/1, @2/1       
 0 mov            ~agg0/1, ~agg/1    

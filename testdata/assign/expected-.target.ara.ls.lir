@@ -2,10 +2,12 @@
 
 ----- start stream .entrypoint
 0 <enterFunc>    ~rval/0, $args/0                                                                                                       ;;; .entrypoint
-0 <reserveLocal> $cout/8                                                                                                                ;;; cout
+0 <reserveLocal> $cout_alloc/8                                                                                                          ;;; cout
+0 lea            $cout/8, $cout_alloc/8                                                                                                 ;;; cout
 0 <precall>      
 0 call           ~rval0/0, !.sht.cons.stdout_sctor/0, $cout/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0          ;;; (call label)
-0 <reserveLocal> $obj0/16                                                                                                               ;;; obj0
+0 <reserveLocal> $obj0_alloc/16                                                                                                         ;;; obj0
+0 lea            $obj0/16, $obj0_alloc/16                                                                                               ;;; obj0
 0 <precall>      
 0 call           ~rval1/0, !.assign.assignTester_sctor/0, $obj0/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
 0 mov            [~obj0+8]/0, $cout/0                                                                                                   ;;; =

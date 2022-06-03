@@ -14,20 +14,21 @@
 ----- start stream .assign.assignTester.writeIntoSubObject
 10  <selectSegment>  @code/0                                                                                                  
 20  <enterFunc>      ~rval1/0, $self1/0                                                                                       ;;; .assign.assignTester.writeIntoSubObject
-30  <reserveLocal>   $a0/24                                                                                                   ;;; a
-40  <precall>        @totalStackSize/32                                                                                       
-50  call             ~rval2/0, !.assign.A_sctor/0, $a/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0      ;;; (call label)
-60  <postcall>       @totalStackSize/32                                                                                       
-70  mov              [~a+16]/0, @7/1                                                                                          ;;; =
-80  <precall>        @totalStackSize/32                                                                                       
-90  call             ~rval3/0, !.assign.A_sdtor/0, $a/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
-100 <postcall>       @totalStackSize/32                                                                                       
-110 <unreserveLocal> $a0/24                                                                                                   
-120 <exitFunc>       
+30  <reserveLocal>   $a_alloc/24                                                                                              ;;; a
+40  lea              $a/24, $a_alloc/24                                                                                       ;;; a
+50  <precall>        @totalStackSize/32                                                                                       
+60  call             ~rval2/0, !.assign.A_sctor/0, $a/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0      ;;; (call label)
+70  <postcall>       @totalStackSize/32                                                                                       
+80  mov              [~a+16]/0, @7/1                                                                                          ;;; =
+90  <precall>        @totalStackSize/32                                                                                       
+100 call             ~rval3/0, !.assign.A_sdtor/0, $a/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
+110 <postcall>       @totalStackSize/32                                                                                       
+120 <unreserveLocal> $a_alloc/24                                                                                              
+130 <exitFunc>       
 
 ----- start stream .assign.assignTester.readFromSubSubObject
 10 <selectSegment> @code/0                             
-20 <enterFunc>     ~rval4/0, $self2/0, $a1/0, $wrong/0 ;;; .assign.assignTester.readFromSubSubObject
+20 <enterFunc>     ~rval4/0, $self2/0, $a0/0, $wrong/0 ;;; .assign.assignTester.readFromSubSubObject
 30 mov             ~_x/0, [~a+16]/0                    ;;; fieldaccess: owner of _x
 40 mov             $wrong/0, [~_x+16]/0                ;;; =
 50 <exitFunc>      
@@ -35,28 +36,29 @@
 ----- start stream .assign.assignTester.writeIntoSubSubObject
 10  <selectSegment>  @code/0                                                                                                      
 20  <enterFunc>      ~rval5/0, $self3/0                                                                                           ;;; .assign.assignTester.writeIntoSubSubObject
-30  <reserveLocal>   $wrong0/24                                                                                                   ;;; wrong
-40  <precall>        @totalStackSize/32                                                                                           
-50  call             ~rval6/0, !.assign.A_sctor/0, $wrong/0, ~rdx_burn1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0 ;;; (call label)
-60  <postcall>       @totalStackSize/32                                                                                           
-70  mov              ~_x0/0, [~wrong+16]/0                                                                                        ;;; fieldaccess: owner of _x
-80  mov              [~_x0+16]/0, @7/1                                                                                            ;;; =
-90  <precall>        @totalStackSize/32                                                                                           
-100 call             ~rval7/0, !.assign.A_sdtor/0, $wrong/0, ~rdx_burn2/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0 ;;; (call label)
-110 <postcall>       @totalStackSize/32                                                                                           
-120 <unreserveLocal> $wrong0/24                                                                                                   
-130 <exitFunc>       
+30  <reserveLocal>   $wrong_alloc/24                                                                                              ;;; wrong
+40  lea              $wrong/24, $wrong_alloc/24                                                                                   ;;; wrong
+50  <precall>        @totalStackSize/32                                                                                           
+60  call             ~rval6/0, !.assign.A_sctor/0, $wrong/0, ~rdx_burn1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0 ;;; (call label)
+70  <postcall>       @totalStackSize/32                                                                                           
+80  mov              ~_x0/0, [~wrong+16]/0                                                                                        ;;; fieldaccess: owner of _x
+90  mov              [~_x0+16]/0, @7/1                                                                                            ;;; =
+100 <precall>        @totalStackSize/32                                                                                           
+110 call             ~rval7/0, !.assign.A_sdtor/0, $wrong/0, ~rdx_burn2/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0 ;;; (call label)
+120 <postcall>       @totalStackSize/32                                                                                           
+130 <unreserveLocal> $wrong_alloc/24                                                                                              
+140 <exitFunc>       
 
 ----- start stream .assign.assignTester.bopAssociativity
 10  <selectSegment>  @code/0            
 20  <enterFunc>      ~rval8/0, $self4/0 ;;; .assign.assignTester.bopAssociativity
-30  <reserveLocal>   $v0/8              ;;; v
+30  <reserveLocal>   $v/8               ;;; v
 40  mov              ~agg/1, @1/1       
 50  add              ~agg/1, @2/1       
 60  mov              ~agg0/1, ~agg/1    
 70  add              ~agg0/1, @3/1      
 80  mov              $v/0, ~agg0/1      ;;; =
-90  <unreserveLocal> $v0/8              
+90  <unreserveLocal> $v/8               
 100 <exitFunc>       
 
 ----- start stream .assign.assignTester.cctor

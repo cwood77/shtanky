@@ -5,14 +5,14 @@
              push, rdi                        
              mov, rbp, rsp                    
              sub, rsp, 24                     
-             sub, rsp, 32                     
              mov, rbx, rcx                    ; (preserve) [combiner]
-             mov, rcx, [rbp-8]                ;       (cout req for rcx) [splitter]
+             lea, rcx, [rbp-8]                ; cout
+             sub, rsp, 32                     
              call, .sht.cons.stdout_sctor     ; (call label)
              add, rsp, 32                     
-             sub, rsp, 32                     
              mov, rdi, rcx                    ; (preserve) [combiner]
-             mov, rcx, [rbp-8]                ;       (obj0 req for rcx) [splitter]
+             lea, rcx, [rbp-24]               ; obj0
+             sub, rsp, 32                     
              call, .assign.assignTester_sctor ; (call label)
              add, rsp, 32                     
              mov, [rcx+8], rdi                ; =
@@ -25,7 +25,6 @@
              call, .assign.assignTester_sdtor ; (call label)
              add, rsp, 32                     
              sub, rsp, 32                     
-             mov, rbx, rcx                    ; (preserve) [combiner]
              mov, rcx, rdi                    ; (restore [combiner])
              call, .sht.cons.stdout_sdtor     ; (call label)
              add, rsp, 32                     

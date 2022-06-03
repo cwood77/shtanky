@@ -82,12 +82,32 @@ void astCodeGen::visit(cmn::localDeclNode& n)
 {
    hNodeVisitor::visit(n);
 
-   m_b.forNode(n)
-      .append(cmn::tgt::kReserveLocal)
-         .withArg<lirArgVar>(m_u.makeUnique(n.name),
-            cmn::type::gNodeCache->demand(n.demandSoleChild<cmn::typeNode>())
-               .getRealAllocSize(m_t))
-         .withComment(n.name);
+   size_t allocSize = cmn::type::gNodeCache->demand(n.demandSoleChild<cmn::typeNode>())
+      .getRealAllocSize(m_t);
+
+   if(cmn::type::gNodeCache->demand(n).is<cmn::type::iStructType>())
+   {
+      // user types are passed as pointers, so get the address of the stack
+      // alloc, rather than the value
+
+      std::string backStorName = m_u.makeUnique(n.name + "_alloc");
+      m_b.forNode(n)
+         .append(cmn::tgt::kReserveLocal)
+            .withArg<lirArgVar>(backStorName,allocSize)
+            .withComment(n.name)
+            .then()
+         .append(cmn::tgt::kLea)
+            .withArg<lirArgVar>(n.name,allocSize)
+            .withArg<lirArgVar>(backStorName,allocSize)
+            .withComment(n.name);
+   }
+   else
+   {
+      m_b.forNode(n)
+         .append(cmn::tgt::kReserveLocal)
+            .withArg<lirArgVar>(n.name,allocSize)
+            .withComment(n.name);
+   }
 
    // TODO not handling initializers here (i.e. constant
    // initial value)
