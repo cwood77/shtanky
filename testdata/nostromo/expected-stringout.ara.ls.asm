@@ -46,9 +46,8 @@
                           pop, rbp
                           ret
 
-.seg const
+.seg code
 .nostromo.debugOut_vtbl_inst:
-.data, 
 
 .seg code                 
 .nostromo.debugOut_sctor: 

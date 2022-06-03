@@ -61,6 +61,7 @@ protected:
    codeGenBase(cmn::outBundle& out, const std::string& path);
 
    void generatePrototype(cmn::funcNode& n);
+   void writeAttributes(cmn::node& n);
    virtual void appendFileSuffix() {}
 
    cmn::outStream *m_pOut;

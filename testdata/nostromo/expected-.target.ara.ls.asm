@@ -50,9 +50,8 @@
                                pop, rbp
                                ret
 
-.seg const
+.seg code
 .nostromo.consoleTarget_vtbl_inst:
-.data, 
 
 .seg code                      
 .nostromo.consoleTarget_sctor: 

@@ -64,13 +64,14 @@
 0 <enterFunc> ~rval14/0, $self10/0 ;;; .assign.B.cdtor
 
 ----- start stream .assign.A_vtbl_inst
-0 <globalConstData> @/0 ;;; .assign.A_vtbl_inst
+0 <label> !.assign.A_vtbl_inst/0
 
 ----- start stream .assign.B_vtbl_inst
-0 <globalConstData> @/0 ;;; .assign.B_vtbl_inst
+0 <label> !.assign.B_vtbl_inst/0
 
 ----- start stream .assign.assignTester_vtbl_inst
-0 <globalConstData> @.assign.assignTester.run /0 ;;; .assign.assignTester_vtbl_inst
+0 <label> !.assign.assignTester_vtbl_inst/0
+0 goto    !.assign.assignTester.run/0
 
 ----- start stream .assign.A_sctor
 0 <enterFunc> ~rval15/0, $self11/0                                                                                                ;;; .assign.A_sctor

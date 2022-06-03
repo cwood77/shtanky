@@ -16,8 +16,9 @@
 30 <exitFunc>      
 
 ----- start stream .nostromo.bootstrapper_vtbl_inst
-10 <selectSegment>   @const/0                       
-20 <globalConstData> @.nostromo.bootstrapper.run /0 ;;; .nostromo.bootstrapper_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.nostromo.bootstrapper_vtbl_inst/0
+30 goto            !.nostromo.bootstrapper.run/0
 
 ----- start stream .nostromo.bootstrapper_sctor
 10  <selectSegment> @code/0                                                                                                                  

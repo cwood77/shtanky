@@ -39,8 +39,8 @@
 30 <exitFunc>      
 
 ----- start stream .assign.consoleTarget_vtbl_inst
-10 <selectSegment>   @const/0 
-20 <globalConstData> @/0      ;;; .assign.consoleTarget_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.assign.consoleTarget_vtbl_inst/0
 
 ----- start stream .assign.consoleTarget_sctor
 10  <selectSegment> @code/0                                                                                                                 

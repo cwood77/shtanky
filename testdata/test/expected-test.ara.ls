@@ -17,6 +17,7 @@ func .test.test.cdtor(
 {
 }
 
+[vtbl]
 const .test.test_vtbl_inst : .test.test_vtbl = { .test.test.run };
 
 func .test.test_sctor(

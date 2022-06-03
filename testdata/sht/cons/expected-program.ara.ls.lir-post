@@ -49,16 +49,19 @@
 30 <exitFunc>      
 
 ----- start stream .sht.cons.iStream_vtbl_inst
-10 <selectSegment>   @const/0                      
-20 <globalConstData> @.sht.cons.iStream.printLn /0 ;;; .sht.cons.iStream_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.sht.cons.iStream_vtbl_inst/0
+30 goto            !.sht.cons.iStream.printLn/0
 
 ----- start stream .sht.cons.program_vtbl_inst
-10 <selectSegment>   @const/0                  
-20 <globalConstData> @.sht.cons.program.run /0 ;;; .sht.cons.program_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.sht.cons.program_vtbl_inst/0
+30 goto            !.sht.cons.program.run/0
 
 ----- start stream .sht.cons.stdout_vtbl_inst
-10 <selectSegment>   @const/0                     
-20 <globalConstData> @.sht.cons.stdout.printLn /0 ;;; .sht.cons.stdout_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.sht.cons.stdout_vtbl_inst/0
+30 goto            !.sht.cons.stdout.printLn/0
 
 ----- start stream .sht.cons.iStream_sctor
 10  <selectSegment> @code/0                                                                                                              

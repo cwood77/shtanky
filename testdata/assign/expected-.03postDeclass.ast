@@ -142,17 +142,17 @@ araceliProjectNode targetType=ca
             sequenceNode
             userTypeNode pDef=.assign.B->0 typeNode
          classNode name=A_vtbl baseClasses=[ ]
-         constNode name=A_vtbl_inst
+         constNode name=A_vtbl_inst attributes=[ vtbl ]
             userTypeNode pDef=A_vtbl->0 typeNode
             structLiteralNode
          classNode name=B_vtbl baseClasses=[ ]
-         constNode name=B_vtbl_inst
+         constNode name=B_vtbl_inst attributes=[ vtbl ]
             userTypeNode pDef=B_vtbl->0 typeNode
             structLiteralNode
          classNode name=assignTester_vtbl baseClasses=[ ]
             fieldNode memberNode name=run
                ptrTypeNode typeNode
-         constNode name=assignTester_vtbl_inst
+         constNode name=assignTester_vtbl_inst attributes=[ vtbl ]
             userTypeNode pDef=assignTester_vtbl->0 typeNode
             structLiteralNode
                varRefNode pSrc=.assign.assignTester.run->0
@@ -277,7 +277,7 @@ araceliProjectNode targetType=ca
             sequenceNode
             userTypeNode pDef=.assign.consoleTarget->0 typeNode
          classNode name=consoleTarget_vtbl baseClasses=[ ]
-         constNode name=consoleTarget_vtbl_inst
+         constNode name=consoleTarget_vtbl_inst attributes=[ vtbl ]
             userTypeNode pDef=consoleTarget_vtbl->0 typeNode
             structLiteralNode
          funcNode name=consoleTarget_sctor
@@ -376,21 +376,21 @@ araceliProjectNode targetType=ca
             classNode name=iStream_vtbl baseClasses=[ ]
                fieldNode memberNode name=printLn
                   ptrTypeNode typeNode
-            constNode name=iStream_vtbl_inst
+            constNode name=iStream_vtbl_inst attributes=[ vtbl ]
                userTypeNode pDef=iStream_vtbl->0 typeNode
                structLiteralNode
                   varRefNode pSrc=.sht.cons.iStream.printLn->0
             classNode name=program_vtbl baseClasses=[ ]
                fieldNode memberNode name=run
                   ptrTypeNode typeNode
-            constNode name=program_vtbl_inst
+            constNode name=program_vtbl_inst attributes=[ vtbl ]
                userTypeNode pDef=program_vtbl->0 typeNode
                structLiteralNode
                   varRefNode pSrc=.sht.cons.program.run->0
             classNode name=stdout_vtbl baseClasses=[ ]
                fieldNode memberNode name=printLn
                   ptrTypeNode typeNode
-            constNode name=stdout_vtbl_inst
+            constNode name=stdout_vtbl_inst attributes=[ vtbl ]
                userTypeNode pDef=stdout_vtbl->0 typeNode
                structLiteralNode
                   varRefNode pSrc=.sht.cons.stdout.printLn->0
@@ -557,7 +557,7 @@ araceliProjectNode targetType=ca
                sequenceNode
                userTypeNode pDef=.sht.core.array<.sht.core.string>->0 typeNode
             classNode name=array<.sht.core.string>_vtbl baseClasses=[ ]
-            constNode name=array<.sht.core.string>_vtbl_inst
+            constNode name=array<.sht.core.string>_vtbl_inst attributes=[ vtbl ]
                userTypeNode pDef=array<.sht.core.string>_vtbl->0 typeNode
                structLiteralNode
             funcNode name=array<.sht.core.string>_sctor
@@ -637,7 +637,7 @@ araceliProjectNode targetType=ca
                sequenceNode
                userTypeNode pDef=.sht.core.loopInst->0 typeNode
             classNode name=loopInst_vtbl baseClasses=[ ]
-            constNode name=loopInst_vtbl_inst
+            constNode name=loopInst_vtbl_inst attributes=[ vtbl ]
                userTypeNode pDef=loopInst_vtbl->0 typeNode
                structLiteralNode
             funcNode name=loopInst_sctor
@@ -681,7 +681,7 @@ araceliProjectNode targetType=ca
                sequenceNode
                userTypeNode pDef=.sht.core.object->0 typeNode
             classNode name=object_vtbl baseClasses=[ ]
-            constNode name=object_vtbl_inst
+            constNode name=object_vtbl_inst attributes=[ vtbl ]
                userTypeNode pDef=object_vtbl->0 typeNode
                structLiteralNode
             funcNode name=object_sctor
@@ -771,7 +771,7 @@ araceliProjectNode targetType=ca
                sequenceNode
                userTypeNode pDef=.sht.core.string->0 typeNode
             classNode name=string_vtbl baseClasses=[ ]
-            constNode name=string_vtbl_inst
+            constNode name=string_vtbl_inst attributes=[ vtbl ]
                userTypeNode pDef=string_vtbl->0 typeNode
                structLiteralNode
             funcNode name=string_sctor

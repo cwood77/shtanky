@@ -64,12 +64,12 @@ rex(48)op(89)modR/M(ec)
 rex(48)op(8f)modR/M(c5)
 // 47:                                   ret
 op(c3)
-// 50: .nostromo.uart16550.driver_vtbl_inst:
-// 51: .data, .nostromo.uart16550.driver.write8 
-_lbldata(00-00-00-00,00-00-00-00)
-// 54: .nostromo.uart16550.fakeBase_vtbl_inst:
-// 55: .data, .nostromo.uart16550.fakeBase.write8 
-_lbldata(00-00-00-00,00-00-00-00)
+// 50: .nostromo.uart16550.driver_vtbl_inst: 
+// 51:                                       goto, .nostromo.uart16550.driver.write8
+op(e9)co32(00-00-00-00)
+// 54: .nostromo.uart16550.fakeBase_vtbl_inst: 
+// 55:                                         goto, .nostromo.uart16550.fakeBase.write8
+op(e9)co32(00-00-00-00)
 // 58: .nostromo.uart16550.driver_sctor: 
 // 59:                                   push, rbp                                               
 rex(48)op(ff)modR/M(f5)

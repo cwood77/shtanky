@@ -47,10 +47,13 @@ func .sht.cons.program.cdtor(
 {
 }
 
+[vtbl]
 const .sht.cons.iStream_vtbl_inst : .sht.cons.iStream_vtbl = { .sht.cons.iStream.printLn };
 
+[vtbl]
 const .sht.cons.program_vtbl_inst : .sht.cons.program_vtbl = { .sht.cons.program.run };
 
+[vtbl]
 const .sht.cons.stdout_vtbl_inst : .sht.cons.stdout_vtbl = { .sht.cons.stdout.printLn };
 
 func .sht.cons.iStream_sctor(

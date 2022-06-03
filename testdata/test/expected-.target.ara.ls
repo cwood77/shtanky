@@ -22,6 +22,7 @@ func .test.consoleTarget.cdtor(
 {
 }
 
+[vtbl]
 const .test.consoleTarget_vtbl_inst : .test.consoleTarget_vtbl = {  };
 
 func .test.consoleTarget_sctor(

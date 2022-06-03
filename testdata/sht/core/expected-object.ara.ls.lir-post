@@ -11,8 +11,8 @@
 30 <exitFunc>      
 
 ----- start stream .sht.core.object_vtbl_inst
-10 <selectSegment>   @const/0 
-20 <globalConstData> @/0      ;;; .sht.core.object_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.sht.core.object_vtbl_inst/0
 
 ----- start stream .sht.core.object_sctor
 10 <selectSegment> @code/0                                                                                                       

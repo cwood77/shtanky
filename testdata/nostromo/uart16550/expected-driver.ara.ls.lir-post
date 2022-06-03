@@ -31,12 +31,14 @@
 30 <exitFunc>      
 
 ----- start stream .nostromo.uart16550.driver_vtbl_inst
-10 <selectSegment>   @const/0                              
-20 <globalConstData> @.nostromo.uart16550.driver.write8 /0 ;;; .nostromo.uart16550.driver_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.nostromo.uart16550.driver_vtbl_inst/0
+30 goto            !.nostromo.uart16550.driver.write8/0
 
 ----- start stream .nostromo.uart16550.fakeBase_vtbl_inst
-10 <selectSegment>   @const/0                                
-20 <globalConstData> @.nostromo.uart16550.fakeBase.write8 /0 ;;; .nostromo.uart16550.fakeBase_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.nostromo.uart16550.fakeBase_vtbl_inst/0
+30 goto            !.nostromo.uart16550.fakeBase.write8/0
 
 ----- start stream .nostromo.uart16550.driver_sctor
 10  <selectSegment> @code/0                                                                                                                      

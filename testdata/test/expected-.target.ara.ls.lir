@@ -26,7 +26,7 @@
 0 <enterFunc> ~rval6/0, $self0/0 ;;; .test.consoleTarget.cdtor
 
 ----- start stream .test.consoleTarget_vtbl_inst
-0 <globalConstData> @/0 ;;; .test.consoleTarget_vtbl_inst
+0 <label> !.test.consoleTarget_vtbl_inst/0
 
 ----- start stream .test.consoleTarget_sctor
 0 <enterFunc> ~rval7/0, $self1/0                                                                                                    ;;; .test.consoleTarget_sctor

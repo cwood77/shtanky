@@ -19,10 +19,12 @@
 0 <enterFunc> ~rval4/0, $self4/0 ;;; .nostromo.uart16550.driver.cdtor
 
 ----- start stream .nostromo.uart16550.driver_vtbl_inst
-0 <globalConstData> @.nostromo.uart16550.driver.write8 /0 ;;; .nostromo.uart16550.driver_vtbl_inst
+0 <label> !.nostromo.uart16550.driver_vtbl_inst/0
+0 goto    !.nostromo.uart16550.driver.write8/0
 
 ----- start stream .nostromo.uart16550.fakeBase_vtbl_inst
-0 <globalConstData> @.nostromo.uart16550.fakeBase.write8 /0 ;;; .nostromo.uart16550.fakeBase_vtbl_inst
+0 <label> !.nostromo.uart16550.fakeBase_vtbl_inst/0
+0 goto    !.nostromo.uart16550.fakeBase.write8/0
 
 ----- start stream .nostromo.uart16550.driver_sctor
 0 <enterFunc> ~rval5/0, $self5/0                                                                                                           ;;; .nostromo.uart16550.driver_sctor

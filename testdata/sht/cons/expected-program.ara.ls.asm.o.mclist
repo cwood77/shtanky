@@ -103,15 +103,15 @@ rex(48)op(89)modR/M(ec)
 rex(48)op(8f)modR/M(c5)
 // 74:                          ret
 op(c3)
-// 77: .sht.cons.iStream_vtbl_inst:
-// 78: .data, .sht.cons.iStream.printLn 
-_lbldata(00-00-00-00,00-00-00-00)
-// 81: .sht.cons.program_vtbl_inst:
-// 82: .data, .sht.cons.program.run 
-_lbldata(00-00-00-00,00-00-00-00)
-// 85: .sht.cons.stdout_vtbl_inst:
-// 86: .data, .sht.cons.stdout.printLn 
-_lbldata(00-00-00-00,00-00-00-00)
+// 77: .sht.cons.iStream_vtbl_inst: 
+// 78:                              goto, .sht.cons.iStream.printLn
+op(e9)co32(00-00-00-00)
+// 81: .sht.cons.program_vtbl_inst: 
+// 82:                              goto, .sht.cons.program.run
+op(e9)co32(00-00-00-00)
+// 85: .sht.cons.stdout_vtbl_inst: 
+// 86:                             goto, .sht.cons.stdout.printLn
+op(e9)co32(00-00-00-00)
 // 89: .sht.cons.iStream_sctor: 
 // 90:                          push, rbp                                      
 rex(48)op(ff)modR/M(f5)

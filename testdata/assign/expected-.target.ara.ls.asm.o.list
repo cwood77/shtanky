@@ -36,7 +36,7 @@ numentries(00-00-00-00,00-00-00-00)
 // returnedto: class obj
 blockSize(0d-00-00-00,00-00-00-00)block(48-ff-f5-48,89-e5-48-89,ec-48-8f-c5,c3)
 // class obj
-flags(41-00-00-00)
+flags(03-00-00-00)
 // class exportTable
 numentries(01-00-00-00,00-00-00-00)
 name:len(1f-00-00-00,00-00-00-00)name:bytes(2e-61-73-73,69-67-6e-2e,63-6f-6e-73,6f-6c-65-54,61-72-67-65,74-5f-76-74,62-6c-5f-69,6e-73-74)offset(00-00-00-00)

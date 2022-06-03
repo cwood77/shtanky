@@ -78,10 +78,13 @@ func .assign.B.cdtor(
 {
 }
 
+[vtbl]
 const .assign.A_vtbl_inst : .assign.A_vtbl = {  };
 
+[vtbl]
 const .assign.B_vtbl_inst : .assign.B_vtbl = {  };
 
+[vtbl]
 const .assign.assignTester_vtbl_inst : .assign.assignTester_vtbl = { .assign.assignTester.run };
 
 func .assign.A_sctor(

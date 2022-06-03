@@ -18,7 +18,8 @@
 0 <enterFunc> ~rval2/0, $self1/0 ;;; .test.test.cdtor
 
 ----- start stream .test.test_vtbl_inst
-0 <globalConstData> @.test.test.run /0 ;;; .test.test_vtbl_inst
+0 <label> !.test.test_vtbl_inst/0
+0 goto    !.test.test.run/0
 
 ----- start stream .test.test_sctor
 0 <enterFunc> ~rval3/0, $self2/0                                                                                                 ;;; .test.test_sctor

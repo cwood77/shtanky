@@ -38,9 +38,9 @@
                   pop, rbp
                   ret
 
-.seg const
-.test.test_vtbl_inst:
-.data, .test.test.run 
+.seg code             
+.test.test_vtbl_inst: 
+                      goto, .test.test.run
 
 .seg code         
 .test.test_sctor: 

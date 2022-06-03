@@ -22,6 +22,7 @@ func .nostromo.debugOut.cdtor(
 {
 }
 
+[vtbl]
 const .nostromo.debugOut_vtbl_inst : .nostromo.debugOut_vtbl = {  };
 
 func .nostromo.debugOut_sctor(

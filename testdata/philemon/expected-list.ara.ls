@@ -33,8 +33,10 @@ func .philemon.list<str>.cdtor(
 {
 }
 
+[vtbl]
 const .philemon.bootstrap_vtbl_inst : .philemon.bootstrap_vtbl = { .philemon.bootstrap.run };
 
+[vtbl]
 const .philemon.list<str>_vtbl_inst : .philemon.list<str>_vtbl = {  };
 
 func .philemon.bootstrap_sctor(

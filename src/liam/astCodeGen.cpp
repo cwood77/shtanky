@@ -1,6 +1,7 @@
 #include "../cmn/fmt.hpp"
 #include "../cmn/lexor.hpp"
 #include "../cmn/obj-fmt.hpp"
+#include "../cmn/stlutil.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/throw.hpp"
 #include "../cmn/type.hpp"
@@ -23,14 +24,34 @@ void dataFormatter::visit(cmn::stringLiteralNode& n)
 
 void astCodeGen::visit(cmn::constNode& n)
 {
-   std::stringstream expr;
-   { dataFormatter v(expr); n.acceptVisitor(v); }
+   if(cmn::has(n.attributes,"vtbl"))
+   {
+      m_b.createNewStream(n.name,cmn::objfmt::obj::kLexCode);
+      m_b.forNode(n)
+         .append(cmn::tgt::kLabel)
+            .withArg<lirArgLabel>(n.name,0)
+            .tweakArgAs<lirArgLabel>(0).isCode = true;
 
-   m_b.createNewStream(n.name,cmn::objfmt::obj::kLexConst);
-   m_b.forNode(n)
-      .append(cmn::tgt::kGlobalConstData)
-         .withArg<lirArgConst>(expr.str(),0)
-         .withComment(n.name);
+      auto methods = n
+         .demandSoleChild<cmn::structLiteralNode>()
+         .getChildrenOf<cmn::varRefNode>();
+      for(auto *pNode : methods)
+         m_b.forNode(n)
+            .append(cmn::tgt::kGoto)
+            .withArg<lirArgLabel>(pNode->pSrc.ref,0)
+            .tweakArgAs<lirArgLabel>(0).isCode = true;
+   }
+   else
+   {
+      std::stringstream expr;
+      { dataFormatter v(expr); n.acceptVisitor(v); }
+
+      m_b.createNewStream(n.name,cmn::objfmt::obj::kLexConst);
+      m_b.forNode(n)
+         .append(cmn::tgt::kGlobalConstData)
+            .withArg<lirArgConst>(expr.str(),0)
+            .withComment(n.name);
+   }
 }
 
 void astCodeGen::visit(cmn::funcNode& n)

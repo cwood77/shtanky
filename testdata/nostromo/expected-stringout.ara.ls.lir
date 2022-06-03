@@ -23,7 +23,7 @@
 0 <enterFunc> ~rval4/0, $self1/0 ;;; .nostromo.debugOut.cdtor
 
 ----- start stream .nostromo.debugOut_vtbl_inst
-0 <globalConstData> @/0 ;;; .nostromo.debugOut_vtbl_inst
+0 <label> !.nostromo.debugOut_vtbl_inst/0
 
 ----- start stream .nostromo.debugOut_sctor
 0 <enterFunc> ~rval5/0, $self2/0                                                                                                   ;;; .nostromo.debugOut_sctor

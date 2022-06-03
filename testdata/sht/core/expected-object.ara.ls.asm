@@ -14,9 +14,8 @@
                         pop, rbp
                         ret
 
-.seg const
+.seg code
 .sht.core.object_vtbl_inst:
-.data, 
 
 .seg code               
 .sht.core.object_sctor: 

@@ -128,11 +128,9 @@ codeGenBase::codeGenBase(cmn::outBundle& out, const std::string& path) : m_pOut(
 
 void codeGenBase::generatePrototype(cmn::funcNode& m)
 {
-   m_pOut->stream() << cmn::indent(*m_pOut);
+   writeAttributes(m);
 
-   if(m.attributes.size())
-      for(auto it=m.attributes.begin();it!=m.attributes.end();++it)
-         m_pOut->stream() << cmn::indent(*m_pOut) << "[" << *it << "]" << std::endl;
+   m_pOut->stream() << cmn::indent(*m_pOut);
 
    cmn::autoIndent _i(*m_pOut);
    m_pOut->stream()
@@ -159,6 +157,13 @@ void codeGenBase::generatePrototype(cmn::funcNode& m)
    m_pOut->stream() << ") : ";
    liamTypeWriter tyW(m_pOut->stream(),m_refColl);
    m.demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
+}
+
+void codeGenBase::writeAttributes(cmn::node& n)
+{
+   if(n.attributes.size())
+      for(auto it=n.attributes.begin();it!=n.attributes.end();++it)
+         m_pOut->stream() << cmn::indent(*m_pOut) << "[" << *it << "]" << std::endl;
 }
 
 void headerCodeGen::visit(cmn::classNode& n)
@@ -212,6 +217,7 @@ void headerCodeGen::visit(cmn::funcNode& n)
 
 void sourceCodeGen::visit(cmn::constNode& n)
 {
+   writeAttributes(n);
    m_pOut->stream() << cmn::indent(*m_pOut) << "const " << cmn::fullyQualifiedName::build(n,n.name) << " : ";
    liamTypeWriter tyW(m_pOut->stream(),m_refColl);
    n.getChildren()[0]->acceptVisitor(tyW);

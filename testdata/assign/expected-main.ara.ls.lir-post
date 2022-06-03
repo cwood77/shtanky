@@ -95,16 +95,17 @@
 30 <exitFunc>      
 
 ----- start stream .assign.A_vtbl_inst
-10 <selectSegment>   @const/0 
-20 <globalConstData> @/0      ;;; .assign.A_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.assign.A_vtbl_inst/0
 
 ----- start stream .assign.B_vtbl_inst
-10 <selectSegment>   @const/0 
-20 <globalConstData> @/0      ;;; .assign.B_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.assign.B_vtbl_inst/0
 
 ----- start stream .assign.assignTester_vtbl_inst
-10 <selectSegment>   @const/0                     
-20 <globalConstData> @.assign.assignTester.run /0 ;;; .assign.assignTester_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.assign.assignTester_vtbl_inst/0
+30 goto            !.assign.assignTester.run/0
 
 ----- start stream .assign.A_sctor
 10  <selectSegment> @code/0                                                                                                             

@@ -137,17 +137,15 @@
                  pop, rbp
                  ret
 
-.seg const
+.seg code
 .assign.A_vtbl_inst:
-.data, 
 
-.seg const
+.seg code
 .assign.B_vtbl_inst:
-.data, 
 
-.seg const
-.assign.assignTester_vtbl_inst:
-.data, .assign.assignTester.run 
+.seg code                       
+.assign.assignTester_vtbl_inst: 
+                                goto, .assign.assignTester.run
 
 .seg code        
 .assign.A_sctor: 

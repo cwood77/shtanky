@@ -14,6 +14,7 @@ func .nostromo.bootstrapper.cdtor(
 {
 }
 
+[vtbl]
 const .nostromo.bootstrapper_vtbl_inst : .nostromo.bootstrapper_vtbl = { .nostromo.bootstrapper.run };
 
 func .nostromo.bootstrapper_sctor(

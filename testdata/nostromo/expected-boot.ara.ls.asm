@@ -22,9 +22,9 @@
                               pop, rbp
                               ret
 
-.seg const
-.nostromo.bootstrapper_vtbl_inst:
-.data, .nostromo.bootstrapper.run 
+.seg code                         
+.nostromo.bootstrapper_vtbl_inst: 
+                                  goto, .nostromo.bootstrapper.run
 
 .seg code                     
 .nostromo.bootstrapper_sctor: 

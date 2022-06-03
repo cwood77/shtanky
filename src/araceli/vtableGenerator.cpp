@@ -13,6 +13,7 @@ void vtableGenerator::generate(classCatalog& cc)
       pClass->name = cit->second.name + "_vtbl";
 
       std::unique_ptr<cmn::constNode> pConst(new cmn::constNode());
+      pConst->attributes.insert("vtbl");
       pConst->name = cit->second.name + "_vtbl_inst";
 
       auto& sNode = cmn::treeWriter(*pConst.get())

@@ -244,12 +244,19 @@ void lirBranchDecomposition::runInstr(lirInstr& i)
 
 void lirLabelDecomposition::runInstr(lirInstr& i)
 {
-   if(i.instrId == cmn::tgt::kLabel)
+   // for labels
+   //  - add a goto to previous block to 'fallthrough' to this block
+   //  - add a segment, since each label is an object in the o file
+   //
+   // if there's already a segment, then assume the author knows what he's doing and doesn't
+   // need any help (e.g. a vtable)
+   if(i.instrId == cmn::tgt::kLabel && i.prev().instrId != cmn::tgt::kSelectSegment)
    {
       if(i.prev().instrId != cmn::tgt::kGoto)
       {
          auto *pGoto = new lirInstr(cmn::tgt::kGoto);
          pGoto->addArg(i.getArgs()[0]->clone());
+         pGoto->comment = "label decomp";
          scheduleInjectBefore(*pGoto,i);
       }
 

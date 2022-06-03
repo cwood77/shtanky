@@ -22,6 +22,7 @@ func .nostromo.consoleTarget.cdtor(
 {
 }
 
+[vtbl]
 const .nostromo.consoleTarget_vtbl_inst : .nostromo.consoleTarget_vtbl = {  };
 
 func .nostromo.consoleTarget_sctor(

@@ -46,13 +46,13 @@
                                   pop, rbp
                                   ret
 
-.seg const
-.nostromo.uart16550.driver_vtbl_inst:
-.data, .nostromo.uart16550.driver.write8 
+.seg code                             
+.nostromo.uart16550.driver_vtbl_inst: 
+                                      goto, .nostromo.uart16550.driver.write8
 
-.seg const
-.nostromo.uart16550.fakeBase_vtbl_inst:
-.data, .nostromo.uart16550.fakeBase.write8 
+.seg code                               
+.nostromo.uart16550.fakeBase_vtbl_inst: 
+                                        goto, .nostromo.uart16550.fakeBase.write8
 
 .seg code                         
 .nostromo.uart16550.driver_sctor: 

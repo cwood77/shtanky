@@ -7,7 +7,7 @@
 0 <enterFunc> ~rval0/0, $self0/0 ;;; .sht.core.object.cdtor
 
 ----- start stream .sht.core.object_vtbl_inst
-0 <globalConstData> @/0 ;;; .sht.core.object_vtbl_inst
+0 <label> !.sht.core.object_vtbl_inst/0
 
 ----- start stream .sht.core.object_sctor
 0 <enterFunc> ~rval1/0, $self1/0                                                                                            ;;; .sht.core.object_sctor

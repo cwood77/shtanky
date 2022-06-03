@@ -27,8 +27,9 @@
 30 <exitFunc>      
 
 ----- start stream .test.test_vtbl_inst
-10 <selectSegment>   @const/0           
-20 <globalConstData> @.test.test.run /0 ;;; .test.test_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.test.test_vtbl_inst/0
+30 goto            !.test.test.run/0
 
 ----- start stream .test.test_sctor
 10  <selectSegment> @code/0                                                                                                            

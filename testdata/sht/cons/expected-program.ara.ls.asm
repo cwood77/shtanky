@@ -73,17 +73,17 @@
                          pop, rbp
                          ret
 
-.seg const
-.sht.cons.iStream_vtbl_inst:
-.data, .sht.cons.iStream.printLn 
+.seg code                    
+.sht.cons.iStream_vtbl_inst: 
+                             goto, .sht.cons.iStream.printLn
 
-.seg const
-.sht.cons.program_vtbl_inst:
-.data, .sht.cons.program.run 
+.seg code                    
+.sht.cons.program_vtbl_inst: 
+                             goto, .sht.cons.program.run
 
-.seg const
-.sht.cons.stdout_vtbl_inst:
-.data, .sht.cons.stdout.printLn 
+.seg code                   
+.sht.cons.stdout_vtbl_inst: 
+                            goto, .sht.cons.stdout.printLn
 
 .seg code                
 .sht.cons.iStream_sctor: 

@@ -30,8 +30,10 @@ func .nostromo.uart16550.driver.cdtor(
 {
 }
 
+[vtbl]
 const .nostromo.uart16550.driver_vtbl_inst : .nostromo.uart16550.driver_vtbl = { .nostromo.uart16550.driver.write8 };
 
+[vtbl]
 const .nostromo.uart16550.fakeBase_vtbl_inst : .nostromo.uart16550.fakeBase_vtbl = { .nostromo.uart16550.fakeBase.write8 };
 
 func .nostromo.uart16550.driver_sctor(

@@ -39,8 +39,8 @@
 30 <exitFunc>      
 
 ----- start stream .nostromo.consoleTarget_vtbl_inst
-10 <selectSegment>   @const/0 
-20 <globalConstData> @/0      ;;; .nostromo.consoleTarget_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.nostromo.consoleTarget_vtbl_inst/0
 
 ----- start stream .nostromo.consoleTarget_sctor
 10  <selectSegment> @code/0                                                                                                                   

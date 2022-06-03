@@ -58,9 +58,9 @@ rex(48)op(89)modR/M(ec)
 rex(48)op(8f)modR/M(c5)
 // 39:                   ret
 op(c3)
-// 42: .test.test_vtbl_inst:
-// 43: .data, .test.test.run 
-_lbldata(00-00-00-00,00-00-00-00)
+// 42: .test.test_vtbl_inst: 
+// 43:                       goto, .test.test.run
+op(e9)co32(00-00-00-00)
 // 46: .test.test_sctor: 
 // 47:                   push, rbp                               
 rex(48)op(ff)modR/M(f5)

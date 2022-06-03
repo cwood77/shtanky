@@ -30,13 +30,16 @@
 0 <enterFunc> ~rval8/0, $self7/0 ;;; .sht.cons.program.cdtor
 
 ----- start stream .sht.cons.iStream_vtbl_inst
-0 <globalConstData> @.sht.cons.iStream.printLn /0 ;;; .sht.cons.iStream_vtbl_inst
+0 <label> !.sht.cons.iStream_vtbl_inst/0
+0 goto    !.sht.cons.iStream.printLn/0
 
 ----- start stream .sht.cons.program_vtbl_inst
-0 <globalConstData> @.sht.cons.program.run /0 ;;; .sht.cons.program_vtbl_inst
+0 <label> !.sht.cons.program_vtbl_inst/0
+0 goto    !.sht.cons.program.run/0
 
 ----- start stream .sht.cons.stdout_vtbl_inst
-0 <globalConstData> @.sht.cons.stdout.printLn /0 ;;; .sht.cons.stdout_vtbl_inst
+0 <label> !.sht.cons.stdout_vtbl_inst/0
+0 goto    !.sht.cons.stdout.printLn/0
 
 ----- start stream .sht.cons.iStream_sctor
 0 <enterFunc> ~rval9/0, $self8/0                                                                                                   ;;; .sht.cons.iStream_sctor

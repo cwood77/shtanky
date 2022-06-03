@@ -50,9 +50,8 @@
                            pop, rbp
                            ret
 
-.seg const
+.seg code
 .test.consoleTarget_vtbl_inst:
-.data, 
 
 .seg code                  
 .test.consoleTarget_sctor: 
