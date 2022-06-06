@@ -15,18 +15,17 @@
 120 <postcall>       @totalStackSize/32                                                                                                       
 130 mov              [~obj0+8]/0, $cout/0                                                                                                     ;;; =
 140 <precall>        @totalStackSize/32                                                                                                       
-150 mov              ~run/0, [~obj0]/0                                                                                                        ;;; fieldaccess: owner of run
-160 call             ~rval2/0, [~run]/0, $obj0/0, $args/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0                             ;;; (call ptr)
-170 <postcall>       @totalStackSize/32                                                                                                       
-180 <precall>        @totalStackSize/32                                                                                                       
-190 call             ~rval3/0, !.nostromo.bootstrapper_sdtor/0, $obj0/0, ~rdx_burn1/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0 ;;; (call label)
-200 <postcall>       @totalStackSize/32                                                                                                       
-210 <precall>        @totalStackSize/32                                                                                                       
-220 call             ~rval4/0, !.sht.cons.stdout_sdtor/0, $cout/0, ~rdx_burn2/0, ~r8_burn3/0, ~r9_burn3/0, ~r10_trash3/0, ~r11_trash3/0       ;;; (call label)
-230 <postcall>       @totalStackSize/32                                                                                                       
-240 <unreserveLocal> $obj0_alloc/16                                                                                                           
-250 <unreserveLocal> $cout_alloc/8                                                                                                            
-260 <exitFunc>       
+150 call             ~rval2/0, [~obj0]/0, $obj0/0, $args/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0                            ;;; (vtbl call)
+160 <postcall>       @totalStackSize/32                                                                                                       
+170 <precall>        @totalStackSize/32                                                                                                       
+180 call             ~rval3/0, !.nostromo.bootstrapper_sdtor/0, $obj0/0, ~rdx_burn1/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0 ;;; (call label)
+190 <postcall>       @totalStackSize/32                                                                                                       
+200 <precall>        @totalStackSize/32                                                                                                       
+210 call             ~rval4/0, !.sht.cons.stdout_sdtor/0, $cout/0, ~rdx_burn2/0, ~r8_burn3/0, ~r9_burn3/0, ~r10_trash3/0, ~r11_trash3/0       ;;; (call label)
+220 <postcall>       @totalStackSize/32                                                                                                       
+230 <unreserveLocal> $obj0_alloc/16                                                                                                           
+240 <unreserveLocal> $cout_alloc/8                                                                                                            
+250 <exitFunc>       
 
 ----- start stream .nostromo.consoleTarget.cctor
 10 <selectSegment> @code/0           

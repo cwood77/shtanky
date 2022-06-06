@@ -14,16 +14,15 @@
 70  mov              $l/0, ~rval0/0                                                                                                 ;;; =
 80  <precall>        @totalStackSize/32                                                                                             
 90  mov              ~_vtbl/0, [~self+8]/0                                                                                          ;;; fieldaccess: owner of _vtbl
-100 mov              ~write8/0, [~_vtbl]/0                                                                                          ;;; fieldaccess: owner of write8
-110 <precall>        @totalStackSize/32                                                                                             
-120 mov              ~t/1, @0/1                                                                                                     ;;; shape:hoist imm from call
-130 call             ~rval1/0, !.sht.core.string.indexOpGet/0, $msg/0, ~t/1, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
-140 <postcall>       @totalStackSize/32                                                                                             
-150 mov              ~t0/0, [~self+8]/0                                                                                             ;;; shape:hoist addrOf from call
-160 call             ~rval2/0, [~write8]/0, ~t0/0, ~rval1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0                 ;;; (call ptr)
-170 <postcall>       @totalStackSize/32                                                                                             
-180 <unreserveLocal> $l/8                                                                                                           
-190 <exitFunc>       
+100 <precall>        @totalStackSize/32                                                                                             
+110 mov              ~t/1, @0/1                                                                                                     ;;; shape:hoist imm from call
+120 call             ~rval1/0, !.sht.core.string.indexOpGet/0, $msg/0, ~t/1, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
+130 <postcall>       @totalStackSize/32                                                                                             
+140 mov              ~t0/0, [~self+8]/0                                                                                             ;;; shape:hoist addrOf from call
+150 call             ~rval2/0, [~_vtbl]/0, ~t0/0, ~rval1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0                  ;;; (vtbl call)
+160 <postcall>       @totalStackSize/32                                                                                             
+170 <unreserveLocal> $l/8                                                                                                           
+180 <exitFunc>       
 
 ----- start stream .nostromo.debugOut.cctor
 10 <selectSegment> @code/0            

@@ -11,10 +11,9 @@
 0 mov            $l/0, ~rval0/0                                                                                                 ;;; =
 0 <precall>      
 0 mov            ~_vtbl/0, [~self+8]/0                                                                                          ;;; fieldaccess: owner of _vtbl
-0 mov            ~write8/0, [~_vtbl]/0                                                                                          ;;; fieldaccess: owner of write8
 0 <precall>      
 0 call           ~rval1/0, !.sht.core.string.indexOpGet/0, $msg/0, @0/1, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
-0 call           ~rval2/0, [~write8]/0, [~self+8]/0, ~rval1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0           ;;; (call ptr)
+0 call           ~rval2/0, [~_vtbl]/0, [~self+8]/0, ~rval1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0            ;;; (vtbl call)
 
 ----- start stream .nostromo.debugOut.cctor
 0 <enterFunc> ~rval3/0, $self0/0 ;;; .nostromo.debugOut.cctor

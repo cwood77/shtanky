@@ -40,6 +40,7 @@ class ptrTypeNode;
 class sequenceNode;
 class invokeNode;
 class invokeFuncPtrNode;
+class invokeVTableNode;
 class fieldAccessNode;
 class callNode;
 class localDeclNode;
@@ -90,6 +91,7 @@ public:
    virtual void visit(sequenceNode& n) = 0;
    virtual void visit(invokeNode& n) = 0;
    virtual void visit(invokeFuncPtrNode& n) = 0;
+   virtual void visit(invokeVTableNode& n) = 0;
    virtual void visit(fieldAccessNode& n) = 0;
    virtual void visit(callNode& n) = 0;
    virtual void visit(localDeclNode& n) = 0;
@@ -465,6 +467,15 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class invokeVTableNode : public node {
+public:
+   invokeVTableNode() : index(0) {}
+
+   size_t index;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 class fieldAccessNode : public node {
 public:
    std::string name;
@@ -641,6 +652,7 @@ public:
    virtual void visit(sequenceNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(invokeNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(invokeFuncPtrNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(invokeVTableNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(fieldAccessNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(callNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(localDeclNode& n) { visit(static_cast<node&>(n)); }
@@ -691,6 +703,7 @@ public:
    virtual void visit(sequenceNode& n);
    virtual void visit(invokeNode& n);
    virtual void visit(invokeFuncPtrNode& n);
+   virtual void visit(invokeVTableNode& n);
    virtual void visit(fieldAccessNode& n);
    virtual void visit(callNode& n);
    virtual void visit(localDeclNode& n);
@@ -758,6 +771,7 @@ public:
    virtual void visit(sequenceNode& n);
    virtual void visit(invokeNode& n);
    virtual void visit(invokeFuncPtrNode& n);
+   virtual void visit(invokeVTableNode& n);
    virtual void visit(fieldAccessNode& n);
    virtual void visit(callNode& n);
    virtual void visit(localDeclNode& n);
@@ -867,6 +881,7 @@ public:
    virtual void visit(sequenceNode&) { inst.reset(new sequenceNode()); }
    virtual void visit(invokeNode&) { inst.reset(new invokeNode()); }
    virtual void visit(invokeFuncPtrNode&) { inst.reset(new invokeFuncPtrNode()); }
+   virtual void visit(invokeVTableNode&) { inst.reset(new invokeVTableNode()); }
    virtual void visit(fieldAccessNode&) { inst.reset(new fieldAccessNode()); }
    virtual void visit(callNode&) { inst.reset(new callNode()); }
    virtual void visit(localDeclNode&) { inst.reset(new localDeclNode()); }
@@ -923,6 +938,7 @@ public:
    //virtual void visit(sequenceNode& n) { unexpected(n); }
    virtual void visit(invokeNode& n) { unexpected(n); }
    //virtual void visit(invokeFuncPtrNode& n) { unexpected(n); }
+   virtual void visit(invokeVTableNode& n);
    virtual void visit(fieldAccessNode& n) { unexpected(n); }
    virtual void visit(callNode& n);
    virtual void visit(localDeclNode& n) { unexpected(n); }

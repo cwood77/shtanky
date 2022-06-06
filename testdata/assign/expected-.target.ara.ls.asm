@@ -17,9 +17,8 @@
              add, rsp, 32                     
              mov, [rcx+8], rdi                ; =
              sub, rsp, 32                     
-             mov, rbx, [rcx]                  ; fieldaccess: owner of run
              mov, rdx, rbx                    ;       (args req for rdx) [splitter]
-             call, [rbx]                      ; (call ptr)
+             call, [rcx]                      ; (vtbl call)
              add, rsp, 32                     
              sub, rsp, 32                     
              call, .assign.assignTester_sdtor ; (call label)

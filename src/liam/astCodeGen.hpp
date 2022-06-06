@@ -29,7 +29,8 @@ public:
    virtual void visit(cmn::node& n) { visitChildren(n); }
    virtual void visit(cmn::constNode& n);
    virtual void visit(cmn::funcNode& n);
-   virtual void visit(cmn::invokeFuncPtrNode& n);
+   virtual void visit(cmn::invokeFuncPtrNode& n) { unexpected(n); }
+   virtual void visit(cmn::invokeVTableNode& n);
    virtual void visit(cmn::localDeclNode& n);
    virtual void visit(cmn::fieldAccessNode& n);
    virtual void visit(cmn::callNode& n);

@@ -341,6 +341,16 @@ void diagVisitor::visit(invokeFuncPtrNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(invokeVTableNode& n)
+{
+   cdwDEBUG("%sinvoke v-table %lld\n",
+      getIndent().c_str(),
+      n.index);
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 void diagVisitor::visit(fieldAccessNode& n)
 {
    cdwDEBUG("%sfield access; name=%s\n",
@@ -825,6 +835,13 @@ void astFormatter::visit(invokeFuncPtrNode& n)
    cdwDumpAstEnd()
 }
 
+void astFormatter::visit(invokeVTableNode& n)
+{
+   cdwDumpAstStart(invokeVTableNode)
+   cdwDumpAstField(index)
+   cdwDumpAstEnd()
+}
+
 void astFormatter::visit(fieldAccessNode& n)
 {
    cdwDumpAstStart(fieldAccessNode)
@@ -1054,6 +1071,12 @@ void cloningNodeVisitor::visit(userTypeNode& n)
    as<userTypeNode>().pDef.ref = n.pDef.ref;
    if(n.pDef._getRefee())
       as<userTypeNode>().pDef.bind(*n.pDef._getRefee());
+   hNodeVisitor::visit(n);
+}
+
+void cloningNodeVisitor::visit(invokeVTableNode& n)
+{
+   as<invokeVTableNode>().index = n.index;
    hNodeVisitor::visit(n);
 }
 

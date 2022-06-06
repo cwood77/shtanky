@@ -79,7 +79,8 @@ void astCodeGen::visit(cmn::funcNode& n)
    n.demandSoleChild<cmn::sequenceNode>().acceptVisitor(*this);
 }
 
-void astCodeGen::visit(cmn::invokeFuncPtrNode& n) // TODO left off here
+// first arg is the vtable ptr
+void astCodeGen::visit(cmn::invokeVTableNode& n) // TODO left off here
 {
    m_b.forNode(n)
       .append(cmn::tgt::kPreCallStackAlloc);
@@ -90,13 +91,18 @@ void astCodeGen::visit(cmn::invokeFuncPtrNode& n) // TODO left off here
       .append(cmn::tgt::kCall)
          .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
          .returnToParent(0)
-         .withComment("(call ptr)");
+         .withComment("(vtbl call)");
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       i.inheritArgFromChild(**it);
 
    consumeAllArgRegisters(i);
    trashScratchRegsOnCall(i);
+
+   // use offset to adjust vtbl index
+   auto& a = i.tweakArgAs<lirArg>(1);
+   a.disp = n.index * 5;
+   a.addrOf = true;
 }
 
 void astCodeGen::visit(cmn::localDeclNode& n)

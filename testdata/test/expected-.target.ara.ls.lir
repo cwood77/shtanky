@@ -12,8 +12,7 @@
 0 call           ~rval1/0, !.test.test_sctor/0, $obj0/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0       ;;; (call label)
 0 mov            [~obj0+8]/0, $cout/0                                                                                               ;;; =
 0 <precall>      
-0 mov            ~run/0, [~obj0]/0                                                                                                  ;;; fieldaccess: owner of run
-0 call           ~rval2/0, [~run]/0, $obj0/0, $args/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0                       ;;; (call ptr)
+0 call           ~rval2/0, [~obj0]/0, $obj0/0, $args/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0                      ;;; (vtbl call)
 0 <precall>      
 0 call           ~rval3/0, !.test.test_sdtor/0, $obj0/0, ~rdx_burn1/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0       ;;; (call label)
 0 <precall>      

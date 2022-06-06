@@ -9,12 +9,11 @@
                 push, rdi                  
                 mov, rbp, rsp              
                 sub, rsp, 32               
-                mov, rbx, [rcx+8]          ; fieldaccess: owner of _vtbl
-                mov, rdi, [rbx]            ; fieldaccess: owner of printLn
+                mov, rdi, [rcx+8]          ; fieldaccess: owner of _vtbl
                 lea, rdx, qwordptr .const0 
                 mov, rbx, rcx              ; (preserve) [combiner]
                 mov, rcx, [rbx+8]          ; shape:hoist addrOf from call
-                call, [rdi]                ; (call ptr)
+                call, [rdi]                ; (vtbl call)
                 add, rsp, 32               
                 mov, rsp, rbp              
                 pop, rdi                   

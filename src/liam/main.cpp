@@ -14,6 +14,7 @@
 #include "lir.hpp"
 #include "lirXfrm.hpp"
 #include "projectBuilder.hpp"
+#include "vTableInvokeDetection.hpp"
 #include "varAlloc.hpp"
 #include "varCombiner.hpp"
 #include "varFinder.hpp"
@@ -47,9 +48,14 @@ int _main(int argc,const char *argv[])
    cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
    cmn::propagateTypes(prj);
 
+   // AST transforms
+   cmn::tgt::w64EmuTargetInfo t;
+   { vTableInvokeDetector v(t); prj.acceptVisitor(v); }
+   cdwVERBOSE("graph after transforms ----\n");
+   { cmn::diagVisitor v; prj.acceptVisitor(v); }
+
    // generate LIR
    lirStreams lir;
-   cmn::tgt::w64EmuTargetInfo t;
    cmn::outBundle out,dbgOut;
    cmn::unconditionalWriter wr;
    dbgOut.scheduleAutoUpdate(wr);

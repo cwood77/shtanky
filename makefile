@@ -291,6 +291,7 @@ LIAM_SRC = \
 	src/liam/lirXfrm.cpp \
 	src/liam/main.cpp \
 	src/liam/projectBuilder.cpp \
+	src/liam/vTableInvokeDetection.cpp \
 	src/liam/varAlloc.cpp \
 	src/liam/varCombiner.cpp \
 	src/liam/varFinder.cpp \
