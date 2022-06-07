@@ -111,6 +111,7 @@ public:
    testWriter(script& s, bool subset, cmn::cmdLine& cl)
    : m_s(s), m_subset(subset), m_cl(cl) {}
    void add(const std::string& name, std::function<void (instrStream&)> f);
+   void skipByDefault(const std::string& name, std::function<void (instrStream&)> f);
 
 private:
    script& m_s;

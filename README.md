@@ -190,9 +190,10 @@ Levels include
 Intermediate artifacts are useful for debugging problems, but are they helpful for detecting problems?  I don't think so.
 
 Propsed changes
-1. [ ] Add execution to helloWorld.
-1. [ ] Limit ast to the araceli level.
-1. [ ] Disable comparison of all intermediate output for tests that actually run (i.e. capturing only .log).
+1. [ ] Reoder tests in order of complexity
+1. [x] Add execution to helloWorld.
+1. [ ] Limit araceli to the ast level.
+1. [\] Disable comparison of all intermediate output for tests that actually run (i.e. capturing only .log).
 1. [ ] Rename tests as follows:
     - assign -> **ast**
     - shtemu -> **sandbox**

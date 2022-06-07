@@ -20,15 +20,27 @@ int main(int argc, const char *argv[])
 
    testWriter(s,subset,cl).add("assign",[](auto& is){
       araceliTest(is,".\\testdata\\assign")
-         .wholeApp()
          .verifyAdditionalArtifact(".\\testdata\\assign\\.00init.ast","init AST")
          .verifyAdditionalArtifact(".\\testdata\\assign\\.01postlink.ast","postlink AST")
          .verifyAdditionalArtifact(".\\testdata\\assign\\.02preDeclass.ast","preDeclass AST")
          .verifyAdditionalArtifact(".\\testdata\\assign\\.03postDeclass.ast","postDeclass AST")
-         .expectLiamOf(".\\testdata\\assign\\main.ara")
+      ;
+   });
+
+   testWriter(s,subset,cl).add("philemon",[](auto& is){
+      araceliTest(is,".\\testdata\\philemon")
+         .expectLiamOf(".\\testdata\\philemon\\list.ara")
+      ;
+   });
+
+   testWriter(s,subset,cl).add("test",[](auto& is){
+      araceliTest(is,".\\testdata\\test")
+         .wholeApp()
+         .expectLiamOf(".\\testdata\\test\\test.ara")
          .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
          .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
-         .expectLiamOf(".\\testdata\\assign\\.target.ara",false)
+         .expectLiamOf(".\\testdata\\test\\.target.ara",false) // false = no philemon
+         .emulateAndCheckOutput()
       ;
    });
 
@@ -44,37 +56,23 @@ int main(int argc, const char *argv[])
       ;
    });
 
-   testWriter(s,subset,cl).add("philemon",[](auto& is){
-      araceliTest(is,".\\testdata\\philemon")
-         .expectLiamOf(".\\testdata\\philemon\\list.ara")
-      ;
-   });
+   // ------------------ dev sandboxes ------------------
 
-   testWriter(s,subset,cl).add("shtemu.ls",[](auto& is){
-      liamTest(is,".\\testdata\\shtemu\\basic.ls")
-         .wholeApp(".\\testdata\\shtemu\\basic.ls.app")
-         .emulateAndCheckOutput()
-      ;
-   });
-   testWriter(s,subset,cl).add("shtemu",[](auto& is){
+   testWriter(s,subset,cl).skipByDefault("shtemu",[](auto& is){
       shtasmTest(is,".\\testdata\\shtemu\\basic.asm")
          .wholeApp(".\\testdata\\shtemu\\basic.app")
          .emulateAndCheckOutput()
       ;
    });
 
-   testWriter(s,subset,cl).add("test",[](auto& is){
-      araceliTest(is,".\\testdata\\test")
-         .wholeApp()
-         .expectLiamOf(".\\testdata\\test\\test.ara")
-         .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
-         .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
-         .expectLiamOf(".\\testdata\\test\\.target.ara",false) // false = no philemon
+   testWriter(s,subset,cl).skipByDefault("shtemu.ls",[](auto& is){
+      liamTest(is,".\\testdata\\shtemu\\basic.ls")
+         .wholeApp(".\\testdata\\shtemu\\basic.ls.app")
          .emulateAndCheckOutput()
       ;
    });
 
-   // ------------------ tests end ------------------
+   // ------------------ end ------------------
 
    std::ofstream wrapper(".\\bin\\.appr.bat");
    if(!wrapper.good())

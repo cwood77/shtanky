@@ -209,3 +209,14 @@ void testWriter::add(const std::string& name, std::function<void (instrStream&)>
    instrStream is(m_s);
    f(is);
 }
+
+void testWriter::skipByDefault(const std::string& name, std::function<void (instrStream&)> f)
+{
+   if(m_subset && !m_cl.getSwitch(name,"",false))
+   //if(!m_subset || !m_cl.getSwitch(name,"",false))
+      return;
+
+   m_s.noteFailHint(name);
+   instrStream is(m_s);
+   f(is);
+}
