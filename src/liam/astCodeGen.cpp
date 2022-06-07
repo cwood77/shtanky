@@ -82,10 +82,45 @@ void astCodeGen::visit(cmn::funcNode& n)
 // first arg is the vtable ptr
 void astCodeGen::visit(cmn::invokeVTableNode& n) // TODO left off here
 {
+   // if you're not invoking the first index, then you'll need a scratch allocation
+   // this is b/c calls require absolute INDIRECT (i.e. ptr)
+   const bool needsLocal = n.index;
+   std::string localVar;
+   std::string callPtrVar;
+
+   if(needsLocal)
+   {
+      localVar = m_u.makeUnique("callPtr_forVTable");
+      m_b.forNode(n)
+         .append(cmn::tgt::kReserveLocal)
+            .withArg<lirArgTemp>(localVar,0)
+            .withComment("scratch for vtable callptr calculation");
+   }
+
    m_b.forNode(n)
       .append(cmn::tgt::kPreCallStackAlloc);
 
    hNodeVisitor::visit(n);
+
+   if(needsLocal)
+   {
+      callPtrVar = m_u.makeUnique("addrOf_callPtr_forVTable");
+      m_b.forNode(n)
+         // copy inst into temp alloc
+         .append(cmn::tgt::kMov)
+            .withArg<lirArgTemp>(localVar,0)
+            .inheritArgFromChild(*n.getChildren()[0])
+            .then()
+         // adjust for offset
+         .append(cmn::tgt::kAdd)
+            .withArg<lirArgTemp>(localVar,0)
+            .withArg<lirArgConst>("5",0) // TODO HACK
+            .then()
+         // take address of, since call wants a ptr
+         .append(cmn::tgt::kLea)
+            .withArg<lirArgTemp>(callPtrVar,0)
+            .withArg<lirArgTemp>(localVar,0);
+   }
 
    auto& i = m_b.forNode(n)
       .append(cmn::tgt::kCall)
@@ -93,16 +128,19 @@ void astCodeGen::visit(cmn::invokeVTableNode& n) // TODO left off here
          .returnToParent(0)
          .withComment("(vtbl call)");
 
-   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+   // first arg (call ptr)
+   if(needsLocal)
+      i.withArg<lirArgTemp>(callPtrVar,0).tweakArgAs<lirArgTemp>(1).addrOf = true;
+   else
+      i.inheritArgFromChild(*n.getChildren()[0]);
+
+   // rest of args
+   for(auto it=++(n.getChildren().begin());it!=n.getChildren().end();++it)
       i.inheritArgFromChild(**it);
 
+   // call idiomatics
    consumeAllArgRegisters(i);
    trashScratchRegsOnCall(i);
-
-   // use offset to adjust vtbl index
-   auto& a = i.tweakArgAs<lirArg>(1);
-   a.disp = n.index * 5;
-   a.addrOf = true;
 }
 
 void astCodeGen::visit(cmn::localDeclNode& n)

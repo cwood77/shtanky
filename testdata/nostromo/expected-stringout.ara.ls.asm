@@ -6,6 +6,7 @@
 .nostromo.debugOut.write: 
                           push, rbp                         
                           push, rbx                         
+                          push, rdi                         
                           mov, rbp, rsp                     
                           sub, rsp, 8                       
                           sub, rsp, 32                      
@@ -15,16 +16,17 @@
                           add, rsp, 32                      
                           mov, [rbp-8], rax                 ; =
                           sub, rsp, 32                      
-                          mov, rbx, [rbx+8]                 ; fieldaccess: owner of _vtbl
+                          mov, rdi, [rbx+8]                 ; fieldaccess: owner of _vtbl
                           sub, rsp, 32                      
                           mov, rdx, 0                       ; shape:hoist imm from call
                           call, .sht.core.string.indexOpGet ; (call label)
                           add, rsp, 32                      
                           mov, rcx, [rbx+8]                 ; shape:hoist addrOf from call
                           mov, rdx, rax                     ;       (rval1 req for rdx) [splitter]
-                          call, [rbx]                       ; (vtbl call)
+                          call, [rdi]                       ; (vtbl call)
                           add, rsp, 32                      
                           mov, rsp, rbp                     
+                          pop, rdi                          
                           pop, rbx                          
                           pop, rbp                          
                           ret                               

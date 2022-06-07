@@ -59,15 +59,18 @@ void varAllocator::run(varTable& v, varFinder& f)
       size_t firstAlive = (*vit)->refs.begin()->first;
       size_t lastAlive = (--((*vit)->refs.end()))->first;
 
-      f.resetUsedStorage();
       // record all the storage used by variables living during my lifetime
+      f.resetUsedStorage();
       for(auto it=v.all().begin();it!=v.all().end();++it)
-         if(it->second->isAlive(firstAlive,lastAlive))
-            for(auto jit=it->second->instrToStorageMap.begin();
-               jit!=it->second->instrToStorageMap.end();++jit)
-               if(firstAlive <= jit->first && jit->first <= lastAlive)
-                  for(auto kit=jit->second.begin();kit!=jit->second.end();++kit)
-                     f.recordStorageUsed(*kit);
+      {
+         if(!it->second->isAlive(firstAlive,lastAlive)) continue;
+         for(size_t i=firstAlive;i<=lastAlive;i++)
+         {
+            auto stors = it->second->getStorageAt(i);
+            for(auto stor : stors)
+               f.recordStorageUsed(stor);
+         }
+      }
 
       size_t ans = f.chooseFreeStorage((*vit)->lastArg().getSize());
       cdwDEBUG("assigning r%ld for var %s\n",ans,(*vit)->name.c_str());

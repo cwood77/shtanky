@@ -14,7 +14,7 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(89)modR/M(e5)
 // 17:             sub, rsp, 32              
 rex(48)op(83)modR/M(ec)i8(20)
-// 18:             lea, rcx, qwordptr .text2 
+// 18:             lea, rcx, qwordptr .text0 
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 // 19:             call, ._print             ; (call label)
 op(e8)co32(00-00-00-00)
@@ -33,7 +33,7 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(89)modR/M(e5)
 // 29:             sub, rsp, 32              
 rex(48)op(83)modR/M(ec)i8(20)
-// 30:             lea, rcx, qwordptr .text2 
+// 30:             lea, rcx, qwordptr .text1 
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 // 31:             call, ._print             ; (call label)
 op(e8)co32(00-00-00-00)
@@ -74,39 +74,81 @@ op(c3)
 rex(48)op(ff)modR/M(f5)
 // 57:              push, rbx                 
 rex(48)op(ff)modR/M(f3)
-// 58:              mov, rbp, rsp             
+// 58:              push, rdi                 
+rex(48)op(ff)modR/M(f7)
+// 59:              mov, rbp, rsp             
 rex(48)op(89)modR/M(e5)
-// 59:              sub, rsp, 8               
-rex(48)op(83)modR/M(ec)i8(08)
-// 60:              lea, rcx, [rbp-8]         ; o
-rex(48)op(8d)modR/M(4d)d8(f8)
-// 61:              sub, rsp, 32              
+// 60:              sub, rsp, 24              
+rex(48)op(83)modR/M(ec)i8(18)
+// 61:              lea, rcx, [rbp-24]        ; o
+rex(48)op(8d)modR/M(4d)d8(e8)
+// 62:              sub, rsp, 32              
 rex(48)op(83)modR/M(ec)i8(20)
-// 62:              call, .ctor               ; (call label)
+// 63:              call, .ctor               ; (call label)
 op(e8)co32(00-00-00-00)
-// 63:              add, rsp, 32              
+// 64:              add, rsp, 32              
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 64:              sub, rsp, 32              
+// 65:              sub, rsp, 32              
 rex(48)op(83)modR/M(ec)i8(20)
-// 65:              mov, rbx, rcx             ; (preserve) [combiner]
+// 66:              mov, rbx, rcx             ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
-// 66:              lea, rcx, qwordptr .text0 
+// 67:              lea, rcx, qwordptr .text2 
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
-// 67:              call, ._print             ; (call label)
+// 68:              call, ._print             ; (call label)
 op(e8)co32(00-00-00-00)
-// 68:              add, rsp, 32              
+// 69:              add, rsp, 32              
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 69:              sub, rsp, 32              
+// 70:              sub, rsp, 32              
 rex(48)op(83)modR/M(ec)i8(20)
-// 70:              call, [rbx]               ; (vtbl call)
+// 71:              call, [rbx]               ; (vtbl call)
 rex(48)op(ff)modR/M(13)
-// 71:              add, rsp, 32              
+// 72:              add, rsp, 32              
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 72:              mov, rsp, rbp             
+// 73:              sub, rsp, 32              
+rex(48)op(83)modR/M(ec)i8(20)
+// 74:              mov, r10, [rbx]           ; codeshape decomp
+rex(4c)op(8b)modR/M(13)
+// 75:              mov, [rbp-8], r10         
+rex(4c)op(89)modR/M(55)d8(f8)
+// 76:              mov, r10, 5               ; codeshape decomp
+rex(49)op(ba)i64(05-00-00-00,00-00-00-00)
+// 77:              add, [rbp-8], r10         
+rex(4c)op(01)modR/M(55)d8(f8)
+// 78:              lea, rdi, [rbp-8]         
+rex(48)op(8d)modR/M(7d)d8(f8)
+// 79:              call, [rdi]               ; (vtbl call)
+rex(48)op(ff)modR/M(17)
+// 80:              add, rsp, 32              
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 81:              sub, rsp, 32              
+rex(48)op(83)modR/M(ec)i8(20)
+// 82:              call, [rbx]               ; (vtbl call)
+rex(48)op(ff)modR/M(13)
+// 83:              add, rsp, 32              
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 84:              sub, rsp, 32              
+rex(48)op(83)modR/M(ec)i8(20)
+// 85:              mov, r10, [rbx]           ; codeshape decomp
+rex(4c)op(8b)modR/M(13)
+// 86:              mov, [rbp-16], r10        
+rex(4c)op(89)modR/M(55)d8(f0)
+// 87:              mov, r10, 5               ; codeshape decomp
+rex(49)op(ba)i64(05-00-00-00,00-00-00-00)
+// 88:              add, [rbp-16], r10        
+rex(4c)op(01)modR/M(55)d8(f0)
+// 89:              lea, rbx, [rbp-16]        
+rex(48)op(8d)modR/M(5d)d8(f0)
+// 90:              call, [rbx]               ; (vtbl call)
+rex(48)op(ff)modR/M(13)
+// 91:              add, rsp, 32              
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 92:              mov, rsp, rbp             
 rex(48)op(89)modR/M(ec)
-// 73:              pop, rbx                  
+// 93:              pop, rdi                  
+rex(48)op(8f)modR/M(c7)
+// 94:              pop, rbx                  
 rex(48)op(8f)modR/M(c3)
-// 74:              pop, rbp                  
+// 95:              pop, rbp                  
 rex(48)op(8f)modR/M(c5)
-// 75:              ret                       
+// 96:              ret                       
 op(c3)

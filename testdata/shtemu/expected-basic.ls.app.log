@@ -7,6 +7,7 @@
 [shtemu.exe:D:src/shtemu/loader.cpp-32]     setting flags to {0,1,2,3}
 [shtemu.exe:i:src/shtemu/main.cpp-30] passing control to app
 [shtemu.exe:D:src/shtemu/loader.cpp-12]   entrypoint is offset 68
-[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'text 0'
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'text 2'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'text 1'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'text 0'
 [shtemu.exe:i:src/shtemu/main.cpp-32] control returned to shtemu

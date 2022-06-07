@@ -4,12 +4,12 @@ const .text2 : str = "text 2";
 
 func .virtFunc0() : void
 {
-   ._print(.text2);
+   ._print(.text0);
 }
 
 func .virtFunc1() : void
 {
-   ._print(.text2);
+   ._print(.text1);
 }
 
 class .v {
@@ -34,8 +34,11 @@ func .whatever() : void
 {
    var o : .obj;
    .ctor(o);
-   ._print(.text0);
+   ._print(.text2);
    o:_vtbl:f0->();
+   o:_vtbl:f1->();
+   o:_vtbl:f0->();
+   o:_vtbl:f1->();
 }
 
 func ._getflg(index : int) : int;
