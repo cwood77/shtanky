@@ -36,12 +36,10 @@
 .assign.assignTester.readFromSubSubObject: 
                                            push, rbp          
                                            push, rbx          
-                                           push, rdi          
                                            mov, rbp, rsp      
-                                           mov, rbx, [rdi+16] ; fieldaccess: owner of _x
+                                           mov, rbx, [rdx+16] ; fieldaccess: owner of _x
                                            mov, r8, [rbx+16]  ; =
                                            mov, rsp, rbp      
-                                           pop, rdi           
                                            pop, rbx           
                                            pop, rbp           
                                            ret                
@@ -103,11 +101,9 @@
 .seg code        
 .assign.A.cctor: 
                  push, rbp       
-                 push, rbx       
                  mov, rbp, rsp   
-                 mov, [rbx+8], 0 ; =
+                 mov, [rcx+8], 0 ; =
                  mov, rsp, rbp   
-                 pop, rbx        
                  pop, rbp        
                  ret             
 
@@ -122,12 +118,10 @@
 .seg code        
 .assign.B.cctor: 
                  push, rbp        
-                 push, rbx        
                  mov, rbp, rsp    
-                 mov, [rbx+8], 0  ; =
-                 mov, [rbx+16], 0 ; =
+                 mov, [rcx+8], 0  ; =
+                 mov, [rcx+16], 0 ; =
                  mov, rsp, rbp    
-                 pop, rbx         
                  pop, rbp         
                  ret              
 

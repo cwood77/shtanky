@@ -27,6 +27,7 @@
                           push, rbp     
                           mov, rbp, rsp 
                           sub, rsp, 32  
+                          mov, rcx, rdx ;       (msg req for rcx) [splitter]
                           call, ._print ; (call label)
                           add, rsp, 32  
                           mov, rsp, rbp 

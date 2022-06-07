@@ -6,28 +6,28 @@
 30 <exitFunc>      
 
 ----- start stream .nostromo.uart16550.fakeBase.cctor
-10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval0/0, $self0/0 ;;; .nostromo.uart16550.fakeBase.cctor
+10 <selectSegment> @code/0           
+20 <enterFunc>     ~rval0/0, $self/0 ;;; .nostromo.uart16550.fakeBase.cctor
 30 <exitFunc>      
 
 ----- start stream .nostromo.uart16550.fakeBase.cdtor
-10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval1/0, $self1/0 ;;; .nostromo.uart16550.fakeBase.cdtor
+10 <selectSegment> @code/0           
+20 <enterFunc>     ~rval1/0, $self/0 ;;; .nostromo.uart16550.fakeBase.cdtor
 30 <exitFunc>      
 
 ----- start stream .nostromo.uart16550.driver.write8
-10 <selectSegment> @code/0                      
-20 <enterFunc>     ~rval2/0, $self2/0, $byte0/0 ;;; .nostromo.uart16550.driver.write8
+10 <selectSegment> @code/0                    
+20 <enterFunc>     ~rval2/0, $self/0, $byte/0 ;;; .nostromo.uart16550.driver.write8
 30 <exitFunc>      
 
 ----- start stream .nostromo.uart16550.driver.cctor
-10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval3/0, $self3/0 ;;; .nostromo.uart16550.driver.cctor
+10 <selectSegment> @code/0           
+20 <enterFunc>     ~rval3/0, $self/0 ;;; .nostromo.uart16550.driver.cctor
 30 <exitFunc>      
 
 ----- start stream .nostromo.uart16550.driver.cdtor
-10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval4/0, $self4/0 ;;; .nostromo.uart16550.driver.cdtor
+10 <selectSegment> @code/0           
+20 <enterFunc>     ~rval4/0, $self/0 ;;; .nostromo.uart16550.driver.cdtor
 30 <exitFunc>      
 
 ----- start stream .nostromo.uart16550.driver_vtbl_inst
@@ -42,7 +42,7 @@
 
 ----- start stream .nostromo.uart16550.driver_sctor
 10  <selectSegment> @code/0                                                                                                                      
-20  <enterFunc>     ~rval5/0, $self5/0                                                                                                           ;;; .nostromo.uart16550.driver_sctor
+20  <enterFunc>     ~rval5/0, $self/0                                                                                                            ;;; .nostromo.uart16550.driver_sctor
 30  <precall>       @totalStackSize/32                                                                                                           
 40  call            ~rval6/0, !.nostromo.uart16550.fakeBase_sctor/0, $self/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0    ;;; (call label)
 50  <postcall>      @totalStackSize/32                                                                                                           
@@ -55,7 +55,7 @@
 
 ----- start stream .nostromo.uart16550.driver_sdtor
 10  <selectSegment> @code/0                                                                                                                         
-20  <enterFunc>     ~rval8/0, $self6/0                                                                                                              ;;; .nostromo.uart16550.driver_sdtor
+20  <enterFunc>     ~rval8/0, $self/0                                                                                                               ;;; .nostromo.uart16550.driver_sdtor
 30  lea             ~str0/0, !.nostromo.uart16550.driver_vtbl_inst/0                                                                                
 40  mov             [~self]/0, ~str0/0                                                                                                              ;;; =
 50  <precall>       @totalStackSize/32                                                                                                              
@@ -68,7 +68,7 @@
 
 ----- start stream .nostromo.uart16550.fakeBase_sctor
 10  <selectSegment> @code/0                                                                                                                         
-20  <enterFunc>     ~rval11/0, $self7/0                                                                                                             ;;; .nostromo.uart16550.fakeBase_sctor
+20  <enterFunc>     ~rval11/0, $self/0                                                                                                              ;;; .nostromo.uart16550.fakeBase_sctor
 30  <precall>       @totalStackSize/32                                                                                                              
 40  call            ~rval12/0, !.sht.core.object_sctor/0, $self/0, ~rdx_burn3/0, ~r8_burn3/0, ~r9_burn3/0, ~r10_trash3/0, ~r11_trash3/0             ;;; (call label)
 50  <postcall>      @totalStackSize/32                                                                                                              
@@ -81,7 +81,7 @@
 
 ----- start stream .nostromo.uart16550.fakeBase_sdtor
 10  <selectSegment> @code/0                                                                                                                         
-20  <enterFunc>     ~rval14/0, $self8/0                                                                                                             ;;; .nostromo.uart16550.fakeBase_sdtor
+20  <enterFunc>     ~rval14/0, $self/0                                                                                                              ;;; .nostromo.uart16550.fakeBase_sdtor
 30  lea             ~str2/0, !.nostromo.uart16550.fakeBase_vtbl_inst/0                                                                              
 40  mov             [~self]/0, ~str2/0                                                                                                              ;;; =
 50  <precall>       @totalStackSize/32                                                                                                              

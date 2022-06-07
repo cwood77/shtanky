@@ -16,13 +16,13 @@
 90 <exitFunc>      
 
 ----- start stream .test.test.cctor
-10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval1/0, $self0/0 ;;; .test.test.cctor
+10 <selectSegment> @code/0           
+20 <enterFunc>     ~rval1/0, $self/0 ;;; .test.test.cctor
 30 <exitFunc>      
 
 ----- start stream .test.test.cdtor
-10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval2/0, $self1/0 ;;; .test.test.cdtor
+10 <selectSegment> @code/0           
+20 <enterFunc>     ~rval2/0, $self/0 ;;; .test.test.cdtor
 30 <exitFunc>      
 
 ----- start stream .test.test_vtbl_inst
@@ -32,7 +32,7 @@
 
 ----- start stream .test.test_sctor
 10  <selectSegment> @code/0                                                                                                            
-20  <enterFunc>     ~rval3/0, $self2/0                                                                                                 ;;; .test.test_sctor
+20  <enterFunc>     ~rval3/0, $self/0                                                                                                  ;;; .test.test_sctor
 30  <precall>       @totalStackSize/32                                                                                                 
 40  call            ~rval4/0, !.sht.cons.program_sctor/0, $self/0, ~rdx_burn/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
 50  <postcall>      @totalStackSize/32                                                                                                 
@@ -45,7 +45,7 @@
 
 ----- start stream .test.test_sdtor
 10  <selectSegment> @code/0                                                                                                             
-20  <enterFunc>     ~rval6/0, $self3/0                                                                                                  ;;; .test.test_sdtor
+20  <enterFunc>     ~rval6/0, $self/0                                                                                                   ;;; .test.test_sdtor
 30  lea             ~str1/0, !.test.test_vtbl_inst/0                                                                                    
 40  mov             [~self]/0, ~str1/0                                                                                                  ;;; =
 50  <precall>       @totalStackSize/32                                                                                                  

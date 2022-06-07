@@ -1,15 +1,11 @@
 [shtemu.exe:D:src/shtemu/osCall.cpp-16] service registered 1 => N6shtemu12printServiceE
 [shtemu.exe:i:src/shtemu/main.cpp-11] --- win64 shtanky emulator ---
-[shtemu.exe:i:src/shtemu/main.cpp-15] loading file .\testdata\shtemu\basic.ls.app
-[shtemu.exe:v:src/shtemu/loader.cpp-44] loading '.\testdata\shtemu\basic.ls.app'
+[shtemu.exe:i:src/shtemu/main.cpp-15] loading file .\testdata\test\.app
+[shtemu.exe:v:src/shtemu/loader.cpp-44] loading '.\testdata\test\.app'
 [shtemu.exe:D:src/shtemu/loader.cpp-19]   osCall is offset 60
 [shtemu.exe:D:src/shtemu/loader.cpp-26]   flags is offset 28
 [shtemu.exe:D:src/shtemu/loader.cpp-32]     setting flags to {0,1,2,3}
 [shtemu.exe:i:src/shtemu/main.cpp-30] passing control to app
 [shtemu.exe:D:src/shtemu/loader.cpp-12]   entrypoint is offset 68
-[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'text 2'
-[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'text 0'
-[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'text 1'
-[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'text 0'
-[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'text 1'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] 'hello world!'
 [shtemu.exe:i:src/shtemu/main.cpp-32] control returned to shtemu

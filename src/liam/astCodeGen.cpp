@@ -74,7 +74,7 @@ void astCodeGen::visit(cmn::funcNode& n)
 
    auto args = n.getChildrenOf<cmn::argNode>();
    for(auto it=args.begin();it!=args.end();++it)
-      i.withArg<lirArgVar>(m_u.makeUnique((*it)->name),**it);
+      i.withArg<lirArgVar>((*it)->name,**it);
 
    n.demandSoleChild<cmn::sequenceNode>().acceptVisitor(*this);
 }

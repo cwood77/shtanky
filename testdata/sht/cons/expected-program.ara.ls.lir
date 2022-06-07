@@ -4,30 +4,30 @@
 0 <enterFunc> ~rval/0, $self/0, $msg/0 ;;; .sht.cons.iStream.printLn
 
 ----- start stream .sht.cons.iStream.cctor
-0 <enterFunc> ~rval0/0, $self0/0 ;;; .sht.cons.iStream.cctor
+0 <enterFunc> ~rval0/0, $self/0 ;;; .sht.cons.iStream.cctor
 
 ----- start stream .sht.cons.iStream.cdtor
-0 <enterFunc> ~rval1/0, $self1/0 ;;; .sht.cons.iStream.cdtor
+0 <enterFunc> ~rval1/0, $self/0 ;;; .sht.cons.iStream.cdtor
 
 ----- start stream .sht.cons.stdout.printLn
-0 <enterFunc> ~rval2/0, $self2/0, $msg0/0                                                                   ;;; .sht.cons.stdout.printLn
+0 <enterFunc> ~rval2/0, $self/0, $msg/0                                                                     ;;; .sht.cons.stdout.printLn
 0 <precall>   
 0 call        ~rval3/0, !._print/0, $msg/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (call label)
 
 ----- start stream .sht.cons.stdout.cctor
-0 <enterFunc> ~rval4/0, $self3/0 ;;; .sht.cons.stdout.cctor
+0 <enterFunc> ~rval4/0, $self/0 ;;; .sht.cons.stdout.cctor
 
 ----- start stream .sht.cons.stdout.cdtor
-0 <enterFunc> ~rval5/0, $self4/0 ;;; .sht.cons.stdout.cdtor
+0 <enterFunc> ~rval5/0, $self/0 ;;; .sht.cons.stdout.cdtor
 
 ----- start stream .sht.cons.program.run
-0 <enterFunc> ~rval6/0, $self5/0, $args/0 ;;; .sht.cons.program.run
+0 <enterFunc> ~rval6/0, $self/0, $args/0 ;;; .sht.cons.program.run
 
 ----- start stream .sht.cons.program.cctor
-0 <enterFunc> ~rval7/0, $self6/0 ;;; .sht.cons.program.cctor
+0 <enterFunc> ~rval7/0, $self/0 ;;; .sht.cons.program.cctor
 
 ----- start stream .sht.cons.program.cdtor
-0 <enterFunc> ~rval8/0, $self7/0 ;;; .sht.cons.program.cdtor
+0 <enterFunc> ~rval8/0, $self/0 ;;; .sht.cons.program.cdtor
 
 ----- start stream .sht.cons.iStream_vtbl_inst
 0 <label> !.sht.cons.iStream_vtbl_inst/0
@@ -42,7 +42,7 @@
 0 goto    !.sht.cons.stdout.printLn/0
 
 ----- start stream .sht.cons.iStream_sctor
-0 <enterFunc> ~rval9/0, $self8/0                                                                                                   ;;; .sht.cons.iStream_sctor
+0 <enterFunc> ~rval9/0, $self/0                                                                                                    ;;; .sht.cons.iStream_sctor
 0 <precall>   
 0 call        ~rval10/0, !.sht.core.object_sctor/0, $self/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0  ;;; (call label)
 0 lea         ~str/0, !.sht.cons.iStream_vtbl_inst/0                                                                               
@@ -51,7 +51,7 @@
 0 call        ~rval11/0, !.sht.cons.iStream.cctor/0, $self/0, ~rdx_burn1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0 ;;; (call label)
 
 ----- start stream .sht.cons.iStream_sdtor
-0 <enterFunc> ~rval12/0, $self9/0                                                                                                  ;;; .sht.cons.iStream_sdtor
+0 <enterFunc> ~rval12/0, $self/0                                                                                                   ;;; .sht.cons.iStream_sdtor
 0 lea         ~str0/0, !.sht.cons.iStream_vtbl_inst/0                                                                              
 0 mov         [~self]/0, ~str0/0                                                                                                   ;;; =
 0 <precall>   
@@ -60,7 +60,7 @@
 0 call        ~rval14/0, !.sht.core.object_sdtor/0, $self/0, ~rdx_burn3/0, ~r8_burn3/0, ~r9_burn3/0, ~r10_trash3/0, ~r11_trash3/0  ;;; (call label)
 
 ----- start stream .sht.cons.program_sctor
-0 <enterFunc> ~rval15/0, $self10/0                                                                                                 ;;; .sht.cons.program_sctor
+0 <enterFunc> ~rval15/0, $self/0                                                                                                   ;;; .sht.cons.program_sctor
 0 <precall>   
 0 call        ~rval16/0, !.sht.core.object_sctor/0, $self/0, ~rdx_burn4/0, ~r8_burn4/0, ~r9_burn4/0, ~r10_trash4/0, ~r11_trash4/0  ;;; (call label)
 0 lea         ~str1/0, !.sht.cons.program_vtbl_inst/0                                                                              
@@ -69,7 +69,7 @@
 0 call        ~rval17/0, !.sht.cons.program.cctor/0, $self/0, ~rdx_burn5/0, ~r8_burn5/0, ~r9_burn5/0, ~r10_trash5/0, ~r11_trash5/0 ;;; (call label)
 
 ----- start stream .sht.cons.program_sdtor
-0 <enterFunc> ~rval18/0, $self11/0                                                                                                 ;;; .sht.cons.program_sdtor
+0 <enterFunc> ~rval18/0, $self/0                                                                                                   ;;; .sht.cons.program_sdtor
 0 lea         ~str2/0, !.sht.cons.program_vtbl_inst/0                                                                              
 0 mov         [~self]/0, ~str2/0                                                                                                   ;;; =
 0 <precall>   
@@ -78,7 +78,7 @@
 0 call        ~rval20/0, !.sht.core.object_sdtor/0, $self/0, ~rdx_burn7/0, ~r8_burn7/0, ~r9_burn7/0, ~r10_trash7/0, ~r11_trash7/0  ;;; (call label)
 
 ----- start stream .sht.cons.stdout_sctor
-0 <enterFunc> ~rval21/0, $self12/0                                                                                                 ;;; .sht.cons.stdout_sctor
+0 <enterFunc> ~rval21/0, $self/0                                                                                                   ;;; .sht.cons.stdout_sctor
 0 <precall>   
 0 call        ~rval22/0, !.sht.cons.iStream_sctor/0, $self/0, ~rdx_burn8/0, ~r8_burn8/0, ~r9_burn8/0, ~r10_trash8/0, ~r11_trash8/0 ;;; (call label)
 0 lea         ~str3/0, !.sht.cons.stdout_vtbl_inst/0                                                                               
@@ -87,7 +87,7 @@
 0 call        ~rval23/0, !.sht.cons.stdout.cctor/0, $self/0, ~rdx_burn9/0, ~r8_burn9/0, ~r9_burn9/0, ~r10_trash9/0, ~r11_trash9/0  ;;; (call label)
 
 ----- start stream .sht.cons.stdout_sdtor
-0 <enterFunc> ~rval24/0, $self13/0                                                                                                      ;;; .sht.cons.stdout_sdtor
+0 <enterFunc> ~rval24/0, $self/0                                                                                                        ;;; .sht.cons.stdout_sdtor
 0 lea         ~str4/0, !.sht.cons.stdout_vtbl_inst/0                                                                                    
 0 mov         [~self]/0, ~str4/0                                                                                                        ;;; =
 0 <precall>   

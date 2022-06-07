@@ -6,13 +6,13 @@
 30 <exitFunc>      
 
 ----- start stream .nostromo.bootstrapper.cctor
-10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval0/0, $self0/0 ;;; .nostromo.bootstrapper.cctor
+10 <selectSegment> @code/0           
+20 <enterFunc>     ~rval0/0, $self/0 ;;; .nostromo.bootstrapper.cctor
 30 <exitFunc>      
 
 ----- start stream .nostromo.bootstrapper.cdtor
-10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval1/0, $self1/0 ;;; .nostromo.bootstrapper.cdtor
+10 <selectSegment> @code/0           
+20 <enterFunc>     ~rval1/0, $self/0 ;;; .nostromo.bootstrapper.cdtor
 30 <exitFunc>      
 
 ----- start stream .nostromo.bootstrapper_vtbl_inst
@@ -22,7 +22,7 @@
 
 ----- start stream .nostromo.bootstrapper_sctor
 10  <selectSegment> @code/0                                                                                                                  
-20  <enterFunc>     ~rval2/0, $self2/0                                                                                                       ;;; .nostromo.bootstrapper_sctor
+20  <enterFunc>     ~rval2/0, $self/0                                                                                                        ;;; .nostromo.bootstrapper_sctor
 30  <precall>       @totalStackSize/32                                                                                                       
 40  call            ~rval3/0, !.sht.cons.program_sctor/0, $self/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0           ;;; (call label)
 50  <postcall>      @totalStackSize/32                                                                                                       
@@ -35,7 +35,7 @@
 
 ----- start stream .nostromo.bootstrapper_sdtor
 10  <selectSegment> @code/0                                                                                                                  
-20  <enterFunc>     ~rval5/0, $self3/0                                                                                                       ;;; .nostromo.bootstrapper_sdtor
+20  <enterFunc>     ~rval5/0, $self/0                                                                                                        ;;; .nostromo.bootstrapper_sdtor
 30  lea             ~str0/0, !.nostromo.bootstrapper_vtbl_inst/0                                                                             
 40  mov             [~self]/0, ~str0/0                                                                                                       ;;; =
 50  <precall>       @totalStackSize/32                                                                                                       

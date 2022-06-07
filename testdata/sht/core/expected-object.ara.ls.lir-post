@@ -6,8 +6,8 @@
 30 <exitFunc>      
 
 ----- start stream .sht.core.object.cdtor
-10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval0/0, $self0/0 ;;; .sht.core.object.cdtor
+10 <selectSegment> @code/0           
+20 <enterFunc>     ~rval0/0, $self/0 ;;; .sht.core.object.cdtor
 30 <exitFunc>      
 
 ----- start stream .sht.core.object_vtbl_inst
@@ -16,7 +16,7 @@
 
 ----- start stream .sht.core.object_sctor
 10 <selectSegment> @code/0                                                                                                       
-20 <enterFunc>     ~rval1/0, $self1/0                                                                                            ;;; .sht.core.object_sctor
+20 <enterFunc>     ~rval1/0, $self/0                                                                                             ;;; .sht.core.object_sctor
 30 lea             ~str/0, !.sht.core.object_vtbl_inst/0                                                                         
 40 mov             [~self]/0, ~str/0                                                                                             ;;; =
 50 <precall>       @totalStackSize/32                                                                                            
@@ -26,7 +26,7 @@
 
 ----- start stream .sht.core.object_sdtor
 10 <selectSegment> @code/0                                                                                                            
-20 <enterFunc>     ~rval3/0, $self2/0                                                                                                 ;;; .sht.core.object_sdtor
+20 <enterFunc>     ~rval3/0, $self/0                                                                                                  ;;; .sht.core.object_sdtor
 30 lea             ~str0/0, !.sht.core.object_vtbl_inst/0                                                                             
 40 mov             [~self]/0, ~str0/0                                                                                                 ;;; =
 50 <precall>       @totalStackSize/32                                                                                                 

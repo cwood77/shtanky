@@ -4,11 +4,11 @@
 0 <enterFunc> ~rval/0, $self/0, $args/0 ;;; .assign.assignTester.run
 
 ----- start stream .assign.assignTester.readFromSubObject
-0 <enterFunc> ~rval0/0, $self0/0, $a/0, $v/0 ;;; .assign.assignTester.readFromSubObject
-0 mov         $v/0, [~a+16]/0                ;;; =
+0 <enterFunc> ~rval0/0, $self/0, $a/0, $v/0 ;;; .assign.assignTester.readFromSubObject
+0 mov         $v/0, [~a+16]/0               ;;; =
 
 ----- start stream .assign.assignTester.writeIntoSubObject
-0 <enterFunc>    ~rval1/0, $self1/0                                                                                       ;;; .assign.assignTester.writeIntoSubObject
+0 <enterFunc>    ~rval1/0, $self/0                                                                                        ;;; .assign.assignTester.writeIntoSubObject
 0 <reserveLocal> $a_alloc/24                                                                                              ;;; a
 0 lea            $a/24, $a_alloc/24                                                                                       ;;; a
 0 <precall>      
@@ -18,12 +18,12 @@
 0 call           ~rval3/0, !.assign.A_sdtor/0, $a/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
 
 ----- start stream .assign.assignTester.readFromSubSubObject
-0 <enterFunc> ~rval4/0, $self2/0, $a0/0, $wrong/0 ;;; .assign.assignTester.readFromSubSubObject
-0 mov         ~_x/0, [~a+16]/0                    ;;; fieldaccess: owner of _x
-0 mov         $wrong/0, [~_x+16]/0                ;;; =
+0 <enterFunc> ~rval4/0, $self/0, $a/0, $wrong/0 ;;; .assign.assignTester.readFromSubSubObject
+0 mov         ~_x/0, [~a+16]/0                  ;;; fieldaccess: owner of _x
+0 mov         $wrong/0, [~_x+16]/0              ;;; =
 
 ----- start stream .assign.assignTester.writeIntoSubSubObject
-0 <enterFunc>    ~rval5/0, $self3/0                                                                                           ;;; .assign.assignTester.writeIntoSubSubObject
+0 <enterFunc>    ~rval5/0, $self/0                                                                                            ;;; .assign.assignTester.writeIntoSubSubObject
 0 <reserveLocal> $wrong_alloc/24                                                                                              ;;; wrong
 0 lea            $wrong/24, $wrong_alloc/24                                                                                   ;;; wrong
 0 <precall>      
@@ -34,34 +34,34 @@
 0 call           ~rval7/0, !.assign.A_sdtor/0, $wrong/0, ~rdx_burn2/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0 ;;; (call label)
 
 ----- start stream .assign.assignTester.bopAssociativity
-0 <enterFunc>    ~rval8/0, $self4/0 ;;; .assign.assignTester.bopAssociativity
-0 <reserveLocal> $v/8               ;;; v
-0 mov            ~agg/1, @1/1       
-0 add            ~agg/1, @2/1       
-0 mov            ~agg0/1, ~agg/1    
-0 add            ~agg0/1, @3/1      
-0 mov            $v/0, ~agg0/1      ;;; =
+0 <enterFunc>    ~rval8/0, $self/0 ;;; .assign.assignTester.bopAssociativity
+0 <reserveLocal> $v/8              ;;; v
+0 mov            ~agg/1, @1/1      
+0 add            ~agg/1, @2/1      
+0 mov            ~agg0/1, ~agg/1   
+0 add            ~agg0/1, @3/1     
+0 mov            $v/0, ~agg0/1     ;;; =
 
 ----- start stream .assign.assignTester.cctor
-0 <enterFunc> ~rval9/0, $self5/0 ;;; .assign.assignTester.cctor
+0 <enterFunc> ~rval9/0, $self/0 ;;; .assign.assignTester.cctor
 
 ----- start stream .assign.assignTester.cdtor
-0 <enterFunc> ~rval10/0, $self6/0 ;;; .assign.assignTester.cdtor
+0 <enterFunc> ~rval10/0, $self/0 ;;; .assign.assignTester.cdtor
 
 ----- start stream .assign.A.cctor
-0 <enterFunc> ~rval11/0, $self7/0 ;;; .assign.A.cctor
-0 mov         [~self+8]/0, @0/1   ;;; =
+0 <enterFunc> ~rval11/0, $self/0 ;;; .assign.A.cctor
+0 mov         [~self+8]/0, @0/1  ;;; =
 
 ----- start stream .assign.A.cdtor
-0 <enterFunc> ~rval12/0, $self8/0 ;;; .assign.A.cdtor
+0 <enterFunc> ~rval12/0, $self/0 ;;; .assign.A.cdtor
 
 ----- start stream .assign.B.cctor
-0 <enterFunc> ~rval13/0, $self9/0 ;;; .assign.B.cctor
-0 mov         [~self+8]/0, @0/1   ;;; =
-0 mov         [~self+16]/0, @0/1  ;;; =
+0 <enterFunc> ~rval13/0, $self/0 ;;; .assign.B.cctor
+0 mov         [~self+8]/0, @0/1  ;;; =
+0 mov         [~self+16]/0, @0/1 ;;; =
 
 ----- start stream .assign.B.cdtor
-0 <enterFunc> ~rval14/0, $self10/0 ;;; .assign.B.cdtor
+0 <enterFunc> ~rval14/0, $self/0 ;;; .assign.B.cdtor
 
 ----- start stream .assign.A_vtbl_inst
 0 <label> !.assign.A_vtbl_inst/0
@@ -74,7 +74,7 @@
 0 goto    !.assign.assignTester.run/0
 
 ----- start stream .assign.A_sctor
-0 <enterFunc> ~rval15/0, $self11/0                                                                                                ;;; .assign.A_sctor
+0 <enterFunc> ~rval15/0, $self/0                                                                                                  ;;; .assign.A_sctor
 0 <precall>   
 0 call        ~rval16/0, !.sht.core.object_sctor/0, $self/0, ~rdx_burn3/0, ~r8_burn3/0, ~r9_burn3/0, ~r10_trash3/0, ~r11_trash3/0 ;;; (call label)
 0 lea         ~str/0, !.assign.A_vtbl_inst/0                                                                                      
@@ -83,7 +83,7 @@
 0 call        ~rval17/0, !.assign.A.cctor/0, $self/0, ~rdx_burn4/0, ~r8_burn4/0, ~r9_burn4/0, ~r10_trash4/0, ~r11_trash4/0        ;;; (call label)
 
 ----- start stream .assign.A_sdtor
-0 <enterFunc> ~rval18/0, $self12/0                                                                                                ;;; .assign.A_sdtor
+0 <enterFunc> ~rval18/0, $self/0                                                                                                  ;;; .assign.A_sdtor
 0 lea         ~str0/0, !.assign.A_vtbl_inst/0                                                                                     
 0 mov         [~self]/0, ~str0/0                                                                                                  ;;; =
 0 <precall>   
@@ -92,7 +92,7 @@
 0 call        ~rval20/0, !.sht.core.object_sdtor/0, $self/0, ~rdx_burn6/0, ~r8_burn6/0, ~r9_burn6/0, ~r10_trash6/0, ~r11_trash6/0 ;;; (call label)
 
 ----- start stream .assign.B_sctor
-0 <enterFunc> ~rval21/0, $self13/0                                                                                                ;;; .assign.B_sctor
+0 <enterFunc> ~rval21/0, $self/0                                                                                                  ;;; .assign.B_sctor
 0 <precall>   
 0 call        ~rval22/0, !.sht.core.object_sctor/0, $self/0, ~rdx_burn7/0, ~r8_burn7/0, ~r9_burn7/0, ~r10_trash7/0, ~r11_trash7/0 ;;; (call label)
 0 lea         ~str1/0, !.assign.B_vtbl_inst/0                                                                                     
@@ -101,7 +101,7 @@
 0 call        ~rval23/0, !.assign.B.cctor/0, $self/0, ~rdx_burn8/0, ~r8_burn8/0, ~r9_burn8/0, ~r10_trash8/0, ~r11_trash8/0        ;;; (call label)
 
 ----- start stream .assign.B_sdtor
-0 <enterFunc> ~rval24/0, $self14/0                                                                                                     ;;; .assign.B_sdtor
+0 <enterFunc> ~rval24/0, $self/0                                                                                                       ;;; .assign.B_sdtor
 0 lea         ~str2/0, !.assign.B_vtbl_inst/0                                                                                          
 0 mov         [~self]/0, ~str2/0                                                                                                       ;;; =
 0 <precall>   
@@ -110,7 +110,7 @@
 0 call        ~rval26/0, !.sht.core.object_sdtor/0, $self/0, ~rdx_burn10/0, ~r8_burn10/0, ~r9_burn10/0, ~r10_trash10/0, ~r11_trash10/0 ;;; (call label)
 
 ----- start stream .assign.assignTester_sctor
-0 <enterFunc> ~rval27/0, $self15/0                                                                                                         ;;; .assign.assignTester_sctor
+0 <enterFunc> ~rval27/0, $self/0                                                                                                           ;;; .assign.assignTester_sctor
 0 <precall>   
 0 call        ~rval28/0, !.sht.cons.program_sctor/0, $self/0, ~rdx_burn11/0, ~r8_burn11/0, ~r9_burn11/0, ~r10_trash11/0, ~r11_trash11/0    ;;; (call label)
 0 lea         ~str3/0, !.assign.assignTester_vtbl_inst/0                                                                                   
@@ -119,7 +119,7 @@
 0 call        ~rval29/0, !.assign.assignTester.cctor/0, $self/0, ~rdx_burn12/0, ~r8_burn12/0, ~r9_burn12/0, ~r10_trash12/0, ~r11_trash12/0 ;;; (call label)
 
 ----- start stream .assign.assignTester_sdtor
-0 <enterFunc> ~rval30/0, $self16/0                                                                                                         ;;; .assign.assignTester_sdtor
+0 <enterFunc> ~rval30/0, $self/0                                                                                                           ;;; .assign.assignTester_sdtor
 0 lea         ~str4/0, !.assign.assignTester_vtbl_inst/0                                                                                   
 0 mov         [~self]/0, ~str4/0                                                                                                           ;;; =
 0 <precall>   

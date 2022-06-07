@@ -25,13 +25,13 @@
 180 <exitFunc>       
 
 ----- start stream .nostromo.debugOut.cctor
-10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval3/0, $self0/0 ;;; .nostromo.debugOut.cctor
+10 <selectSegment> @code/0           
+20 <enterFunc>     ~rval3/0, $self/0 ;;; .nostromo.debugOut.cctor
 30 <exitFunc>      
 
 ----- start stream .nostromo.debugOut.cdtor
-10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval4/0, $self1/0 ;;; .nostromo.debugOut.cdtor
+10 <selectSegment> @code/0           
+20 <enterFunc>     ~rval4/0, $self/0 ;;; .nostromo.debugOut.cdtor
 30 <exitFunc>      
 
 ----- start stream .nostromo.debugOut_vtbl_inst
@@ -40,7 +40,7 @@
 
 ----- start stream .nostromo.debugOut_sctor
 10  <selectSegment> @code/0                                                                                                              
-20  <enterFunc>     ~rval5/0, $self2/0                                                                                                   ;;; .nostromo.debugOut_sctor
+20  <enterFunc>     ~rval5/0, $self/0                                                                                                    ;;; .nostromo.debugOut_sctor
 30  <precall>       @totalStackSize/32                                                                                                   
 40  call            ~rval6/0, !.sht.core.object_sctor/0, $self/0, ~rdx_burn0/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0   ;;; (call label)
 50  <postcall>      @totalStackSize/32                                                                                                   
@@ -53,7 +53,7 @@
 
 ----- start stream .nostromo.debugOut_sdtor
 10  <selectSegment> @code/0                                                                                                              
-20  <enterFunc>     ~rval8/0, $self3/0                                                                                                   ;;; .nostromo.debugOut_sdtor
+20  <enterFunc>     ~rval8/0, $self/0                                                                                                    ;;; .nostromo.debugOut_sdtor
 30  lea             ~str0/0, !.nostromo.debugOut_vtbl_inst/0                                                                             
 40  mov             [~self]/0, ~str0/0                                                                                                   ;;; =
 50  <precall>       @totalStackSize/32                                                                                                   

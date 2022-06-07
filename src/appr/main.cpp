@@ -70,6 +70,7 @@ int main(int argc, const char *argv[])
          .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
          .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
          .expectLiamOf(".\\testdata\\test\\.target.ara",false) // false = no philemon
+         .emulateAndCheckOutput()
       ;
    });
 

@@ -55,6 +55,9 @@ public:
    { testBase::verifyAdditionalArtifact(path,cuz); return *this; }
    araceliTest& expectLiamOf(const std::string& path, bool hasPhilemon = true);
 
+   araceliTest& emulateAndCheckOutput()
+   { testBase::emulateAndCheckOutput(); return *this; }
+
 private:
    const std::string m_folder;
 };
