@@ -31,13 +31,15 @@
 0 <enterFunc> ~rval7/0, $self1/0                                                                                                        ;;; .nostromo.consoleTarget_sctor
 0 <precall>   
 0 call        ~rval8/0, !.sht.core.object_sctor/0, $self/0, ~rdx_burn3/0, ~r8_burn4/0, ~r9_burn4/0, ~r10_trash4/0, ~r11_trash4/0        ;;; (call label)
-0 mov         [~self]/0, !.nostromo.consoleTarget_vtbl_inst/0                                                                           ;;; =
+0 lea         ~str/0, !.nostromo.consoleTarget_vtbl_inst/0                                                                              
+0 mov         [~self]/0, ~str/0                                                                                                         ;;; =
 0 <precall>   
 0 call        ~rval9/0, !.nostromo.consoleTarget.cctor/0, $self/0, ~rdx_burn4/0, ~r8_burn5/0, ~r9_burn5/0, ~r10_trash5/0, ~r11_trash5/0 ;;; (call label)
 
 ----- start stream .nostromo.consoleTarget_sdtor
 0 <enterFunc> ~rval10/0, $self2/0                                                                                                        ;;; .nostromo.consoleTarget_sdtor
-0 mov         [~self]/0, !.nostromo.consoleTarget_vtbl_inst/0                                                                            ;;; =
+0 lea         ~str0/0, !.nostromo.consoleTarget_vtbl_inst/0                                                                              
+0 mov         [~self]/0, ~str0/0                                                                                                         ;;; =
 0 <precall>   
 0 call        ~rval11/0, !.nostromo.consoleTarget.cdtor/0, $self/0, ~rdx_burn5/0, ~r8_burn6/0, ~r9_burn6/0, ~r10_trash6/0, ~r11_trash6/0 ;;; (call label)
 0 <precall>   

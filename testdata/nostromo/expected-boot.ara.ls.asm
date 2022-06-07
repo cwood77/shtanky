@@ -29,25 +29,28 @@
 .seg code                     
 .nostromo.bootstrapper_sctor: 
                               push, rbp                                           
+                              push, rbx                                           
                               mov, rbp, rsp                                       
                               sub, rsp, 32                                        
                               call, .sht.cons.program_sctor                       ; (call label)
                               add, rsp, 32                                        
-                              mov, r10, qwordptr .nostromo.bootstrapper_vtbl_inst ; codeshape decomp
-                              mov, [rcx], r10                                     ; =
+                              lea, rbx, qwordptr .nostromo.bootstrapper_vtbl_inst 
+                              mov, [rcx], rbx                                     ; =
                               sub, rsp, 32                                        
                               call, .nostromo.bootstrapper.cctor                  ; (call label)
                               add, rsp, 32                                        
                               mov, rsp, rbp                                       
+                              pop, rbx                                            
                               pop, rbp                                            
                               ret                                                 
 
 .seg code                     
 .nostromo.bootstrapper_sdtor: 
                               push, rbp                                           
+                              push, rbx                                           
                               mov, rbp, rsp                                       
-                              mov, r10, qwordptr .nostromo.bootstrapper_vtbl_inst ; codeshape decomp
-                              mov, [rcx], r10                                     ; =
+                              lea, rbx, qwordptr .nostromo.bootstrapper_vtbl_inst 
+                              mov, [rcx], rbx                                     ; =
                               sub, rsp, 32                                        
                               call, .nostromo.bootstrapper.cdtor                  ; (call label)
                               add, rsp, 32                                        
@@ -55,6 +58,7 @@
                               call, .sht.cons.program_sdtor                       ; (call label)
                               add, rsp, 32                                        
                               mov, rsp, rbp                                       
+                              pop, rbx                                            
                               pop, rbp                                            
                               ret                                                 
 

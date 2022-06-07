@@ -44,23 +44,25 @@
 30  <precall>       @totalStackSize/32                                                                                                   
 40  call            ~rval6/0, !.sht.core.object_sctor/0, $self/0, ~rdx_burn0/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0   ;;; (call label)
 50  <postcall>      @totalStackSize/32                                                                                                   
-60  mov             [~self]/0, !.nostromo.debugOut_vtbl_inst/0                                                                           ;;; =
-70  <precall>       @totalStackSize/32                                                                                                   
-80  call            ~rval7/0, !.nostromo.debugOut.cctor/0, $self/0, ~rdx_burn1/0, ~r8_burn3/0, ~r9_burn3/0, ~r10_trash3/0, ~r11_trash3/0 ;;; (call label)
-90  <postcall>      @totalStackSize/32                                                                                                   
-100 <exitFunc>      
+60  lea             ~str/0, !.nostromo.debugOut_vtbl_inst/0                                                                              
+70  mov             [~self]/0, ~str/0                                                                                                    ;;; =
+80  <precall>       @totalStackSize/32                                                                                                   
+90  call            ~rval7/0, !.nostromo.debugOut.cctor/0, $self/0, ~rdx_burn1/0, ~r8_burn3/0, ~r9_burn3/0, ~r10_trash3/0, ~r11_trash3/0 ;;; (call label)
+100 <postcall>      @totalStackSize/32                                                                                                   
+110 <exitFunc>      
 
 ----- start stream .nostromo.debugOut_sdtor
 10  <selectSegment> @code/0                                                                                                              
 20  <enterFunc>     ~rval8/0, $self3/0                                                                                                   ;;; .nostromo.debugOut_sdtor
-30  mov             [~self]/0, !.nostromo.debugOut_vtbl_inst/0                                                                           ;;; =
-40  <precall>       @totalStackSize/32                                                                                                   
-50  call            ~rval9/0, !.nostromo.debugOut.cdtor/0, $self/0, ~rdx_burn2/0, ~r8_burn4/0, ~r9_burn4/0, ~r10_trash4/0, ~r11_trash4/0 ;;; (call label)
-60  <postcall>      @totalStackSize/32                                                                                                   
-70  <precall>       @totalStackSize/32                                                                                                   
-80  call            ~rval10/0, !.sht.core.object_sdtor/0, $self/0, ~rdx_burn3/0, ~r8_burn5/0, ~r9_burn5/0, ~r10_trash5/0, ~r11_trash5/0  ;;; (call label)
-90  <postcall>      @totalStackSize/32                                                                                                   
-100 <exitFunc>      
+30  lea             ~str0/0, !.nostromo.debugOut_vtbl_inst/0                                                                             
+40  mov             [~self]/0, ~str0/0                                                                                                   ;;; =
+50  <precall>       @totalStackSize/32                                                                                                   
+60  call            ~rval9/0, !.nostromo.debugOut.cdtor/0, $self/0, ~rdx_burn2/0, ~r8_burn4/0, ~r9_burn4/0, ~r10_trash4/0, ~r11_trash4/0 ;;; (call label)
+70  <postcall>      @totalStackSize/32                                                                                                   
+80  <precall>       @totalStackSize/32                                                                                                   
+90  call            ~rval10/0, !.sht.core.object_sdtor/0, $self/0, ~rdx_burn3/0, ~r8_burn5/0, ~r9_burn5/0, ~r10_trash5/0, ~r11_trash5/0  ;;; (call label)
+100 <postcall>      @totalStackSize/32                                                                                                   
+110 <exitFunc>      
 
 === end of LIR bundle dump ===
 

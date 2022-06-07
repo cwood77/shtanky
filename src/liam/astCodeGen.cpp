@@ -243,9 +243,9 @@ void astCodeGen::visit(cmn::varRefNode& n)
       // patches are immediate data
 
       auto& ty = cmn::type::gNodeCache->demand(*n.pSrc._getRefee());
-      if(ty.getName() == "string")
+      if(ty.getName() == "string" || ty.is<cmn::type::iStructType>())
       {
-         // strings are special and require LEA
+         // strings and user types are pointers (i.e. reference types) and require LEA
 
          m_b.forNode(n)
             .append(cmn::tgt::kLea)

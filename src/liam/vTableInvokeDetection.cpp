@@ -1,3 +1,4 @@
+#include "../cmn/target.hpp"
 #include "../cmn/type.hpp"
 #include "vTableInvokeDetection.hpp"
 
@@ -33,7 +34,8 @@ void vTableInvokeDetector::visit(cmn::invokeFuncPtrNode& n)
    // checks all pass, replace the nodes
 
    auto *pNoob = new cmn::invokeVTableNode();
-   pNoob->index = sty.getOffsetOfField(pFa->name,m_t);
+   // each field is a pointer, so convert to index by dividing by pointer size
+   pNoob->index = sty.getOffsetOfField(pFa->name,m_t) / m_t.getRealSize(0);
    pNoob->appendChild(*pVTable);
    pFa->getChildren().clear();
    for(size_t i=1;i<n.getChildren().size();i++)

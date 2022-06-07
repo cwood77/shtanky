@@ -75,54 +75,62 @@ op(c3)
 // 52: .nostromo.debugOut_sctor: 
 // 53:                           push, rbp                                       
 rex(48)op(ff)modR/M(f5)
-// 54:                           mov, rbp, rsp                                   
+// 54:                           push, rbx                                       
+rex(48)op(ff)modR/M(f3)
+// 55:                           mov, rbp, rsp                                   
 rex(48)op(89)modR/M(e5)
-// 55:                           sub, rsp, 32                                    
+// 56:                           sub, rsp, 32                                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 56:                           call, .sht.core.object_sctor                    ; (call label)
+// 57:                           call, .sht.core.object_sctor                    ; (call label)
 op(e8)co32(00-00-00-00)
-// 57:                           add, rsp, 32                                    
+// 58:                           add, rsp, 32                                    
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 58:                           mov, r10, qwordptr .nostromo.debugOut_vtbl_inst ; codeshape decomp
-rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 59:                           mov, [rcx], r10                                 ; =
-rex(4c)op(89)modR/M(11)
-// 60:                           sub, rsp, 32                                    
+// 59:                           lea, rbx, qwordptr .nostromo.debugOut_vtbl_inst 
+rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
+// 60:                           mov, [rcx], rbx                                 ; =
+rex(48)op(89)modR/M(19)
+// 61:                           sub, rsp, 32                                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 61:                           call, .nostromo.debugOut.cctor                  ; (call label)
+// 62:                           call, .nostromo.debugOut.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 62:                           add, rsp, 32                                    
+// 63:                           add, rsp, 32                                    
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 63:                           mov, rsp, rbp                                   
+// 64:                           mov, rsp, rbp                                   
 rex(48)op(89)modR/M(ec)
-// 64:                           pop, rbp                                        
+// 65:                           pop, rbx                                        
+rex(48)op(8f)modR/M(c3)
+// 66:                           pop, rbp                                        
 rex(48)op(8f)modR/M(c5)
-// 65:                           ret                                             
+// 67:                           ret                                             
 op(c3)
-// 68: .nostromo.debugOut_sdtor: 
-// 69:                           push, rbp                                       
+// 70: .nostromo.debugOut_sdtor: 
+// 71:                           push, rbp                                       
 rex(48)op(ff)modR/M(f5)
-// 70:                           mov, rbp, rsp                                   
+// 72:                           push, rbx                                       
+rex(48)op(ff)modR/M(f3)
+// 73:                           mov, rbp, rsp                                   
 rex(48)op(89)modR/M(e5)
-// 71:                           mov, r10, qwordptr .nostromo.debugOut_vtbl_inst ; codeshape decomp
-rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
-// 72:                           mov, [rcx], r10                                 ; =
-rex(4c)op(89)modR/M(11)
-// 73:                           sub, rsp, 32                                    
-rex(48)op(83)modR/M(ec)i8(20)
-// 74:                           call, .nostromo.debugOut.cdtor                  ; (call label)
-op(e8)co32(00-00-00-00)
-// 75:                           add, rsp, 32                                    
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 74:                           lea, rbx, qwordptr .nostromo.debugOut_vtbl_inst 
+rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
+// 75:                           mov, [rcx], rbx                                 ; =
+rex(48)op(89)modR/M(19)
 // 76:                           sub, rsp, 32                                    
 rex(48)op(83)modR/M(ec)i8(20)
-// 77:                           call, .sht.core.object_sdtor                    ; (call label)
+// 77:                           call, .nostromo.debugOut.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
 // 78:                           add, rsp, 32                                    
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 79:                           mov, rsp, rbp                                   
+// 79:                           sub, rsp, 32                                    
+rex(48)op(83)modR/M(ec)i8(20)
+// 80:                           call, .sht.core.object_sdtor                    ; (call label)
+op(e8)co32(00-00-00-00)
+// 81:                           add, rsp, 32                                    
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 82:                           mov, rsp, rbp                                   
 rex(48)op(89)modR/M(ec)
-// 80:                           pop, rbp                                        
+// 83:                           pop, rbx                                        
+rex(48)op(8f)modR/M(c3)
+// 84:                           pop, rbp                                        
 rex(48)op(8f)modR/M(c5)
-// 81:                           ret                                             
+// 85:                           ret                                             
 op(c3)

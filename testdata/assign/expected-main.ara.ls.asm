@@ -150,25 +150,28 @@
 .seg code        
 .assign.A_sctor: 
                  push, rbp                              
+                 push, rbx                              
                  mov, rbp, rsp                          
                  sub, rsp, 32                           
                  call, .sht.core.object_sctor           ; (call label)
                  add, rsp, 32                           
-                 mov, r10, qwordptr .assign.A_vtbl_inst ; codeshape decomp
-                 mov, [rcx], r10                        ; =
+                 lea, rbx, qwordptr .assign.A_vtbl_inst 
+                 mov, [rcx], rbx                        ; =
                  sub, rsp, 32                           
                  call, .assign.A.cctor                  ; (call label)
                  add, rsp, 32                           
                  mov, rsp, rbp                          
+                 pop, rbx                               
                  pop, rbp                               
                  ret                                    
 
 .seg code        
 .assign.A_sdtor: 
                  push, rbp                              
+                 push, rbx                              
                  mov, rbp, rsp                          
-                 mov, r10, qwordptr .assign.A_vtbl_inst ; codeshape decomp
-                 mov, [rcx], r10                        ; =
+                 lea, rbx, qwordptr .assign.A_vtbl_inst 
+                 mov, [rcx], rbx                        ; =
                  sub, rsp, 32                           
                  call, .assign.A.cdtor                  ; (call label)
                  add, rsp, 32                           
@@ -176,31 +179,35 @@
                  call, .sht.core.object_sdtor           ; (call label)
                  add, rsp, 32                           
                  mov, rsp, rbp                          
+                 pop, rbx                               
                  pop, rbp                               
                  ret                                    
 
 .seg code        
 .assign.B_sctor: 
                  push, rbp                              
+                 push, rbx                              
                  mov, rbp, rsp                          
                  sub, rsp, 32                           
                  call, .sht.core.object_sctor           ; (call label)
                  add, rsp, 32                           
-                 mov, r10, qwordptr .assign.B_vtbl_inst ; codeshape decomp
-                 mov, [rcx], r10                        ; =
+                 lea, rbx, qwordptr .assign.B_vtbl_inst 
+                 mov, [rcx], rbx                        ; =
                  sub, rsp, 32                           
                  call, .assign.B.cctor                  ; (call label)
                  add, rsp, 32                           
                  mov, rsp, rbp                          
+                 pop, rbx                               
                  pop, rbp                               
                  ret                                    
 
 .seg code        
 .assign.B_sdtor: 
                  push, rbp                              
+                 push, rbx                              
                  mov, rbp, rsp                          
-                 mov, r10, qwordptr .assign.B_vtbl_inst ; codeshape decomp
-                 mov, [rcx], r10                        ; =
+                 lea, rbx, qwordptr .assign.B_vtbl_inst 
+                 mov, [rcx], rbx                        ; =
                  sub, rsp, 32                           
                  call, .assign.B.cdtor                  ; (call label)
                  add, rsp, 32                           
@@ -208,31 +215,35 @@
                  call, .sht.core.object_sdtor           ; (call label)
                  add, rsp, 32                           
                  mov, rsp, rbp                          
+                 pop, rbx                               
                  pop, rbp                               
                  ret                                    
 
 .seg code                   
 .assign.assignTester_sctor: 
                             push, rbp                                         
+                            push, rbx                                         
                             mov, rbp, rsp                                     
                             sub, rsp, 32                                      
                             call, .sht.cons.program_sctor                     ; (call label)
                             add, rsp, 32                                      
-                            mov, r10, qwordptr .assign.assignTester_vtbl_inst ; codeshape decomp
-                            mov, [rcx], r10                                   ; =
+                            lea, rbx, qwordptr .assign.assignTester_vtbl_inst 
+                            mov, [rcx], rbx                                   ; =
                             sub, rsp, 32                                      
                             call, .assign.assignTester.cctor                  ; (call label)
                             add, rsp, 32                                      
                             mov, rsp, rbp                                     
+                            pop, rbx                                          
                             pop, rbp                                          
                             ret                                               
 
 .seg code                   
 .assign.assignTester_sdtor: 
                             push, rbp                                         
+                            push, rbx                                         
                             mov, rbp, rsp                                     
-                            mov, r10, qwordptr .assign.assignTester_vtbl_inst ; codeshape decomp
-                            mov, [rcx], r10                                   ; =
+                            lea, rbx, qwordptr .assign.assignTester_vtbl_inst 
+                            mov, [rcx], rbx                                   ; =
                             sub, rsp, 32                                      
                             call, .assign.assignTester.cdtor                  ; (call label)
                             add, rsp, 32                                      
@@ -240,6 +251,7 @@
                             call, .sht.cons.program_sdtor                     ; (call label)
                             add, rsp, 32                                      
                             mov, rsp, rbp                                     
+                            pop, rbx                                          
                             pop, rbp                                          
                             ret                                               
 

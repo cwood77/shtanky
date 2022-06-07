@@ -1,62 +1,76 @@
 .seg const
-.zero:
-.data, "0" <b> 0 
+.text0:
+.data, "text 0" <b> 0 
 
 .seg const
-.one:
-.data, "1" <b> 0 
+.text1:
+.data, "text 1" <b> 0 
 
 .seg const
-.other:
-.data, "other!" <b> 0 
+.text2:
+.data, "text 2" <b> 0 
 
-.seg code            
-.entrypoint:         
-                     push, rbp                 
-                     push, rbx                 
-                     mov, rbp, rsp             
-                     sub, rsp, 8               
-                     sub, rsp, 32              
-                     mov, rcx, 8               ; shape:hoist imm from call
-                     call, ._getflg            ; (call label)
-                     add, rsp, 32              
-                     mov, [rbp-8], rax         ; =
-                     xor, rbx, rbx             
-                     cmp, [rbp-8], 1           
-                     setlts, rbx               
-                     cmp, rbx, 0               
-                     je, .entrypoint.else.0    
-                     sub, rsp, 32              
-                     lea, rcx, qwordptr .zero  
-                     call, ._print             ; (call label)
-                     add, rsp, 32              
-                     goto, .entrypoint.endif.1 
-.seg code            
-.entrypoint.else.0:  
-                     xor, rbx, rbx             
-                     cmp, [rbp-8], 2           
-                     setlts, rbx               
-                     cmp, rbx, 0               
-                     je, .entrypoint.else.2    
-                     sub, rsp, 32              
-                     lea, rcx, qwordptr .one   
-                     call, ._print             ; (call label)
-                     add, rsp, 32              
-                     goto, .entrypoint.endif.3 
-.seg code            
-.entrypoint.else.2:  
-                     sub, rsp, 32              
-                     lea, rcx, qwordptr .other 
-                     call, ._print             ; (call label)
-                     add, rsp, 32              
-                     goto, .entrypoint.endif.3 
-.seg code            
-.entrypoint.endif.3: 
-                     goto, .entrypoint.endif.1 
-.seg code            
-.entrypoint.endif.1: 
-                     mov, rsp, rbp             
-                     pop, rbx                  
-                     pop, rbp                  
-                     ret                       
+.seg code   
+.virtFunc0: 
+            push, rbp                 
+            mov, rbp, rsp             
+            sub, rsp, 32              
+            lea, rcx, qwordptr .text2 
+            call, ._print             ; (call label)
+            add, rsp, 32              
+            mov, rsp, rbp             
+            pop, rbp                  
+            ret                       
+
+.seg code   
+.virtFunc1: 
+            push, rbp                 
+            mov, rbp, rsp             
+            sub, rsp, 32              
+            lea, rcx, qwordptr .text2 
+            call, ._print             ; (call label)
+            add, rsp, 32              
+            mov, rsp, rbp             
+            pop, rbp                  
+            ret                       
+
+.seg code 
+.vinst:   
+          goto, .virtFunc0
+          goto, .virtFunc1
+
+.seg code 
+.ctor:    
+          push, rbp                 
+          push, rbx                 
+          mov, rbp, rsp             
+          lea, rbx, qwordptr .vinst 
+          mov, [rcx], rbx           ; =
+          mov, rsp, rbp             
+          pop, rbx                  
+          pop, rbp                  
+          ret                       
+
+.seg code    
+.entrypoint: 
+             push, rbp                 
+             push, rbx                 
+             mov, rbp, rsp             
+             sub, rsp, 8               
+             lea, rcx, [rbp-8]         ; o
+             sub, rsp, 32              
+             call, .ctor               ; (call label)
+             add, rsp, 32              
+             sub, rsp, 32              
+             mov, rbx, rcx             ; (preserve) [combiner]
+             lea, rcx, qwordptr .text0 
+             call, ._print             ; (call label)
+             add, rsp, 32              
+             sub, rsp, 32              
+             call, [rbx]               ; (vtbl call)
+             add, rsp, 32              
+             mov, rsp, rbp             
+             pop, rbx                  
+             pop, rbp                  
+             ret                       
 

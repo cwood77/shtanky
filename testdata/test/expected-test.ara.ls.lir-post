@@ -36,23 +36,25 @@
 30  <precall>       @totalStackSize/32                                                                                                 
 40  call            ~rval4/0, !.sht.cons.program_sctor/0, $self/0, ~rdx_burn/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
 50  <postcall>      @totalStackSize/32                                                                                                 
-60  mov             [~self]/0, !.test.test_vtbl_inst/0                                                                                 ;;; =
-70  <precall>       @totalStackSize/32                                                                                                 
-80  call            ~rval5/0, !.test.test.cctor/0, $self/0, ~rdx_burn0/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0       ;;; (call label)
-90  <postcall>      @totalStackSize/32                                                                                                 
-100 <exitFunc>      
+60  lea             ~str0/0, !.test.test_vtbl_inst/0                                                                                   
+70  mov             [~self]/0, ~str0/0                                                                                                 ;;; =
+80  <precall>       @totalStackSize/32                                                                                                 
+90  call            ~rval5/0, !.test.test.cctor/0, $self/0, ~rdx_burn0/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0       ;;; (call label)
+100 <postcall>      @totalStackSize/32                                                                                                 
+110 <exitFunc>      
 
 ----- start stream .test.test_sdtor
 10  <selectSegment> @code/0                                                                                                             
 20  <enterFunc>     ~rval6/0, $self3/0                                                                                                  ;;; .test.test_sdtor
-30  mov             [~self]/0, !.test.test_vtbl_inst/0                                                                                  ;;; =
-40  <precall>       @totalStackSize/32                                                                                                  
-50  call            ~rval7/0, !.test.test.cdtor/0, $self/0, ~rdx_burn1/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0        ;;; (call label)
-60  <postcall>      @totalStackSize/32                                                                                                  
-70  <precall>       @totalStackSize/32                                                                                                  
-80  call            ~rval8/0, !.sht.cons.program_sdtor/0, $self/0, ~rdx_burn2/0, ~r8_burn3/0, ~r9_burn3/0, ~r10_trash3/0, ~r11_trash3/0 ;;; (call label)
-90  <postcall>      @totalStackSize/32                                                                                                  
-100 <exitFunc>      
+30  lea             ~str1/0, !.test.test_vtbl_inst/0                                                                                    
+40  mov             [~self]/0, ~str1/0                                                                                                  ;;; =
+50  <precall>       @totalStackSize/32                                                                                                  
+60  call            ~rval7/0, !.test.test.cdtor/0, $self/0, ~rdx_burn1/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0        ;;; (call label)
+70  <postcall>      @totalStackSize/32                                                                                                  
+80  <precall>       @totalStackSize/32                                                                                                  
+90  call            ~rval8/0, !.sht.cons.program_sdtor/0, $self/0, ~rdx_burn2/0, ~r8_burn3/0, ~r9_burn3/0, ~r10_trash3/0, ~r11_trash3/0 ;;; (call label)
+100 <postcall>      @totalStackSize/32                                                                                                  
+110 <exitFunc>      
 
 === end of LIR bundle dump ===
 

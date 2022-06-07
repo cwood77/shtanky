@@ -1,19 +1,41 @@
-const .zero : str = "0";
-const .one : str = "1";
-const .other : str = "other!";
+const .text0 : str = "text 0";
+const .text1 : str = "text 1";
+const .text2 : str = "text 2";
+
+func .virtFunc0() : void
+{
+   ._print(.text2);
+}
+
+func .virtFunc1() : void
+{
+   ._print(.text2);
+}
+
+class .v {
+   f0 : ptr;
+   f1 : ptr;
+}
+
+[vtbl]
+const .vinst : .v = { .virtFunc0, .virtFunc1 };
+
+class .obj {
+   _vtbl : .v;
+}
+
+func .ctor(self : .obj) : void
+{
+   self:_vtbl = .vinst;
+}
 
 [entrypoint]
 func .whatever() : void
 {
-   var f : int;
-   f = ._getflg(8);
-
-   if(f < 1)
-      ._print(.zero);
-   else if(f < 2)
-      ._print(.one);
-   else
-      ._print(.other);
+   var o : .obj;
+   .ctor(o);
+   ._print(.text0);
+   o:_vtbl:f0->();
 }
 
 func ._getflg(index : int) : int;

@@ -44,25 +44,28 @@
 .seg code         
 .test.test_sctor: 
                   push, rbp                               
+                  push, rbx                               
                   mov, rbp, rsp                           
                   sub, rsp, 32                            
                   call, .sht.cons.program_sctor           ; (call label)
                   add, rsp, 32                            
-                  mov, r10, qwordptr .test.test_vtbl_inst ; codeshape decomp
-                  mov, [rcx], r10                         ; =
+                  lea, rbx, qwordptr .test.test_vtbl_inst 
+                  mov, [rcx], rbx                         ; =
                   sub, rsp, 32                            
                   call, .test.test.cctor                  ; (call label)
                   add, rsp, 32                            
                   mov, rsp, rbp                           
+                  pop, rbx                                
                   pop, rbp                                
                   ret                                     
 
 .seg code         
 .test.test_sdtor: 
                   push, rbp                               
+                  push, rbx                               
                   mov, rbp, rsp                           
-                  mov, r10, qwordptr .test.test_vtbl_inst ; codeshape decomp
-                  mov, [rcx], r10                         ; =
+                  lea, rbx, qwordptr .test.test_vtbl_inst 
+                  mov, [rcx], rbx                         ; =
                   sub, rsp, 32                            
                   call, .test.test.cdtor                  ; (call label)
                   add, rsp, 32                            
@@ -70,6 +73,7 @@
                   call, .sht.cons.program_sdtor           ; (call label)
                   add, rsp, 32                            
                   mov, rsp, rbp                           
+                  pop, rbx                                
                   pop, rbp                                
                   ret                                     
 
