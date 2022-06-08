@@ -292,7 +292,7 @@ void codegen::visit(cmn::forLoopNode& n)
       cdwTHROW("forLoopNode children is %d != 2",n.getChildren().size());
 
    auto& s = getOutStream();
-   s.stream() << "for(";
+   s.stream() << "for[" << n.name << "](";
    n.getChildren()[0]->acceptVisitor(*this);
    s.stream() << ")" << std::endl;
    n.getChildren()[1]->acceptVisitor(*this);

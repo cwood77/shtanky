@@ -1,0 +1,10 @@
+[program]
+class foo : .sht.cons.program {
+
+   override run(args : str[]) : void
+   {
+      for[i](i < 2)
+         ._print("foo");
+   }
+
+}

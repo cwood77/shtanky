@@ -398,6 +398,34 @@ void astCodeGen::visit(cmn::ifNode& n)
          .tweakArgAs<lirArgLabel>(0).isCode = true;
 }
 
+void astCodeGen::visit(cmn::loopStartNode& n)
+{
+   m_b.forNode(n)
+      .append(cmn::tgt::kLabel)
+         .withArg<lirArgLabel>(n.name + "_start",0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
+}
+
+void astCodeGen::visit(cmn::loopBreakNode& n)
+{
+   m_b.forNode(n)
+      .append(cmn::tgt::kGoto)
+         .withArg<lirArgLabel>(n.name + "_end",0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
+}
+
+void astCodeGen::visit(cmn::loopEndNode& n)
+{
+   m_b.forNode(n)
+      .append(cmn::tgt::kGoto)
+         .withArg<lirArgLabel>(n.name + "_start",0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
+   m_b.forNode(n)
+      .append(cmn::tgt::kLabel)
+         .withArg<lirArgLabel>(n.name + "_end",0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
+}
+
 // all literals are nearly identical (just 'value' different) - share this?
 
 void astCodeGen::visit(cmn::stringLiteralNode& n)

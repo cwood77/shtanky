@@ -1,3 +1,6 @@
+#pragma once
+#include "../cmn/ast.hpp"
+
 // original code
 //     for[+i](i < l)
 //     {
@@ -41,3 +44,18 @@
 //           <loopendnode>
 //        }
 //     }
+
+namespace liam {
+
+class loopInstMethodDecomposer : public cmn::hNodeVisitor {
+};
+
+class loopDecomposer : public cmn::hNodeVisitor {
+public:
+   virtual void visit(cmn::node& n) { visitChildren(n); }
+   virtual void visit(cmn::forLoopNode& n);
+
+   virtual void _implementLanguage() {} // all
+};
+
+} // namespace liam

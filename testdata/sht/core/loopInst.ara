@@ -4,8 +4,14 @@ class loopInst {
    _breakReason : str;
    _exitedNormally : bool;
 
+   public bump() : void
+   {
+      _count = _count + 1;
+   }
+
    public getCount() : int
    {
+      //return _count;
    }
 
    public break() : void

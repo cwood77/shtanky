@@ -72,6 +72,18 @@ int main(int argc, const char *argv[])
       ;
    });
 
+   testWriter(s,subset,cl).skipByDefault("shtemu.ara",[](auto& is){
+      araceliTest(is,".\\testdata\\shtemu")
+         .wholeApp()
+         .expectLiamOf(".\\testdata\\shtemu\\basic.ara")
+         .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+         .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
+         .expectLiamOf(".\\testdata\\sht\\core\\loopInst.ara")
+         .expectLiamOf(".\\testdata\\shtemu\\.target.ara",false) // false = no philemon
+         .emulateAndCheckOutput()
+      ;
+   });
+
    // ------------------ end ------------------
 
    std::ofstream wrapper(".\\bin\\.appr.bat");

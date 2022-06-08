@@ -289,6 +289,7 @@ LIAM_SRC = \
 	src/liam/lexor.cpp \
 	src/liam/lir.cpp \
 	src/liam/lirXfrm.cpp \
+	src/liam/loopTransforms.cpp \
 	src/liam/main.cpp \
 	src/liam/projectBuilder.cpp \
 	src/liam/vTableInvokeDetection.cpp \

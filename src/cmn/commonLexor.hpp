@@ -55,6 +55,7 @@ public:
       kElse,
       kWhile,
       kFor,
+      kReturn,
 
       k_Reserved,
 

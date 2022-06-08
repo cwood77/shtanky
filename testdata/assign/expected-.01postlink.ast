@@ -169,20 +169,28 @@ araceliProjectNode targetType=ca
                   userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=4
                fieldNode memberNode name=_exitedNormally lineNumber=5 flags=-
                   boolTypeNode typeNode lineNumber=5
-               methodNode baseImpl=getCount->0 memberNode name=getCount lineNumber=6 flags=+
-                  intTypeNode typeNode lineNumber=6
+               methodNode baseImpl=bump->0 memberNode name=bump lineNumber=6 flags=+
+                  voidTypeNode typeNode lineNumber=6
                   sequenceNode lineNumber=8
-               methodNode baseImpl=break->0 memberNode name=break lineNumber=9 flags=+
-                  voidTypeNode typeNode lineNumber=9
-                  sequenceNode lineNumber=11
-               methodNode baseImpl=breakWithReason->0 memberNode name=breakWithReason lineNumber=12 flags=+
-                  argNode name=reason lineNumber=12
-                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=12
-                  voidTypeNode typeNode lineNumber=12
-                  sequenceNode lineNumber=14
-               methodNode baseImpl=continue->0 memberNode name=continue lineNumber=15 flags=+
-                  voidTypeNode typeNode lineNumber=15
-                  sequenceNode lineNumber=17
+                     assignmentNode lineNumber=8
+                        varRefNode pSrc=_count->N3cmn9fieldNodeE lineNumber=8
+                        bopNode op=+ lineNumber=8
+                           varRefNode pSrc=_count->N3cmn9fieldNodeE lineNumber=8
+                           intLiteralNode lexeme=1 lineNumber=8
+               methodNode baseImpl=getCount->0 memberNode name=getCount lineNumber=10 flags=+
+                  intTypeNode typeNode lineNumber=10
+                  sequenceNode lineNumber=12
+               methodNode baseImpl=break->0 memberNode name=break lineNumber=13 flags=+
+                  voidTypeNode typeNode lineNumber=13
+                  sequenceNode lineNumber=15
+               methodNode baseImpl=breakWithReason->0 memberNode name=breakWithReason lineNumber=16 flags=+
+                  argNode name=reason lineNumber=16
+                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=16
+                  voidTypeNode typeNode lineNumber=16
+                  sequenceNode lineNumber=18
+               methodNode baseImpl=continue->0 memberNode name=continue lineNumber=19 flags=+
+                  voidTypeNode typeNode lineNumber=19
+                  sequenceNode lineNumber=21
          fileNode fullPath=.\testdata\sht\core\object.ara.ph lineNumber=1
             classNode name=object baseClasses=[ ] lineNumber=1
          fileNode fullPath=.\testdata\sht\core\string.ara.ph lineNumber=1

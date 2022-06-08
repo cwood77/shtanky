@@ -19,10 +19,8 @@ node::~node()
 
 void node::injectAbove(node& n)
 {
-   m_pParent->appendChild(n);
+   m_pParent->replaceChild(*this,n);
    n.appendChild(*this);
-
-   n.m_pParent->removeChild(*this);
 }
 
 void node::appendChild(node& n)
@@ -113,6 +111,23 @@ void classNode::computeLineage(std::list<classNode*>& l)
    for(auto it=baseClasses.begin();it!=baseClasses.end();++it)
       it->getRefee()->computeLineage(l);
    l.push_back(this);
+}
+
+std::string forLoopNode::computeLoopGuid()
+{
+   if(lineNumber == 0)
+      cdwTHROW("loops must have non-zero line numbers");
+
+   auto& func = getAncestor<funcNode>();
+   std::stringstream _name;
+   _name
+      << fullyQualifiedName::build(func,func.name).c_str()
+      << ".loop_"
+      << name.c_str()
+      << "_"
+      << lineNumber
+   ;
+   return _name.str();
 }
 
 void diagVisitor::visit(araceliProjectNode& n)

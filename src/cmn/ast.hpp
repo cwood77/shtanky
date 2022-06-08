@@ -545,6 +545,8 @@ public:
    bool scoped;
    bool decomposed;
 
+   std::string computeLoopGuid();
+
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
@@ -970,6 +972,16 @@ node& cloneTree(node& n);
 class treeWriter {
 public:
    explicit treeWriter(cmn::node& n) : m_pNode(&n) {}
+
+   template<class T>
+   treeWriter& prepend(std::function<void(T&)> initializer = [](T& n){})
+   {
+      std::unique_ptr<T> pNode(new T());
+      initializer(*pNode.get());
+      m_pNode->insertChild(0,*pNode.release());
+      m_pNode = m_pNode->getChildren()[0];
+      return *this;
+   }
 
    template<class T>
    treeWriter& append(std::function<void(T&)> initializer = [](T& n){})

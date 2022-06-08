@@ -13,6 +13,7 @@
 #include "instrPrefs.hpp"
 #include "lir.hpp"
 #include "lirXfrm.hpp"
+#include "loopTransforms.hpp"
 #include "projectBuilder.hpp"
 #include "vTableInvokeDetection.hpp"
 #include "varAlloc.hpp"
@@ -28,6 +29,9 @@ int _main(int argc,const char *argv[])
    cdwDEBUG("compiled with C++ %u\n",__cplusplus);
 
    cmn::cmdLine cl(argc,argv);
+   cmn::outBundle out,dbgOut;
+   cmn::unconditionalWriter wr;
+   dbgOut.scheduleAutoUpdate(wr);
 
    // load
    cmn::liamProjectNode prj;
@@ -35,30 +39,44 @@ int _main(int argc,const char *argv[])
    projectBuilder::build(prj);
    cdwVERBOSE("graph after loading ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
+   { auto& s = dbgOut.get<cmn::outStream>(prj.sourceFullPath + ".00init.ast");
+     cmn::astFormatter v(s); prj.acceptVisitor(v); }
 
    // link
    cmn::nodeLinker().linkGraph(prj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; prj.acceptVisitor(v); }
 
-   // type propagation
+   cmn::tgt::w64EmuTargetInfo t;
+   {
+      // initial type propagation
+      cmn::type::table                           _t;
+      cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
+      cmn::type::nodeCache                       _c;
+      cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
+      cmn::propagateTypes(prj);
+
+      // AST transforms
+      { vTableInvokeDetector v(t); prj.acceptVisitor(v); }
+      { loopDecomposer v; prj.acceptVisitor(v); }
+      cdwVERBOSE("graph after transforms ----\n");
+      { cmn::diagVisitor v; prj.acceptVisitor(v); }
+   }
+
+   // re-link
+   cmn::nodeLinker().linkGraph(prj);
+
+   // final type propagation
    cmn::type::table                           _t;
    cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
    cmn::type::nodeCache                       _c;
    cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
    cmn::propagateTypes(prj);
-
-   // AST transforms
-   cmn::tgt::w64EmuTargetInfo t;
-   { vTableInvokeDetector v(t); prj.acceptVisitor(v); }
-   cdwVERBOSE("graph after transforms ----\n");
-   { cmn::diagVisitor v; prj.acceptVisitor(v); }
+   { auto& s = dbgOut.get<cmn::outStream>(prj.sourceFullPath + ".01postXfrm.ast");
+     cmn::astFormatter v(s); prj.acceptVisitor(v); }
 
    // generate LIR
    lirStreams lir;
-   cmn::outBundle out,dbgOut;
-   cmn::unconditionalWriter wr;
-   dbgOut.scheduleAutoUpdate(wr);
    { lirBuilder b(lir,t); astCodeGen v(b,t); prj.acceptVisitor(v); }
    { auto& s = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir");
      lirFormatter(s,t).format(lir); }

@@ -314,7 +314,7 @@ void sourceCodeGen::visit(cmn::forLoopNode& n)
    if(n.getChildren().size() != 2)
       cdwTHROW("forLoopNode children is %d != 2",n.getChildren().size());
 
-   m_pOut->stream() << "for(";
+   m_pOut->stream() << "for[" << n.name << "](";
    n.getChildren()[0]->acceptVisitor(*this);
    m_pOut->stream() << ")" << std::endl;
    n.getChildren()[1]->acceptVisitor(*this);
