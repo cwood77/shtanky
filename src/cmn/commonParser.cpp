@@ -291,6 +291,16 @@ bool commonParser::tryParseStatement(node& owner)
       parseIf(owner);
    else if(m_l.getToken() == commonLexor::kFor)
       parseLoop(owner);
+   else if(m_l.getToken() == commonLexor::kReturn)
+   {
+      m_l.advance();
+      auto& r = m_nFac.appendNewChild<returnNode>(owner);
+
+      if(m_l.getToken() != commonLexor::kSemiColon)
+         parseRValue(r);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
+   }
    else
    {
       std::unique_ptr<node> pInst(&parseLValue());

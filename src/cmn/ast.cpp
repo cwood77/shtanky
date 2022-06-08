@@ -336,6 +336,15 @@ void diagVisitor::visit(sequenceNode& n)
    hNodeVisitor::visit(n);
 }
 
+void diagVisitor::visit(returnNode& n)
+{
+   cdwDEBUG("%sreturn\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
 void diagVisitor::visit(invokeNode& n)
 {
    cdwDEBUG("%sinvoke; name=%s; protoLinked?=%d\n",
@@ -834,6 +843,12 @@ void astFormatter::visit(ptrTypeNode& n)
 void astFormatter::visit(sequenceNode& n)
 {
    cdwDumpAstStart(sequenceNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(returnNode& n)
+{
+   cdwDumpAstStart(returnNode)
    cdwDumpAstEnd()
 }
 

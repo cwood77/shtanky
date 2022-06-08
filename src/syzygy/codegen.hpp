@@ -32,6 +32,7 @@ public:
    virtual void visit(cmn::userTypeNode& n);
    virtual void visit(cmn::ptrTypeNode& n);
    virtual void visit(cmn::sequenceNode& n);
+   virtual void visit(cmn::returnNode& n);
    virtual void visit(cmn::invokeNode& n);
    virtual void visit(cmn::invokeFuncPtrNode& n);
    virtual void visit(cmn::fieldAccessNode& n);

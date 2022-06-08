@@ -38,6 +38,7 @@ class voidTypeNode;
 class userTypeNode;
 class ptrTypeNode;
 class sequenceNode;
+class returnNode;
 class invokeNode;
 class invokeFuncPtrNode;
 class invokeVTableNode;
@@ -89,6 +90,7 @@ public:
    virtual void visit(userTypeNode& n) = 0;
    virtual void visit(ptrTypeNode& n) = 0;
    virtual void visit(sequenceNode& n) = 0;
+   virtual void visit(returnNode& n) = 0;
    virtual void visit(invokeNode& n) = 0;
    virtual void visit(invokeFuncPtrNode& n) = 0;
    virtual void visit(invokeVTableNode& n) = 0;
@@ -455,6 +457,11 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class returnNode : public node {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 class invokeNode : public node {
 public:
    link<methodNode> proto;
@@ -652,6 +659,7 @@ public:
    virtual void visit(userTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(ptrTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(sequenceNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(returnNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(invokeNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(invokeFuncPtrNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(invokeVTableNode& n) { visit(static_cast<node&>(n)); }
@@ -703,6 +711,7 @@ public:
    virtual void visit(userTypeNode& n);
    virtual void visit(ptrTypeNode& n);
    virtual void visit(sequenceNode& n);
+   virtual void visit(returnNode& n);
    virtual void visit(invokeNode& n);
    virtual void visit(invokeFuncPtrNode& n);
    virtual void visit(invokeVTableNode& n);
@@ -771,6 +780,7 @@ public:
    virtual void visit(userTypeNode& n);
    virtual void visit(ptrTypeNode& n);
    virtual void visit(sequenceNode& n);
+   virtual void visit(returnNode& n);
    virtual void visit(invokeNode& n);
    virtual void visit(invokeFuncPtrNode& n);
    virtual void visit(invokeVTableNode& n);
@@ -881,6 +891,7 @@ public:
    virtual void visit(userTypeNode&) { inst.reset(new userTypeNode()); }
    virtual void visit(ptrTypeNode&) { inst.reset(new ptrTypeNode()); }
    virtual void visit(sequenceNode&) { inst.reset(new sequenceNode()); }
+   virtual void visit(returnNode&) { inst.reset(new returnNode()); }
    virtual void visit(invokeNode&) { inst.reset(new invokeNode()); }
    virtual void visit(invokeFuncPtrNode&) { inst.reset(new invokeFuncPtrNode()); }
    virtual void visit(invokeVTableNode&) { inst.reset(new invokeVTableNode()); }
@@ -938,6 +949,7 @@ public:
    virtual void visit(userTypeNode& n);
    //virtual void visit(ptrTypeNode& n);
    //virtual void visit(sequenceNode& n) { unexpected(n); }
+   //virtual void visit(returnNode& n);
    virtual void visit(invokeNode& n) { unexpected(n); }
    //virtual void visit(invokeFuncPtrNode& n) { unexpected(n); }
    virtual void visit(invokeVTableNode& n);

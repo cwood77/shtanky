@@ -254,6 +254,12 @@ void sourceCodeGen::visit(cmn::sequenceNode& n)
    m_pOut->stream() << std::endl;
 }
 
+void sourceCodeGen::visit(cmn::returnNode& n)
+{
+   m_pOut->stream() << cmn::indent(*m_pOut) << "return ";
+   hNodeVisitor::visit(n);
+}
+
 void sourceCodeGen::visit(cmn::invokeFuncPtrNode& n)
 {
    n.getChildren()[0]->acceptVisitor(*this);

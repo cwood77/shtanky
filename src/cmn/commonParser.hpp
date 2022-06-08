@@ -51,6 +51,8 @@ class lexorBase;
 // <statement> ::== 'var' <var>
 //                | <if>
 //                | <loop>
+//                | <return> <rvalue> ';'
+//                | <return> ';'
 //                | <lvalue> '=' <assignment> ';'
 //                | <lvalue> <call-and-friends> ';'
 // <statement-or-body> ::== <statement>

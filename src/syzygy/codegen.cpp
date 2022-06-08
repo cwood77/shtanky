@@ -189,6 +189,14 @@ void codegen::visit(cmn::sequenceNode& n)
    s.stream() << cmn::indent(s) << "}" << std::endl;
 }
 
+void codegen::visit(cmn::returnNode& n)
+{
+   auto& s = getOutStream();
+
+   s.stream() << cmn::indent(s) << "return ";
+   hNodeVisitor::visit(n);
+}
+
 void codegen::visit(cmn::invokeNode& n)
 {
    auto& s = getOutStream();
