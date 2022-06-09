@@ -6,17 +6,13 @@
 .test.test.run: 
                 push, rbp                  
                 push, rbx                  
-                push, rdi                  
                 mov, rbp, rsp              
                 sub, rsp, 32               
-                mov, rdi, [rcx+8]          ; fieldaccess: owner of _vtbl
+                mov, rbx, [rcx+8]          ; fieldaccess: owner of _vtbl
                 lea, rdx, qwordptr .const0 
-                mov, rbx, rcx              ; (preserve) [combiner]
-                mov, rcx, [rbx+8]          ; shape:hoist addrOf from call
-                call, [rdi]                ; (vtbl call)
+                call, [rbx]                ; (vtbl call)
                 add, rsp, 32               
                 mov, rsp, rbp              
-                pop, rdi                   
                 pop, rbx                   
                 pop, rbp                   
                 ret                        

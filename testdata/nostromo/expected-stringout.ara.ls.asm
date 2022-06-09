@@ -18,11 +18,10 @@
                           sub, rsp, 32                      
                           mov, rdi, [rbx+8]                 ; fieldaccess: owner of _vtbl
                           sub, rsp, 32                      
-                          mov, rdx, 0                       ; shape:hoist imm from call
                           call, .sht.core.string.indexOpGet ; (call label)
                           add, rsp, 32                      
-                          mov, rcx, [rbx+8]                 ; shape:hoist addrOf from call
                           mov, rdx, rax                     ;       (rval1 req for rdx) [splitter]
+                          mov, rcx, rbx                     ; (restore [combiner])
                           call, [rdi]                       ; (vtbl call)
                           add, rsp, 32                      
                           mov, rsp, rbp                     

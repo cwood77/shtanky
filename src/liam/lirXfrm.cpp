@@ -381,7 +381,7 @@ void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
    { lirComparisonOpDecomposition xfrm; xfrm.runStreams(lir); }
    { lirBranchDecomposition xfrm; xfrm.runStreams(lir); }
    { lirLabelDecomposition xfrm; xfrm.runStreams(lir); }
-   { lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); } // TODO this whole transform is legacy
+   //{ lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); } // TODO this whole transform is legacy
    { lirNumberingTransform xfrm; xfrm.runStreams(lir); }
 }
 
