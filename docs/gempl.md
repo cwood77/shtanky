@@ -75,6 +75,31 @@ class $(name) {
 
 %endfor
 
+---alloction-free module-local reflection---
+%params(tag)
+
+generic<T>
+class my$(tag)Types {
+
+   count() : int
+   {
+      return %reflect.count($(tag));
+   }
+
+   get(i : int) : T
+   {
+%for(i,%reflect($(tag)))
+      if(i == $(_))
+         return _inst$(_);
+%endfor
+   }
+
+%for(i,%reflect($(tag)))
+   _inst$(_) : $(i);
+%endfor
+
+}
+
 
 
 ------ so, what does a salome language need?

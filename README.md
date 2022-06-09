@@ -123,7 +123,7 @@ By milestone
 ### Hello World MVP
 - [x] code shape transform
 - [x] handle volatile regs (i.e. regs must be preserved around calls if in use)
-- [ ] impl frame ptrs
+- [x] impl frame ptrs
 
 ### Must, but Later
 - [x] int literals
@@ -139,24 +139,31 @@ By milestone
 - [ ] generate windows PE from shlink
 
 ### Big, Hairy
-- [ ] templ
+- [x] templ
 - [ ] gempl
 - [x] cop
 - [x] array class?
-- [ ] passing args into stemu
+- [/] passing args into stemu
 - [ ] heap class allocation (actually needs a heap in stemu/stanky)
 - [ ] DLLs
 - [ ] maybe a 'grep' tool that understand the languages--i.e. can skip comments, etc.
 
 ### Nostromo
 Start building the OS and fill out the language as you go
-- [ ] while loop, with names, and break
-- [ ] peek/poke
-- [ ] register codegen
-- [ ] if
+- [...] while loop, with names, and break
+- [x] peek/poke
+- [/] register codegen
+- [...] if
 - [ ] not
-- [ ] strings?  length, index
+- [...] strings?  length, index
 - [ ] no size for int types means lots of funcs with 8
+
+### Uncategorized
+- [ ] Elijah shorthand
+- [ ] telnet protocol?
+- [ ] string interp
+- [ ] int formats
+- [ ] reflection?  at least enough for ATS
 
 What is a string?
 - it's a type that compiles down to an array and and a set of shtasm intrinsics
@@ -201,5 +208,12 @@ Propsed changes
     - nostromo -> _no change_
 1. [x] Exercise branches by passing command-line input through shtemu
 1. [ ] Strive to get execution of nostromo.
+
+### Elijah
+
+Shorthand notations that may be employed
+- [ ] increment/decrement ops
+- [ ] => for method bodies
+- [ ] default property generation
 
 [^1]: The name "shtanky" was suggested by my son, Ethan (age 11).  I selected the first of his suggestions that didn't include "my dad's butt" somewhere in the title.
