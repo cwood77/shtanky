@@ -140,6 +140,20 @@ protected:
    virtual void runInstr(lirInstr& i);
 };
 
+// if func has an early return, it needs a label
+// don't generate them always because it's so obnoxious
+class lirEarlyReturnDecomposition : public lirTransform {
+public:
+   lirEarlyReturnDecomposition() : m_any(false) {}
+
+protected:
+   virtual void runInstr(lirInstr& i);
+
+private:
+   bool m_any;
+   std::string m_label;
+};
+
 // add segment directives for labels, and also implicit
 // gotos
 class lirLabelDecomposition : public lirTransform {

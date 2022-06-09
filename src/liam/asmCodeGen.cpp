@@ -166,6 +166,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
       //         reserved by kEnterFunc
       case cmn::tgt::kReserveLocal:
       case cmn::tgt::kUnreserveLocal:
+      case cmn::tgt::kRet: // the jump emitted by early return transform is enough
          break;
       case cmn::tgt::kGlobalConstData:
          {

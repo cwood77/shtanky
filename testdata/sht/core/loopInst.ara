@@ -2,7 +2,7 @@ class loopInst {
 
    _count : int;
    _breakReason : str;
-   _exitedNormally : bool;
+   _condition : bool;
 
    public bump() : void
    {
@@ -11,7 +11,7 @@ class loopInst {
 
    public getCount() : int
    {
-      //return _count;
+      return _count;
    }
 
    public break() : void

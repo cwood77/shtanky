@@ -242,6 +242,36 @@ void lirBranchDecomposition::runInstr(lirInstr& i)
    lirTransform::runInstr(i);
 }
 
+void lirEarlyReturnDecomposition::runInstr(lirInstr& i)
+{
+   if(i.instrId == cmn::tgt::kEnterFunc)
+   {
+      m_label = i.comment + ".end";
+      m_any = false;
+   }
+
+   else if(i.instrId == cmn::tgt::kRet)
+   {
+      auto *pGoto = new lirInstr(cmn::tgt::kGoto);
+      pGoto->addArg<lirArgLabel>(m_label,0);
+      pGoto->comment = "early return";
+      dynamic_cast<lirArgLabel*>(pGoto->getArgs()[0])->isCode = true;
+      scheduleInjectAfter(*pGoto,i);
+      m_any = true;
+   }
+
+   else if(i.instrId == cmn::tgt::kExitFunc && m_any)
+   {
+      auto *pLabel = new lirInstr(cmn::tgt::kLabel);
+      pLabel->addArg<lirArgLabel>(m_label,0);
+      dynamic_cast<lirArgLabel*>(pLabel->getArgs()[0])->isCode = true;
+      scheduleInjectBefore(*pLabel,i);
+      m_any = false;
+   }
+
+   lirTransform::runInstr(i);
+}
+
 void lirLabelDecomposition::runInstr(lirInstr& i)
 {
    // for labels
@@ -380,6 +410,7 @@ void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
    { lirPairedInstrDecomposition xfrm; xfrm.runStreams(lir); }
    { lirComparisonOpDecomposition xfrm; xfrm.runStreams(lir); }
    { lirBranchDecomposition xfrm; xfrm.runStreams(lir); }
+   { lirEarlyReturnDecomposition xfrm; xfrm.runStreams(lir); }
    { lirLabelDecomposition xfrm; xfrm.runStreams(lir); }
    //{ lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); } // TODO this whole transform is legacy
    { lirNumberingTransform xfrm; xfrm.runStreams(lir); }
@@ -416,6 +447,8 @@ void spuriousVarStripper::runInstr(lirInstr& i)
       args.push_back(pKeeper);
    }
 
+   // even though this instr is never emitted, strip the args so codeshape doesn't
+   // get confused later
    else if(i.instrId == cmn::tgt::kRet)
    {
       for(auto *pA : i.getArgs())

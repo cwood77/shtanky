@@ -39,7 +39,11 @@ void invokeSubProcess(const char *shortName, const char *ext, const char *addend
    childStream << "bin\\out\\debug\\" << shortName << ".exe ";
    childStream << projectDir;
    childStream << " " << ext;
+   // I require object of salome and philemon becaue I'm the one who will introduce this dependency;
+   // they don't know I'll do that.
    childStream << " .\\testdata\\sht\\core\\object." << addendumFileExt;
+   // Similarly, philemon will introduce the dependency on arrays and strings, which salome can't
+   // anticipate, so give her a hint
    childStream << " .\\testdata\\sht\\core\\string." << addendumFileExt;
    childStream << " .\\testdata\\sht\\core\\array." << addendumFileExt;
    cdwVERBOSE("calling: %s\n",childStream.str().c_str());

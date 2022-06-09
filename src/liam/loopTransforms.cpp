@@ -10,21 +10,25 @@ void loopDecomposer::visit(cmn::forLoopNode& n)
 
    // some of these statements are prepended, so they're backwards
 
-   // if(i:exitedNormally)
+   // if(i:_condition)
+   //    ;
+   // else
    //    <break>
    cmn::treeWriter(seq)
       .prepend<cmn::ifNode>()
-         .append<cmn::fieldAccessNode>([](auto& f){ f.name = "_exitedNormally"; })
+         .append<cmn::fieldAccessNode>([](auto& f){ f.name = "_condition"; })
             .append<cmn::varRefNode>([&](auto& v){ v.pSrc.ref = n.name; })
+               .backTo<cmn::ifNode>()
+         .append<cmn::sequenceNode>()
                .backTo<cmn::ifNode>()
          .append<cmn::sequenceNode>()
             .append<cmn::loopBreakNode>([&](auto& b){ b.name = guid; })
    ;
 
-   // i:exitedNormally = i:count < 1;
+   // i:_condition = i:count < 1;
    cmn::treeWriter(seq)
       .prepend<cmn::assignmentNode>()
-         .append<cmn::fieldAccessNode>([](auto& f){ f.name = "_exitedNormally"; })
+         .append<cmn::fieldAccessNode>([](auto& f){ f.name = "_condition"; })
             .append<cmn::varRefNode>([&](auto& v){ v.pSrc.ref = n.name; })
                .backTo<cmn::assignmentNode>()
          .get().appendChild(*n.getChildren()[0]);
