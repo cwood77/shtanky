@@ -66,18 +66,14 @@ void instrPrefs::handle(lirInstr& i)
          break;
       case cmn::tgt::kRet:
          {
-            cdwTHROW("unimpled");
             if(i.getArgs().size())
             {
-               lirArgVar *pVar = dynamic_cast<lirArgVar*>(i.getArgs()[0]);
-               if(pVar)
-               {
-                  auto& cc = m_target.getCallConvention();
-                  std::vector<size_t> argStorage;
-                  cc.getRValAndArgBank(argStorage);
-                  var& v = m_vTable.demand(pVar->getName());
-                  v.requireStorage(i.orderNum,argStorage[0]);
-               }
+               lirArg& arg = *i.getArgs()[0];
+               auto& cc = m_target.getCallConvention();
+               std::vector<size_t> argStorage;
+               cc.getRValAndArgBank(argStorage);
+               var& v = m_vTable.demand(arg.getName());
+               v.requireStorage(i.orderNum,argStorage[0]);
             }
          }
          break;

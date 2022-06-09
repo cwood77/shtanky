@@ -289,7 +289,7 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
    // for now, only handle special cases
 
    // call can't handle immediate passed args
-   if(i.instrId == cmn::tgt::kCall)
+   if(i.instrId == cmn::tgt::kCall) // splitter should be able to handle this
    {
       auto& args = i.getArgs();
       for(size_t j=2;j<args.size();j++)
@@ -318,7 +318,7 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
    }
 
    // call can't handle any addr modifications (i.e. displacemnets or derefs)
-   if(i.instrId == cmn::tgt::kCall)
+   if(i.instrId == cmn::tgt::kCall) // splitter should be able to handle this
    {
       auto& args = i.getArgs();
       for(size_t j=2;j<args.size();j++)
@@ -346,7 +346,7 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
    }
 
    // temp hack for bops masquarading as =
-   if(i.instrId == cmn::tgt::kMov)
+   if(i.instrId == cmn::tgt::kMov) // don't think I do this anymore; unattested in testdata
    {
       auto *pArg = dynamic_cast<lirArgConst*>(i.getArgs()[0]);
       if(pArg)
@@ -381,7 +381,7 @@ void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
    { lirComparisonOpDecomposition xfrm; xfrm.runStreams(lir); }
    { lirBranchDecomposition xfrm; xfrm.runStreams(lir); }
    { lirLabelDecomposition xfrm; xfrm.runStreams(lir); }
-   { lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); }
+   { lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); } // TODO this whole transform is legacy
    { lirNumberingTransform xfrm; xfrm.runStreams(lir); }
 }
 
@@ -414,6 +414,13 @@ void spuriousVarStripper::runInstr(lirInstr& i)
 
       args.clear();
       args.push_back(pKeeper);
+   }
+
+   else if(i.instrId == cmn::tgt::kRet)
+   {
+      for(auto *pA : i.getArgs())
+         delete pA;
+      i.getArgs().clear();
    }
 
    lirTransform::runInstr(i);

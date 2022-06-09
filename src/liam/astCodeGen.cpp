@@ -66,7 +66,7 @@ void astCodeGen::visit(cmn::funcNode& n)
 
    m_b.createNewStream(funcNameInAsm,cmn::objfmt::obj::kLexCode);
 
-   auto& i = m_b.forNode(n)
+   auto i = m_b.forNode(n)
       .append(cmn::tgt::kEnterFunc)
          .withArg<lirArgTemp>(m_u.makeUnique("rval"),n)
          .returnToParent(0)
@@ -77,6 +77,20 @@ void astCodeGen::visit(cmn::funcNode& n)
       i.withArg<lirArgVar>((*it)->name,**it);
 
    n.demandSoleChild<cmn::sequenceNode>().acceptVisitor(*this);
+}
+
+void astCodeGen::visit(cmn::returnNode& n)
+{
+   hNodeVisitor::visit(n);
+
+   auto i = m_b.forNode(n)
+      .append(cmn::tgt::kRet);
+
+   if(n.getChildren().size() > 1)
+      cdwTHROW("don't know how to handle return with multiple args");
+
+   if(n.getChildren().size())
+      i.inheritArgFromChild(*n.getChildren()[0]);
 }
 
 // first arg is the vtable ptr
@@ -122,7 +136,7 @@ void astCodeGen::visit(cmn::invokeVTableNode& n) // TODO left off here
             .withArg<lirArgTemp>(localVar,0);
    }
 
-   auto& i = m_b.forNode(n)
+   auto i = m_b.forNode(n)
       .append(cmn::tgt::kCall)
          .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
          .returnToParent(0)
