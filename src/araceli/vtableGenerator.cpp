@@ -30,10 +30,7 @@ void vtableGenerator::generate(classCatalog& cc)
                .append<cmn::ptrTypeNode>();
 
          cmn::treeWriter(sNode)
-            .append<cmn::varRefNode>([=](auto& v)
-            {
-               v.pSrc.ref = cmn::fullyQualifiedName::build(*cit->second.pNode,mit->name);
-            });
+            .append<cmn::varRefNode>([=](auto& v){ v.pSrc.ref = mit->fqn; });
       }
 
       cmn::fileNode& file = cit->second.pNode->getAncestor<cmn::fileNode>();
