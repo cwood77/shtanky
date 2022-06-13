@@ -102,7 +102,8 @@ public:
    };
 
    enum {
-      kClassBop = (1 << 0 | kNoClass)
+      kClassBop  = (1 << 0 | kNoClass),
+      kClassLoop = (1 << 1 | kNoClass),
    };
 
 protected:

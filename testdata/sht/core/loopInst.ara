@@ -1,17 +1,15 @@
-class loopInst {
+abstract loopInstBase {
 
-   _count : int;
-   _breakReason : str;
-   _condition : bool;
-
-   public bump() : void
+   public setDir(up : bool) : void
    {
-      _count = _count + 1;
    }
 
    public getCount() : int
    {
-      return _count;
+   }
+
+   public virtual bump() : void
+   {
    }
 
    public break() : void
@@ -23,6 +21,46 @@ class loopInst {
    }
 
    public continue() : void
+   {
+   }
+
+}
+
+class forLoopInst : loopInstBase {
+
+   public setBounds(start : int, stop : int) : void
+   {
+   }
+
+   public inBounds() : bool
+   {
+   }
+
+   public getValue() : int
+   {
+   }
+
+}
+
+class whileLoopInst : loopInstBase {
+
+   public getValue() : int
+   {
+   }
+
+}
+
+// need some enumerable interface...?
+// need basecall to impl bump()
+generic<T>
+class forEachLoopInst : loopInstBase {
+
+   override bump() : void
+   {
+   }
+
+   // different signature!
+   public getValue() : T
    {
    }
 

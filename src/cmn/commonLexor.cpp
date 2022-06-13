@@ -125,6 +125,13 @@ static const lexemeClassInfo classTable[] = {
          0,
       } },
 
+   { commonLexor::kClassLoop, "loop",
+      (size_t[]){
+         commonLexor::kFor,
+         commonLexor::kWhile,
+         0,
+      } },
+
    { commonLexor::kNoClass, NULL, NULL },
 };
 

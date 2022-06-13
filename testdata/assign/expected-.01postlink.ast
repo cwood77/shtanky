@@ -161,38 +161,6 @@ araceliProjectNode targetType=ca
                   intTypeNode typeNode lineNumber=22
                fieldNode memberNode name=_ptr lineNumber=23 flags=-
                   ptrTypeNode typeNode lineNumber=23
-         fileNode fullPath=.\testdata\sht\core\loopInst.ara.ph lineNumber=1
-            classNode name=loopInst baseClasses=[ .sht.core.object->N3cmn9classNodeE ] lineNumber=1
-               fieldNode memberNode name=_count lineNumber=3 flags=-
-                  intTypeNode typeNode lineNumber=3
-               fieldNode memberNode name=_breakReason lineNumber=4 flags=-
-                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=4
-               fieldNode memberNode name=_condition lineNumber=5 flags=-
-                  boolTypeNode typeNode lineNumber=5
-               methodNode baseImpl=bump->0 memberNode name=bump lineNumber=6 flags=+
-                  voidTypeNode typeNode lineNumber=6
-                  sequenceNode lineNumber=8
-                     assignmentNode lineNumber=8
-                        varRefNode pSrc=_count->N3cmn9fieldNodeE lineNumber=8
-                        bopNode op=+ lineNumber=8
-                           varRefNode pSrc=_count->N3cmn9fieldNodeE lineNumber=8
-                           intLiteralNode lexeme=1 lineNumber=8
-               methodNode baseImpl=getCount->0 memberNode name=getCount lineNumber=10 flags=+
-                  intTypeNode typeNode lineNumber=10
-                  sequenceNode lineNumber=12
-                     returnNode lineNumber=12
-                        varRefNode pSrc=_count->N3cmn9fieldNodeE lineNumber=12
-               methodNode baseImpl=break->0 memberNode name=break lineNumber=14 flags=+
-                  voidTypeNode typeNode lineNumber=14
-                  sequenceNode lineNumber=16
-               methodNode baseImpl=breakWithReason->0 memberNode name=breakWithReason lineNumber=17 flags=+
-                  argNode name=reason lineNumber=17
-                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=17
-                  voidTypeNode typeNode lineNumber=17
-                  sequenceNode lineNumber=19
-               methodNode baseImpl=continue->0 memberNode name=continue lineNumber=20 flags=+
-                  voidTypeNode typeNode lineNumber=20
-                  sequenceNode lineNumber=22
          fileNode fullPath=.\testdata\sht\core\object.ara.ph lineNumber=1
             classNode name=object baseClasses=[ ] lineNumber=1
          fileNode fullPath=.\testdata\sht\core\string.ara.ph lineNumber=1

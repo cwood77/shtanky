@@ -153,7 +153,9 @@ void commonParser::parseClassMembers(classNode& c)
 
 void commonParser::parseMemberKeywords(size_t& flags)
 {
-   if(m_l.getToken() == commonLexor::kOverride)
+   if(m_l.getToken() == commonLexor::kVirtual)
+      flags |= nodeFlags::kVirtual;
+   else if(m_l.getToken() == commonLexor::kOverride)
       flags |= nodeFlags::kOverride;
    else if(m_l.getToken() == commonLexor::kAbstract)
       flags |= nodeFlags::kAbstract;
@@ -289,7 +291,7 @@ bool commonParser::tryParseStatement(node& owner)
       parseVar(owner);
    else if(m_l.getToken() == commonLexor::kIf)
       parseIf(owner);
-   else if(m_l.getToken() == commonLexor::kFor)
+   else if(m_l.getTokenClass() & commonLexor::kClassLoop)
       parseLoop(owner);
    else if(m_l.getToken() == commonLexor::kReturn)
    {
@@ -476,25 +478,43 @@ void commonParser::parseIfPrime(node& owner)
 
 void commonParser::parseLoop(node& owner)
 {
-   m_l.demandAndEat(cdwLoc,commonLexor::kFor);
-   auto& l = m_nFac.appendNewChild<forLoopNode>(owner);
-   parseLoopPrime(l);
+   if(m_l.getToken() == commonLexor::kFor)
+   {
+      auto& l = m_nFac.appendNewChild<forLoopNode>(owner);
+
+      parseLoopName(l);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
+
+      parseRValue(l);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kComma);
+
+      parseRValue(l);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+      parseStatementOrBody(l);
+   }
+   else if(m_l.getToken() == commonLexor::kWhile)
+   {
+      auto& l = m_nFac.appendNewChild<whileLoopNode>(owner);
+
+      parseLoopName(l);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
+
+      parseRValue(l);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+      parseStatementOrBody(l);
+   }
+   else
+      m_l.demandOneOf(cdwLoc,2,commonLexor::kFor,commonLexor::kWhile);
 }
 
-void commonParser::parseLoopPrime(forLoopNode& l)
-{
-   parseLoopName(l);
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
-
-   parseRValue(l);
-
-   m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
-
-   parseStatementOrBody(l);
-}
-
-void commonParser::parseLoopName(forLoopNode& l)
+void commonParser::parseLoopName(loopBaseNode& l)
 {
    if(m_l.getToken() == commonLexor::kLBracket)
    {
@@ -516,7 +536,7 @@ void commonParser::parseLoopName(forLoopNode& l)
    }
    else
    {
-      l.name = "def";
+      l.name = "_";
       l.scoped = true;
    }
 }

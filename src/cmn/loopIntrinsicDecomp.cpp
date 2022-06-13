@@ -28,12 +28,12 @@ void loopVarRefFixup::visit(varRefNode& n)
    if(cmn::has(m_loopInstances,n.pSrc.ref))
    {
       auto *pM = new invokeNode();
-      pM->proto.ref = "getCount";
+      pM->proto.ref = "getValue";
       n.injectAbove(*pM);
    }
 }
 
-void loopVarRefFixup::visit(forLoopNode& n)
+void loopVarRefFixup::visit(loopBaseNode& n)
 {
    if(!n.decomposed)
       m_loopInstances.insert(n.name);
@@ -53,13 +53,13 @@ void loopInstDropper::visit(loopIntrinsicNode& n)
    visitChildren(*pVarRef);
 }
 
-void loopInstDropper::visit(forLoopNode& n)
+void loopInstDropper::handleLoop(loopBaseNode& n, const std::string& instTypeName)
 {
    if(!n.decomposed)
    {
       auto *pSeq = new sequenceNode;
       auto *pLoc = new localDeclNode; pLoc->name = n.name;
-      auto *pTy = new userTypeNode; pTy->pDef.ref = ".sht.core.loopInst";
+      auto *pTy = new userTypeNode; pTy->pDef.ref = instTypeName;
       pLoc->appendChild(*pTy);
 
       n.injectAbove(*pSeq);

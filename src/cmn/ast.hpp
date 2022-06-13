@@ -51,7 +51,9 @@ class bopNode;
 class indexNode;
 class ifNode;
 class loopIntrinsicNode;
+class loopBaseNode;
 class forLoopNode;
+class whileLoopNode;
 class loopStartNode;
 class loopBreakNode;
 class loopEndNode;
@@ -103,7 +105,9 @@ public:
    virtual void visit(indexNode& n) = 0;
    virtual void visit(ifNode& n) = 0;
    virtual void visit(loopIntrinsicNode& n) = 0;
+   virtual void visit(loopBaseNode& n) = 0;
    virtual void visit(forLoopNode& n) = 0;
+   virtual void visit(whileLoopNode& n) = 0;
    virtual void visit(loopStartNode& n) = 0;
    virtual void visit(loopBreakNode& n) = 0;
    virtual void visit(loopEndNode& n) = 0;
@@ -544,16 +548,27 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
-class forLoopNode : public node {
+class loopBaseNode : public node {
 public:
-   forLoopNode() : scoped(false), decomposed(false) {}
-
    std::string name;
    bool scoped;
    bool decomposed;
 
    std::string computeLoopGuid();
 
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+
+protected:
+   loopBaseNode() : scoped(false), decomposed(false) {}
+};
+
+class forLoopNode : public loopBaseNode {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class whileLoopNode : public loopBaseNode {
+public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
@@ -672,7 +687,9 @@ public:
    virtual void visit(indexNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(ifNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(loopIntrinsicNode& n) { visit(static_cast<node&>(n)); }
-   virtual void visit(forLoopNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(loopBaseNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(forLoopNode& n) { visit(static_cast<loopBaseNode&>(n)); }
+   virtual void visit(whileLoopNode& n) { visit(static_cast<loopBaseNode&>(n)); }
    virtual void visit(loopStartNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(loopBreakNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(loopEndNode& n) { visit(static_cast<node&>(n)); }
@@ -724,7 +741,9 @@ public:
    virtual void visit(indexNode& n);
    virtual void visit(ifNode& n);
    virtual void visit(loopIntrinsicNode& n);
+   virtual void visit(loopBaseNode& n);
    virtual void visit(forLoopNode& n);
+   virtual void visit(whileLoopNode& n);
    virtual void visit(loopStartNode& n);
    virtual void visit(loopBreakNode& n);
    virtual void visit(loopEndNode& n);
@@ -793,7 +812,9 @@ public:
    virtual void visit(indexNode& n);
    virtual void visit(ifNode& n);
    virtual void visit(loopIntrinsicNode& n);
+   virtual void visit(loopBaseNode& n);
    virtual void visit(forLoopNode& n);
+   virtual void visit(whileLoopNode& n);
    virtual void visit(loopStartNode& n);
    virtual void visit(loopBreakNode& n);
    virtual void visit(loopEndNode& n);
@@ -904,7 +925,9 @@ public:
    virtual void visit(indexNode&) { inst.reset(new indexNode()); }
    virtual void visit(ifNode&) { inst.reset(new ifNode()); }
    virtual void visit(loopIntrinsicNode&) { inst.reset(new loopIntrinsicNode()); }
+   virtual void visit(loopBaseNode& n) { unexpected(n); }
    virtual void visit(forLoopNode&) { inst.reset(new forLoopNode()); }
+   virtual void visit(whileLoopNode&) { inst.reset(new whileLoopNode()); }
    virtual void visit(loopStartNode&) { inst.reset(new loopStartNode()); }
    virtual void visit(loopBreakNode&) { inst.reset(new loopBreakNode()); }
    virtual void visit(loopEndNode&) { inst.reset(new loopEndNode()); }
@@ -922,9 +945,9 @@ public:
 };
 
 // Out of laziness, I implement these only when needed
-class cloningNodeVisitor : public hNodeVisitor {
+class fieldCopyingNodeVisitor : public hNodeVisitor {
 public:
-   explicit cloningNodeVisitor(node& n) : m_n(n) {}
+   explicit fieldCopyingNodeVisitor(node& n) : m_n(n) {}
 
    virtual void visit(node& n);
    virtual void visit(araceliProjectNode& n) { unexpected(n); }
@@ -961,6 +984,13 @@ public:
    virtual void visit(bopNode& n) { unexpected(n); }
    //virtual void visit(indexNode& n) { unexpected(n); }
    //virtual void visit(ifNode& n) { unexpected(n); }
+   virtual void visit(loopIntrinsicNode& n) { unexpected(n); }
+   virtual void visit(loopBaseNode& n);
+   virtual void visit(forLoopNode& n) { unexpected(n); }
+   virtual void visit(whileLoopNode& n) { unexpected(n); }
+   virtual void visit(loopStartNode& n) { unexpected(n); }
+   virtual void visit(loopBreakNode& n) { unexpected(n); }
+   virtual void visit(loopEndNode& n) { unexpected(n); }
    virtual void visit(stringLiteralNode& n) { unexpected(n); }
    virtual void visit(boolLiteralNode& n) { unexpected(n); }
    virtual void visit(intLiteralNode& n) { unexpected(n); }
@@ -1002,6 +1032,17 @@ public:
       initializer(*pNode.get());
       m_pNode->appendChild(*pNode.release());
       m_pNode = m_pNode->lastChild();
+      return *this;
+   }
+
+   template<class T>
+   treeWriter& after(std::function<void(T&)> initializer = [](T& n){})
+   {
+      std::unique_ptr<T> pNode(new T());
+      initializer(*pNode.get());
+      auto *pNaked = pNode.get();
+      m_pNode->insertChildAfter(*pNode.release(),*m_pNode);
+      m_pNode = pNaked;
       return *this;
    }
 

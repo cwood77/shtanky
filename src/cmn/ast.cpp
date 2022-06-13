@@ -113,7 +113,7 @@ void classNode::computeLineage(std::list<classNode*>& l)
    l.push_back(this);
 }
 
-std::string forLoopNode::computeLoopGuid()
+std::string loopBaseNode::computeLoopGuid()
 {
    if(lineNumber == 0)
       cdwTHROW("loops must have non-zero line numbers");
@@ -464,13 +464,31 @@ void diagVisitor::visit(loopIntrinsicNode& n)
    hNodeVisitor::visit(n);
 }
 
-void diagVisitor::visit(forLoopNode& n)
+void diagVisitor::visit(loopBaseNode& n)
 {
-   cdwDEBUG("%sforLoop '%s' '%s', decomposed?=\n",
+   cdwDEBUG("%sloopBase '%s' '%s', decomposed?=\n",
       getIndent().c_str(),
       n.name.c_str(),
       n.scoped ? "-" : "+",
       n.decomposed ? "Y" : "N");
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(forLoopNode& n)
+{
+   cdwDEBUG("%sforLoop\n",
+      getIndent().c_str());
+
+   autoIndent _a(*this);
+   hNodeVisitor::visit(n);
+}
+
+void diagVisitor::visit(whileLoopNode& n)
+{
+   cdwDEBUG("%swhileLoop\n",
+      getIndent().c_str());
 
    autoIndent _a(*this);
    hNodeVisitor::visit(n);
@@ -932,12 +950,24 @@ void astFormatter::visit(loopIntrinsicNode& n)
    cdwDumpAstEnd()
 }
 
-void astFormatter::visit(forLoopNode& n)
+void astFormatter::visit(loopBaseNode& n)
 {
-   cdwDumpAstStart(forLoopNode)
+   cdwDumpAstStart(loopBaseNode)
    cdwDumpAstField(name)
    cdwDumpAstField(scoped)
    cdwDumpAstField(decomposed)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(forLoopNode& n)
+{
+   cdwDumpAstStart(forLoopNode)
+   cdwDumpAstEnd()
+}
+
+void astFormatter::visit(whileLoopNode& n)
+{
+   cdwDumpAstStart(forLoopNode)
    cdwDumpAstEnd()
 }
 
@@ -1060,14 +1090,14 @@ void fullyQualifiedName::prepend(const std::string& n)
    m_fqn = n + m_fqn;
 }
 
-void cloningNodeVisitor::visit(node& n)
+void fieldCopyingNodeVisitor::visit(node& n)
 {
    as<node>().lineNumber = n.lineNumber;
    as<node>().attributes = n.attributes;
    as<node>().flags = n.flags;
 }
 
-void cloningNodeVisitor::visit(classNode& n)
+void fieldCopyingNodeVisitor::visit(classNode& n)
 {
    as<classNode>().name = n.name;
    as<classNode>().baseClasses.resize(n.baseClasses.size());
@@ -1076,13 +1106,13 @@ void cloningNodeVisitor::visit(classNode& n)
    hNodeVisitor::visit(n);
 }
 
-void cloningNodeVisitor::visit(memberNode& n)
+void fieldCopyingNodeVisitor::visit(memberNode& n)
 {
    as<memberNode>().name = n.name;
    hNodeVisitor::visit(n);
 }
 
-void cloningNodeVisitor::visit(methodNode& n)
+void fieldCopyingNodeVisitor::visit(methodNode& n)
 {
    as<methodNode>().baseImpl.ref = n.baseImpl.ref;
    if(n.baseImpl.getRefee())
@@ -1090,13 +1120,13 @@ void cloningNodeVisitor::visit(methodNode& n)
    hNodeVisitor::visit(n);
 }
 
-void cloningNodeVisitor::visit(argNode& n)
+void fieldCopyingNodeVisitor::visit(argNode& n)
 {
    as<argNode>().name = n.name;
    hNodeVisitor::visit(n);
 }
 
-void cloningNodeVisitor::visit(userTypeNode& n)
+void fieldCopyingNodeVisitor::visit(userTypeNode& n)
 {
    as<userTypeNode>().pDef.ref = n.pDef.ref;
    if(n.pDef._getRefee())
@@ -1104,13 +1134,13 @@ void cloningNodeVisitor::visit(userTypeNode& n)
    hNodeVisitor::visit(n);
 }
 
-void cloningNodeVisitor::visit(invokeVTableNode& n)
+void fieldCopyingNodeVisitor::visit(invokeVTableNode& n)
 {
    as<invokeVTableNode>().index = n.index;
    hNodeVisitor::visit(n);
 }
 
-void cloningNodeVisitor::visit(callNode& n)
+void fieldCopyingNodeVisitor::visit(callNode& n)
 {
    as<callNode>().pTarget.ref = n.pTarget.ref;
    if(n.pTarget._getRefee())
@@ -1118,7 +1148,7 @@ void cloningNodeVisitor::visit(callNode& n)
    hNodeVisitor::visit(n);
 }
 
-void cloningNodeVisitor::visit(varRefNode& n)
+void fieldCopyingNodeVisitor::visit(varRefNode& n)
 {
    hNodeVisitor::visit(n);
    as<varRefNode>().pSrc.ref = n.pSrc.ref;
@@ -1126,11 +1156,19 @@ void cloningNodeVisitor::visit(varRefNode& n)
       as<varRefNode>().pSrc.bind(*n.pSrc._getRefee());
 }
 
+void fieldCopyingNodeVisitor::visit(loopBaseNode& n)
+{
+   as<loopBaseNode>().name = n.name;
+   as<loopBaseNode>().scoped = n.scoped;
+   as<loopBaseNode>().decomposed = n.decomposed;
+   hNodeVisitor::visit(n);
+}
+
 node& cloneTree(node& n)
 {
    creatingNodeVisitor creator;
    n.acceptVisitor(creator);
-   { cloningNodeVisitor v(*creator.inst.get()); n.acceptVisitor(v); }
+   { fieldCopyingNodeVisitor v(*creator.inst.get()); n.acceptVisitor(v); }
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       creator.inst->appendChild(cloneTree(**it));

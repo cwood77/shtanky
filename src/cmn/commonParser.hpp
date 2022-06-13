@@ -67,8 +67,8 @@ class lexorBase;
 //          | 'else' <statement-or-body>
 //          | e
 //
-// <loop> ::== 'for' <loop'>
-// <loop'> ::== <loop-name> '(' <rvalue> ')' <statement-or-body>
+// <loop> ::== 'for' <loop-name> '(' <rvalue> ',' <rvalue> ')' <statement-or-body>
+//           | 'while' <loop-name> '(' <rvalue> ')' <statement-or-body>
 // <loop-name> ::== '[' '+' <name> ']'
 //                | '[' '-' <name> ']'
 //                | e
@@ -176,8 +176,7 @@ private:
    void parseIf(node& owner);
    void parseIfPrime(node& owner);
    void parseLoop(node& owner);
-   void parseLoopPrime(forLoopNode& l);
-   void parseLoopName(forLoopNode& l);
+   void parseLoopName(loopBaseNode& l);
 
    // ------------------------- L-value / R-value
    node& parseLValue();
