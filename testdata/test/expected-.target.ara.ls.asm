@@ -18,7 +18,7 @@
              mov, [rcx+8], rdi            ; =
              sub, rsp, 32                 
              mov, rdx, rbx                ;       (args req for rdx) [splitter]
-             call, [rcx]                  ; (vtbl call)
+             call, [rcx]                  ; vtbl call to .test.test_vtbl::run
              add, rsp, 32                 
              sub, rsp, 32                 
              call, .test.test_sdtor       ; (call label)

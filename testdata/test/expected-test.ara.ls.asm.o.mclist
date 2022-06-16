@@ -14,7 +14,7 @@ rex(48)op(83)modR/M(ec)i8(20)
 rex(48)op(8b)modR/M(59)d8(08)
 // 12:                 lea, rdx, qwordptr ._strLit_helloWorld_0 
 rex(48)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
-// 13:                 call, [rbx]                              ; (vtbl call)
+// 13:                 call, [rbx]                              ; vtbl call to .sht.cons.iStream_vtbl::printLn
 rex(48)op(ff)modR/M(13)
 // 14:                 add, rsp, 32                             
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)

@@ -140,7 +140,7 @@ void astCodeGen::visit(cmn::invokeVTableNode& n) // TODO left off here
       .append(cmn::tgt::kCall)
          .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
          .returnToParent(0)
-         .withComment("(vtbl call)");
+         .withComment(std::string("vtbl call to ") + n.name);
 
    // first arg (call ptr)
    if(needsLocal)

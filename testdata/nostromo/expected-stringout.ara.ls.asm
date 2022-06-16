@@ -22,7 +22,7 @@
                           add, rsp, 32                      
                           mov, rdx, rax                     ;       (rval1 req for rdx) [splitter]
                           mov, rcx, rbx                     ; (restore [combiner])
-                          call, [rdi]                       ; (vtbl call)
+                          call, [rdi]                       ; vtbl call to .nostromo.uart16550.driver_vtbl::write8
                           add, rsp, 32                      
                           mov, rsp, rbp                     
                           pop, rdi                          

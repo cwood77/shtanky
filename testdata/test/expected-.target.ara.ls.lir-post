@@ -15,7 +15,7 @@
 120 <postcall>       @totalStackSize/32                                                                                                 
 130 mov              [~obj0+8]/0, $cout/0                                                                                               ;;; =
 140 <precall>        @totalStackSize/32                                                                                                 
-150 call             ~rval2/0, [~obj0]/0, $obj0/0, $args/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0                      ;;; (vtbl call)
+150 call             ~rval2/0, [~obj0]/0, $obj0/0, $args/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0                      ;;; vtbl call to .test.test_vtbl::run
 160 <postcall>       @totalStackSize/32                                                                                                 
 170 <precall>        @totalStackSize/32                                                                                                 
 180 call             ~rval3/0, !.test.test_sdtor/0, $obj0/0, ~rdx_burn1/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0       ;;; (call label)

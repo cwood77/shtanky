@@ -10,7 +10,7 @@
                 sub, rsp, 32                             
                 mov, rbx, [rcx+8]                        ; fieldaccess: owner of _vtbl
                 lea, rdx, qwordptr ._strLit_helloWorld_0 
-                call, [rbx]                              ; (vtbl call)
+                call, [rbx]                              ; vtbl call to .sht.cons.iStream_vtbl::printLn
                 add, rsp, 32                             
                 mov, rsp, rbp                            
                 pop, rbx                                 

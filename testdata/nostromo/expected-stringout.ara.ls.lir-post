@@ -17,7 +17,7 @@
 100 <precall>        @totalStackSize/32                                                                                             
 110 call             ~rval1/0, !.sht.core.string.indexOpGet/0, $msg/0, @0/1, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
 120 <postcall>       @totalStackSize/32                                                                                             
-130 call             ~rval2/0, [~_vtbl]/0, [~self+8]/0, ~rval1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0            ;;; (vtbl call)
+130 call             ~rval2/0, [~_vtbl]/0, [~self+8]/0, ~rval1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0            ;;; vtbl call to .nostromo.uart16550.driver_vtbl::write8
 140 <postcall>       @totalStackSize/32                                                                                             
 150 <unreserveLocal> $l/8                                                                                                           
 160 <exitFunc>       

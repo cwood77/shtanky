@@ -35,6 +35,7 @@ void vTableInvokeDetector::visit(cmn::invokeFuncPtrNode& n)
 
    auto *pNoob = new cmn::invokeVTableNode();
    // each field is a pointer, so convert to index by dividing by pointer size
+   pNoob->name = ty.getName() + "::" + pFa->name;
    pNoob->index = sty.getOffsetOfField(pFa->name,m_t) / m_t.getRealSize(0);
    pNoob->appendChild(*pVTable);
    pFa->getChildren().clear();

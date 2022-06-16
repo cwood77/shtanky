@@ -563,6 +563,7 @@ class invokeVTableNode : public node {
 public:
    invokeVTableNode() : index(0) {}
 
+   std::string name; // name is not strictly necessary, but is preserved for asm comments
    size_t index;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }

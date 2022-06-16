@@ -35,7 +35,7 @@ rex(48)op(89)modR/M(79)d8(08)
 rex(48)op(83)modR/M(ec)i8(20)
 // 20:              mov, rdx, rbx                ;       (args req for rdx) [splitter]
 rex(48)op(89)modR/M(da)
-// 21:              call, [rcx]                  ; (vtbl call)
+// 21:              call, [rcx]                  ; vtbl call to .test.test_vtbl::run
 rex(48)op(ff)modR/M(11)
 // 22:              add, rsp, 32                 
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)

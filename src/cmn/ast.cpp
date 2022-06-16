@@ -470,8 +470,9 @@ void diagVisitor::visit(invokeFuncPtrNode& n)
 
 void diagVisitor::visit(invokeVTableNode& n)
 {
-   cdwDEBUG("%sinvoke v-table %lld\n",
+   cdwDEBUG("%sinvoke v-table %s %lld\n",
       getIndent().c_str(),
+      n.name.c_str(),
       n.index);
 
    autoIndent _a(*this);
@@ -989,6 +990,7 @@ void astFormatter::visit(invokeFuncPtrNode& n)
 void astFormatter::visit(invokeVTableNode& n)
 {
    cdwDumpAstStart(invokeVTableNode)
+   cdwDumpAstField(name)
    cdwDumpAstField(index)
    cdwDumpAstEnd()
 }
@@ -1237,6 +1239,7 @@ void fieldCopyingNodeVisitor::visit(userTypeNode& n)
 
 void fieldCopyingNodeVisitor::visit(invokeVTableNode& n)
 {
+   as<invokeVTableNode>().name = n.name;
    as<invokeVTableNode>().index = n.index;
    hNodeVisitor::visit(n);
 }

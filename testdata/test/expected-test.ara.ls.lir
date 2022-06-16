@@ -8,7 +8,7 @@
 0 <precall>   
 0 mov         ~_vtbl/0, [~self+8]/0                                                                         ;;; fieldaccess: owner of _vtbl
 0 lea         ~str/0, !._strLit_helloWorld_0/0                                                              
-0 call        ~rval0/0, [~_vtbl]/0, [~self+8]/0, ~str/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (vtbl call)
+0 call        ~rval0/0, [~_vtbl]/0, [~self+8]/0, ~str/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; vtbl call to .sht.cons.iStream_vtbl::printLn
 
 ----- start stream .test.test.cctor
 0 <enterFunc> ~rval1/0, $self/0 ;;; .test.test.cctor

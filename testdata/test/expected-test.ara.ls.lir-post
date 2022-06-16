@@ -10,7 +10,7 @@
 30 <precall>       @totalStackSize/32                                                                            
 40 mov             ~_vtbl/0, [~self+8]/0                                                                         ;;; fieldaccess: owner of _vtbl
 50 lea             ~str/0, !._strLit_helloWorld_0/0                                                              
-60 call            ~rval0/0, [~_vtbl]/0, [~self+8]/0, ~str/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (vtbl call)
+60 call            ~rval0/0, [~_vtbl]/0, [~self+8]/0, ~str/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; vtbl call to .sht.cons.iStream_vtbl::printLn
 70 <postcall>      @totalStackSize/32                                                                            
 80 <exitFunc>      
 
