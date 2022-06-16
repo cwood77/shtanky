@@ -85,7 +85,10 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
    if(srcStor == cmn::tgt::kStorageImmediate)
       pSrc = &mov.addArg<lirArgConst>(v.getImmediateData(),v.getSize());
    else
+   {
       pSrc = &mov.addArg<lirArgVar>("spltS",v.getSize());
+      preserveDisp(v,orderNum,*pSrc);
+   }
 
    v.refs[mov.orderNum].push_back(&dest);
    v.refs[mov.orderNum].push_back(pSrc);
@@ -95,6 +98,21 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
    m_newInstrs.push_back(std::make_pair<lirInstr*,size_t>(&mov,(size_t)destStor));
 
    v.storageDisambiguators[&dest] = destStor;
+}
+
+void varSplitter::preserveDisp(var& v, size_t orderNum, lirArg& splitSrcArg)
+{
+   // consider returning a field (e.g. "ret [rcx+8]").  In this case, I'll split rcx -> rax,
+   // when I really want to split [rcx+8] -> rax.  So, preserve any displacement
+   // while splitting
+
+   auto& args = v.refs[orderNum];
+   if(args.size() != 1)
+      cdwTHROW("insanity");
+   auto& origArg = **args.begin();
+
+   splitSrcArg.disp = origArg.disp;
+   splitSrcArg.addrOf = origArg.addrOf;
 }
 
 void splitResolver::run()
@@ -108,7 +126,7 @@ void splitResolver::run()
 
          auto prev = src.getStorageAt(pInstr->orderNum-1);
          if(prev.size() != 1)
-            cdwTHROW("insane!  to many previous storages!");
+            cdwTHROW("insane!  too many previous storages!");
 
          src.requireStorage(pInstr->orderNum,*prev.begin());
          src.storageDisambiguators[pInstr->getArgs()[1]] = *prev.begin();

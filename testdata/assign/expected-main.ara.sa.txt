@@ -1,0 +1,50 @@
+[program] 
+class assignTester : .sht.cons.program {
+
+   override run(args : str[]) : void
+   {
+   }
+   private readFromSubObject(a : A, v : void) : void
+   {
+      v = a:_b;
+   }
+   private writeIntoSubObject() : void
+   {
+      var a : A;
+      a:_b = 7;
+   }
+   private readFromSubSubObject(a : A, wrong : void) : void
+   {
+      wrong = a:_b:_x;
+   }
+   private writeIntoSubSubObject() : void
+   {
+      var wrong : A;
+      wrong:_b:_x = 7;
+   }
+   private bopAssociativity() : void
+   {
+      var v : void;
+      v = 1 + 2 + 3;
+   }
+
+}
+
+class A {
+
+   [allow:assignTester] 
+   private _x : void;
+   [allow:assignTester] 
+   private _b : B;
+
+}
+
+class B {
+
+   [allow:assignTester] 
+   private _unused : void;
+   [allow:assignTester] 
+   private _x : void;
+
+}
+

@@ -1,4 +1,4 @@
-=== LIR bundle has 5 objects(s) ===   (hint: $=var, ~=temp, @=immediate)
+=== LIR bundle has 5 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
 
 ----- start stream .sht.core.object.cctor
 10 <selectSegment> @code/0          
@@ -6,31 +6,33 @@
 30 <exitFunc>      
 
 ----- start stream .sht.core.object.cdtor
-10 <selectSegment> @code/0            
-20 <enterFunc>     ~rval0/0, $self0/0 ;;; .sht.core.object.cdtor
+10 <selectSegment> @code/0           
+20 <enterFunc>     ~rval0/0, $self/0 ;;; .sht.core.object.cdtor
 30 <exitFunc>      
 
 ----- start stream .sht.core.object_vtbl_inst
-10 <selectSegment>   @const/0 
-20 <globalConstData> @/0      ;;; .sht.core.object_vtbl_inst
+10 <selectSegment> @code/0
+20 <label>         !.sht.core.object_vtbl_inst/0
 
 ----- start stream .sht.core.object_sctor
-10 <selectSegment> @code/0                                      
-20 <enterFunc>     ~rval1/0, $self1/0                           ;;; .sht.core.object_sctor
-30 mov             [~self]/0, @.sht.core.object_vtbl_inst/0     ;;; =
-40 <precall>       @totalStackSize/32                           
-50 call            ~rval2/0, @.sht.core.object.cctor/0, $self/0 ;;; (call label)
-60 <postcall>      @totalStackSize/32                           
-70 <exitFunc>      
+10 <selectSegment> @code/0                                                                                                       
+20 <enterFunc>     ~rval1/0, $self/0                                                                                             ;;; .sht.core.object_sctor
+30 lea             ~str/0, !.sht.core.object_vtbl_inst/0                                                                         
+40 mov             [~self]/0, ~str/0                                                                                             ;;; =
+50 <precall>       @totalStackSize/32                                                                                            
+60 call            ~rval2/0, !.sht.core.object.cctor/0, $self/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (call label)
+70 <postcall>      @totalStackSize/32                                                                                            
+80 <exitFunc>      
 
 ----- start stream .sht.core.object_sdtor
-10 <selectSegment> @code/0                                      
-20 <enterFunc>     ~rval3/0, $self2/0                           ;;; .sht.core.object_sdtor
-30 mov             [~self]/0, @.sht.core.object_vtbl_inst/0     ;;; =
-40 <precall>       @totalStackSize/32                           
-50 call            ~rval4/0, @.sht.core.object.cdtor/0, $self/0 ;;; (call label)
-60 <postcall>      @totalStackSize/32                           
-70 <exitFunc>      
+10 <selectSegment> @code/0                                                                                                            
+20 <enterFunc>     ~rval3/0, $self/0                                                                                                  ;;; .sht.core.object_sdtor
+30 lea             ~str0/0, !.sht.core.object_vtbl_inst/0                                                                             
+40 mov             [~self]/0, ~str0/0                                                                                                 ;;; =
+50 <precall>       @totalStackSize/32                                                                                                 
+60 call            ~rval4/0, !.sht.core.object.cdtor/0, $self/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
+70 <postcall>      @totalStackSize/32                                                                                                 
+80 <exitFunc>      
 
 === end of LIR bundle dump ===
 

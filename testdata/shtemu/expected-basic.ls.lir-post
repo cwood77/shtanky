@@ -1,0 +1,95 @@
+=== LIR bundle has 8 objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)
+
+----- start stream .text0
+10 <selectSegment>   @const/0           
+20 <globalConstData> @"text 0" <b> 0 /0 ;;; .text0
+
+----- start stream .text1
+10 <selectSegment>   @const/0           
+20 <globalConstData> @"text 1" <b> 0 /0 ;;; .text1
+
+----- start stream .text2
+10 <selectSegment>   @const/0           
+20 <globalConstData> @"text 2" <b> 0 /0 ;;; .text2
+
+----- start stream .virtFunc0
+10 <selectSegment> @code/0                                                                                       
+20 <enterFunc>     ~rval/0                                                                                       ;;; .virtFunc0
+30 <precall>       @totalStackSize/32                                                                            
+40 lea             ~str/0, !.text0/0                                                                             
+50 call            ~rval0/0, !._print/0, ~str/0, ~rdx_burn/0, ~r8_burn/0, ~r9_burn/0, ~r10_trash/0, ~r11_trash/0 ;;; (call label)
+60 <postcall>      @totalStackSize/32                                                                            
+70 <exitFunc>      
+
+----- start stream .virtFunc1
+10 <selectSegment> @code/0                                                                                             
+20 <enterFunc>     ~rval1/0                                                                                            ;;; .virtFunc1
+30 <precall>       @totalStackSize/32                                                                                  
+40 lea             ~str0/0, !.text1/0                                                                                  
+50 call            ~rval2/0, !._print/0, ~str0/0, ~rdx_burn0/0, ~r8_burn0/0, ~r9_burn0/0, ~r10_trash0/0, ~r11_trash0/0 ;;; (call label)
+60 <postcall>      @totalStackSize/32                                                                                  
+70 <exitFunc>      
+
+----- start stream .vinst
+10 <selectSegment> @code/0
+20 <label>         !.vinst/0
+30 goto            !.virtFunc0/0
+40 goto            !.virtFunc1/0
+
+----- start stream .ctor
+10 <selectSegment> @code/0            
+20 <enterFunc>     ~rval3/0, $self/0  ;;; .ctor
+30 lea             ~str1/0, !.vinst/0 
+40 mov             [~self]/0, ~str1/0 ;;; =
+50 <exitFunc>      
+
+----- start stream .entrypoint
+10  <selectSegment>  @code/0                                                                                                                       
+20  <enterFunc>      ~rval4/0                                                                                                                      ;;; .entrypoint
+30  <reserveLocal>   $o_alloc/8                                                                                                                    ;;; o
+40  lea              $o/8, $o_alloc/8                                                                                                              ;;; o
+50  <precall>        @totalStackSize/32                                                                                                            
+60  call             ~rval5/0, !.ctor/0, $o/0, ~rdx_burn1/0, ~r8_burn1/0, ~r9_burn1/0, ~r10_trash1/0, ~r11_trash1/0                                ;;; (call label)
+70  <postcall>       @totalStackSize/32                                                                                                            
+80  <precall>        @totalStackSize/32                                                                                                            
+90  lea              ~str2/0, !.text2/0                                                                                                            
+100 call             ~rval6/0, !._print/0, ~str2/0, ~rdx_burn2/0, ~r8_burn2/0, ~r9_burn2/0, ~r10_trash2/0, ~r11_trash2/0                           ;;; (call label)
+110 <postcall>       @totalStackSize/32                                                                                                            
+120 <precall>        @totalStackSize/32                                                                                                            
+130 call             ~rval7/0, [~o]/0, ~rcx_burn/0, ~rdx_burn3/0, ~r8_burn3/0, ~r9_burn3/0, ~r10_trash3/0, ~r11_trash3/0                           ;;; (vtbl call)
+140 <postcall>       @totalStackSize/32                                                                                                            
+150 <reserveLocal>   ~callPtr_forVTable/0                                                                                                          ;;; scratch for vtable callptr calculation
+160 <precall>        @totalStackSize/32                                                                                                            
+170 mov              ~callPtr_forVTable/0, [~o]/0                                                                                                  
+180 add              ~callPtr_forVTable/0, @5/0                                                                                                    
+190 lea              ~addrOf_callPtr_forVTable/0, ~callPtr_forVTable/0                                                                             
+200 call             ~rval8/0, [~addrOf_callPtr_forVTable]/0, ~rcx_burn0/0, ~rdx_burn4/0, ~r8_burn4/0, ~r9_burn4/0, ~r10_trash4/0, ~r11_trash4/0   ;;; (vtbl call)
+210 <postcall>       @totalStackSize/32                                                                                                            
+220 <precall>        @totalStackSize/32                                                                                                            
+230 call             ~rval9/0, [~o]/0, ~rcx_burn1/0, ~rdx_burn5/0, ~r8_burn5/0, ~r9_burn5/0, ~r10_trash5/0, ~r11_trash5/0                          ;;; (vtbl call)
+240 <postcall>       @totalStackSize/32                                                                                                            
+250 <reserveLocal>   ~callPtr_forVTable0/0                                                                                                         ;;; scratch for vtable callptr calculation
+260 <precall>        @totalStackSize/32                                                                                                            
+270 mov              ~callPtr_forVTable0/0, [~o]/0                                                                                                 
+280 add              ~callPtr_forVTable0/0, @5/0                                                                                                   
+290 lea              ~addrOf_callPtr_forVTable0/0, ~callPtr_forVTable0/0                                                                           
+300 call             ~rval10/0, [~addrOf_callPtr_forVTable0]/0, ~rcx_burn2/0, ~rdx_burn6/0, ~r8_burn6/0, ~r9_burn6/0, ~r10_trash6/0, ~r11_trash6/0 ;;; (vtbl call)
+310 <postcall>       @totalStackSize/32                                                                                                            
+320 <unreserveLocal> ~callPtr_forVTable0/0                                                                                                         
+330 <unreserveLocal> ~callPtr_forVTable/0                                                                                                          
+340 <unreserveLocal> $o_alloc/8                                                                                                                    
+350 <exitFunc>       
+
+=== end of LIR bundle dump ===
+
+~~~ some debugging hints for this target ~~~
+
+pref order              rbx rdi rsi r12 r13 r14 r15 rax rcx rdx r8 r9 r10 r11
+passing order           -   -   -   -   -   -   -   0   1   2   3  4  -   -
+saved in Prolog or Call P   P   P   P   P   P   P   C   C   C   C  C  C   C
+as int                  24  30  29  35  36  37  38  23  25  26  31 32 33  34
+
+reg rax rbx rcx rdx rbp rsp rsi rdi r8 r9 r10 r11 r12 r13 r14 r15
+    23  24  25  26  27  28  29  30  31 32 33  34  35  36  37  38
+
+cc shadow space = 32

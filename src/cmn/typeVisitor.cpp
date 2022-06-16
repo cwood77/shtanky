@@ -3,9 +3,31 @@
 
 namespace cmn {
 
+// here, you are guaranteed to get a stub (userTypeVisitor hasn't run yet)
+// that allows transforms later to demand a type
+void builtInTypeVisitor::visit(classNode& n)
+{
+   m_pBuilder.reset(
+      type::typeBuilder::open(
+         type::gTable->fetch(
+            fullyQualifiedName::build(n))));
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
+
+   hNodeVisitor::visit(n);
+}
+
 void builtInTypeVisitor::visit(strTypeNode& n)
 {
    m_pBuilder.reset(type::typeBuilder::createString());
+   hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
+}
+
+void builtInTypeVisitor::visit(boolTypeNode& n)
+{
+   m_pBuilder.reset(type::typeBuilder::createBool());
    hNodeVisitor::visit(n);
    type::gNodeCache->publish(n,m_pBuilder->finish());
    m_pBuilder.reset(NULL);
@@ -35,20 +57,6 @@ void builtInTypeVisitor::visit(voidTypeNode& n)
 
 // here, you are guaranteed to get a stub (userTypeVisitor hasn't run yet)
 // that allows transforms later to demand a type
-void builtInTypeVisitor::visit(classNode& n)
-{
-   m_pBuilder.reset(
-      type::typeBuilder::open(
-         type::gTable->fetch(
-            fullyQualifiedName::build(n))));
-   type::gNodeCache->publish(n,m_pBuilder->finish());
-   m_pBuilder.reset(NULL);
-
-   hNodeVisitor::visit(n);
-}
-
-// here, you are guaranteed to get a stub (userTypeVisitor hasn't run yet)
-// that allows transforms later to demand a type
 void builtInTypeVisitor::visit(userTypeNode& n)
 {
    m_pBuilder.reset(
@@ -71,6 +79,14 @@ void builtInTypeVisitor::visit(ptrTypeNode& n)
 void builtInTypeVisitor::visit(stringLiteralNode& n)
 {
    m_pBuilder.reset(type::typeBuilder::createString());
+   hNodeVisitor::visit(n);
+   type::gNodeCache->publish(n,m_pBuilder->finish());
+   m_pBuilder.reset(NULL);
+}
+
+void builtInTypeVisitor::visit(boolLiteralNode& n)
+{
+   m_pBuilder.reset(type::typeBuilder::createBool());
    hNodeVisitor::visit(n);
    type::gNodeCache->publish(n,m_pBuilder->finish());
    m_pBuilder.reset(NULL);
@@ -195,7 +211,7 @@ void typePropagator::visit(callNode& n)
 {
    hNodeVisitor::visit(n);
 
-   auto fqn = fullyQualifiedName::build(*n.pTarget.getRefee(),n.pTarget.ref);
+   auto fqn = fullyQualifiedName::build(n.pTarget.getRefee()->getNode(),n.pTarget.ref);
    auto& rVal = type::gTable->fetch(fqn).as<type::iFunctionType>().getReturnType();
    type::gNodeCache->publish(n,rVal);
 }
@@ -218,7 +234,12 @@ void typePropagator::visit(bopNode& n)
 {
    hNodeVisitor::visit(n);
 
-   type::gNodeCache->publish(n,type::gNodeCache->demand(*n.getChildren()[0]));
+   if(n.op == "+")
+      type::gNodeCache->publish(n,type::gNodeCache->demand(*n.getChildren()[0]));
+   else if(n.op == "<")
+      type::gNodeCache->publish(n,type::gTable->fetch("bool"));
+   else
+      cdwTHROW("unknown bop %s",n.op.c_str());
 }
 
 void typePropagator::visit(indexNode& n)

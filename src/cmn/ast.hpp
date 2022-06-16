@@ -1,8 +1,9 @@
 #pragma once
-
+#include "global.hpp"
 #include "throw.hpp"
 #include <functional>
 #include <list>
+#include <map>
 #include <memory>
 #include <set>
 #include <sstream>
@@ -12,6 +13,8 @@
 #include <vector>
 
 namespace cmn {
+
+class outStream;
 
 class node;
 class araceliProjectNode;
@@ -36,8 +39,10 @@ class voidTypeNode;
 class userTypeNode;
 class ptrTypeNode;
 class sequenceNode;
+class returnNode;
 class invokeNode;
 class invokeFuncPtrNode;
+class invokeVTableNode;
 class fieldAccessNode;
 class callNode;
 class localDeclNode;
@@ -46,6 +51,13 @@ class assignmentNode;
 class bopNode;
 class indexNode;
 class ifNode;
+class loopIntrinsicNode;
+class loopBaseNode;
+class forLoopNode;
+class whileLoopNode;
+class loopStartNode;
+class loopBreakNode;
+class loopEndNode;
 class stringLiteralNode;
 class boolLiteralNode;
 class intLiteralNode;
@@ -81,8 +93,10 @@ public:
    virtual void visit(userTypeNode& n) = 0;
    virtual void visit(ptrTypeNode& n) = 0;
    virtual void visit(sequenceNode& n) = 0;
+   virtual void visit(returnNode& n) = 0;
    virtual void visit(invokeNode& n) = 0;
    virtual void visit(invokeFuncPtrNode& n) = 0;
+   virtual void visit(invokeVTableNode& n) = 0;
    virtual void visit(fieldAccessNode& n) = 0;
    virtual void visit(callNode& n) = 0;
    virtual void visit(localDeclNode& n) = 0;
@@ -91,6 +105,13 @@ public:
    virtual void visit(bopNode& n) = 0;
    virtual void visit(indexNode& n) = 0;
    virtual void visit(ifNode& n) = 0;
+   virtual void visit(loopIntrinsicNode& n) = 0;
+   virtual void visit(loopBaseNode& n) = 0;
+   virtual void visit(forLoopNode& n) = 0;
+   virtual void visit(whileLoopNode& n) = 0;
+   virtual void visit(loopStartNode& n) = 0;
+   virtual void visit(loopBreakNode& n) = 0;
+   virtual void visit(loopEndNode& n) = 0;
    virtual void visit(stringLiteralNode& n) = 0;
    virtual void visit(boolLiteralNode& n) = 0;
    virtual void visit(intLiteralNode& n) = 0;
@@ -132,6 +153,36 @@ namespace nodeFlags {
    };
 };
 
+class linkBase {
+public:
+   linkBase() : m_pRefee(NULL) {}
+   ~linkBase();
+
+   virtual void bind(node& dest) = 0;
+   virtual bool tryBind(node& dest) = 0;
+
+   std::string ref;
+
+   node *_getRefee() { return m_pRefee; }
+
+protected:
+   node *m_pRefee;
+};
+
+class linkTarget {
+public:
+   void addRefer(linkBase& l);
+   void removeRefer(linkBase& l);
+
+   // 'try' b/c the migrate will fail if the link won't bind b/c type mismatch
+   void tryMigrateRefers(node& noob);
+
+   const std::set<linkBase*>& getRefers() const { return m_refers; }
+
+private:
+   std::set<linkBase*> m_refers;
+};
+
 class node {
 public:
    node() : lineNumber(0), flags(0), m_pParent(NULL) {}
@@ -140,11 +191,13 @@ public:
    unsigned long lineNumber;
    std::set<std::string> attributes;
    size_t flags;
+   linkTarget lTarget;
 
    node *getParent() { return m_pParent; }
    void injectAbove(node& n);
    void appendChild(node& n);
    void insertChild(size_t i, node& n);
+   void insertChildBefore(node& noob, node& antecedent);
    void insertChildAfter(node& noob, node& antecedent);
    node *replaceChild(node& old, node& nu); // caller responsible for delete
    void removeChild(node& n);
@@ -228,33 +281,82 @@ private:
    node& operator=(const node&);
 };
 
-class linkBase {
-public:
-   linkBase() : m_pRefee(NULL) {}
-
-   virtual void bind(node& dest) = 0;
-
-   std::string ref;
-
-   node *_getRefee() { return m_pRefee; }
-
-protected:
-   node *m_pRefee;
-};
-
 template<class T>
 class link : public linkBase {
 public:
    virtual void bind(node& dest)
    {
+      if(!tryBind(dest))
+         cdwTHROW(std::string("link expected node type ") + typeid(T).name());
+   }
+
+   virtual bool tryBind(node& dest)
+   {
       auto *p = dynamic_cast<T*>(&dest);
       if(!p)
-         cdwTHROW(
-            std::string("link expected node type ") + typeid(T).name());
+         return false;
+
+      if(m_pRefee)
+         m_pRefee->lTarget.removeRefer(*this);
       m_pRefee = &dest;
+      m_pRefee->lTarget.addRefer(*this);
+      return true;
    }
 
    T *getRefee() { return dynamic_cast<T*>(m_pRefee); }
+};
+
+class iNodeDeleteOperation {
+public:
+   virtual void onNodeDeleted(node& n) = 0;
+   virtual void onLinkDeleted(linkBase& n) = 0;
+   virtual void complete() = 0;
+};
+
+class rootNodeDeleteOperation : private iNodeDeleteOperation {
+public:
+   void push(iNodeDeleteOperation& o) { m_stack.push_front(&o); }
+   void pop() { m_stack.pop_front(); }
+
+   iNodeDeleteOperation& head();
+
+private:
+   virtual void onNodeDeleted(node& n);
+   virtual void onLinkDeleted(linkBase& n);
+   virtual void complete() {}
+
+   std::list<iNodeDeleteOperation*> m_stack;
+};
+
+extern timedGlobal<rootNodeDeleteOperation> gNodeDeleteOp;
+
+class scopedNodeDeleteOperation : public iNodeDeleteOperation {
+public:
+   virtual void onNodeDeleted(node& n);
+   virtual void onLinkDeleted(linkBase& n);
+   virtual void complete();
+
+private:
+   std::map<linkTarget*,std::set<linkBase*> > m_danglingLinks;
+   std::map<linkTarget*,std::string> m_nodeTypes;
+};
+
+// generally speaking, you don't need a delete op to delete nodes,
+// so long as you never delete a refee before deleting a refer.
+// if you're doing that, use a delete group so you aren't falsely
+// accused of leaving behind a dangling pointer
+class autoNodeDeleteOperation : public scopedNodeDeleteOperation {
+public:
+   autoNodeDeleteOperation()
+   {
+      gNodeDeleteOp->push(*this);
+   }
+
+   ~autoNodeDeleteOperation()
+   {
+      gNodeDeleteOp->head().complete();
+      gNodeDeleteOp->pop();
+   }
 };
 
 // ----------------------- interfaces -----------------------
@@ -264,6 +366,14 @@ public:
 class iVarSourceNode {
 public:
    virtual const std::string& getNameForVarRefee() const = 0;
+};
+
+// anything callable via an invoke (i.e. methods, functions)
+class iInvokeTargetNode {
+public:
+   virtual bool isDynDispatch() const = 0;
+   virtual const std::string& getShortName() const = 0;
+   virtual cmn::node& getNode() = 0;
 };
 
 // ----------------------- project -----------------------
@@ -334,11 +444,14 @@ public:
    virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
-class methodNode : public memberNode {
+class methodNode : public memberNode, public iInvokeTargetNode {
 public:
    link<methodNode> baseImpl;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+   virtual bool isDynDispatch() const { return flags & nodeFlags::kDynDispatchMask; }
+   virtual const std::string& getShortName() const { return baseImpl.ref; }
+   virtual cmn::node& getNode() { return *this; }
 };
 
 class fieldNode : public memberNode {
@@ -354,12 +467,15 @@ public:
    virtual const std::string& getNameForVarRefee() const { return name; }
 };
 
-class funcNode : public node, public iVarSourceNode {
+class funcNode : public node, public iVarSourceNode, public iInvokeTargetNode {
 public:
    std::string name;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
    virtual const std::string& getNameForVarRefee() const { return name; }
+   virtual bool isDynDispatch() const { return false; }
+   virtual const std::string& getShortName() const { return name; }
+   virtual cmn::node& getNode() { return *this; }
 };
 
 class intrinsicNode : public funcNode {
@@ -426,17 +542,30 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+class returnNode : public node {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
 class invokeNode : public node {
 public:
-   link<methodNode> proto; // the _ONLY_ unimpled link
-                           // TODO I need this for araceli compile--to tell dynamic vs.
-                           // static dispatch!
+   link<methodNode> proto;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
 class invokeFuncPtrNode : public node {
 public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class invokeVTableNode : public node {
+public:
+   invokeVTableNode() : index(0) {}
+
+   std::string name; // name is not strictly necessary, but is preserved for asm comments
+   size_t index;
+
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
@@ -449,7 +578,7 @@ public:
 
 class callNode : public node {
 public:
-   link<funcNode> pTarget;
+   link<iInvokeTargetNode> pTarget;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
@@ -491,6 +620,58 @@ public:
 
 class ifNode : public node {
 public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class loopIntrinsicNode : public node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class loopBaseNode : public node {
+public:
+   std::string name;
+   bool scoped;
+   bool decomposed;
+
+   std::string computeLoopGuid();
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+
+protected:
+   loopBaseNode() : scoped(false), decomposed(false) {}
+};
+
+class forLoopNode : public loopBaseNode {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class whileLoopNode : public loopBaseNode {
+public:
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class loopStartNode : public node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class loopBreakNode : public node {
+public:
+   std::string name;
+
+   virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
+};
+
+class loopEndNode : public node {
+public:
+   std::string name;
+
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
@@ -575,8 +756,10 @@ public:
    virtual void visit(userTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(ptrTypeNode& n) { visit(static_cast<typeNode&>(n)); }
    virtual void visit(sequenceNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(returnNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(invokeNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(invokeFuncPtrNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(invokeVTableNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(fieldAccessNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(callNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(localDeclNode& n) { visit(static_cast<node&>(n)); }
@@ -585,6 +768,13 @@ public:
    virtual void visit(bopNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(indexNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(ifNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(loopIntrinsicNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(loopBaseNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(forLoopNode& n) { visit(static_cast<loopBaseNode&>(n)); }
+   virtual void visit(whileLoopNode& n) { visit(static_cast<loopBaseNode&>(n)); }
+   virtual void visit(loopStartNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(loopBreakNode& n) { visit(static_cast<node&>(n)); }
+   virtual void visit(loopEndNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(stringLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(boolLiteralNode& n) { visit(static_cast<node&>(n)); }
    virtual void visit(intLiteralNode& n) { visit(static_cast<node&>(n)); }
@@ -620,8 +810,10 @@ public:
    virtual void visit(userTypeNode& n);
    virtual void visit(ptrTypeNode& n);
    virtual void visit(sequenceNode& n);
+   virtual void visit(returnNode& n);
    virtual void visit(invokeNode& n);
    virtual void visit(invokeFuncPtrNode& n);
+   virtual void visit(invokeVTableNode& n);
    virtual void visit(fieldAccessNode& n);
    virtual void visit(callNode& n);
    virtual void visit(localDeclNode& n);
@@ -630,6 +822,13 @@ public:
    virtual void visit(bopNode& n);
    virtual void visit(indexNode& n);
    virtual void visit(ifNode& n);
+   virtual void visit(loopIntrinsicNode& n);
+   virtual void visit(loopBaseNode& n);
+   virtual void visit(forLoopNode& n);
+   virtual void visit(whileLoopNode& n);
+   virtual void visit(loopStartNode& n);
+   virtual void visit(loopBreakNode& n);
+   virtual void visit(loopEndNode& n);
    virtual void visit(stringLiteralNode& n);
    virtual void visit(boolLiteralNode& n);
    virtual void visit(intLiteralNode& n);
@@ -653,6 +852,66 @@ private:
    std::string getIndent() const;
 
    size_t m_nIndents;
+};
+
+class astFormatter : public hNodeVisitor {
+public:
+   explicit astFormatter(outStream& s) : m_s(s) {}
+
+   virtual void visit(node& n);
+   virtual void visit(araceliProjectNode& n);
+   virtual void visit(liamProjectNode& n);
+   virtual void visit(scopeNode& n);
+   virtual void visit(fileNode& n);
+   virtual void visit(fileRefNode& n);
+   virtual void visit(classNode& n);
+   virtual void visit(memberNode& n);
+   virtual void visit(methodNode& n);
+   virtual void visit(fieldNode& n);
+   virtual void visit(constNode& n);
+   virtual void visit(funcNode& n);
+   virtual void visit(intrinsicNode& n);
+   virtual void visit(argNode& n);
+   virtual void visit(typeNode& n);
+   virtual void visit(strTypeNode& n);
+   virtual void visit(boolTypeNode& n);
+   virtual void visit(intTypeNode& n);
+   virtual void visit(arrayTypeNode& n);
+   virtual void visit(voidTypeNode& n);
+   virtual void visit(userTypeNode& n);
+   virtual void visit(ptrTypeNode& n);
+   virtual void visit(sequenceNode& n);
+   virtual void visit(returnNode& n);
+   virtual void visit(invokeNode& n);
+   virtual void visit(invokeFuncPtrNode& n);
+   virtual void visit(invokeVTableNode& n);
+   virtual void visit(fieldAccessNode& n);
+   virtual void visit(callNode& n);
+   virtual void visit(localDeclNode& n);
+   virtual void visit(varRefNode& n);
+   virtual void visit(assignmentNode& n);
+   virtual void visit(bopNode& n);
+   virtual void visit(indexNode& n);
+   virtual void visit(ifNode& n);
+   virtual void visit(loopIntrinsicNode& n);
+   virtual void visit(loopBaseNode& n);
+   virtual void visit(forLoopNode& n);
+   virtual void visit(whileLoopNode& n);
+   virtual void visit(loopStartNode& n);
+   virtual void visit(loopBreakNode& n);
+   virtual void visit(loopEndNode& n);
+   virtual void visit(stringLiteralNode& n);
+   virtual void visit(boolLiteralNode& n);
+   virtual void visit(intLiteralNode& n);
+   virtual void visit(structLiteralNode& n);
+   virtual void visit(genericNode& n);
+   virtual void visit(constraintNode& n);
+   virtual void visit(instantiateNode& n);
+
+   virtual void _implementLanguage() {} // all
+
+private:
+   outStream& m_s;
 };
 
 template<class T = hNodeVisitor>
@@ -735,8 +994,10 @@ public:
    virtual void visit(userTypeNode&) { inst.reset(new userTypeNode()); }
    virtual void visit(ptrTypeNode&) { inst.reset(new ptrTypeNode()); }
    virtual void visit(sequenceNode&) { inst.reset(new sequenceNode()); }
+   virtual void visit(returnNode&) { inst.reset(new returnNode()); }
    virtual void visit(invokeNode&) { inst.reset(new invokeNode()); }
    virtual void visit(invokeFuncPtrNode&) { inst.reset(new invokeFuncPtrNode()); }
+   virtual void visit(invokeVTableNode&) { inst.reset(new invokeVTableNode()); }
    virtual void visit(fieldAccessNode&) { inst.reset(new fieldAccessNode()); }
    virtual void visit(callNode&) { inst.reset(new callNode()); }
    virtual void visit(localDeclNode&) { inst.reset(new localDeclNode()); }
@@ -745,6 +1006,13 @@ public:
    virtual void visit(bopNode&) { inst.reset(new bopNode()); }
    virtual void visit(indexNode&) { inst.reset(new indexNode()); }
    virtual void visit(ifNode&) { inst.reset(new ifNode()); }
+   virtual void visit(loopIntrinsicNode&) { inst.reset(new loopIntrinsicNode()); }
+   virtual void visit(loopBaseNode& n) { unexpected(n); }
+   virtual void visit(forLoopNode&) { inst.reset(new forLoopNode()); }
+   virtual void visit(whileLoopNode&) { inst.reset(new whileLoopNode()); }
+   virtual void visit(loopStartNode&) { inst.reset(new loopStartNode()); }
+   virtual void visit(loopBreakNode&) { inst.reset(new loopBreakNode()); }
+   virtual void visit(loopEndNode&) { inst.reset(new loopEndNode()); }
    virtual void visit(stringLiteralNode&) { inst.reset(new stringLiteralNode()); }
    virtual void visit(boolLiteralNode&) { inst.reset(new boolLiteralNode()); }
    virtual void visit(intLiteralNode&) { inst.reset(new intLiteralNode()); }
@@ -759,10 +1027,12 @@ public:
 };
 
 // Out of laziness, I implement these only when needed
-class cloningNodeVisitor : public hNodeVisitor {
+class fieldCopyingNodeVisitor : public hNodeVisitor {
 public:
-   explicit cloningNodeVisitor(node& n) : m_n(n) {}
+   explicit fieldCopyingNodeVisitor(node& n, bool copyLinks)
+   : m_n(n), m_copyLinks(copyLinks) {}
 
+   // commented lines here mean that function is "free" and doesn't need to be implemented
    virtual void visit(node& n);
    virtual void visit(araceliProjectNode& n) { unexpected(n); }
    virtual void visit(liamProjectNode& n) { unexpected(n); }
@@ -775,7 +1045,7 @@ public:
    //virtual void visit(fieldNode& n);
    virtual void visit(constNode& n) { unexpected(n); }
    virtual void visit(funcNode& n) { unexpected(n); }
-   //virtual void visit(intrinsicNode& n) { unexpected(n); }
+   //virtual void visit(intrinsicNode& n);
    virtual void visit(argNode& n);
    //virtual void visit(typeNode& n);
    //virtual void visit(strTypeNode& n);
@@ -785,22 +1055,31 @@ public:
    //virtual void visit(voidTypeNode& n);
    virtual void visit(userTypeNode& n);
    //virtual void visit(ptrTypeNode& n);
-   //virtual void visit(sequenceNode& n) { unexpected(n); }
+   //virtual void visit(sequenceNode& n);
+   //virtual void visit(returnNode& n);
    virtual void visit(invokeNode& n) { unexpected(n); }
-   //virtual void visit(invokeFuncPtrNode& n) { unexpected(n); }
+   //virtual void visit(invokeFuncPtrNode& n);
+   virtual void visit(invokeVTableNode& n);
    virtual void visit(fieldAccessNode& n) { unexpected(n); }
-   virtual void visit(callNode& n) { unexpected(n); }
+   virtual void visit(callNode& n);
    virtual void visit(localDeclNode& n) { unexpected(n); }
    virtual void visit(varRefNode& n);
-   //virtual void visit(assignmentNode& n) { unexpected(n); }
+   //virtual void visit(assignmentNode& n);
    virtual void visit(bopNode& n) { unexpected(n); }
-   //virtual void visit(indexNode& n) { unexpected(n); }
-   //virtual void visit(ifNode& n) { unexpected(n); }
-   virtual void visit(stringLiteralNode& n) { unexpected(n); }
-   virtual void visit(boolLiteralNode& n) { unexpected(n); }
-   virtual void visit(intLiteralNode& n) { unexpected(n); }
-   //virtual void visit(structLiteralNode& n) { unexpected(n); }
-   //virtual void visit(genericNode& n) { unexpected(n); }
+   //virtual void visit(indexNode& n);
+   //virtual void visit(ifNode& n);
+   virtual void visit(loopIntrinsicNode& n) { unexpected(n); }
+   virtual void visit(loopBaseNode& n);
+   //virtual void visit(forLoopNode& n);
+   //virtual void visit(whileLoopNode& n);
+   virtual void visit(loopStartNode& n) { unexpected(n); }
+   virtual void visit(loopBreakNode& n) { unexpected(n); }
+   virtual void visit(loopEndNode& n) { unexpected(n); }
+   virtual void visit(stringLiteralNode& n);
+   virtual void visit(boolLiteralNode& n);
+   virtual void visit(intLiteralNode& n);
+   //virtual void visit(structLiteralNode& n);
+   //virtual void visit(genericNode& n);
    virtual void visit(constraintNode& n) { unexpected(n); }
    virtual void visit(instantiateNode& n) { unexpected(n); }
 
@@ -809,10 +1088,36 @@ public:
 private:
    template<class T> T& as() { return dynamic_cast<T&>(m_n); }
 
+   template<class L> void handleLink(link<L>& dest, link<L>& src)
+   {
+      if(m_copyLinks && src.getRefee())
+         dest.bind(*src._getRefee());
+   }
+
    node& m_n;
+   const bool m_copyLinks;
 };
 
-node& cloneTree(node& n);
+node& cloneTree(node& n, bool copyLinks);
+
+// whether a node appearing as a statement in a codegenerator, should be terminated by
+// a semicolon.  Things like if statements or nested sequences, etc., don't need this.
+class statementNeedsSemiColon : public hNodeVisitor {
+public:
+   statementNeedsSemiColon() : m_needs(true) {}
+
+   bool needs() const { return m_needs; }
+
+   virtual void visit(node& n) {}
+   virtual void visit(sequenceNode& n) { m_needs = false; }
+   virtual void visit(ifNode& n) { m_needs = false; }
+   virtual void visit(loopBaseNode& n) { m_needs = false; }
+
+   virtual void _implementLanguage() {} // all
+
+private:
+   bool m_needs;
+};
 
 // ----------------------- transform aids -----------------------
 
@@ -821,12 +1126,33 @@ public:
    explicit treeWriter(cmn::node& n) : m_pNode(&n) {}
 
    template<class T>
+   treeWriter& prepend(std::function<void(T&)> initializer = [](T& n){})
+   {
+      std::unique_ptr<T> pNode(new T());
+      initializer(*pNode.get());
+      m_pNode->insertChild(0,*pNode.release());
+      m_pNode = m_pNode->getChildren()[0];
+      return *this;
+   }
+
+   template<class T>
    treeWriter& append(std::function<void(T&)> initializer = [](T& n){})
    {
       std::unique_ptr<T> pNode(new T());
       initializer(*pNode.get());
       m_pNode->appendChild(*pNode.release());
       m_pNode = m_pNode->lastChild();
+      return *this;
+   }
+
+   template<class T>
+   treeWriter& after(std::function<void(T&)> initializer = [](T& n){})
+   {
+      std::unique_ptr<T> pNode(new T());
+      initializer(*pNode.get());
+      auto *pNaked = pNode.get();
+      m_pNode->getParent()->insertChildAfter(*pNode.release(),*m_pNode);
+      m_pNode = pNaked;
       return *this;
    }
 

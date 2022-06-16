@@ -1,0 +1,15 @@
+class debugOut {
+
+   public write(msg : str) : void
+   {
+      var l : int;
+      l = msg->length();
+      {
+         _uart->write8(msg[0]);
+      }
+   }
+   private _uart : uart16550.driver;
+
+}
+
+const gDbgOut : debugOut = 0;

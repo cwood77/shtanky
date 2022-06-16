@@ -2,7 +2,52 @@ class debugOut {
 
    public write(msg : str) : void
    {
-      _uart->write8(0);
+      var l : int;
+      l = msg->length();
+      //for[+i](i < l)
+      {
+         _uart->write8(msg[0]);
+         //loop(i)->break();
+      }
+
+//     // here i disambiguates the loop for continue and break
+//     // statements, as well as being the loop counter
+//     // the + means i is declared in calling scope rather than
+//     // inner scope
+//     for[+i](i < l)
+//     {
+//        _uart->write8(msg[i]);
+//
+//        loop(i)->break(); // loop() is some sort of keyword/instrinsic here
+//     }
+//
+//     // loop(i) is weird b/c the _value_ of i is unimportant; it's
+//     // the lexical quantity between the parens that matters
+//
+//     // how does this decompose?
+//     var i : .sht.core.loop; // if public
+//     {
+//        var i : .sht.core.loop; // if private
+//        :label_i; <loopStart i>
+//
+//        i:exitedNormally = (i:count < l);
+//        if(i:exitedNormally)
+//           goto label_i_done; <loopBreak i>
+//
+//        <loop body>
+//
+//        goto label_i; <loopEnd i>
+//        :label_i_done;
+//     }
+//
+//
+//     // and how to conditionals work?
+//     labels, jumpIfTrue
+
+// in asm I need xor, sub, set, cmp, jcc, and the meta-instr LT
+// how will labels work?
+
+
    }
 
    private _uart : uart16550.driver;

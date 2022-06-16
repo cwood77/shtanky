@@ -33,8 +33,10 @@ func .philemon.list<str>.cdtor(
 {
 }
 
+[vtbl]
 const .philemon.bootstrap_vtbl_inst : .philemon.bootstrap_vtbl = { .philemon.bootstrap.run };
 
+[vtbl]
 const .philemon.list<str>_vtbl_inst : .philemon.list<str>_vtbl = {  };
 
 func .philemon.bootstrap_sctor(
@@ -70,9 +72,9 @@ func .philemon.list<str>_sdtor(
 }
 
 
-func ._osCall(code : str, payload : str) : void;
+ref "..\sht\prims.lh";
 
-ref "list.ara.lh";
+ref ".\list.ara.lh";
 ref "..\sht\cons\program.ara.lh";
 ref "..\sht\core\array.ara.lh";
 ref "..\sht\core\object.ara.lh";

@@ -1,21 +1,749 @@
-// 2: helloWorld: .data, "hello world" <b> 0
-_strdata(68-65-6c-6c,6f-20-77-6f,72-6c-64)_intdata(00)
-// 5: .entrypoint:
-// 6:    push, rbp
+// 2: .here:
+// 3: .data, "made it here" <b> 0 
+_strdata(6d-61-64-65,20-69-74-20,68-65-72-65)_intdata(00)
+// 6: .here0:
+// 7: .data, "made it here (0)" <b> 0 
+_strdata(6d-61-64-65,20-69-74-20,68-65-72-65,20-28-30-29)_intdata(00)
+// 10: .here1:
+// 11: .data, "made it here (1)" <b> 0 
+_strdata(6d-61-64-65,20-69-74-20,68-65-72-65,20-28-31-29)_intdata(00)
+// 14: .here2:
+// 15: .data, "made it here (2)" <b> 0 
+_strdata(6d-61-64-65,20-69-74-20,68-65-72-65,20-28-32-29)_intdata(00)
+// 18: .objcctor:
+// 19: .data, "obj ctor" <b> 0 
+_strdata(6f-62-6a-20,63-74-6f-72)_intdata(00)
+// 22: .progtxt:
+// 23: .data, "program" <b> 0 
+_strdata(70-72-6f-67,72-61-6d)_intdata(00)
+// 26: .insideRun:
+// 27: .data, "inside test.run" <b> 0 
+_strdata(69-6e-73-69,64-65-20-74,65-73-74-2e,72-75-6e)_intdata(00)
+// 32: .vfunc:
+// 33:    push, rbp
 rex(48)op(ff)modR/M(f5)
-// 7:    mov, rbp, rsp
+// 34:    mov, rbp, rsp
 rex(48)op(89)modR/M(e5)
-// 8:    sub, rsp, 32
+// 36: push, rcx
+rex(48)op(ff)modR/M(f1)
+// 37: push, rdx
+rex(48)op(ff)modR/M(f2)
+// 38: sub, rsp, 32                                  
 rex(48)op(83)modR/M(ec)i8(20)
-// 10:    mov, rcx, 1
-rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
-// 11:    mov, rdx, 0
-rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
-// 12:    call, ._osCall_impl
-op(ff)modR/M(15)co32(00-00-00-00)
-// 14:    mov, rsp, rbp
+// 39: lea, rcx, qwordptr .here0
+rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
+// 40: call, ._print
+op(e8)co32(00-00-00-00)
+// 41: add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 42: pop, rdx
+rex(48)op(8f)modR/M(c2)
+// 43: pop, rcx
+rex(48)op(8f)modR/M(c1)
+// 45:    mov, rsp, rbp
 rex(48)op(89)modR/M(ec)
-// 15:    pop, rbp
+// 46:    pop, rbp
 rex(48)op(8f)modR/M(c5)
-// 16:    ret
+// 47:    ret
+op(c3)
+// 50: .example_vtbl:
+// 51: .data, .vfunc
+_lbldata(00-00-00-00,00-00-00-00)
+// 54: .entrypoint_vstudio:
+// 55:    push, rbp
+rex(48)op(ff)modR/M(f5)
+// 56:    mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 59:    sub, rsp, 8
+rex(48)op(83)modR/M(ec)i8(08)
+// 60:    lea, r10, [rbp-8] ; r10 = objptr
+rex(4c)op(8d)modR/M(55)d8(f8)
+// 61:    lea, r11, qwordptr .example_vtbl
+rex(4c)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
+// 62:    mov, [r10], r11
+rex(4d)op(89)modR/M(1a)
+// 65:    mov, r11, [r10]
+rex(4d)op(8b)modR/M(1a)
+// 66:    sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 67:    call, r11
+rex(49)op(ff)modR/M(d3)
+// 68:    add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 70:    mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 71:    pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 72:    ret
+op(c3)
+// 88: .vfunc0:
+// 89:    push, rbp
+rex(48)op(ff)modR/M(f5)
+// 90:    mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 92: push, rcx
+rex(48)op(ff)modR/M(f1)
+// 93: push, rdx
+rex(48)op(ff)modR/M(f2)
+// 94: sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 95: lea, rcx, qwordptr .here0
+rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
+// 96: call, ._print
+op(e8)co32(00-00-00-00)
+// 97: add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 98: pop, rdx
+rex(48)op(8f)modR/M(c2)
+// 99: pop, rcx
+rex(48)op(8f)modR/M(c1)
+// 101:    mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 102:    pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 103:    ret
+op(c3)
+// 106: .vfunc1:
+// 107:    push, rbp
+rex(48)op(ff)modR/M(f5)
+// 108:    mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 110: push, rcx
+rex(48)op(ff)modR/M(f1)
+// 111: push, rdx
+rex(48)op(ff)modR/M(f2)
+// 112: sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 113: lea, rcx, qwordptr .here1
+rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
+// 114: call, ._print
+op(e8)co32(00-00-00-00)
+// 115: add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 116: pop, rdx
+rex(48)op(8f)modR/M(c2)
+// 117: pop, rcx
+rex(48)op(8f)modR/M(c1)
+// 119:    mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 120:    pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 121:    ret
+op(c3)
+// 124: .vfunc2:
+// 125:    push, rbp
+rex(48)op(ff)modR/M(f5)
+// 126:    mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 128: push, rcx
+rex(48)op(ff)modR/M(f1)
+// 129: push, rdx
+rex(48)op(ff)modR/M(f2)
+// 130: sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 131: lea, rcx, qwordptr .here2
+rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
+// 132: call, ._print
+op(e8)co32(00-00-00-00)
+// 133: add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 134: pop, rdx
+rex(48)op(8f)modR/M(c2)
+// 135: pop, rcx
+rex(48)op(8f)modR/M(c1)
+// 137:    mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 138:    pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 139:    ret
+op(c3)
+// 142: .jmp_vtbl:
+// 143:    goto, .vfunc0
+op(e9)co32(00-00-00-00)
+// 144:    goto, .vfunc1
+op(e9)co32(00-00-00-00)
+// 145:    goto, .vfunc2
+op(e9)co32(00-00-00-00)
+// 148: .entrypoint:
+// 149:    push, rbp
+rex(48)op(ff)modR/M(f5)
+// 150:    mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 152:    xor, rcx, rcx
+rex(48)op(31)modR/M(c9)
+// 153:    call, ._getflg
+op(e8)co32(00-00-00-00)
+// 155:    lea, r10, qwordptr .jmp_vtbl
+rex(4c)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
+// 156:    add, r10, rax
+rex(49)op(01)modR/M(c2)
+// 157:    sub, rsp, 8
+rex(48)op(83)modR/M(ec)i8(08)
+// 158:    mov, [rbp-8], r10
+rex(4c)op(89)modR/M(55)d8(f8)
+// 159:    call, [rbp-8]
+rex(48)op(ff)modR/M(55)d8(f8)
+// 161:    mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 162:    pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 163:    ret
+op(c3)
+// 168: .entrypoint_123098a09: 
+// 169:              push, rbp                    
+rex(48)op(ff)modR/M(f5)
+// 170:              push, rbx                    
+rex(48)op(ff)modR/M(f3)
+// 171:              push, rdi                    
+rex(48)op(ff)modR/M(f7)
+// 172:              mov, rbp, rsp                
+rex(48)op(89)modR/M(e5)
+// 173:              sub, rsp, 24                 
+rex(48)op(83)modR/M(ec)i8(18)
+// 174:              mov, rbx, rcx     ; args     ; (preserve) [combiner]
+rex(48)op(89)modR/M(cb)
+// 175:              lea, rcx, [rbp-8]            ; cout
+rex(48)op(8d)modR/M(4d)d8(f8)
+// 176:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 177:              call, .sht.cons.stdout_sctor ; (call label)                ; survived this call!
+op(e8)co32(00-00-00-00)
+// 178:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 179:              mov, rdi, rcx     ; stdout   ; (preserve) [combiner]
+rex(48)op(89)modR/M(cf)
+// 180:              lea, rcx, [rbp-24]           ; obj0
+rex(48)op(8d)modR/M(4d)d8(e8)
+// 181:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 182:              call, .test.test_sctor       ; (call label)                ; survived this call!
+op(e8)co32(00-00-00-00)
+// 183:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 184:              mov, [rcx+8], rdi  ;field    ; =
+rex(48)op(89)modR/M(79)d8(08)
+// 185:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 186:          mov, r10, [rcx]   ;vtbl      ; fieldaccess: owner of run    ;;;;;;;;;;;;;;; isn't this stomping?
+rex(4c)op(8b)modR/M(11)
+// 187:          mov, rdx, rbx                ;       (args req for rdx) [splitter]
+rex(48)op(89)modR/M(da)
+// 188:          call, [r10]   ;(test,args)   ; (call ptr)
+rex(49)op(ff)modR/M(12)
+// 192:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 193: push, rcx
+rex(48)op(ff)modR/M(f1)
+// 194: push, rdx
+rex(48)op(ff)modR/M(f2)
+// 195: sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 196: lea, rcx, qwordptr .here
+rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
+// 197: call, ._print
+op(e8)co32(00-00-00-00)
+// 198: add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 199: pop, rdx
+rex(48)op(8f)modR/M(c2)
+// 200: pop, rcx
+rex(48)op(8f)modR/M(c1)
+// 202:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 203:              call, .test.test_sdtor       ; (call label)                ; did not survive this :(
+op(e8)co32(00-00-00-00)
+// 204:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 206:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 207:              mov, rcx, rdi                ; (restore [combiner])
+rex(48)op(89)modR/M(f9)
+// 208:              call, .sht.cons.stdout_sdtor ; (call label)
+op(e8)co32(00-00-00-00)
+// 209:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 210:              mov, rsp, rbp                
+rex(48)op(89)modR/M(ec)
+// 211:              pop, rdi                     
+rex(48)op(8f)modR/M(c7)
+// 212:              pop, rbx                     
+rex(48)op(8f)modR/M(c3)
+// 213:              pop, rbp                     
+rex(48)op(8f)modR/M(c5)
+// 214:              ret                          
+op(c3)
+// 217: .sht.cons.iStream.printLn: 
+// 218:                            push, rbp
+rex(48)op(ff)modR/M(f5)
+// 219:                            mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 220:                            mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 221:                            pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 222:                            ret
+op(c3)
+// 225: .sht.cons.iStream.cctor: 
+// 226:                          push, rbp
+rex(48)op(ff)modR/M(f5)
+// 227:                          mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 228:                          mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 229:                          pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 230:                          ret
+op(c3)
+// 233: .sht.cons.iStream.cdtor: 
+// 234:                          push, rbp
+rex(48)op(ff)modR/M(f5)
+// 235:                          mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 236:                          mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 237:                          pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 238:                          ret
+op(c3)
+// 241: .sht.cons.stdout.printLn: 
+// 242:                           push, rbp     
+rex(48)op(ff)modR/M(f5)
+// 243:                           mov, rbp, rsp 
+rex(48)op(89)modR/M(e5)
+// 244:                           sub, rsp, 32  
+rex(48)op(83)modR/M(ec)i8(20)
+// 245:                           call, ._print ; (call label)
+op(e8)co32(00-00-00-00)
+// 246:                           add, rsp, 32  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 247:                           mov, rsp, rbp 
+rex(48)op(89)modR/M(ec)
+// 248:                           pop, rbp      
+rex(48)op(8f)modR/M(c5)
+// 249:                           ret           
+op(c3)
+// 252: .sht.cons.stdout.cctor: 
+// 253:                         push, rbp
+rex(48)op(ff)modR/M(f5)
+// 254:                         mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 255:                         mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 256:                         pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 257:                         ret
+op(c3)
+// 260: .sht.cons.stdout.cdtor: 
+// 261:                         push, rbp
+rex(48)op(ff)modR/M(f5)
+// 262:                         mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 263:                         mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 264:                         pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 265:                         ret
+op(c3)
+// 268: .sht.cons.program.run: 
+// 269:                        push, rbp
+rex(48)op(ff)modR/M(f5)
+// 270:                        mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 271:                        mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 272:                        pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 273:                        ret
+op(c3)
+// 276: .sht.cons.program.cctor: 
+// 277:                          push, rbp
+rex(48)op(ff)modR/M(f5)
+// 278:                          mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 279:                          mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 280:                          pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 281:                          ret
+op(c3)
+// 284: .sht.cons.program.cdtor: 
+// 285:                          push, rbp
+rex(48)op(ff)modR/M(f5)
+// 286:                          mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 287:                          mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 288:                          pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 289:                          ret
+op(c3)
+// 292: .sht.cons.iStream_vtbl_inst:
+// 293: .data, .sht.cons.iStream.printLn 
+_lbldata(00-00-00-00,00-00-00-00)
+// 296: .sht.cons.program_vtbl_inst:
+// 297: .data, .sht.cons.program.run 
+_lbldata(00-00-00-00,00-00-00-00)
+// 300: .sht.cons.stdout_vtbl_inst:
+// 301: .data, .sht.cons.stdout.printLn 
+_lbldata(00-00-00-00,00-00-00-00)
+// 304: .sht.cons.iStream_sctor: 
+// 305:                          push, rbp                                      
+rex(48)op(ff)modR/M(f5)
+// 306:                          mov, rbp, rsp                                  
+rex(48)op(89)modR/M(e5)
+// 307:                          sub, rsp, 32                                   
+rex(48)op(83)modR/M(ec)i8(20)
+// 308:                          call, .sht.core.object_sctor                   ; (call label)
+op(e8)co32(00-00-00-00)
+// 309:                          add, rsp, 32                                   
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 310:                          mov, r10, qwordptr .sht.cons.iStream_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 311:                          mov, [rcx], r10                                ; =
+rex(4c)op(89)modR/M(11)
+// 312:                          sub, rsp, 32                                   
+rex(48)op(83)modR/M(ec)i8(20)
+// 313:                          call, .sht.cons.iStream.cctor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 314:                          add, rsp, 32                                   
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 315:                          mov, rsp, rbp                                  
+rex(48)op(89)modR/M(ec)
+// 316:                          pop, rbp                                       
+rex(48)op(8f)modR/M(c5)
+// 317:                          ret                                            
+op(c3)
+// 320: .sht.cons.iStream_sdtor: 
+// 321:                          push, rbp                                      
+rex(48)op(ff)modR/M(f5)
+// 322:                          mov, rbp, rsp                                  
+rex(48)op(89)modR/M(e5)
+// 323:                          mov, r10, qwordptr .sht.cons.iStream_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 324:                          mov, [rcx], r10                                ; =
+rex(4c)op(89)modR/M(11)
+// 325:                          sub, rsp, 32                                   
+rex(48)op(83)modR/M(ec)i8(20)
+// 326:                          call, .sht.cons.iStream.cdtor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 327:                          add, rsp, 32                                   
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 328:                          sub, rsp, 32                                   
+rex(48)op(83)modR/M(ec)i8(20)
+// 329:                          call, .sht.core.object_sdtor                   ; (call label)
+op(e8)co32(00-00-00-00)
+// 330:                          add, rsp, 32                                   
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 331:                          mov, rsp, rbp                                  
+rex(48)op(89)modR/M(ec)
+// 332:                          pop, rbp                                       
+rex(48)op(8f)modR/M(c5)
+// 333:                          ret                                            
+op(c3)
+// 336: .sht.cons.program_sctor: 
+// 337:                          push, rbp                                      
+rex(48)op(ff)modR/M(f5)
+// 338:                          mov, rbp, rsp                                  
+rex(48)op(89)modR/M(e5)
+// 339:                          sub, rsp, 32                                   
+rex(48)op(83)modR/M(ec)i8(20)
+// 340:                          call, .sht.core.object_sctor                   ; (call label)
+op(e8)co32(00-00-00-00)
+// 341:                          add, rsp, 32                                   
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 342:                          mov, r10, qwordptr .sht.cons.program_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 343:                          mov, [rcx], r10                                ; =
+rex(4c)op(89)modR/M(11)
+// 344:                          sub, rsp, 32                                   
+rex(48)op(83)modR/M(ec)i8(20)
+// 345:                          call, .sht.cons.program.cctor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 346:                          add, rsp, 32                                   
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 347:                          mov, rsp, rbp                                  
+rex(48)op(89)modR/M(ec)
+// 348:                          pop, rbp                                       
+rex(48)op(8f)modR/M(c5)
+// 349:                          ret                                            
+op(c3)
+// 352: .sht.cons.program_sdtor: 
+// 353:                          push, rbp                                      
+rex(48)op(ff)modR/M(f5)
+// 354:                          mov, rbp, rsp                                  
+rex(48)op(89)modR/M(e5)
+// 355:                          mov, r10, qwordptr .sht.cons.program_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 356:                          mov, [rcx], r10                                ; =
+rex(4c)op(89)modR/M(11)
+// 357:                          sub, rsp, 32                                   
+rex(48)op(83)modR/M(ec)i8(20)
+// 358:                          call, .sht.cons.program.cdtor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 359:                          add, rsp, 32                                   
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 360:                          sub, rsp, 32                                   
+rex(48)op(83)modR/M(ec)i8(20)
+// 361:                          call, .sht.core.object_sdtor                   ; (call label)
+op(e8)co32(00-00-00-00)
+// 362:                          add, rsp, 32                                   
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 363:                          mov, rsp, rbp                                  
+rex(48)op(89)modR/M(ec)
+// 364:                          pop, rbp                                       
+rex(48)op(8f)modR/M(c5)
+// 365:                          ret                                            
+op(c3)
+// 368: .sht.cons.stdout_sctor: 
+// 369:                         push, rbp                                     
+rex(48)op(ff)modR/M(f5)
+// 370:                         mov, rbp, rsp                                 
+rex(48)op(89)modR/M(e5)
+// 371:                         sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 372:                         call, .sht.cons.iStream_sctor                 ; (call label)
+op(e8)co32(00-00-00-00)
+// 373:                         add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 374:                         mov, r10, qwordptr .sht.cons.stdout_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 375:                         mov, [rcx], r10                               ; =
+rex(4c)op(89)modR/M(11)
+// 376:                         sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 377:                         call, .sht.cons.stdout.cctor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 378:                         add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 379:                         mov, rsp, rbp                                 
+rex(48)op(89)modR/M(ec)
+// 380:                         pop, rbp                                      
+rex(48)op(8f)modR/M(c5)
+// 381:                         ret                                           
+op(c3)
+// 384: .sht.cons.stdout_sdtor: 
+// 385:                         push, rbp                                     
+rex(48)op(ff)modR/M(f5)
+// 386:                         mov, rbp, rsp                                 
+rex(48)op(89)modR/M(e5)
+// 387:                         mov, r10, qwordptr .sht.cons.stdout_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 388:                         mov, [rcx], r10                               ; =
+rex(4c)op(89)modR/M(11)
+// 389:                         sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 390:                         call, .sht.cons.stdout.cdtor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 391:                         add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 392:                         sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 393:                         call, .sht.cons.iStream_sdtor                 ; (call label)
+op(e8)co32(00-00-00-00)
+// 394:                         add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 395:                         mov, rsp, rbp                                 
+rex(48)op(89)modR/M(ec)
+// 396:                         pop, rbp                                      
+rex(48)op(8f)modR/M(c5)
+// 397:                         ret                                           
+op(c3)
+// 400: .sht.core.object.cctor: 
+// 401:                         push, rbp
+rex(48)op(ff)modR/M(f5)
+// 402:                         mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 403:                         mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 404:                         pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 405:                         ret
+op(c3)
+// 408: .sht.core.object.cdtor: 
+// 409:                         push, rbp
+rex(48)op(ff)modR/M(f5)
+// 410:                         mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 411:                         mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 412:                         pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 413:                         ret
+op(c3)
+// 416: .sht.core.object_vtbl_inst:
+// 417: .data, 
+// 420: .sht.core.object_sctor: 
+// 421:                         push, rbp                                     
+rex(48)op(ff)modR/M(f5)
+// 422:                         mov, rbp, rsp                                 
+rex(48)op(89)modR/M(e5)
+// 423:                         mov, r10, qwordptr .sht.core.object_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 424:                         mov, [rcx], r10                               ; =
+rex(4c)op(89)modR/M(11)
+// 425:                         sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 426:                         call, .sht.core.object.cctor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 427:                         add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 428:                         mov, rsp, rbp                                 
+rex(48)op(89)modR/M(ec)
+// 429:                         pop, rbp                                      
+rex(48)op(8f)modR/M(c5)
+// 430:                         ret                                           
+op(c3)
+// 433: .sht.core.object_sdtor: 
+// 434:                         push, rbp                                     
+rex(48)op(ff)modR/M(f5)
+// 435:                         mov, rbp, rsp                                 
+rex(48)op(89)modR/M(e5)
+// 436:                         mov, r10, qwordptr .sht.core.object_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 437:                         mov, [rcx], r10                               ; =
+rex(4c)op(89)modR/M(11)
+// 438:                         sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 439:                         call, .sht.core.object.cdtor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 440:                         add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 441:                         mov, rsp, rbp                                 
+rex(48)op(89)modR/M(ec)
+// 442:                         pop, rbp                                      
+rex(48)op(8f)modR/M(c5)
+// 443:                         ret                                           
+op(c3)
+// 446: .const0:
+// 447: .data, "hello world!" <b> 0 
+_strdata(68-65-6c-6c,6f-20-77-6f,72-6c-64-21)_intdata(00)
+// 450: .test.test.run: 
+// 451:                 push, rbp                  
+rex(48)op(ff)modR/M(f5)
+// 452:                 push, rbx                  
+rex(48)op(ff)modR/M(f3)
+// 453:                 push, rdi                  
+rex(48)op(ff)modR/M(f7)
+// 454:                 mov, rbp, rsp              
+rex(48)op(89)modR/M(e5)
+// 455: push, rcx
+rex(48)op(ff)modR/M(f1)
+// 456: push, rdx
+rex(48)op(ff)modR/M(f2)
+// 457: sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 458: lea, rcx, qwordptr .insideRun
+rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
+// 459: call, ._print
+op(e8)co32(00-00-00-00)
+// 460: add, rsp, 32                                  
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 461: pop, rdx
+rex(48)op(8f)modR/M(c2)
+// 462: pop, rcx
+rex(48)op(8f)modR/M(c1)
+// 464:                 sub, rsp, 32               
+rex(48)op(83)modR/M(ec)i8(20)
+// 465:                 mov, rbx, [rcx+8]          ; fieldaccess: owner of _vtbl
+rex(48)op(8b)modR/M(59)d8(08)
+// 466:                 mov, rdi, [rbx]            ; fieldaccess: owner of printLn
+rex(48)op(8b)modR/M(3b)
+// 467:                 lea, rdx, qwordptr .const0 
+rex(48)op(8d)modR/M(15)disp32toLabel(00-00-00-00)
+// 468:                 mov, rbx, rcx              ; (preserve) [combiner]
+rex(48)op(89)modR/M(cb)
+// 469:                 mov, rcx, [rbx+8]          ; shape:hoist addrOf from call
+rex(48)op(8b)modR/M(4b)d8(08)
+// 470:                 call, [rdi]                ; (call ptr)
+rex(48)op(ff)modR/M(17)
+// 471:                 add, rsp, 32               
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 472:                 mov, rsp, rbp              
+rex(48)op(89)modR/M(ec)
+// 473:                 pop, rdi                   
+rex(48)op(8f)modR/M(c7)
+// 474:                 pop, rbx                   
+rex(48)op(8f)modR/M(c3)
+// 475:                 pop, rbp                   
+rex(48)op(8f)modR/M(c5)
+// 476:                 ret                        
+op(c3)
+// 479: .test.test.cctor: 
+// 480:                   push, rbp
+rex(48)op(ff)modR/M(f5)
+// 481:                   mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 482:                   mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 483:                   pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 484:                   ret
+op(c3)
+// 487: .test.test.cdtor: 
+// 488:                   push, rbp
+rex(48)op(ff)modR/M(f5)
+// 489:                   mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 490:                   mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 491:                   pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 492:                   ret
+op(c3)
+// 495: .test.test_vtbl_inst:
+// 496: .data, .test.test.run 
+_lbldata(00-00-00-00,00-00-00-00)
+// 499: .test.test_sctor: 
+// 523:                   push, rbp                               
+rex(48)op(ff)modR/M(f5)
+// 524:                   mov, rbp, rsp                           
+rex(48)op(89)modR/M(e5)
+// 525:                   sub, rsp, 32                            
+rex(48)op(83)modR/M(ec)i8(20)
+// 526:                   call, .sht.cons.program_sctor           ; (call label)
+op(e8)co32(00-00-00-00)
+// 527:                   add, rsp, 32                            
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 528:                   mov, r10, qwordptr .test.test_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 529:                   mov, [rcx], r10                         ; =
+rex(4c)op(89)modR/M(11)
+// 530:                   sub, rsp, 32                            
+rex(48)op(83)modR/M(ec)i8(20)
+// 531:                   call, .test.test.cctor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 532:                   add, rsp, 32                            
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 533:                   mov, rsp, rbp                           
+rex(48)op(89)modR/M(ec)
+// 534:                   pop, rbp                                
+rex(48)op(8f)modR/M(c5)
+// 535:                   ret                                     
+op(c3)
+// 538: .test.test_sdtor: 
+// 539:                   push, rbp                               
+rex(48)op(ff)modR/M(f5)
+// 540:                   mov, rbp, rsp                           
+rex(48)op(89)modR/M(e5)
+// 541:                   mov, r10, qwordptr .test.test_vtbl_inst ; codeshape decomp
+rex(4c)op(8b)modR/M(15)disp32toLabel(00-00-00-00)
+// 542:                   mov, [rcx], r10                         ; =
+rex(4c)op(89)modR/M(11)
+// 543:                   sub, rsp, 32                            
+rex(48)op(83)modR/M(ec)i8(20)
+// 544:                   call, .test.test.cdtor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 545:                   add, rsp, 32                            
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 546:                   sub, rsp, 32                            
+rex(48)op(83)modR/M(ec)i8(20)
+// 547:                   call, .sht.cons.program_sdtor           ; (call label)
+op(e8)co32(00-00-00-00)
+// 548:                   add, rsp, 32                            
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 549:                   mov, rsp, rbp                           
+rex(48)op(89)modR/M(ec)
+// 550:                   pop, rbp                                
+rex(48)op(8f)modR/M(c5)
+// 551:                   ret                                     
 op(c3)

@@ -74,6 +74,7 @@ extern timedGlobal<table> gTable;
 class typeBuilder {
 public:
    static typeBuilder *createString();
+   static typeBuilder *createBool();
    static typeBuilder *createInt();
    static typeBuilder *createVoid();
    static typeBuilder *createClass(const std::string& name);

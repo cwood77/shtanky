@@ -1,4 +1,6 @@
 #pragma once
+#include "../cmn/cmdline.hpp"
+#include <functional>
 #include <list>
 #include <map>
 #include <memory>
@@ -32,6 +34,8 @@ public:
 protected:
    explicit testBase(instrStream& s) : m_stream(s) {}
 
+   void verifyAdditionalArtifact(const std::string& path, const std::string& cuz);
+
    virtual void setupAutoShlink(const std::string& appPath);
    void emulateAndCheckOutput();
 
@@ -47,7 +51,12 @@ public:
    araceliTest(instrStream& s, const std::string& folder);
 
    araceliTest& wholeApp() { setupAutoShlink(m_folder + "\\.app"); return *this; }
+   araceliTest& verifyAdditionalArtifact(const std::string& path, const std::string& cuz)
+   { testBase::verifyAdditionalArtifact(path,cuz); return *this; }
    araceliTest& expectLiamOf(const std::string& path, bool hasPhilemon = true);
+
+   araceliTest& emulateAndCheckOutput()
+   { testBase::emulateAndCheckOutput(); return *this; }
 
 private:
    const std::string m_folder;
@@ -75,6 +84,12 @@ class liamTest : public intermediateTest {
 public:
    liamTest(instrStream& s, const std::string& file);
 
+   liamTest& wholeApp(const std::string& appPath)
+   { setupAutoShlink(appPath); return *this; }
+
+   liamTest& emulateAndCheckOutput()
+   { testBase::emulateAndCheckOutput(); return *this; }
+
    virtual void andLink(shlinkTest& t);
 };
 
@@ -89,4 +104,17 @@ public:
    { testBase::emulateAndCheckOutput(); return *this; }
 
    virtual void andLink(shlinkTest& t);
+};
+
+class testWriter {
+public:
+   testWriter(script& s, bool subset, cmn::cmdLine& cl)
+   : m_s(s), m_subset(subset), m_cl(cl) {}
+   void add(const std::string& name, std::function<void (instrStream&)> f);
+   void skipByDefault(const std::string& name, std::function<void (instrStream&)> f);
+
+private:
+   script& m_s;
+   bool m_subset;
+   cmn::cmdLine& m_cl;
 };

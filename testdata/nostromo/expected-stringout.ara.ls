@@ -4,7 +4,12 @@ func .nostromo.debugOut.write(
    self : .nostromo.debugOut,
    msg : .sht.core.string) : void
 {
-   self:_uart:_vtbl:write8->(self:_uart,0);
+   var l : int;
+   l = .sht.core.string.length(msg);
+   {
+      self:_uart:_vtbl:write8->(self:_uart,.sht.core.string.indexOpGet(msg,0));
+   }
+
 }
 
 func .nostromo.debugOut.cctor(
@@ -17,6 +22,7 @@ func .nostromo.debugOut.cdtor(
 {
 }
 
+[vtbl]
 const .nostromo.debugOut_vtbl_inst : .nostromo.debugOut_vtbl = {  };
 
 func .nostromo.debugOut_sctor(
@@ -36,8 +42,8 @@ func .nostromo.debugOut_sdtor(
 }
 
 
-func ._osCall(code : str, payload : str) : void;
+ref "..\sht\prims.lh";
 
-ref "stringout.ara.lh";
+ref ".\stringout.ara.lh";
 ref "..\sht\core\object.ara.lh";
 ref "..\sht\core\string.ara.lh";

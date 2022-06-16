@@ -27,9 +27,25 @@ static const instrFmt subFmts[] = {
 };
 
 static const instrFmt addFmts[] = {
+   { "ADD{REX.W + 81 /0 id}",
+      kR64 | kM64,
+      kI32,
+      kArgTypeNone, kArgTypeNone, "br", false },
    { "ADD{REX.W + 83 /0 ib}",
       kR64 | kM64,
       kI8,
+      kArgTypeNone, kArgTypeNone, "br", false },
+   { "ADD{REX.W + 01 /r}",
+      kR64 | kM64,
+      kR64,
+      kArgTypeNone, kArgTypeNone, "br", false },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
+static const instrFmt xorFmts[] = {
+   { "XOR{REX.W + 31 /r}",
+      kR64 | kM64,
+      kR64,
       kArgTypeNone, kArgTypeNone, "br", false },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
@@ -41,8 +57,7 @@ static const instrFmt movFmts[] = {
       kArgTypeNone, kArgTypeNone, "wr", false },
    { "MOV{REX.W + 8B /r}",
       kR64,
-      kR64 | kM64, // TODO anybody who takes a memory could theoretically emit a displacment
-                   //      and a patch!
+      kR64 | kM64,
       kArgTypeNone, kArgTypeNone, "wr", false },
    { "MOV{REX.W + B8+ rd io}",
       kR64,
@@ -51,6 +66,14 @@ static const instrFmt movFmts[] = {
    { "MOV{REX.W + C7 /0 id}",
       kR64 | kM64,
       kI32,
+      kArgTypeNone, kArgTypeNone, "wr", false },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
+static const instrFmt leaFmts[] = {
+   { "LEA{REX.W + 8D /r}",
+      kR64,
+      kM64,
       kArgTypeNone, kArgTypeNone, "wr", false },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
@@ -71,10 +94,38 @@ static const instrFmt retFmts[] = {
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
+static const instrFmt cmpFmts[] = {
+   { "CMP{REX.W + 81 /7 id}",
+      kR64 | kM64,
+      kI32,
+      kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
+static const instrFmt sltsFmts[] = {
+   { "SETL{REX + 0F 9C}",
+      kR64,
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
+static const instrFmt jumpEqualFmts[] = {
+   { "JE{0F 84 cd}",
+      kI32, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
+static const instrFmt gotoFmts[] = {
+   { "JMP{E9 cd}",
+      kI32, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
 static const instrInfo kInstrs[] = {
    { "<selectSegment>",   NULL, false, NULL     },
    { "<enterFunc>",       NULL, false, NULL     },
    { "<exitFunc>",        NULL, false, NULL     },
+   { "<label>",           NULL, false, NULL     },
 
    { "<reserveLocal>",    NULL, false, NULL     },
    { "<unreserveLocal>",  NULL, false, NULL     },
@@ -86,8 +137,10 @@ static const instrInfo kInstrs[] = {
 
    { "sub",               "br", false, (const instrFmt*)&subFmts },
    { "add",               "br", false, (const instrFmt*)&addFmts },
+   { "xor",               "br", false, (const instrFmt*)&xorFmts },
 
    { "mov",               "wr", false, (const instrFmt*)&movFmts },
+   { "lea",               "wr", false, (const instrFmt*)&leaFmts },
 
    { "<precall>",         NULL, false, NULL     },
    { "call",              "x",  true,  (const instrFmt*)&callFmts },
@@ -96,6 +149,14 @@ static const instrInfo kInstrs[] = {
    { "ret",               "r",  true, (const instrFmt*)&retFmts },
 
    { "<split>",           NULL, false, NULL     },
+
+   { "<isLessThan?>",     NULL, false, NULL     },
+   { "cmp",               "rr", false, (const instrFmt*)&cmpFmts },
+   { "setlts",            "w",  false, (const instrFmt*)&sltsFmts },
+
+   { "<ifFalse>",         NULL, false, NULL     },
+   { "je",                "rx", false, (const instrFmt*)&jumpEqualFmts },
+   { "goto",              "x",  false, (const instrFmt*)&gotoFmts },
 
    { "system",            "x",  true,  NULL     },
 };

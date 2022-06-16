@@ -57,6 +57,15 @@ public:
    lirArgConst(const std::string& name, size_t size) : lirArg(name,size) {}
    virtual lirArg& clone() const { return _clone<lirArgConst>(); }
 };
+class lirArgLabel : public lirArgConst {
+public:
+   lirArgLabel(const std::string& name, size_t size)
+   : lirArgConst(name,size), isCode(false) {}
+   bool isCode;
+   virtual lirArg& clone() const { return _clone<lirArgLabel>(); }
+protected:
+   virtual lirArg& copyFieldsInto(lirArg& noob) const;
+};
 class lirArgTemp : public lirArg {
 public:
    lirArgTemp(const std::string& name, size_t size) : lirArg(name,size) {}
@@ -82,6 +91,7 @@ public:
    lirInstr& append(lirInstr& noob);
 
    bool isLast() const { return m_pNext == NULL; }
+   lirInstr& prev() { return *m_pPrev; }
    lirInstr& next() { return *m_pNext; }
    lirInstr& head();
    lirInstr& tail();
@@ -254,11 +264,12 @@ public:
    class instrBuilder;
 
    lirBuilder(lirStreams& lir, cmn::tgt::iTargetInfo& t)
-   : m_lir(lir), m_t(t), m_pCurrStream(NULL) {}
+   : m_lir(lir), m_t(t), m_pCurrStream(NULL), m_nLabel(0) {}
 
    ~lirBuilder();
 
    void createNewStream(const std::string& name, const std::string& segment);
+   std::string reserveNewLabel(const std::string& nameHint);
 
    nodeScope forNode(cmn::node& n) { return nodeScope(*this,n); }
 
@@ -307,6 +318,14 @@ public:
       instrBuilder& returnToParent(size_t nArg)
       { m_b.publishArg(m_n,*m_i.getArgs()[nArg]); return *this; }
 
+      template<class T>
+      T& tweakArgAs(size_t nArg)
+      { return dynamic_cast<T&>(*m_i.getArgs()[nArg]); }
+
+      lirInstr& instr() { return m_i; }
+
+      nodeScope then() { return m_b.forNode(m_n); }
+
    private:
       lirBuilder& m_b;
       cmn::node& m_n;
@@ -321,6 +340,7 @@ private:
    lirStreams& m_lir;
    cmn::tgt::iTargetInfo& m_t;
    lirStream *m_pCurrStream;
+   size_t m_nLabel;
    std::map<cmn::node*,lirArg*> m_cache;
    std::set<lirArg*> m_orphans;
 };

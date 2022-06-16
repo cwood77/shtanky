@@ -38,6 +38,8 @@ public:
    virtual void visit(cmn::node& n) {}
    virtual void visit(cmn::typeNode& n);
    virtual void visit(cmn::strTypeNode& n);
+   virtual void visit(cmn::boolTypeNode& n);
+   virtual void visit(cmn::intTypeNode& n);
    virtual void visit(cmn::arrayTypeNode& n);
    virtual void visit(cmn::voidTypeNode& n);
    virtual void visit(cmn::userTypeNode& n);
@@ -59,6 +61,7 @@ protected:
    codeGenBase(cmn::outBundle& out, const std::string& path);
 
    void generatePrototype(cmn::funcNode& n);
+   void writeAttributes(cmn::node& n);
    virtual void appendFileSuffix() {}
 
    cmn::outStream *m_pOut;
@@ -85,6 +88,7 @@ public:
    virtual void visit(cmn::constNode& n);
    virtual void visit(cmn::funcNode& n);
    virtual void visit(cmn::sequenceNode& n);
+   virtual void visit(cmn::returnNode& n);
    virtual void visit(cmn::invokeFuncPtrNode& n);
    virtual void visit(cmn::fieldAccessNode& n);
    virtual void visit(cmn::callNode& n);
@@ -92,6 +96,9 @@ public:
    virtual void visit(cmn::varRefNode& n);
    virtual void visit(cmn::assignmentNode& n);
    virtual void visit(cmn::bopNode& n);
+   virtual void visit(cmn::ifNode& n);
+   virtual void visit(cmn::forLoopNode& n);
+   virtual void visit(cmn::whileLoopNode& n);
    virtual void visit(cmn::stringLiteralNode& n);
    virtual void visit(cmn::boolLiteralNode& n);
    virtual void visit(cmn::intLiteralNode& n);

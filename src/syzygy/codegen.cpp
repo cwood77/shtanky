@@ -100,8 +100,15 @@ void codegen::visit(cmn::fieldNode& n)
 {
    auto& s = getOutStream();
 
-   s.stream() << cmn::indent(s);
+   s.stream() << cmn::indent(s) << writeAttributes(n,s);
    visitNameTypePair(n,n.name);
+
+   if(n.getChildren().size() > 1)
+   {
+      s.stream() << " = ";
+      n.getChildren()[1]->acceptVisitor(*this);
+   }
+
    s.stream() << ";" << std::endl;
 }
 
@@ -129,6 +136,18 @@ void codegen::visit(cmn::argNode& n)
 void codegen::visit(cmn::strTypeNode& n)
 {
    getOutStream().stream() << "str";
+   hNodeVisitor::visit(n);
+}
+
+void codegen::visit(cmn::boolTypeNode& n)
+{
+   getOutStream().stream() << "bool";
+   hNodeVisitor::visit(n);
+}
+
+void codegen::visit(cmn::intTypeNode& n)
+{
+   getOutStream().stream() << "int";
    hNodeVisitor::visit(n);
 }
 
@@ -165,19 +184,32 @@ void codegen::visit(cmn::sequenceNode& n)
       cmn::autoIndent _i(s);
       for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       {
-         s.stream() << cmn::indent(s);
+         bool isSeq = (dynamic_cast<cmn::sequenceNode*>(*it));
+         if(!isSeq)
+            s.stream() << cmn::indent(s);
          (*it)->acceptVisitor(*this);
-         s.stream() << ";" << std::endl;
+         cmn::statementNeedsSemiColon sc;
+         (*it)->acceptVisitor(sc);
+         if(sc.needs())
+            s.stream() << ";" << std::endl;
       }
    }
    s.stream() << cmn::indent(s) << "}" << std::endl;
+}
+
+void codegen::visit(cmn::returnNode& n)
+{
+   auto& s = getOutStream();
+
+   s.stream() << cmn::indent(s) << "return ";
+   hNodeVisitor::visit(n);
 }
 
 void codegen::visit(cmn::invokeNode& n)
 {
    auto& s = getOutStream();
 
-   if(n.getChildren().size() < 2)
+   if(n.getChildren().size() < 1)
       cdwTHROW("insanity");
 
    n.getChildren()[0]->acceptVisitor(*this);
@@ -189,7 +221,7 @@ void codegen::visit(cmn::invokeFuncPtrNode& n)
 {
    auto& s = getOutStream();
 
-   if(n.getChildren().size() < 2)
+   if(n.getChildren().size() < 1)
       cdwTHROW("insanity");
 
    n.getChildren()[0]->acceptVisitor(*this);
@@ -264,10 +296,66 @@ void codegen::visit(cmn::indexNode& n)
    s.stream() << "]";
 }
 
+void codegen::visit(cmn::ifNode& n)
+{
+   auto& s = getOutStream();
+
+   s.stream() << "if(";
+   n.getChildren()[0]->acceptVisitor(*this);
+   s.stream() << ")" << std::endl;
+
+   n.getChildren()[1]->acceptVisitor(*this);
+
+   if(n.getChildren().size() > 2)
+   {
+      s.stream() << cmn::indent(s) << "else" << std::endl;
+      n.getChildren()[2]->acceptVisitor(*this);
+   }
+}
+
+
+#if 0
+void codegen::visit(cmn::loopIntrinsicNode& n)
+{
+   auto& s = getOutStream();
+   s.stream() << "loop(" << n.name << ")";
+}
+#endif
+
+void codegen::visit(cmn::forLoopNode& n)
+{
+   if(n.getChildren().size() != 2)
+      cdwTHROW("forLoopNode children is %d != 2",n.getChildren().size());
+
+   auto& s = getOutStream();
+   s.stream() << "for[" << n.name << "](";
+   n.getChildren()[0]->acceptVisitor(*this);
+   s.stream() << ")" << std::endl;
+   n.getChildren()[1]->acceptVisitor(*this);
+}
+
+void codegen::visit(cmn::whileLoopNode& n)
+{
+   if(n.getChildren().size() != 2)
+      cdwTHROW("whileLoopNode children is %d != 2",n.getChildren().size());
+
+   auto& s = getOutStream();
+   s.stream() << "while[" << n.name << "](";
+   n.getChildren()[0]->acceptVisitor(*this);
+   s.stream() << ")" << std::endl;
+   n.getChildren()[1]->acceptVisitor(*this);
+}
+
 void codegen::visit(cmn::stringLiteralNode& n)
 {
    auto& s = getOutStream();
    s.stream() << "\"" << n.value << "\"";
+}
+
+void codegen::visit(cmn::boolLiteralNode& n)
+{
+   auto& s = getOutStream();
+   s.stream() << (n.value ? "true" : "false" );
 }
 
 void codegen::visit(cmn::intLiteralNode& n)
@@ -284,11 +372,41 @@ void codegen::visit(cmn::structLiteralNode& n)
    s.stream() << " }";
 }
 
+void codegen::visit(cmn::genericNode& n)
+{
+   auto& s = getOutStream();
+   s.stream() << "generic<";
+
+   auto cons = n.getChildrenOf<cmn::constraintNode>();
+   for(auto it = cons.begin();it!=cons.end();++it)
+   {
+      if(it!=cons.begin())
+         s.stream() << ",";
+      s.stream() << (*it)->name;
+   }
+
+   s.stream() << ">" << std::endl;
+   hNodeVisitor::visit(n);
+}
+
+void codegen::visit(cmn::instantiateNode& n)
+{
+   auto& s = getOutStream();
+   s.stream() << "instantiate " << n.text << ";" << std::endl;
+   s.stream() << std::endl;
+   hNodeVisitor::visit(n);
+}
+
 cmn::outStream& codegen::getOutStream()
 {
    if(m_pCurrStream == NULL)
    {
-      auto outPath = cmn::pathUtil::addExt(m_pCurrFile->fullPath,m_infix);
+      std::string outPath;
+      if(m_addExt)
+         outPath = cmn::pathUtil::addExt(m_pCurrFile->fullPath,m_infix);
+      else
+         outPath = cmn::pathUtil::replaceOrAddExt(m_pCurrFile->fullPath,
+            cmn::pathUtil::getExt(m_pCurrFile->fullPath),m_infix);
       cdwDEBUG("infixed path w/ '%s' yields [%s] -> [%s]\n",
          m_infix.c_str(),
          m_pCurrFile->fullPath.c_str(),
@@ -332,7 +450,7 @@ void codegen::visitNameTypePair(cmn::node& n, const std::string& name)
    auto& s = getOutStream();
 
    s.stream() << writeFlags(n) << name << " : ";
-   visitChildren(n);
+   n.getChildren()[0]->acceptVisitor(*this);
 }
 
 void codegen::visitCallLikeThingAtParens(cmn::node& n, size_t startIdx)

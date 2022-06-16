@@ -25,7 +25,10 @@ void selfDecomposition::visit(cmn::methodNode& n)
 
 void selfDecomposition::visit(cmn::invokeNode& n)
 {
-   // change invoke nodes to invokeFuncPtr nodes using a vtbl
+   // first, determine whether this is a virtual call or not
+   const bool isVirtual = n.proto.getRefee()->isDynDispatch();
+
+   // change invoke nodes to invokeFuncPtr nodes using a vtbl, or call nodes
 
    // grab instance (LHS) of invoke
    // this is some variable expression.  It's a class, but could be any class.
@@ -33,29 +36,42 @@ void selfDecomposition::visit(cmn::invokeNode& n)
    n.removeChild(*pInstance);
 
    // write a new tree of invokeFuncPtr
-   std::unique_ptr<cmn::invokeFuncPtrNode> pFuncPtr(new cmn::invokeFuncPtrNode());
-   cmn::treeWriter w(*pFuncPtr.get());
-   w
-   .append<cmn::fieldAccessNode>([&](auto&f){f.name=n.proto.ref;})
-      .append<cmn::fieldAccessNode>([](auto&f){f.name="_vtbl";})
-         .get().appendChild(*pInstance);
-   ;
+   std::unique_ptr<cmn::node> pLowered;
+   if(isVirtual)
+   {
+      pLowered.reset(new cmn::invokeFuncPtrNode());
+      cmn::treeWriter w(*pLowered.get());
+      w
+      .append<cmn::fieldAccessNode>([&](auto&f){f.name=n.proto.ref;})
+         .append<cmn::fieldAccessNode>([](auto&f){f.name="_vtbl";})
+            .get().appendChild(cmn::cloneTree(*pInstance,true));
+      ;
+   }
+   else
+   {
+      auto *pC = new cmn::callNode();
+      pC->pTarget.ref = cmn::fullyQualifiedName::build(
+         n.proto.getRefee()->getNode(),
+         n.proto.getRefee()->getShortName());
+      pLowered.reset(pC);
+   }
 
    // the first parameter to any method is the self
-   pFuncPtr->appendChild(cmn::cloneTree(*pInstance));
+   pLowered->appendChild(*pInstance);
 
    // transfer any remaining children to the new node
    while(n.getChildren().size())
    {
-      pFuncPtr->appendChild(*n.getChildren()[0]);
+      pLowered->appendChild(*n.getChildren()[0]);
       n.removeChild(*n.getChildren()[0]);
    }
 
    // replace the invoke
-   auto *pNaked = pFuncPtr.get();
-   delete n.getParent()->replaceChild(n,*pFuncPtr.release());
+   auto *pNaked = pLowered.get();
+   n.lTarget.tryMigrateRefers(*pNaked);
+   delete n.getParent()->replaceChild(n,*pLowered.release());
 
-   hNodeVisitor::visit(*pNaked);
+   visitChildren(*pNaked);
 }
 
 void selfDecomposition::visit(cmn::varRefNode& n)

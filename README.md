@@ -117,17 +117,17 @@ By milestone
 - [x] stemu impl
 - [x] stemu callbacks - stemu side
 - [x] get stemu passing (e.g. study virtual calls)
-- [ ] <enterfunc> is double-allocating stack space
+- [x] <enterfunc> is double-allocating stack space
 - [x] setup an ATS
 
 ### Hello World MVP
 - [x] code shape transform
-- [ ] handle volatile regs (i.e. regs must be preserved around calls if in use)
-- [ ] impl frame ptrs
+- [x] handle volatile regs (i.e. regs must be preserved around calls if in use)
+- [x] impl frame ptrs
 
 ### Must, but Later
-- [ ] int literals
-- [ ] invoke is sometimes a nonvirtual call
+- [x] int literals
+- [x] invoke is sometimes a nonvirtual call
 - [ ] shlink should inflate segments to page boundaries
 
 ### Could, Someday
@@ -139,28 +139,81 @@ By milestone
 - [ ] generate windows PE from shlink
 
 ### Big, Hairy
-- [ ] templ
+- [x] templ
 - [ ] gempl
-- [ ] cop
-- [ ] array class?
-- [ ] passing args into stemu
+- [x] cop
+- [x] array class?
+- [/] passing args into stemu
 - [ ] heap class allocation (actually needs a heap in stemu/stanky)
 - [ ] DLLs
 - [ ] maybe a 'grep' tool that understand the languages--i.e. can skip comments, etc.
 
 ### Nostromo
 Start building the OS and fill out the language as you go
-- [ ] while loop, with names, and break
-- [ ] peek/poke
-- [ ] register codegen
-- [ ] if
+- [...] while loop, with names, and break
+- [x] peek/poke
+- [/] register codegen
+- [...] if
 - [ ] not
-- [ ] strings?  length, index
+- [...] strings?  length, index
 - [ ] no size for int types means lots of funcs with 8
+
+### Uncategorized
+- [ ] Elijah shorthand
+- [ ] telnet protocol?
+- [ ] string interp
+- [ ] int formats
+- [ ] reflection?  at least enough for ATS
 
 What is a string?
 - it's a type that compiles down to an array and and a set of shtasm intrinsics
 - I think I can still get away with widening chars to 64-bits as long as the actual
   array is 8-bit...?  What would an index be?  a move8.  then with an xor?  maybe it's easier to just support 8-bit
+
+### Test strategy
+
+Tests are not free.  Already, test run time is significant.  I want to be thoughtful about avoiding redundant tests.
+
+Tests:
+- shtemu / sandbox
+  - this isn't really a test but a sandbox for developing new features.  The idea is that it allows "bottom up" addition of features by having a shtasm -> shtemu sandbox, along with a liam -> shtemu sandbox, along with a araceli -> shtemu sandbox.  Changes here are likely transitory.
+- assign
+   - this is really a front-end test that checks AST parse trees for things like associativity
+- test
+   - this is really a MVP hello world test
+- nostromo
+   - this is really a sandbox for future work
+
+So, do all these really qualify as tests?  Do all of these require testing at all levels?  Do levels really need to exercise all artifacts?
+
+Levels include
+- AST verification (.ast x 4)
+- Araceli verification (.build.bat, .lh, .ls)
+- Liam verification (.asm, .lir, .lir-post)
+- Shtasm verification (.o, .mc-list, .list)
+- Shlink verification (.list, .app)
+- Shtemu verification (.log)
+
+Intermediate artifacts are useful for debugging problems, but are they helpful for detecting problems?  I don't think so.
+
+Propsed changes
+1. [x] Reoder tests in order of complexity
+1. [x] Add execution to helloWorld.
+1. [x] Limit araceli to the ast level.
+1. [\] Disable comparison of all intermediate output for tests that actually run (i.e. capturing only .log).
+1. [ ] Rename tests as follows:
+    - assign -> **ast**
+    - shtemu -> **sandbox**
+    - test -> **helloWorld**
+    - nostromo -> _no change_
+1. [x] Exercise branches by passing command-line input through shtemu
+1. [ ] Strive to get execution of nostromo.
+
+### Elijah
+
+Shorthand notations that may be employed
+- [ ] increment/decrement ops
+- [ ] => for method bodies
+- [ ] default property generation
 
 [^1]: The name "shtanky" was suggested by my son, Ethan (age 11).  I selected the first of his suggestions that didn't include "my dad's butt" somewhere in the title.

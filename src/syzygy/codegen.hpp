@@ -10,7 +10,8 @@ namespace syzygy {
 
 class codegen : public cmn::hNodeVisitor {
 public:
-   codegen(cmn::outBundle& b, const std::string& infix) : m_b(b), m_infix(infix) {}
+   codegen(cmn::outBundle& b, const std::string& infix, bool addOrReplaceExt)
+   : m_b(b), m_infix(infix), m_addExt(addOrReplaceExt) {}
 
    virtual void visit(cmn::node& n) { visitChildren(n); }
    virtual void visit(cmn::liamProjectNode& n) { unexpected(n); }
@@ -24,11 +25,14 @@ public:
    virtual void visit(cmn::intrinsicNode& n) { }
    virtual void visit(cmn::argNode& n);
    virtual void visit(cmn::strTypeNode& n);
+   virtual void visit(cmn::boolTypeNode& n);
+   virtual void visit(cmn::intTypeNode& n);
    virtual void visit(cmn::arrayTypeNode& n);
    virtual void visit(cmn::voidTypeNode& n);
    virtual void visit(cmn::userTypeNode& n);
    virtual void visit(cmn::ptrTypeNode& n);
    virtual void visit(cmn::sequenceNode& n);
+   virtual void visit(cmn::returnNode& n);
    virtual void visit(cmn::invokeNode& n);
    virtual void visit(cmn::invokeFuncPtrNode& n);
    virtual void visit(cmn::fieldAccessNode& n);
@@ -38,13 +42,19 @@ public:
    virtual void visit(cmn::assignmentNode& n);
    virtual void visit(cmn::bopNode& n);
    virtual void visit(cmn::indexNode& n);
+   virtual void visit(cmn::ifNode& n);
+   virtual void visit(cmn::loopIntrinsicNode& n) { unexpected(n); }
+   virtual void visit(cmn::forLoopNode& n);
+   virtual void visit(cmn::whileLoopNode& n);
+   virtual void visit(cmn::loopStartNode& n) { unexpected(n); }
+   virtual void visit(cmn::loopBreakNode& n) { unexpected(n); }
+   virtual void visit(cmn::loopEndNode& n) { unexpected(n); }
    virtual void visit(cmn::stringLiteralNode& n);
-   virtual void visit(cmn::boolLiteralNode& n) { unexpected(n); }
+   virtual void visit(cmn::boolLiteralNode& n);
    virtual void visit(cmn::intLiteralNode& n);
    virtual void visit(cmn::structLiteralNode& n);
-   virtual void visit(cmn::genericNode& n) { unexpected(n); }
-   virtual void visit(cmn::constraintNode& n) { unexpected(n); }
-   virtual void visit(cmn::instantiateNode& n) { unexpected(n); }
+   virtual void visit(cmn::genericNode& n);
+   virtual void visit(cmn::instantiateNode& n);
 
    virtual void _implementLanguage() {} // all
 
@@ -57,6 +67,7 @@ private:
 
    cmn::outBundle& m_b;
    const std::string m_infix;
+   const bool m_addExt;
 
    cmn::fileNode *m_pCurrFile;
    cmn::outStream *m_pCurrStream;

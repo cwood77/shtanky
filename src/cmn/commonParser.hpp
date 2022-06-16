@@ -10,8 +10,6 @@ class commonLexor;
 class genericTypeExprLexor;
 class lexorBase;
 
-//#error add new nodes to parser: bool, int, index, if
-
 // eBNF
 //
 // ------------------------- file
@@ -41,7 +39,7 @@ class lexorBase;
 //                    | <name> ':' <type>
 //                    | e
 //
-// ------------------------- global funcs (liam)
+// ------------------------- global funcs
 // <const> ::== 'const' <name> ':' <type> '=' <rvalue> ';'
 // <func> ::== 'func' <name> '(' <method/func>
 //
@@ -51,32 +49,58 @@ class lexorBase;
 // <statements> ::== <statement>
 //                 | e
 // <statement> ::== 'var' <var>
+//                | <if>
+//                | <loop>
+//                | <return> <rvalue> ';'
+//                | <return> ';'
 //                | <lvalue> '=' <assignment> ';'
-//                | <lvalue> <call-end-friends> ';'
+//                | <lvalue> <call-and-friends> ';'
+// <statement-or-body> ::== <statement>
+//                        | <body>
 // <var>       ::== <name> ':' <type> ';'
 //                | <name> ':' <type> '=' <rvalue> ';'
 //                | <name> '=' <rvalue> ';'
-// <invoke>     ::== <name> '(' <passed-arg-list> ')' ';'
-// <call>       ::== <passed-arg-list> ')' ';'
 // <assignment> ::== <rvalue> ';'
+//
+// <if> ::== 'if' '(' <rvalue> ')' <statement-or-body> <if'>
+// <if'> ::== 'else' <if>
+//          | 'else' <statement-or-body>
+//          | e
+//
+// <loop> ::== 'for' <loop-name> '(' <rvalue> ',' <rvalue> ')' <statement-or-body>
+//           | 'while' <loop-name> '(' <rvalue> ')' <statement-or-body>
+// <loop-name> ::== '[' '+' <name> ']'
+//                | '[' '-' <name> ']'
+//                | e
+//
+// ------------------------- L-value / R-value
+// ..... we want left associativity generally
+//
+// <lvalue> ::== <name> <lvalue'>
+// <lvalue'> ::== ':' <name> <lvalue'>          [fieldaccess]
+//              | '[' <rvalue> ']' <lvalue'>    [index]
+//              | e
+//
+// <rvalue> ::== <literal>                      [* shenanigans for l-assoc]
+//             | <lvalue> <rvalue'>
+//
+// <rvalue'> ::== <call-and-friends>
+//              | <bop>
+//              | ':' <name> <rvalue'>
+//              | '[' <rvalue ']' <rvalue'>
+//              | e
+//
+// <call-and-friends> ::== '->' <invoke> <rvalue'>
+//                       | '->(' <passed-arg-list> ')' <rvalue'>
+//                       | '(' <call> <rvalue'>
+// <invoke>     ::== <name> '(' <passed-arg-list> ')' <rvalue'>
+// <call>       ::== <passed-arg-list> ')' <rvalue'>
 // <passed-arg-list> ::== <rvalue> ',' <passed-arg-list>
 //                      | <rvalue>
 //                      | e
+// <bop> ::== '+'{,etc.} <rvalue>               [* shenanigans for l-assoc]
 //
-// <lvalue> ::== <name> <lvalue'>
-// <lvalue'> ::== ':' <name> <lvalue'>         [fieldaccess]
-//              | '[' <rvalue> ']' <lvaue'>    [index]
-//              | e
-//
-// <rvalue> ::== <literal>
-//             | <lvalue>
-//             | <lvalue> <call-and-friends>
-//             | <literal> <bop>
-//             | <lvalue> <bop>
-//
-// <call-and-friends> ::== '->' <invoke>
-//                       | '->(' <passed-arg-list> ')'
-//                       | '(' <call>
+// ------------------------- literals
 //
 // <literal> ::== <string-literal>
 //              | <bool-literal>
@@ -90,21 +114,12 @@ class lexorBase;
 // <struct-literal-part-prime> ::== ',' <struct-literal-part>
 //                                | e
 //
-                           // <faccess>  ::== <lvalue> '->' <name>
-                           // <index-op> ::== <lvalue> '[' <lvalue> ']'
-// <bop> ::== '+'{,etc.} <rvalue>
-//
-//  so 1 + 2 + 3
-//  would be:
-//     +
-//  1    +
-//     2  3
-//  ... which is right associative (i.e. 1 + (2 + 3)
-//
 // ------------------------- type
 // <type> ::== 'str' '[' ']'
 //           | 'void'
 //           | 'ptr'
+//           | 'bool'
+//           | 'int'
 //           | <name>
 //           | <generic-opaque>
 //
@@ -120,12 +135,7 @@ class lexorBase;
 //   --delegate to generic parser--
 
 // missing:
-//  index ops      **
-//  arith ops      **
-//  log ops        **
-//  bitwise ops    **
 //  ptr deref      ????
-//  field access   ????
 //  string interp
 //  int literal formats
 //  paren grouping in exprs
@@ -139,7 +149,10 @@ public:
    std::unique_ptr<fileNode> parseFile();
 
 private:
+   // ------------------------- file
    void parseFile(fileNode& f);
+
+   // ------------------------- class
    void parseClass(fileNode& f, const std::string& genericTypeExpr);
    void parseClassBases(classNode& c);
    void parseClassMembers(classNode& c);
@@ -149,30 +162,45 @@ private:
    void parseMethodOrGlobalFuncFromAfterOpenParen(node& n);
    void parseDecledArgList(node& owner);
 
+   // ------------------------- global funcs
    void parseGlobalConst(fileNode& f);
    void parseGlobalFunc(fileNode& f);
 
+   // ------------------------- procedural
    void parseSequence(node& owner);
    void parseStatements(node& owner);
    bool tryParseStatement(node& owner);
+   void parseStatementOrBody(node& owner);
    void parseVar(node& owner);
-   bool parseCallAndFriends(std::unique_ptr<node>& inst, node& owner, bool require);
-   void parseInvoke(std::unique_ptr<node>& inst, node& owner);
-   void parseCall(std::unique_ptr<node>& inst, node& owner);
    void parseAssignment(std::unique_ptr<node>& inst, node& owner);
-   void parsePassedArgList(node& owner);
+   void parseIf(node& owner);
+   void parseIfPrime(node& owner);
+   void parseLoop(node& owner);
+   void parseLoopName(loopBaseNode& l);
 
+   // ------------------------- L-value / R-value
    node& parseLValue();
    node& parseLValuePrime(node& n);
    void parseRValue(node& owner) { parseRValue(owner,&owner); }
    void parseRValue(node& owner, node *pExprRoot);
-   bool parseLiteral(node& owner);
-   void parseStructLiteralPart(node& owner);
+   bool parseRValuePrime(std::unique_ptr<node>& inst, node& owner, node *pExprRoot);
+   bool parseCallAndFriends(std::unique_ptr<node>& inst, node& owner, bool require);
+   void parseInvoke(std::unique_ptr<node>& inst, node& owner);
+   void parseCall(std::unique_ptr<node>& inst, node& owner);
+   void parsePassedArgList(node& owner);
    void parseBop(node& owner, node *pExprRoot);
 
+   // ------------------------- literals
+   node *parseLiteral();
+   void parseStructLiteralPart(node& owner);
+
+   // ------------------------- type
    void parseType(node& owner);
 
+   // ------------------------- attributes
    void parseAttributes();
+
+   // ------------------------- generics
    void parseGeneric(node& n, const std::string& genericTypeExpr);
 
    nodeFactory m_nFac;

@@ -1,6 +1,7 @@
 #include "../cmn/fmt.hpp"
 #include "../cmn/lexor.hpp"
 #include "../cmn/obj-fmt.hpp"
+#include "../cmn/stlutil.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/throw.hpp"
 #include "../cmn/type.hpp"
@@ -23,14 +24,34 @@ void dataFormatter::visit(cmn::stringLiteralNode& n)
 
 void astCodeGen::visit(cmn::constNode& n)
 {
-   std::stringstream expr;
-   { dataFormatter v(expr); n.acceptVisitor(v); }
+   if(cmn::has(n.attributes,"vtbl"))
+   {
+      m_b.createNewStream(n.name,cmn::objfmt::obj::kLexCode);
+      m_b.forNode(n)
+         .append(cmn::tgt::kLabel)
+            .withArg<lirArgLabel>(n.name,0)
+            .tweakArgAs<lirArgLabel>(0).isCode = true;
 
-   m_b.createNewStream(n.name,cmn::objfmt::obj::kLexConst);
-   m_b.forNode(n)
-      .append(cmn::tgt::kGlobalConstData)
-         .withArg<lirArgConst>(expr.str(),0)
-         .withComment(n.name);
+      auto methods = n
+         .demandSoleChild<cmn::structLiteralNode>()
+         .getChildrenOf<cmn::varRefNode>();
+      for(auto *pNode : methods)
+         m_b.forNode(n)
+            .append(cmn::tgt::kGoto)
+            .withArg<lirArgLabel>(pNode->pSrc.ref,0)
+            .tweakArgAs<lirArgLabel>(0).isCode = true;
+   }
+   else
+   {
+      std::stringstream expr;
+      { dataFormatter v(expr); n.acceptVisitor(v); }
+
+      m_b.createNewStream(n.name,cmn::objfmt::obj::kLexConst);
+      m_b.forNode(n)
+         .append(cmn::tgt::kGlobalConstData)
+            .withArg<lirArgConst>(expr.str(),0)
+            .withComment(n.name);
+   }
 }
 
 void astCodeGen::visit(cmn::funcNode& n)
@@ -38,14 +59,14 @@ void astCodeGen::visit(cmn::funcNode& n)
    if(n.getChildrenOf<cmn::sequenceNode>().size() == 0)
       return; // ignore forward references
 
-   m_b.createNewStream(n.name,cmn::objfmt::obj::kLexCode);
-
    // determine real func name (different if entrypoint)
    std::string funcNameInAsm = n.name;
    if(n.attributes.find("entrypoint") != n.attributes.end())
       funcNameInAsm = ".entrypoint";
 
-   auto& i = m_b.forNode(n)
+   m_b.createNewStream(funcNameInAsm,cmn::objfmt::obj::kLexCode);
+
+   auto i = m_b.forNode(n)
       .append(cmn::tgt::kEnterFunc)
          .withArg<lirArgTemp>(m_u.makeUnique("rval"),n)
          .returnToParent(0)
@@ -53,38 +74,119 @@ void astCodeGen::visit(cmn::funcNode& n)
 
    auto args = n.getChildrenOf<cmn::argNode>();
    for(auto it=args.begin();it!=args.end();++it)
-      i.withArg<lirArgVar>(m_u.makeUnique((*it)->name),**it);
+      i.withArg<lirArgVar>((*it)->name,**it);
 
    n.demandSoleChild<cmn::sequenceNode>().acceptVisitor(*this);
 }
 
-void astCodeGen::visit(cmn::invokeFuncPtrNode& n) // TODO left off here
+void astCodeGen::visit(cmn::returnNode& n)
 {
+   hNodeVisitor::visit(n);
+
+   auto i = m_b.forNode(n)
+      .append(cmn::tgt::kRet);
+
+   if(n.getChildren().size() > 1)
+      cdwTHROW("don't know how to handle return with multiple args");
+
+   if(n.getChildren().size())
+      i.inheritArgFromChild(*n.getChildren()[0]);
+}
+
+// first arg is the vtable ptr
+void astCodeGen::visit(cmn::invokeVTableNode& n) // TODO left off here
+{
+   // if you're not invoking the first index, then you'll need a scratch allocation
+   // this is b/c calls require absolute INDIRECT (i.e. ptr)
+   const bool needsLocal = n.index;
+   std::string localVar;
+   std::string callPtrVar;
+
+   if(needsLocal)
+   {
+      localVar = m_u.makeUnique("callPtr_forVTable");
+      m_b.forNode(n)
+         .append(cmn::tgt::kReserveLocal)
+            .withArg<lirArgTemp>(localVar,0)
+            .withComment("scratch for vtable callptr calculation");
+   }
+
    m_b.forNode(n)
       .append(cmn::tgt::kPreCallStackAlloc);
 
    hNodeVisitor::visit(n);
 
-   auto& i = m_b.forNode(n)
+   if(needsLocal)
+   {
+      callPtrVar = m_u.makeUnique("addrOf_callPtr_forVTable");
+      m_b.forNode(n)
+         // copy inst into temp alloc
+         .append(cmn::tgt::kMov)
+            .withArg<lirArgTemp>(localVar,0)
+            .inheritArgFromChild(*n.getChildren()[0])
+            .then()
+         // adjust for offset
+         .append(cmn::tgt::kAdd)
+            .withArg<lirArgTemp>(localVar,0)
+            .withArg<lirArgConst>("5",0) // TODO HACK
+            .then()
+         // take address of, since call wants a ptr
+         .append(cmn::tgt::kLea)
+            .withArg<lirArgTemp>(callPtrVar,0)
+            .withArg<lirArgTemp>(localVar,0);
+   }
+
+   auto i = m_b.forNode(n)
       .append(cmn::tgt::kCall)
          .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
          .returnToParent(0)
-         .withComment("(call ptr)");
+         .withComment(std::string("vtbl call to ") + n.name);
 
-   for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
+   // first arg (call ptr)
+   if(needsLocal)
+      i.withArg<lirArgTemp>(callPtrVar,0).tweakArgAs<lirArgTemp>(1).addrOf = true;
+   else
+      i.inheritArgFromChild(*n.getChildren()[0]);
+
+   // rest of args
+   for(auto it=++(n.getChildren().begin());it!=n.getChildren().end();++it)
       i.inheritArgFromChild(**it);
+
+   // call idiomatics
+   consumeAllArgRegisters(i);
+   trashScratchRegsOnCall(i);
 }
 
 void astCodeGen::visit(cmn::localDeclNode& n)
 {
    hNodeVisitor::visit(n);
 
-   m_b.forNode(n)
-      .append(cmn::tgt::kReserveLocal)
-         .withArg<lirArgVar>(m_u.makeUnique(n.name),
-            cmn::type::gNodeCache->demand(n.demandSoleChild<cmn::typeNode>())
-               .getRealAllocSize(m_t))
-         .withComment(n.name);
+   size_t allocSize = cmn::type::gNodeCache->demand(n.demandSoleChild<cmn::typeNode>())
+      .getRealAllocSize(m_t);
+
+   if(cmn::type::gNodeCache->demand(n).is<cmn::type::iStructType>())
+   {
+      // user types are passed as pointers, so get the address of the stack
+      // alloc, rather than the value
+
+      std::string backStorName = m_u.makeUnique(n.name + "_alloc");
+      m_b.forNode(n)
+         .append(cmn::tgt::kReserveLocal)
+            .withArg<lirArgVar>(backStorName,allocSize)
+            .withComment(n.name)
+            .then()
+         .append(cmn::tgt::kLea)
+            .withArg<lirArgVar>(n.name,allocSize)
+            .withArg<lirArgVar>(backStorName,allocSize)
+            .withComment(n.name);
+   }
+   else
+   {
+      m_b.forNode(n)
+         .append(cmn::tgt::kReserveLocal)
+            .withArg<lirArgVar>(n.name,allocSize)
+            .withComment(n.name);
+   }
 
    // TODO not handling initializers here (i.e. constant
    // initial value)
@@ -173,11 +275,15 @@ void astCodeGen::visit(cmn::callNode& n)
       .append(cmn::tgt::kCall)
          .withArg<lirArgTemp>(m_u.makeUnique("rval"),/*n*/ 0) // TODO 0 until typeprop for node is done
          .returnToParent(0)
-         .withArg<lirArgConst>(n.pTarget.ref,/*n*/ 0) // label
+         .withArg<lirArgLabel>(n.pTarget.ref,/*n*/ 0) // label
          .withComment("(call label)");
+   iCall.tweakArgAs<lirArgLabel>(1).isCode = true;
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       iCall.inheritArgFromChild(**it);
+
+   consumeAllArgRegisters(iCall);
+   trashScratchRegsOnCall(iCall);
 }
 
 void astCodeGen::visit(cmn::varRefNode& n)
@@ -188,12 +294,26 @@ void astCodeGen::visit(cmn::varRefNode& n)
       // references to another stream, like a global, are patched
       // patches are immediate data
 
-      auto pA = new lirArgConst(
-         n.pSrc.ref,
-         cmn::type::gNodeCache->demand(*n.pSrc._getRefee()).getPseudoRefSize());
+      auto& ty = cmn::type::gNodeCache->demand(*n.pSrc._getRefee());
+      if(ty.getName() == "string" || ty.is<cmn::type::iStructType>())
+      {
+         // strings and user types are pointers (i.e. reference types) and require LEA
 
-      m_b.forNode(n)
-         .returnToParent(*pA);
+         m_b.forNode(n)
+            .append(cmn::tgt::kLea)
+               .withArg<lirArgTemp>(m_u.makeUnique("str"),0)
+               .withArg<lirArgLabel>(n.pSrc.ref,0)
+               .returnToParent(0);
+      }
+      else
+      {
+         auto pA = new lirArgLabel(
+            n.pSrc.ref,
+            cmn::type::gNodeCache->demand(*n.pSrc._getRefee()).getPseudoRefSize());
+
+         m_b.forNode(n)
+            .returnToParent(*pA);
+      }
    }
    else
    {
@@ -220,19 +340,104 @@ void astCodeGen::visit(cmn::assignmentNode& n)
 
 void astCodeGen::visit(cmn::bopNode& n)
 {
-   // TODO HACK - bops aren't really implemented yet
-   //             mainly a copy of assignment for now
-
    n.getChildren()[1]->acceptVisitor(*this);
    n.getChildren()[0]->acceptVisitor(*this);
 
+   if(n.op == "+")
+   {
+      auto *pTmp = new lirArgTemp(
+         m_u.makeUnique("agg"),
+         m_b.borrowArgFromChild(*n.getChildren()[0]).getSize());
+
+      m_b.forNode(n)
+         .append(cmn::tgt::kMov)
+            .withArg(pTmp->clone())
+            .inheritArgFromChild(*n.getChildren()[0])
+            .then()
+         .append(cmn::tgt::kAdd)
+            .withArg(*pTmp)
+            .inheritArgFromChild(*n.getChildren()[1])
+            .returnToParent(0);
+   }
+   else if(n.op == "<")
+   {
+      m_b.forNode(n)
+         .append(cmn::tgt::kMacroIsLessThan)
+            .withArg<lirArgTemp>(m_u.makeUnique("lt"),0)
+            .inheritArgFromChild(*n.getChildren()[0])
+            .inheritArgFromChild(*n.getChildren()[1])
+            .returnToParent(0);
+   }
+   else
+      cdwTHROW("unimplemented bop %s",n.op.c_str());
+}
+
+void astCodeGen::visit(cmn::ifNode& n)
+{
+   n.getChildren()[0]->acceptVisitor(*this);
+
+   auto elseLabel = m_b.reserveNewLabel("else");
+   auto endifLabel = m_b.reserveNewLabel("endif");
+
    m_b.forNode(n)
-      .append(cmn::tgt::kMov)
+      .append(cmn::tgt::kMacroIfFalse)
          .inheritArgFromChild(*n.getChildren()[0])
-         .inheritArgFromChild(*n.getChildren()[1])
-         .withComment("BOP , but not really - HACK!!")
-         .returnToParent(0); // can't do this, or you're giving your parent a literal
-                             // can't rely on a transform to fix this for you
+         .withArg<lirArgLabel>(elseLabel,0)
+         .tweakArgAs<lirArgLabel>(1).isCode = true;
+
+   n.getChildren()[1]->acceptVisitor(*this);
+
+   m_b.forNode(n)
+      .append(cmn::tgt::kGoto)
+         .withArg<lirArgLabel>(endifLabel,0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
+   m_b.forNode(n)
+      .append(cmn::tgt::kLabel)
+         .withArg<lirArgLabel>(elseLabel,0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
+
+   auto children = n.getChildren();
+   for(size_t i=2;i<children.size();i++)
+   {
+      children[i]->acceptVisitor(*this);
+      m_b.forNode(n)
+         .append(cmn::tgt::kGoto)
+            .withArg<lirArgLabel>(endifLabel,0)
+            .tweakArgAs<lirArgLabel>(0).isCode = true;
+   }
+
+   m_b.forNode(n)
+      .append(cmn::tgt::kLabel)
+         .withArg<lirArgLabel>(endifLabel,0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
+}
+
+void astCodeGen::visit(cmn::loopStartNode& n)
+{
+   m_b.forNode(n)
+      .append(cmn::tgt::kLabel)
+         .withArg<lirArgLabel>(n.name + "_start",0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
+}
+
+void astCodeGen::visit(cmn::loopBreakNode& n)
+{
+   m_b.forNode(n)
+      .append(cmn::tgt::kGoto)
+         .withArg<lirArgLabel>(n.name + "_end",0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
+}
+
+void astCodeGen::visit(cmn::loopEndNode& n)
+{
+   m_b.forNode(n)
+      .append(cmn::tgt::kGoto)
+         .withArg<lirArgLabel>(n.name + "_start",0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
+   m_b.forNode(n)
+      .append(cmn::tgt::kLabel)
+         .withArg<lirArgLabel>(n.name + "_end",0)
+         .tweakArgAs<lirArgLabel>(0).isCode = true;
 }
 
 // all literals are nearly identical (just 'value' different) - share this?
@@ -249,9 +454,7 @@ void astCodeGen::visit(cmn::stringLiteralNode& n)
 
 void astCodeGen::visit(cmn::boolLiteralNode& n)
 {
-   auto pA = new lirArgConst(
-      n.value ? "T" : "F",
-      cmn::type::gNodeCache->demand(n).getPseudoRefSize());
+   auto pA = new lirArgConst(n.value ? "1" : "0",1);
 
    m_b.forNode(n)
       .returnToParent(*pA);
@@ -266,6 +469,50 @@ void astCodeGen::visit(cmn::intLiteralNode& n)
 
    m_b.forNode(n)
       .returnToParent(*pA);
+}
+
+void astCodeGen::consumeAllArgRegisters(lirBuilder::instrBuilder& instr)
+{
+   // generate additional args to trash regs as necessary
+
+   std::vector<size_t> argStorage;
+   m_t.getCallConvention().getRValAndArgBank(argStorage);
+
+   size_t storageUsed = (instr.instr().getArgs().size() - 1); // -1 for callptr
+
+   if(storageUsed < argStorage.size())
+   {
+      // need some extra dummy args
+      const size_t toBurn = argStorage.size() - storageUsed;
+      const size_t offset = storageUsed;
+      for(size_t i=0;i<toBurn;i++)
+      {
+         size_t stor = argStorage[i+offset];
+
+         std::stringstream nameHint;
+         nameHint << m_t.getProc().getRegName(stor) << "_burn";
+
+         instr.withArg<lirArgTemp>(m_u.makeUnique(nameHint.str()),0);
+      }
+   }
+}
+
+void astCodeGen::trashScratchRegsOnCall(lirBuilder::instrBuilder& instr)
+{
+   // add more dummies for trashed args as required for calling convention
+
+   std::vector<size_t> argStorage;
+   m_t.getCallConvention().createScratchRegisterBank(argStorage);
+
+   for(size_t i=0;i<argStorage.size();i++)
+   {
+      size_t stor = argStorage[i];
+
+      std::stringstream nameHint;
+      nameHint << m_t.getProc().getRegName(stor) << "_trash";
+
+      instr.withArg<lirArgTemp>(m_u.makeUnique(nameHint.str()),0);
+   }
 }
 
 } // namespace liam

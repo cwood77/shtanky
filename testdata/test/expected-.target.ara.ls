@@ -22,6 +22,7 @@ func .test.consoleTarget.cdtor(
 {
 }
 
+[vtbl]
 const .test.consoleTarget_vtbl_inst : .test.consoleTarget_vtbl = {  };
 
 func .test.consoleTarget_sctor(
@@ -41,10 +42,10 @@ func .test.consoleTarget_sdtor(
 }
 
 
-func ._osCall(code : str, payload : str) : void;
+ref "..\sht\prims.lh";
 
 ref "..\sht\cons\program.ara.lh";
 ref "..\sht\core\object.ara.lh";
 ref "..\sht\core\string.ara.lh";
 ref ".target.ara.lh";
-ref "test.ara.lh";
+ref ".\test.ara.lh";

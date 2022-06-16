@@ -153,7 +153,9 @@ void commonParser::parseClassMembers(classNode& c)
 
 void commonParser::parseMemberKeywords(size_t& flags)
 {
-   if(m_l.getToken() == commonLexor::kOverride)
+   if(m_l.getToken() == commonLexor::kVirtual)
+      flags |= nodeFlags::kVirtual;
+   else if(m_l.getToken() == commonLexor::kOverride)
       flags |= nodeFlags::kOverride;
    else if(m_l.getToken() == commonLexor::kAbstract)
       flags |= nodeFlags::kAbstract;
@@ -271,9 +273,6 @@ void commonParser::parseSequence(node& owner)
    auto& s = m_nFac.appendNewChild<sequenceNode>(owner);
    parseStatements(s);
 
-   if(m_l.getToken() == commonLexor::kLBrace)
-      parseSequence(owner);
-
    m_l.demandAndEat(cdwLoc,commonLexor::kRBrace);
 }
 
@@ -284,11 +283,26 @@ void commonParser::parseStatements(node& owner)
 
 bool commonParser::tryParseStatement(node& owner)
 {
-   if(m_l.getToken() == commonLexor::kLBrace) return false;
    if(m_l.getToken() == commonLexor::kRBrace) return false;
 
-   if(m_l.getToken() == commonLexor::kVar)
+   if(m_l.getToken() == commonLexor::kLBrace)
+      parseSequence(owner);
+   else if(m_l.getToken() == commonLexor::kVar)
       parseVar(owner);
+   else if(m_l.getToken() == commonLexor::kIf)
+      parseIf(owner);
+   else if(m_l.getTokenClass() & commonLexor::kClassLoop)
+      parseLoop(owner);
+   else if(m_l.getToken() == commonLexor::kReturn)
+   {
+      m_l.advance();
+      auto& r = m_nFac.appendNewChild<returnNode>(owner);
+
+      if(m_l.getToken() != commonLexor::kSemiColon)
+         parseRValue(r);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kSemiColon);
+   }
    else
    {
       std::unique_ptr<node> pInst(&parseLValue());
@@ -301,6 +315,19 @@ bool commonParser::tryParseStatement(node& owner)
    }
 
    return true;
+}
+
+void commonParser::parseStatementOrBody(node& owner)
+{
+   if(m_l.getToken() == commonLexor::kLBrace)
+      parseSequence(owner);
+   else
+   {
+      auto& s = m_nFac.appendNewChild<sequenceNode>(owner);
+      bool success = tryParseStatement(s);
+      if(!success)
+         m_l.error(cdwLoc,"expected statement");
+   }
 }
 
 void commonParser::parseVar(node& owner)
@@ -342,11 +369,13 @@ bool commonParser::parseCallAndFriends(std::unique_ptr<node>& inst, node& owner,
    {
       m_l.advance();
 
-      auto& i = m_nFac.appendNewChild<cmn::invokeFuncPtrNode>(owner);
-      i.appendChild(*inst.release());
+      std::unique_ptr<node> pI(m_nFac.create<invokeFuncPtrNode>());
+      pI->appendChild(*inst.release());
 
-      parsePassedArgList(i);
+      parsePassedArgList(*pI.get());
       m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+      parseRValuePrime(pI,owner,&owner);
    }
    else if(m_l.getToken() == commonLexor::kLParen)
       parseCall(inst,owner);
@@ -371,13 +400,15 @@ void commonParser::parseInvoke(std::unique_ptr<node>& inst, node& owner)
 
    m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
 
-   auto& i = m_nFac.appendNewChild<invokeNode>(owner);
-   i.proto.ref = name;
-   i.appendChild(*inst.release());
+   std::unique_ptr<node> pI(m_nFac.create<invokeNode>());
+   dynamic_cast<invokeNode*>(pI.get())->proto.ref = name;
+   pI->appendChild(*inst.release());
 
-   parsePassedArgList(i);
+   parsePassedArgList(*pI.get());
 
    m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+   parseRValuePrime(pI,owner,&owner);
 }
 
 void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
@@ -386,12 +417,15 @@ void commonParser::parseCall(std::unique_ptr<node>& inst, node& owner)
 
    varRefNode& func = dynamic_cast<varRefNode&>(*inst.get());
 
-   auto& c = m_nFac.appendNewChild<callNode>(owner);
-   c.pTarget.ref = func.pSrc.ref;
+   std::unique_ptr<node> pC(m_nFac.create<callNode>());
+   dynamic_cast<callNode&>(*pC.get()).pTarget.ref = func.pSrc.ref;
+   inst.reset();
 
-   parsePassedArgList(c);
+   parsePassedArgList(*pC.get());
 
    m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+   parseRValuePrime(pC,owner,&owner);
 }
 
 void commonParser::parseAssignment(std::unique_ptr<node>& inst, node& owner)
@@ -412,6 +446,102 @@ void commonParser::parsePassedArgList(node& owner)
 
       if(m_l.getToken() == commonLexor::kComma)
          m_l.advance();
+   }
+}
+
+void commonParser::parseIf(node& owner)
+{
+   m_l.demandAndEat(cdwLoc,commonLexor::kIf);
+   m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
+
+   auto& rIf = m_nFac.appendNewChild<ifNode>(owner);
+
+   parseRValue(rIf);
+
+   m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+   parseStatementOrBody(rIf);
+
+   if(m_l.getToken() == commonLexor::kElse)
+      parseIfPrime(rIf);
+}
+
+void commonParser::parseIfPrime(node& owner)
+{
+   m_l.demandAndEat(cdwLoc,commonLexor::kElse);
+
+   if(m_l.getToken() == commonLexor::kIf)
+      parseIf(owner);
+   else
+      parseStatementOrBody(owner);
+}
+
+void commonParser::parseLoop(node& owner)
+{
+   if(m_l.getToken() == commonLexor::kFor)
+   {
+      m_l.advance();
+
+      auto& l = m_nFac.appendNewChild<forLoopNode>(owner);
+
+      parseLoopName(l);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
+
+      parseRValue(l);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kComma);
+
+      parseRValue(l);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+      parseStatementOrBody(l);
+   }
+   else if(m_l.getToken() == commonLexor::kWhile)
+   {
+      m_l.advance();
+
+      auto& l = m_nFac.appendNewChild<whileLoopNode>(owner);
+
+      parseLoopName(l);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kLParen);
+
+      parseRValue(l);
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kRParen);
+
+      parseStatementOrBody(l);
+   }
+   else
+      m_l.demandOneOf(cdwLoc,2,commonLexor::kFor,commonLexor::kWhile);
+}
+
+void commonParser::parseLoopName(loopBaseNode& l)
+{
+   if(m_l.getToken() == commonLexor::kLBracket)
+   {
+      m_l.advance();
+
+      bool scoped = true;
+      if(m_l.getToken() == commonLexor::kPlus)
+      {
+         m_l.advance();
+         scoped = false;
+      }
+      l.scoped = scoped;
+
+      m_l.demand(cdwLoc,commonLexor::kName);
+      l.name = m_l.getLexeme();
+      m_l.advance();
+
+      m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
+   }
+   else
+   {
+      l.name = "_";
+      l.scoped = true;
    }
 }
 
@@ -461,6 +591,7 @@ node& commonParser::parseLValuePrime(node& n)
 
 void commonParser::parseRValue(node& owner, node *pExprRoot)
 {
+#if 0
    if(!parseLiteral(owner))
    {
       std::unique_ptr<node> pInst(&parseLValue());
@@ -470,44 +601,74 @@ void commonParser::parseRValue(node& owner, node *pExprRoot)
 
    if(m_l.getTokenClass() & commonLexor::kClassBop)
       parseBop(owner,pExprRoot);
+#else
+   std::unique_ptr<node> pInst(parseLiteral());
+   if(!pInst.get())
+      pInst.reset(&parseLValue());
+   parseRValuePrime(pInst,owner,pExprRoot);
+#endif
 }
 
-bool commonParser::parseLiteral(node& owner)
+#if 1
+// this API sucks
+// unused rval
+bool commonParser::parseRValuePrime(std::unique_ptr<node>& inst, node& owner, node *pExprRoot)
+{
+   if(parseCallAndFriends(inst,owner,false))
+      return true;
+
+   if(m_l.getTokenClass() & commonLexor::kClassBop)
+   {
+      owner.appendChild(*inst.release());
+      parseBop(owner,pExprRoot);
+      return true;
+   }
+   // TODO FA/[]
+
+   owner.appendChild(*inst.release());
+   return true;
+}
+#endif
+
+node *commonParser::parseLiteral()
 {
    if(m_l.getToken() == commonLexor::kStringLiteral)
    {
-      auto& l = m_nFac.appendNewChild<stringLiteralNode>(owner);
-      l.value = m_l.getLexeme();
+      auto *l = m_nFac.create<stringLiteralNode>();
+      l->value = m_l.getLexeme();
       m_l.advance();
+      return l;
    }
    else if(m_l.getToken() == commonLexor::kBoolLiteral)
    {
-      auto& l = m_nFac.appendNewChild<boolLiteralNode>(owner);
+      auto *l = m_nFac.create<boolLiteralNode>();
       if(m_l.getLexeme() == "false")
-         l.value = false;
+         l->value = false;
       else
-         l.value = true;
+         l->value = true;
       m_l.advance();
+      return l;
    }
    else if(m_l.getToken() == commonLexor::kIntLiteral)
    {
-      auto& l = m_nFac.appendNewChild<intLiteralNode>(owner);
-      l.lexeme = m_l.getLexeme();
+      auto *l = m_nFac.create<intLiteralNode>();
+      l->lexeme = m_l.getLexeme();
       m_l.advance();
+      return l;
    }
    else if(m_l.getToken() == commonLexor::kLBrace)
    {
       m_l.advance();
 
-      auto& n = m_nFac.appendNewChild<structLiteralNode>(owner);
-      parseStructLiteralPart(n);
+      auto *n = m_nFac.create<structLiteralNode>();
+      parseStructLiteralPart(*n);
 
       m_l.demandAndEat(cdwLoc,commonLexor::kRBrace);
+
+      return n;
    }
    else
-      return false;
-
-   return true;
+      return NULL;
 }
 
 void commonParser::parseStructLiteralPart(node& owner)
@@ -515,7 +676,10 @@ void commonParser::parseStructLiteralPart(node& owner)
    if(m_l.getToken() == commonLexor::kRBrace)
       return;
 
-   if(!parseLiteral(owner))
+   node *pLit = parseLiteral();
+   if(pLit)
+      owner.appendChild(*pLit);
+   else
    {
       m_l.demand(cdwLoc,commonLexor::kName);
       auto name = m_l.getLexeme();
@@ -564,6 +728,16 @@ void commonParser::parseType(node& owner)
       pType = &m_nFac.appendNewChild<ptrTypeNode>(owner);
       m_l.advance();
    }
+   else if(m_l.getToken() == commonLexor::kBool)
+   {
+      pType = &m_nFac.appendNewChild<boolTypeNode>(owner);
+      m_l.advance();
+   }
+   else if(m_l.getToken() == commonLexor::kInt)
+   {
+      pType = &m_nFac.appendNewChild<intTypeNode>(owner);
+      m_l.advance();
+   }
    else if(m_l.getToken() == commonLexor::kName ||
            m_l.getToken() == commonLexor::kGenericTypeExpr)
    {
@@ -572,10 +746,12 @@ void commonParser::parseType(node& owner)
       m_l.advance();
    }
    else
-      m_l.demandOneOf(cdwLoc,5,
+      m_l.demandOneOf(cdwLoc,7,
          commonLexor::kStr,
          commonLexor::kVoid,
          commonLexor::kPtr,
+         commonLexor::kBool,
+         commonLexor::kInt,
          commonLexor::kName,
          commonLexor::kGenericTypeExpr);
 
@@ -591,13 +767,32 @@ void commonParser::parseAttributes()
 {
    while(m_l.getToken() == commonLexor::kLBracket)
    {
-      m_l.advance();
+      std::string attr;
+      while(true)
+      {
+         m_l.advance();
 
-      m_l.demand(cdwLoc,commonLexor::kName);
-      m_nFac.deferAttribute(m_l.getLexeme());
-      m_l.advance();
+         m_l.demand(cdwLoc,commonLexor::kName);
+         attr += m_l.getLexeme();
+         m_l.advance();
 
-      m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
+         if(m_l.getToken() == commonLexor::kColon)
+         {
+            attr += ":";
+            continue;
+         }
+         else if(m_l.getToken() == commonLexor::kEquals)
+         {
+            attr += "=";
+            continue;
+         }
+
+         m_l.demandAndEat(cdwLoc,commonLexor::kRBracket);
+
+         m_nFac.deferAttribute(attr);
+         attr = "";
+         break;
+      }
    }
 }
 

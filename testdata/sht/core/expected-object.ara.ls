@@ -8,6 +8,7 @@ func .sht.core.object.cdtor(
 {
 }
 
+[vtbl]
 const .sht.core.object_vtbl_inst : .sht.core.object_vtbl = {  };
 
 func .sht.core.object_sctor(
@@ -25,6 +26,6 @@ func .sht.core.object_sdtor(
 }
 
 
-func ._osCall(code : str, payload : str) : void;
+ref "..\prims.lh";
 
-ref "object.ara.lh";
+ref ".\object.ara.lh";

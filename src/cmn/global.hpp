@@ -33,11 +33,12 @@ friend class globalPublishTo<T>;
 template<class T>
 class globalPublishTo {
 public:
-   globalPublishTo(T& v, timedGlobal<T>& w) : m_w(w) { m_w.m_pPtr = &v; }
-   ~globalPublishTo() { m_w.m_pPtr = NULL; }
+   globalPublishTo(T& v, timedGlobal<T>& w) : m_w(w), m_pPrev(w.m_pPtr) { m_w.m_pPtr = &v; }
+   ~globalPublishTo() { m_w.m_pPtr = m_pPrev; }
 
 private:
    timedGlobal<T>& m_w;
+   T *m_pPrev;
 };
 
 #include "global.ipp"

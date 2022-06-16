@@ -15,15 +15,21 @@ public:
    scriptState();
 
    std::string reserveLabel(const std::string& hint);
+
    void setSilentExes(bool v) { m_silenceExes = v; }
    bool shouldSilenceExes() const { return m_silenceExes; }
+   void setDebugMode(bool v) { m_debug = v; }
+   bool isDebugMode() const { return m_debug; }
 
    void incrementTotalProgress() { m_progressCnt++; }
    size_t getTotalProgressSize() const { return m_progressCnt; }
 
+   std::string failHint;
+
 private:
    std::set<std::string> m_labels;
    bool m_silenceExes;
+   bool m_debug;
    size_t m_progressCnt;
 };
 
@@ -44,6 +50,8 @@ public:
 
    void playback(std::ostream& s) { s << m_stream.str(); }
 
+   const std::string& getFailHint() const { return m_pState->failHint; }
+
 private:
    std::stringstream m_stream;
    std::stringstream m_fakeStream;
@@ -61,8 +69,9 @@ enum {
 
 class script {
 public:
-   explicit script(bool silentExes) : m_hadSkips(false)
-   { m_state.setSilentExes(silentExes); }
+   explicit script(bool silentExes, bool debug = true) : m_hadSkips(false)
+   { m_state.setSilentExes(silentExes);
+     m_state.setDebugMode(debug); }
 
    size_t getTotalProgressSize() const { return m_state.getTotalProgressSize(); }
 
@@ -70,6 +79,10 @@ public:
 
    void skipTests(bool v = true);
    bool hadSkips() const { return m_hadSkips; }
+
+   void noteFailHint(const std::string& hint) { m_state.failHint = hint; }
+
+   std::string buildAppPath(const std::string& exeName);
 
 private:
    scriptState m_state;
@@ -114,7 +127,7 @@ class doInstr : public instr {
 public:
    explicit doInstr(class script& s) : instr(s) {}
 
-   doInstr& usingApp(const std::string& path);
+   doInstr& usingApp(const std::string& exeName);
    doInstr& withArg(const std::string& arg);
    doInstr& withArgs(const std::list<std::string>& args);
    doInstr& thenCheckReturnValue(const std::string& errorHint)

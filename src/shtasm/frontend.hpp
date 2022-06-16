@@ -71,6 +71,8 @@ public:
       kRegR14,
       kRegR15,
 
+      kQWordPtr,
+
       kLabel,
    };
 
@@ -88,7 +90,8 @@ public:
 
 // <arg> ::== <reg>
 //          | <number>
-//          | <label>
+//          | 'qwordptr' <label>   {i.e. for call, this label is in the data seg}
+//          | <label>              {i.e. for call, this label is in the code seg}
 //          | <memExpr>
 // <memExpr> ::== <typeExpr> '[' <reg> <scale> ']'
 // <typeExpr> ::== '(' <typeDesig> ')'

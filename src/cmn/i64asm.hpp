@@ -28,7 +28,7 @@ public:
    enum byteType {
       // ---------- safe to use in constants
       kOpcode1,
-      //kOpcode2,
+      kOpcode2,
       //kOpcode3,
       kOpcode1WithReg, // lower 3-bits of opcode are a register
       kCodeOffset32,
@@ -45,6 +45,7 @@ public:
       // sib byte
       kDisp8,
       kDisp32,
+      kDisp32ToLabel,
    };
 
    const char *guid;
@@ -70,7 +71,7 @@ class modRm {
 public:
    static void encodeRegArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte);
    static void encodeOpcodeArg(unsigned char opcode, unsigned char& rex, unsigned char& modRmByte);
-   static void encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize, bool& dispOrCodeOffset);
+   static void encodeModRmArg(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize, bool& dispToLabel);
 
 private:
    static void encodeModRmArg_Label(const asmArgInfo& ai, unsigned char& rex, unsigned char& modRmByte, char& dispSize);
@@ -108,7 +109,7 @@ private:
    void gather(unsigned char& rex, unsigned char& modRm);
    void release(const unsigned char& rex, const unsigned char& modRm);
    void setDisp(char size, __int64 value);
-   void setCodeOffset(char size);
+   void setDispToLabel(char size);
 
    unsigned char *m_pInstrByteStream;
    std::vector<unsigned char> m_prefixByteStream;

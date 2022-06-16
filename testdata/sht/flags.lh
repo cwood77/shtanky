@@ -1,0 +1,3 @@
+// handwritten assembly prims
+
+func ._getflg(index : int) : int;

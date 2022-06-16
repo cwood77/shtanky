@@ -204,6 +204,11 @@ typeBuilder *typeBuilder::createString()
    return new typeBuilder(new stringType());
 }
 
+typeBuilder *typeBuilder::createBool()
+{
+   return new typeBuilder(new boolType());
+}
+
 typeBuilder *typeBuilder::createInt()
 {
    return new typeBuilder(new intType());

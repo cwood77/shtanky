@@ -1,4 +1,5 @@
 #pragma once
+#include "availVarPass.hpp"
 #include <list>
 
 namespace cmn { class uniquifier; }
@@ -125,6 +126,41 @@ protected:
    virtual void runInstr(lirInstr& i);
 };
 
+// implement the following instrs:
+//    kMacroIsLessThan
+class lirComparisonOpDecomposition : public lirTransform {
+protected:
+   virtual void runInstr(lirInstr& i);
+};
+
+// implement the following instrs:
+//    kMacroIfFalse
+class lirBranchDecomposition : public lirTransform {
+protected:
+   virtual void runInstr(lirInstr& i);
+};
+
+// if func has an early return, it needs a label
+// don't generate them always because it's so obnoxious
+class lirEarlyReturnDecomposition : public lirTransform {
+public:
+   lirEarlyReturnDecomposition() : m_any(false) {}
+
+protected:
+   virtual void runInstr(lirInstr& i);
+
+private:
+   bool m_any;
+   std::string m_label;
+};
+
+// add segment directives for labels, and also implicit
+// gotos
+class lirLabelDecomposition : public lirTransform {
+protected:
+   virtual void runInstr(lirInstr& i);
+};
+
 // TODO there's two of these--one pre regalloc and one post
 //      combine?  or just rename them?
 class lirCodeShapeDecomposition : public lirTransform {
@@ -175,7 +211,7 @@ private:
 class codeShapeTransform : public lirTransform {
 public:
    codeShapeTransform(varTable& v, varFinder& f, cmn::tgt::iTargetInfo& t)
-   : m_v(v), m_f(f), m_t(t) {}
+   : m_v(v), m_f(f), m_t(t), m_vfProg(v,f) {}
 
 protected:
    virtual void runInstr(lirInstr& i);
@@ -205,27 +241,18 @@ private:
 
    bool isReadOnly(const cmn::tgt::instrInfo& info, size_t idx);
    bool isMemory(cmn::tgt::argTypes a);
+   bool isImmediate(cmn::tgt::argTypes a);
+   bool isMemoryOrImmediate(cmn::tgt::argTypes a) { return isMemory(a) || isImmediate(a); }
    cmn::tgt::argTypes makeRegister(cmn::tgt::argTypes a);
    bool isStackFramePtrInUse(
       lirInstr& i,
       const cmn::tgt::instrInfo& iInfo,
       std::vector<cmn::tgt::argTypes> origArgs);
 
-   size_t chooseRegister(bool& needsSpill);
-
-   void patchInstructions(
-//         needSpill
- //        reg
- //        offsets
- //        i
- //        iInfo
- //        retryArgs
-
-         );
-
    varTable& m_v;
    varFinder& m_f;
    cmn::tgt::iTargetInfo& m_t;
+   varFinderProgrammer m_vfProg;
 };
 
 } // namespace liam

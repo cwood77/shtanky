@@ -1,0 +1,14 @@
+class prims {
+
+   public static peek8(addr : int) : int
+   {
+      ._osCall(2,addr);
+   }
+
+   public static poke8(addr : int, value : int) : void
+   {
+      // how do I pack up addr+value into payload?
+      ._osCall(3,addr,value);
+   }
+
+}

@@ -11,7 +11,7 @@ shlinkTest& shlinkTest::withObject(const std::string& oFile)
 shlinkTest& shlinkTest::test()
 {
    m_stream.appendNew<doInstr>()
-      .usingApp("bin\\out\\debug\\shlink.exe")
+      .usingApp("shlink.exe")
       .withArg(m_outFile)
       .withArgs(m_objFiles)
       .thenCheckReturnValue("link");
@@ -36,12 +36,23 @@ testBase::~testBase()
       m_pLTest->test();
 }
 
+void testBase::verifyAdditionalArtifact(const std::string& path, const std::string& cuz)
+{
+   m_stream.appendNew<compareInstr>()
+      .withControl(cmn::pathUtil::addPrefixToFilePart(path,"expected-"))
+      .withVariable(path)
+      .because(cuz);
+}
+
 void testBase::setupAutoShlink(const std::string& appPath)
 {
    m_appPath = appPath;
    m_pLTest.reset(new shlinkTest(m_stream,appPath));
 
    shtasmTest(m_stream,".\\testdata\\sht\\oscall.asm").andLink(*m_pLTest.get());
+   shtasmTest(m_stream,".\\testdata\\sht\\flags.asm").andLink(*m_pLTest.get());
+   shtasmTest(m_stream,".\\testdata\\sht\\string.asm").andLink(*m_pLTest.get());
+   shtasmTest(m_stream,".\\testdata\\sht\\array.asm").andLink(*m_pLTest.get());
 }
 
 void testBase::emulateAndCheckOutput()
@@ -55,7 +66,7 @@ void testBase::emulateAndCheckOutput()
    auto log = cmn::pathUtil::addExt(m_appPath,"log");
 
    m_stream.appendNew<doInstr>()
-      .usingApp("bin\\out\\debug\\shtemu.exe")
+      .usingApp("shtemu.exe")
       .withArg(m_appPath)
       .thenCheckReturnValueAndCaptureOutput(log,"Win64 emulation");
 
@@ -69,7 +80,7 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
 : testBase(s), m_folder(folder)
 {
    m_stream.appendNew<doInstr>()
-      .usingApp("bin\\out\\debug\\araceli.exe")
+      .usingApp("araceli.exe")
       .withArg(folder)
       .thenCheckReturnValue("araceli compile");
 
@@ -81,11 +92,21 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
 
 araceliTest& araceliTest::expectLiamOf(const std::string& path, bool hasPhilemon)
 {
+   auto salome = cmn::pathUtil::addExt(path,"sa");
    auto philemon = cmn::pathUtil::addExt(path,"ph");
    auto header = cmn::pathUtil::addExt(path,cmn::pathUtil::kExtLiamHeader);
    auto source = cmn::pathUtil::addExt(path,cmn::pathUtil::kExtLiamSource);
 
    if(hasPhilemon)
+   {
+      m_stream.appendNew<compareInstr>()
+         // salome files will get sucked in by philemon, so make sure these
+         // aren't salome files
+         .withControl(cmn::pathUtil::addExt(
+            cmn::pathUtil::addPrefixToFilePart(salome,"expected-"),"txt"))
+         .withVariable(salome)
+         .because("generated salome");
+
       m_stream.appendNew<compareInstr>()
          // philemon files will get sucked in by araceli, so make sure these
          // aren't philemon files
@@ -93,6 +114,7 @@ araceliTest& araceliTest::expectLiamOf(const std::string& path, bool hasPhilemon
             cmn::pathUtil::addPrefixToFilePart(philemon,"expected-"),"txt"))
          .withVariable(philemon)
          .because("generated philemon");
+   }
 
    m_stream.appendNew<compareInstr>()
       .withControl(cmn::pathUtil::addPrefixToFilePart(header,"expected-"))
@@ -114,7 +136,7 @@ liamTest::liamTest(instrStream& s, const std::string& file)
 : intermediateTest(s)
 {
    s.appendNew<doInstr>()
-      .usingApp("bin\\out\\debug\\liam.exe")
+      .usingApp("liam.exe")
       .withArg(file)
       .thenCheckReturnValue("liam compile");
 
@@ -147,7 +169,7 @@ shtasmTest::shtasmTest(instrStream& s, const std::string& file)
 : intermediateTest(s)
 {
    s.appendNew<doInstr>()
-      .usingApp("bin\\out\\debug\\shtasm.exe")
+      .usingApp("shtasm.exe")
       .withArg(file)
       .thenCheckReturnValue("shtasm assemble");
 
@@ -176,4 +198,24 @@ shtasmTest::shtasmTest(instrStream& s, const std::string& file)
 void shtasmTest::andLink(shlinkTest& t)
 {
    t.withObject(getFilesForNextStage().front());
+}
+
+void testWriter::add(const std::string& name, std::function<void (instrStream&)> f)
+{
+   if(m_subset && !m_cl.getSwitch(name,"",false))
+      return;
+
+   m_s.noteFailHint(name);
+   instrStream is(m_s);
+   f(is);
+}
+
+void testWriter::skipByDefault(const std::string& name, std::function<void (instrStream&)> f)
+{
+   if(!m_subset || !m_cl.getSwitch(name,"",false))
+      return;
+
+   m_s.noteFailHint(name);
+   instrStream is(m_s);
+   f(is);
 }

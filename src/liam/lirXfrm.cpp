@@ -1,3 +1,4 @@
+#include "../cmn/obj-fmt.hpp"
 #include "../cmn/trace.hpp"
 #include "../cmn/unique.hpp"
 #include "lir.hpp"
@@ -127,8 +128,19 @@ void lirCallVirtualStackCalculation::runInstr(lirInstr& i)
 
    if(i.instrId == cmn::tgt::kCall)
    {
+      // rval not included in stack calculation
+      m_argRealSizes.erase(m_argRealSizes.begin());
       // ignore the calladdr/instptr for calls/invokes
       m_argRealSizes.erase(m_argRealSizes.begin());
+
+      // any scratch regs that the target might have are appended to the call,
+      // but should not be considered arguments for this calculation
+      {
+         std::vector<size_t> scratch;
+         m_t.getCallConvention().createScratchRegisterBank(scratch);
+         for(size_t i=0;i<scratch.size();i++)
+            m_argRealSizes.erase(--m_argRealSizes.end());
+      }
 
       lirInstr& precall = *m_preCalls.back();
       size_t subcallStackSize = m_t.getCallConvention().getShadowSpace();
@@ -188,6 +200,104 @@ void lirPairedInstrDecomposition::runInstr(lirInstr& i)
    lirTransform::runInstr(i);
 }
 
+void lirComparisonOpDecomposition::runInstr(lirInstr& i)
+{
+   if(i.instrId == cmn::tgt::kMacroIsLessThan)
+   {
+      // inject a SETcc instruction after me
+      auto noob = new lirInstr(cmn::tgt::kSetLessThanSigned);
+      noob->addArg(*i.getArgs()[0]);
+      scheduleInjectAfter(*noob,i);
+
+      // repurpose my instruction as a compare
+      i.instrId = cmn::tgt::kCmp;
+      i.getArgs().erase(i.getArgs().begin()); // I gave this arg away
+
+      // inject an xor before the compare, since SETcc
+      // only writes to a byte
+      auto *pXor = new lirInstr(cmn::tgt::kXor);
+      pXor->addArg(noob->getArgs()[0]->clone());
+      pXor->addArg(noob->getArgs()[0]->clone());
+      scheduleInjectBefore(*pXor,i);
+   }
+
+   lirTransform::runInstr(i);
+}
+
+void lirBranchDecomposition::runInstr(lirInstr& i)
+{
+   if(i.instrId == cmn::tgt::kMacroIfFalse)
+   {
+      // inject a jump instruction after me
+      auto noob = new lirInstr(cmn::tgt::kJumpEqual);
+      noob->addArg(*i.getArgs()[1]);
+      scheduleInjectAfter(*noob,i);
+
+      // repurpose my instruction as a compare
+      i.instrId = cmn::tgt::kCmp;
+      i.getArgs().resize(1); // rescind ownership of label I just gave to je
+      i.addArg<lirArgConst>("0",1);
+   }
+
+   lirTransform::runInstr(i);
+}
+
+void lirEarlyReturnDecomposition::runInstr(lirInstr& i)
+{
+   if(i.instrId == cmn::tgt::kEnterFunc)
+   {
+      m_label = i.comment + ".end";
+      m_any = false;
+   }
+
+   else if(i.instrId == cmn::tgt::kRet)
+   {
+      auto *pGoto = new lirInstr(cmn::tgt::kGoto);
+      pGoto->addArg<lirArgLabel>(m_label,0);
+      pGoto->comment = "early return";
+      dynamic_cast<lirArgLabel*>(pGoto->getArgs()[0])->isCode = true;
+      scheduleInjectAfter(*pGoto,i);
+      m_any = true;
+   }
+
+   else if(i.instrId == cmn::tgt::kExitFunc && m_any)
+   {
+      auto *pLabel = new lirInstr(cmn::tgt::kLabel);
+      pLabel->addArg<lirArgLabel>(m_label,0);
+      dynamic_cast<lirArgLabel*>(pLabel->getArgs()[0])->isCode = true;
+      scheduleInjectBefore(*pLabel,i);
+      m_any = false;
+   }
+
+   lirTransform::runInstr(i);
+}
+
+void lirLabelDecomposition::runInstr(lirInstr& i)
+{
+   // for labels
+   //  - add a goto to previous block to 'fallthrough' to this block
+   //  - add a segment, since each label is an object in the o file
+   //
+   // if there's already a segment, then assume the author knows what he's doing and doesn't
+   // need any help (e.g. a vtable)
+   if(i.instrId == cmn::tgt::kLabel && i.prev().instrId != cmn::tgt::kSelectSegment)
+   {
+      if(i.prev().instrId != cmn::tgt::kGoto)
+      {
+         auto *pGoto = new lirInstr(cmn::tgt::kGoto);
+         pGoto->addArg(i.getArgs()[0]->clone());
+         pGoto->comment = "label decomp";
+         scheduleInjectBefore(*pGoto,i);
+      }
+
+      auto *pSeg = new lirInstr(cmn::tgt::kSelectSegment);
+      pSeg->addArg<lirArgConst>(cmn::objfmt::obj::kLexCode,0);
+      scheduleInjectBefore(*pSeg,i);
+   }
+
+   lirTransform::runInstr(i);
+}
+
 void lirNumberingTransform::_runStream(lirStream& s)
 {
    m_next = 10;
@@ -209,7 +319,7 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
    // for now, only handle special cases
 
    // call can't handle immediate passed args
-   if(i.instrId == cmn::tgt::kCall)
+   if(i.instrId == cmn::tgt::kCall) // splitter should be able to handle this
    {
       auto& args = i.getArgs();
       for(size_t j=2;j<args.size();j++)
@@ -238,7 +348,7 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
    }
 
    // call can't handle any addr modifications (i.e. displacemnets or derefs)
-   if(i.instrId == cmn::tgt::kCall)
+   if(i.instrId == cmn::tgt::kCall) // splitter should be able to handle this
    {
       auto& args = i.getArgs();
       for(size_t j=2;j<args.size();j++)
@@ -266,7 +376,7 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
    }
 
    // temp hack for bops masquarading as =
-   if(i.instrId == cmn::tgt::kMov)
+   if(i.instrId == cmn::tgt::kMov) // don't think I do this anymore; unattested in testdata
    {
       auto *pArg = dynamic_cast<lirArgConst*>(i.getArgs()[0]);
       if(pArg)
@@ -298,7 +408,11 @@ void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
 {
    { lirCallVirtualStackCalculation xfrm(t); xfrm.runStreams(lir); }
    { lirPairedInstrDecomposition xfrm; xfrm.runStreams(lir); }
-   { lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); }
+   { lirComparisonOpDecomposition xfrm; xfrm.runStreams(lir); }
+   { lirBranchDecomposition xfrm; xfrm.runStreams(lir); }
+   { lirEarlyReturnDecomposition xfrm; xfrm.runStreams(lir); }
+   { lirLabelDecomposition xfrm; xfrm.runStreams(lir); }
+   //{ lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); } // TODO this whole transform is legacy
    { lirNumberingTransform xfrm; xfrm.runStreams(lir); }
 }
 
@@ -333,11 +447,22 @@ void spuriousVarStripper::runInstr(lirInstr& i)
       args.push_back(pKeeper);
    }
 
+   // even though this instr is never emitted, strip the args so codeshape doesn't
+   // get confused later
+   else if(i.instrId == cmn::tgt::kRet)
+   {
+      for(auto *pA : i.getArgs())
+         delete pA;
+      i.getArgs().clear();
+   }
+
    lirTransform::runInstr(i);
 }
 
 void codeShapeTransform::runInstr(lirInstr& i)
 {
+   m_vfProg.onInstr(i);
+
    cdwDEBUG("checking codeshape for instr #%lld instrId=%lld\n",i.orderNum,i.instrId);
 
    // convert lirArgs into the target's argTypes
@@ -365,7 +490,7 @@ void codeShapeTransform::runInstr(lirInstr& i)
 
    // choose registers to use
    bool needsSpill;
-   size_t altStor = chooseRegister(needsSpill);
+   size_t altStor = m_f.pickScratchRegister(needsSpill);
    if(needsSpill && (pIInfo->stackSensitive || isStackFramePtrInUse(i,*pIInfo,at)))
       cdwTHROW("can't spill, but must spill... arrgh!");
 
@@ -426,7 +551,7 @@ void codeShapeTransform::runInstr(lirInstr& i)
       auto& arg = pop.addArg<lirArgTemp>(varName,origArg.getSize());
       pop.comment = "codeshape restore";
 
-      scheduleInjectBefore(pop,i);
+      scheduleInjectBefore(pop,i.next());
       scheduleVarBind(pop,arg,m_v,altStor);
    }
 
@@ -462,8 +587,20 @@ void codeShapeTransform::categorizeArgs(lirInstr& i, std::vector<cmn::tgt::argTy
             }
             else
             {
-               cdwDEBUG("   m (l)\n");
-               at.push_back(cmn::tgt::kM64);
+               // N.B., we haven't decided whether or not this instr is magic yet.  So this
+               //       code needs to be fairly loose to support things like '.seg code'
+               //       hence we should not demand this arg be a label at this point.
+               auto *pLabel = dynamic_cast<lirArgLabel*>(*it);
+               if(pLabel && pLabel->isCode)
+               {
+                  cdwDEBUG("   i (l): I32\n");
+                  at.push_back(cmn::tgt::kI32);
+               }
+               else
+               {
+                  cdwDEBUG("   i (l): M64\n");
+                  at.push_back(cmn::tgt::kM64);
+               }
             }
          }
          else
@@ -558,7 +695,7 @@ bool codeShapeTransform::mutateInstrFmt(const cmn::tgt::instrInfo& iInfo, const 
    size_t idx=0;
    for(auto it=args.begin();it!=args.end();++it,idx++)
    {
-      if(makeChanges && isMemory(*it) && isReadOnly(iInfo,idx))
+      if(makeChanges && isMemoryOrImmediate(*it) && isReadOnly(iInfo,idx))
       {
          retryArgs.push_back(makeRegister(*it));
          changedIndicies.insert(idx);
@@ -589,6 +726,16 @@ bool codeShapeTransform::isMemory(cmn::tgt::argTypes a)
    );
 }
 
+bool codeShapeTransform::isImmediate(cmn::tgt::argTypes a)
+{
+   return (
+      a == cmn::tgt::kI8 ||
+      a == cmn::tgt::kI16 ||
+      a == cmn::tgt::kI32 ||
+      a == cmn::tgt::kI64
+   );
+}
+
 cmn::tgt::argTypes codeShapeTransform::makeRegister(cmn::tgt::argTypes a)
 {
    switch(a)
@@ -597,6 +744,10 @@ cmn::tgt::argTypes codeShapeTransform::makeRegister(cmn::tgt::argTypes a)
       case cmn::tgt::kM16: return cmn::tgt::kR16;
       case cmn::tgt::kM32: return cmn::tgt::kR32;
       case cmn::tgt::kM64: return cmn::tgt::kR64;
+      case cmn::tgt::kI8:  return cmn::tgt::kR8;
+      case cmn::tgt::kI16: return cmn::tgt::kR16;
+      case cmn::tgt::kI32: return cmn::tgt::kR32;
+      case cmn::tgt::kI64: return cmn::tgt::kR64;
       default:
          cdwTHROW("ISE");
    }
@@ -609,7 +760,7 @@ bool codeShapeTransform::isStackFramePtrInUse(lirInstr& i, const cmn::tgt::instr
    size_t idx=0;
    for(auto it=origArgs.begin();it!=origArgs.end();++it,idx++)
    {
-      if(isMemory(*it) && isReadOnly(iInfo,idx))
+      if(isMemoryOrImmediate(*it) && isReadOnly(iInfo,idx))
          ;
       else
       {
@@ -622,22 +773,6 @@ bool codeShapeTransform::isStackFramePtrInUse(lirInstr& i, const cmn::tgt::instr
    }
 
    return stackFramePtrInUse;
-}
-
-size_t codeShapeTransform::chooseRegister(bool& needsSpill)
-{
-   std::vector<size_t> bank;
-   m_t.getCallConvention().createScratchRegisterBank(bank);
-   for(auto it=bank.begin();it!=bank.end();++it)
-   {
-      if(m_f.getUsedRegs().find(*it)==m_f.getUsedRegs().end())
-      {
-         needsSpill = false;
-         return *it;
-      }
-   }
-   needsSpill = true;
-   return *bank.begin();
 }
 
 } // namespace liam

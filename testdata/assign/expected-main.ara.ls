@@ -9,7 +9,7 @@ func .assign.assignTester.readFromSubObject(
    a : .assign.A,
    v : void) : void
 {
-   v = a:b;
+   v = a:_b;
 }
 
 func .assign.assignTester.writeIntoSubObject(
@@ -17,7 +17,7 @@ func .assign.assignTester.writeIntoSubObject(
 {
    var a : .assign.A;
    .assign.A_sctor(a);
-   a:b = 7;
+   a:_b = 7;
    .assign.A_sdtor(a);
 }
 
@@ -26,7 +26,7 @@ func .assign.assignTester.readFromSubSubObject(
    a : .assign.A,
    wrong : void) : void
 {
-   wrong = a:b:x;
+   wrong = a:_b:_x;
 }
 
 func .assign.assignTester.writeIntoSubSubObject(
@@ -34,7 +34,7 @@ func .assign.assignTester.writeIntoSubSubObject(
 {
    var wrong : .assign.A;
    .assign.A_sctor(wrong);
-   wrong:b:x = 7;
+   wrong:_b:_x = 7;
    .assign.A_sdtor(wrong);
 }
 
@@ -58,6 +58,7 @@ func .assign.assignTester.cdtor(
 func .assign.A.cctor(
    self : .assign.A) : .assign.A
 {
+   self:_x = 0;
 }
 
 func .assign.A.cdtor(
@@ -68,6 +69,8 @@ func .assign.A.cdtor(
 func .assign.B.cctor(
    self : .assign.B) : .assign.B
 {
+   self:_unused = 0;
+   self:_x = 0;
 }
 
 func .assign.B.cdtor(
@@ -75,10 +78,13 @@ func .assign.B.cdtor(
 {
 }
 
+[vtbl]
 const .assign.A_vtbl_inst : .assign.A_vtbl = {  };
 
+[vtbl]
 const .assign.B_vtbl_inst : .assign.B_vtbl = {  };
 
+[vtbl]
 const .assign.assignTester_vtbl_inst : .assign.assignTester_vtbl = { .assign.assignTester.run };
 
 func .assign.A_sctor(
@@ -130,9 +136,9 @@ func .assign.assignTester_sdtor(
 }
 
 
-func ._osCall(code : str, payload : str) : void;
+ref "..\sht\prims.lh";
 
-ref "main.ara.lh";
+ref ".\main.ara.lh";
 ref "..\sht\cons\program.ara.lh";
 ref "..\sht\core\array.ara.lh";
 ref "..\sht\core\object.ara.lh";

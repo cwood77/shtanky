@@ -16,6 +16,13 @@ lirArg& lirArg::copyFieldsInto(lirArg& noob) const
    return noob;
 }
 
+lirArg& lirArgLabel::copyFieldsInto(lirArg& noob) const
+{
+   lirArgConst::copyFieldsInto(noob);
+   dynamic_cast<lirArgLabel&>(noob).isCode = isCode;
+   return noob;
+}
+
 lirInstr::lirInstr(const cmn::tgt::instrIds id)
 : orderNum(0)
 , instrId(id)
@@ -137,7 +144,7 @@ lirStream& lirStreams::addNewObject(const std::string& name, const std::string& 
 
 void lirIncrementalFormatter::start(lirStreams& s)
 {
-   m_s.stream() << "=== LIR bundle has " << s.objects.size() << " objects(s) ===   (hint: $=var, ~=temp, @=immediate)" << std::endl;
+   m_s.stream() << "=== LIR bundle has " << s.objects.size() << " objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)" << std::endl;
 }
 
 void lirIncrementalFormatter::format(lirStream& s)
@@ -192,7 +199,9 @@ void lirIncrementalFormatter::format(lirInstr& i, cmn::textTableLineWriter& t)
 void lirIncrementalFormatter::format(lirArg& a, cmn::textTableLineWriter& t)
 {
    const char *pType = "$";
-   if(dynamic_cast<lirArgConst*>(&a))
+   if(dynamic_cast<lirArgLabel*>(&a))
+      pType = "!";
+   else if(dynamic_cast<lirArgConst*>(&a))
       pType = "@";
    else if(dynamic_cast<lirArgTemp*>(&a))
       pType = "~";
@@ -357,6 +366,14 @@ lirBuilder::~lirBuilder()
 void lirBuilder::createNewStream(const std::string& name, const std::string& segment)
 {
    m_pCurrStream = &m_lir.addNewObject(name,segment);
+   m_nLabel = 0;
+}
+
+std::string lirBuilder::reserveNewLabel(const std::string& nameHint)
+{
+   std::stringstream stream;
+   stream << m_pCurrStream->name << "." << nameHint << "." << (m_nLabel++);
+   return stream.str();
 }
 
 const lirArg& lirBuilder::borrowArgFromChild(cmn::node& n)

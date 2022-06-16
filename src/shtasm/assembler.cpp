@@ -56,6 +56,10 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
       {
          w.write("op",++pByte,1);
       }
+      else if(*pByte == cmn::tgt::i64::genInfo::kOpcode2)
+      {
+         w.write("op",(++pByte)++,2);
+      }
       else if(*pByte == cmn::tgt::i64::genInfo::kCodeOffset32)
       {
          if(label.empty())
@@ -92,6 +96,14 @@ void assembler::assemble(const cmn::tgt::instrFmt& f, std::vector<cmn::tgt::asmA
       {
          w.write("d32",(pByte+1+4),4);
          pByte += (1+4-1);
+      }
+      else if(*pByte == cmn::tgt::i64::genInfo::kDisp32ToLabel)
+      {
+         if(label.empty())
+            cdwTHROW("emitting disp32toLabel but no label??");
+         patches[w.tell()] = label;
+         unsigned long patch = 0;
+         w.write("disp32toLabel",&patch,sizeof(unsigned long));
       }
       else
          cdwTHROW("don't know how to write byte %d",(int)*pByte);

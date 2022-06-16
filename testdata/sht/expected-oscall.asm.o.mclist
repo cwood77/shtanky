@@ -1,7 +1,26 @@
 // 2: ._osCall_impl: .data, <qw> 0
 _intdata(00-00-00-00,00-00-00-00)
 // 5: ._osCall:
-// 6:    call, ._osCall_impl
-op(ff)modR/M(15)co32(00-00-00-00)
-// 7:    ret
+// 6:    push, rbp
+rex(48)op(ff)modR/M(f5)
+// 7:    mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 8:    sub, rsp, 32
+rex(48)op(83)modR/M(ec)i8(20)
+// 10:    call, qwordptr ._osCall_impl
+op(ff)modR/M(15)disp32toLabel(00-00-00-00)
+// 12:    mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 13:    pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 14:    ret
+op(c3)
+// 17: ._print:
+// 18:    mov, rdx, rcx
+rex(48)op(89)modR/M(ca)
+// 19:    mov, rcx, 1
+rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
+// 20:    call, ._osCall
+op(e8)co32(00-00-00-00)
+// 21:    ret
 op(c3)

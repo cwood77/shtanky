@@ -9,49 +9,55 @@ RELEASE_LNK_FLAGS_POST = -static-libgcc -static-libstdc++ -static
 
 SCRIPTLIB = scriptlib/xcopy-deploy.bat
 
+dtest: debug
+	@cmd /c appr.bat
+
 debug: \
 	dirs \
 	$(OUT_DIR)/debug/appr.exe \
-	$(OUT_DIR)/debug/philemon.exe \
 	$(OUT_DIR)/debug/araceli.exe \
 	$(OUT_DIR)/debug/liam.exe \
-	$(OUT_DIR)/debug/shtasm.exe \
+	$(OUT_DIR)/debug/philemon.exe \
+	$(OUT_DIR)/debug/salome.exe \
 	$(OUT_DIR)/debug/shlink.exe \
-	$(OUT_DIR)/debug/shtemu.exe
-	@cmd /c appr.bat
+	$(OUT_DIR)/debug/shtasm.exe \
+	$(OUT_DIR)/debug/shtemu.exe \
 
 all: \
 	debug \
 	$(OUT_DIR)/release/appr.exe \
-	$(OUT_DIR)/release/philemon.exe \
 	$(OUT_DIR)/release/araceli.exe \
 	$(OUT_DIR)/release/liam.exe \
-	$(OUT_DIR)/release/shtasm.exe \
+	$(OUT_DIR)/release/philemon.exe \
+	$(OUT_DIR)/release/salome.exe \
 	$(OUT_DIR)/release/shlink.exe \
+	$(OUT_DIR)/release/shtasm.exe \
 	$(OUT_DIR)/release/shtemu.exe \
 
 clean:
 	rm -rf bin
 
 dirs:
-	@mkdir -p $(OBJ_DIR)/debug/syzygy
 	@mkdir -p $(OBJ_DIR)/debug/appr
 	@mkdir -p $(OBJ_DIR)/debug/araceli
 	@mkdir -p $(OBJ_DIR)/debug/cmn
 	@mkdir -p $(OBJ_DIR)/debug/liam
 	@mkdir -p $(OBJ_DIR)/debug/philemon
+	@mkdir -p $(OBJ_DIR)/debug/salome
 	@mkdir -p $(OBJ_DIR)/debug/shlink
 	@mkdir -p $(OBJ_DIR)/debug/shtasm
 	@mkdir -p $(OBJ_DIR)/debug/shtemu
-	@mkdir -p $(OBJ_DIR)/release/syzygy
+	@mkdir -p $(OBJ_DIR)/debug/syzygy
 	@mkdir -p $(OBJ_DIR)/release/appr
 	@mkdir -p $(OBJ_DIR)/release/araceli
 	@mkdir -p $(OBJ_DIR)/release/cmn
 	@mkdir -p $(OBJ_DIR)/release/liam
 	@mkdir -p $(OBJ_DIR)/release/philemon
+	@mkdir -p $(OBJ_DIR)/release/salome
 	@mkdir -p $(OBJ_DIR)/release/shlink
 	@mkdir -p $(OBJ_DIR)/release/shtasm
 	@mkdir -p $(OBJ_DIR)/release/shtemu
+	@mkdir -p $(OBJ_DIR)/release/syzygy
 	@mkdir -p $(OUT_DIR)/debug
 	@mkdir -p $(OUT_DIR)/release
 
@@ -61,6 +67,7 @@ dirs:
 # cmn
 
 CMN_SRC = \
+	src/cmn/align.cpp \
 	src/cmn/ast.cpp \
 	src/cmn/binReader.cpp \
 	src/cmn/binWriter.cpp \
@@ -71,6 +78,7 @@ CMN_SRC = \
 	src/cmn/i64asm.cpp \
 	src/cmn/intel64.cpp \
 	src/cmn/lexor.cpp \
+	src/cmn/loopIntrinsicDecomp.cpp \
 	src/cmn/nameUtil.cpp \
 	src/cmn/obj-fmt.cpp \
 	src/cmn/out.cpp \
@@ -83,6 +91,7 @@ CMN_SRC = \
 	src/cmn/type.cpp \
 	src/cmn/typeVisitor.cpp \
 	src/cmn/unique.cpp \
+	src/cmn/userError.cpp \
 
 CMN_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(CMN_SRC)))
 
@@ -146,6 +155,8 @@ SYZYGY_SRC = \
 	src/araceli/symbolTable.cpp \
 	src/syzygy/codegen.cpp \
 	src/syzygy/frontend.cpp \
+	src/syzygy/genericUnlinker.cpp \
+	src/syzygy/symbolTable.cpp \
 
 SYZYGY_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SYZYGY_SRC)))
 
@@ -164,6 +175,35 @@ $(OUT_DIR)/release/syzygy.lib: $(SYZYGY_RELEASE_OBJ)
 	@ar crs $@ $^
 
 $(SYZYGY_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
+
+# ----------------------------------------------------------------------
+# salome
+
+SALOME_SRC = \
+	src/salome/intfTransform.cpp \
+	src/salome/main.cpp \
+	src/salome/nodeFlagChecker.cpp \
+	src/salome/symbolTable.cpp \
+
+SALOME_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SALOME_SRC)))
+
+$(OUT_DIR)/debug/salome.exe: $(SALOME_DEBUG_OBJ) $(OUT_DIR)/debug/syzygy.lib $(OUT_DIR)/debug/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(SALOME_DEBUG_OBJ) $(DEBUG_LNK_FLAGS_POST) -Lbin/out/debug -lsyzygy -lcmn
+
+$(SALOME_DEBUG_OBJ): $(OBJ_DIR)/debug/%.o: src/%.cpp
+	$(info $< --> $@)
+	@$(COMPILE_CMD) $(DEBUG_CC_FLAGS) $< -o $@
+
+SALOME_RELEASE_OBJ = $(subst src,$(OBJ_DIR)/release,$(patsubst %.cpp,%.o,$(SALOME_SRC)))
+
+$(OUT_DIR)/release/salome.exe: $(SALOME_RELEASE_OBJ) $(OUT_DIR)/release/syzygy.lib $(OUT_DIR)/release/cmn.lib
+	$(info $< --> $@)
+	@$(LINK_CMD) -o $@ $(SALOME_RELEASE_OBJ) $(RELEASE_LNK_FLAGS_POST) -Lbin/out/release -lsyzygy -lcmn
+
+$(SALOME_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 	$(info $< --> $@)
 	@$(COMPILE_CMD) $(RELEASE_CC_FLAGS) $< -o $@
 
@@ -203,6 +243,7 @@ $(PHILEMON_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 
 ARACELI_SRC = \
 	src/araceli/abstractGenerator.cpp \
+	src/araceli/accessChecker.cpp \
 	src/araceli/batGen.cpp \
 	src/araceli/classInfo.cpp \
 	src/araceli/codegen.cpp \
@@ -248,8 +289,10 @@ LIAM_SRC = \
 	src/liam/lexor.cpp \
 	src/liam/lir.cpp \
 	src/liam/lirXfrm.cpp \
+	src/liam/loopTransforms.cpp \
 	src/liam/main.cpp \
 	src/liam/projectBuilder.cpp \
+	src/liam/vTableInvokeDetection.cpp \
 	src/liam/varAlloc.cpp \
 	src/liam/varCombiner.cpp \
 	src/liam/varFinder.cpp \
@@ -339,11 +382,12 @@ $(SHLINK_RELEASE_OBJ): $(OBJ_DIR)/release/%.o: src/%.cpp
 # ----------------------------------------------------------------------
 # shtemu
 
-# I'm using -fpermissive here to allow some ptr math; I don't understand
-# why that's an error in the first place.
-
 SHTEMU_SRC = \
-	src/shtemu/stemu.cpp \
+	src/shtemu/allocator.cpp \
+	src/shtemu/loader.cpp \
+	src/shtemu/main.cpp \
+	src/shtemu/osCall.cpp \
+	src/shtemu/servicePrint.cpp \
 
 SHTEMU_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(SHTEMU_SRC)))
 

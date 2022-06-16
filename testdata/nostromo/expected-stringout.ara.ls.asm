@@ -4,53 +4,84 @@
 
 .seg code                 
 .nostromo.debugOut.write: 
-                          push, rbx         
-                          push, rdi         
-                          sub, rsp, 32      
-                          mov, rbx, [rcx+8] ; fieldaccess: owner of _vtbl
-                          mov, rdi, [rbx]   ; fieldaccess: owner of write8
-                          mov, rdx, 0       ; shape:hoist imm from call
-                          mov, rbx, rcx     ; (preserve) [combiner]
-                          mov, rcx, [rbx+8] ; shape:hoist addrOf from call
-                          call, [rdi]       ; (call ptr)
-                          add, rsp, 32      
-                          pop, rdi          
-                          pop, rbx          
-                          ret               
+                          push, rbp                         
+                          push, rbx                         
+                          push, rdi                         
+                          mov, rbp, rsp                     
+                          sub, rsp, 8                       
+                          sub, rsp, 32                      
+                          mov, rbx, rcx                     ; (preserve) [combiner]
+                          mov, rcx, rdx                     ;       (msg req for rcx) [splitter]
+                          call, .sht.core.string.length     ; (call label)
+                          add, rsp, 32                      
+                          mov, [rbp-8], rax                 ; =
+                          sub, rsp, 32                      
+                          mov, rdi, [rbx+8]                 ; fieldaccess: owner of _vtbl
+                          sub, rsp, 32                      
+                          call, .sht.core.string.indexOpGet ; (call label)
+                          add, rsp, 32                      
+                          mov, rdx, rax                     ;       (rval1 req for rdx) [splitter]
+                          mov, rcx, rbx                     ; (restore [combiner])
+                          call, [rdi]                       ; vtbl call to .nostromo.uart16550.driver_vtbl::write8
+                          add, rsp, 32                      
+                          mov, rsp, rbp                     
+                          pop, rdi                          
+                          pop, rbx                          
+                          pop, rbp                          
+                          ret                               
 
 .seg code                 
 .nostromo.debugOut.cctor: 
+                          push, rbp
+                          mov, rbp, rsp
+                          mov, rsp, rbp
+                          pop, rbp
                           ret
 
 .seg code                 
 .nostromo.debugOut.cdtor: 
+                          push, rbp
+                          mov, rbp, rsp
+                          mov, rsp, rbp
+                          pop, rbp
                           ret
 
-.seg const
+.seg code
 .nostromo.debugOut_vtbl_inst:
-.data, 
 
 .seg code                 
 .nostromo.debugOut_sctor: 
-                          sub, rsp, 32                           
-                          call, .sht.core.object_sctor           ; (call label)
-                          add, rsp, 32                           
-                          mov, r10, .nostromo.debugOut_vtbl_inst ; codeshape decomp
-                          mov, [rcx], r10                        ; =
-                          sub, rsp, 32                           
-                          call, .nostromo.debugOut.cctor         ; (call label)
-                          add, rsp, 32                           
-                          ret                                    
+                          push, rbp                                       
+                          push, rbx                                       
+                          mov, rbp, rsp                                   
+                          sub, rsp, 32                                    
+                          call, .sht.core.object_sctor                    ; (call label)
+                          add, rsp, 32                                    
+                          lea, rbx, qwordptr .nostromo.debugOut_vtbl_inst 
+                          mov, [rcx], rbx                                 ; =
+                          sub, rsp, 32                                    
+                          call, .nostromo.debugOut.cctor                  ; (call label)
+                          add, rsp, 32                                    
+                          mov, rsp, rbp                                   
+                          pop, rbx                                        
+                          pop, rbp                                        
+                          ret                                             
 
 .seg code                 
 .nostromo.debugOut_sdtor: 
-                          mov, r10, .nostromo.debugOut_vtbl_inst ; codeshape decomp
-                          mov, [rcx], r10                        ; =
-                          sub, rsp, 32                           
-                          call, .nostromo.debugOut.cdtor         ; (call label)
-                          add, rsp, 32                           
-                          sub, rsp, 32                           
-                          call, .sht.core.object_sdtor           ; (call label)
-                          add, rsp, 32                           
-                          ret                                    
+                          push, rbp                                       
+                          push, rbx                                       
+                          mov, rbp, rsp                                   
+                          lea, rbx, qwordptr .nostromo.debugOut_vtbl_inst 
+                          mov, [rcx], rbx                                 ; =
+                          sub, rsp, 32                                    
+                          call, .nostromo.debugOut.cdtor                  ; (call label)
+                          add, rsp, 32                                    
+                          sub, rsp, 32                                    
+                          call, .sht.core.object_sdtor                    ; (call label)
+                          add, rsp, 32                                    
+                          mov, rsp, rbp                                   
+                          pop, rbx                                        
+                          pop, rbp                                        
+                          ret                                             
 

@@ -1,12 +1,31 @@
 generic<T>
-class array : lameBase {
+class array {
 
-   override indexOpGet(i : ptr) : T
+   public resize(size : int) : void
+   {
+      _ptr = ._arrresize(_ptr,_length,size);
+      _length = size;
+   }
+
+   public getLength() : int
    {
    }
 
-   override indexOpSet(i : ptr, val : T) : void
+   public append(value : T) : void
    {
    }
+
+   public indexOpGet(i : int) : T
+   {
+      ._arrgidx(_ptr,i);
+   }
+
+   public indexOpSet(i : int, val : T) : void
+   {
+      ._arrsidx(_ptr,i,val);
+   }
+
+   _length : int;
+   _ptr : ptr;
 
 }

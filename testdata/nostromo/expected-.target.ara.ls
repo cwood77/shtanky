@@ -22,6 +22,7 @@ func .nostromo.consoleTarget.cdtor(
 {
 }
 
+[vtbl]
 const .nostromo.consoleTarget_vtbl_inst : .nostromo.consoleTarget_vtbl = {  };
 
 func .nostromo.consoleTarget_sctor(
@@ -41,10 +42,10 @@ func .nostromo.consoleTarget_sdtor(
 }
 
 
-func ._osCall(code : str, payload : str) : void;
+ref "..\sht\prims.lh";
 
 ref ".target.ara.lh";
-ref "boot.ara.lh";
+ref ".\boot.ara.lh";
 ref "..\sht\cons\program.ara.lh";
 ref "..\sht\core\object.ara.lh";
 ref "..\sht\core\string.ara.lh";

@@ -1,0 +1,5 @@
+// thunks back into the OS or emulator
+
+func ._osCall(code : int, payload : ptr) : ptr;
+
+func ._print(text : str) : void;

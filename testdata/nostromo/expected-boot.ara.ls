@@ -14,6 +14,7 @@ func .nostromo.bootstrapper.cdtor(
 {
 }
 
+[vtbl]
 const .nostromo.bootstrapper_vtbl_inst : .nostromo.bootstrapper_vtbl = { .nostromo.bootstrapper.run };
 
 func .nostromo.bootstrapper_sctor(
@@ -33,8 +34,8 @@ func .nostromo.bootstrapper_sdtor(
 }
 
 
-func ._osCall(code : str, payload : str) : void;
+ref "..\sht\prims.lh";
 
-ref "boot.ara.lh";
+ref ".\boot.ara.lh";
 ref "..\sht\cons\program.ara.lh";
 ref "..\sht\core\array.ara.lh";

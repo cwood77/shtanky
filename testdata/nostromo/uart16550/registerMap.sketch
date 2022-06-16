@@ -1,0 +1,58 @@
+
+// int literal types
+// decimal/hex/binary
+// m{12,7/2,2}     [masks?; bits 12,7,6,2]
+// b100,1010,1011  [delimiters?]
+// xF
+
+// string literal types
+// 'foo$(var:x)baz' [interpolation]??
+// l'literal'       [literal] ?? (or make literal the default)
+//
+// how to you implement interpolation?  Need a str lib.  Formatting is hard.  Maybe this
+// isn't so bad since I have typeProp.
+//
+// var _s : string;
+// _s = .concat("foo",.intToStr(i));
+
+class memoryMap {
+
+   public write() : void
+   {
+      // TODO - if these calls are relative (i.e. no leading . I get an error in typeProp?)
+      .sht.mem.map.prims.poke8(_mapBaseAddr,_thr);
+   }
+
+   public read() : void
+   {
+      // TODO - I have a hunch that this crashes araceli (only when not under gdb?)
+      //.sht.mem.map.prims.peek8(_mapBaseAddr+5,_lsr);
+   }
+
+// minimum need:
+// char out
+// Tx empty
+
+   public setTxChar(v : int) : void
+   {
+      _thr = v;
+   }
+
+   public isTxEmpty() : bool
+   {
+      //return bitwise.and(_lsr,bitwise.flag(6,1));
+   }
+
+// need to init (maybe)
+// baudrate divisor
+// parity even?
+// parity enable?
+// word length
+// stop bits
+// enable DMA, interrupts
+
+   _mapBaseAddr : int;
+   _thr : int;// = 0;  // TODO initializtion of fields unimpled!
+   _lsr : int;// = 0;
+
+}

@@ -16,6 +16,7 @@ void methodMover::visit(cmn::fileNode& n)
       pFunc->name = (*it)->getAncestor<cmn::classNode>().name + "." + pMethod->name;
       for(auto jit=pMethod->getChildren().begin();jit!=pMethod->getChildren().end();++jit)
          pFunc->appendChild(**jit);
+      pMethod->lTarget.tryMigrateRefers(*pFunc.get());
 
       pMethod->getChildren().clear();
       pMethod->getParent()->removeChild(*pMethod);

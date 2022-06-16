@@ -1,6 +1,6 @@
 interface iStream {
 
-   abstract printLn(msg : str) : void;
+   printLn(msg : str) : void;
 
 }
 
@@ -8,15 +8,16 @@ class stdout : iStream {
 
    override printLn(msg : str) : void
    {
-      ._osCall(1,msg);
+      ._print(msg);
    }
 
 }
 
 abstract program {
 
-   public _out : iStream;
+   [allow:consoleTarget]
+   _out : iStream;
 
-   abstract run(args : str[]) : void;
+   public abstract run(args : str[]) : void;
 
 }

@@ -36,15 +36,7 @@ void instrPrefs::handle(lirInstr& i)
 {
    switch(i.instrId)
    {
-      case cmn::tgt::kSelectSegment: // no prefs
-      case cmn::tgt::kExitFunc:
-      case cmn::tgt::kUnreserveLocal:
-      case cmn::tgt::kGlobalConstData:
-      case cmn::tgt::kPush:
-      case cmn::tgt::kPop:
-      case cmn::tgt::kMov:
-      case cmn::tgt::kPreCallStackAlloc:
-      case cmn::tgt::kPostCallStackAlloc:
+      default:
          break;
 
       case cmn::tgt::kEnterFunc:
@@ -74,18 +66,14 @@ void instrPrefs::handle(lirInstr& i)
          break;
       case cmn::tgt::kRet:
          {
-            cdwTHROW("unimpled");
             if(i.getArgs().size())
             {
-               lirArgVar *pVar = dynamic_cast<lirArgVar*>(i.getArgs()[0]);
-               if(pVar)
-               {
-                  auto& cc = m_target.getCallConvention();
-                  std::vector<size_t> argStorage;
-                  cc.getRValAndArgBank(argStorage);
-                  var& v = m_vTable.demand(pVar->getName());
-                  v.requireStorage(i.orderNum,argStorage[0]);
-               }
+               lirArg& arg = *i.getArgs()[0];
+               auto& cc = m_target.getCallConvention();
+               std::vector<size_t> argStorage;
+               cc.getRValAndArgBank(argStorage);
+               var& v = m_vTable.demand(arg.getName());
+               v.requireStorage(i.orderNum,argStorage[0]);
             }
          }
          break;
@@ -96,8 +84,6 @@ void instrPrefs::handle(lirInstr& i)
             handle(i,cc,/*outOrIn*/true,/*isInvoke*/false);
          }
          break;
-      default:
-         throw std::runtime_error("unknown instruction!");
    }
 }
 
@@ -170,8 +156,9 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
 
 void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, bool isLeaving)
 {
-   std::vector<size_t> argStorage;
+   std::vector<size_t> argStorage,trashedRegs;
    cc.getRValAndArgBank(argStorage);
+   cc.createScratchRegisterBank(trashedRegs);
    int stackSpace = 0;
 
    // call instructions (going out) have an address at argument 1
@@ -184,7 +171,10 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
    if(isLeaving && i.getArgs().size() < 2)
       cdwTHROW("every call should have at least 2 args (rval, addr)");
 
-   for(size_t k = i.getArgs().size()-1;;k--)
+   size_t loopMax = i.getArgs().size()-1;
+   if(isLeaving)
+      loopMax -= trashedRegs.size(); // when leaving the last N are dummies
+   for(size_t k = loopMax;;k--)
    {
       if(isLeaving && k==1)
          continue;
@@ -217,6 +207,17 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
 
       if(k==0)
          break;
+   }
+
+   // scratch regs are attached to the end of the call
+   if(isLeaving)
+   {
+      size_t offset = i.getArgs().size() - trashedRegs.size();
+      for(size_t k=0;k<trashedRegs.size();k++)
+      {
+         var& v = m_vTable.demand(*i.getArgs()[offset+k]);
+         v.requireStorage(i.orderNum,trashedRegs[k]);
+      }
    }
 }
 

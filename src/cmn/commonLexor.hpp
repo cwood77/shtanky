@@ -52,7 +52,10 @@ public:
       kType,
 
       kIf,
+      kElse,
       kWhile,
+      kFor,
+      kReturn,
 
       k_Reserved,
 
@@ -75,7 +78,6 @@ public:
       // reserved - maybe use later?
       kBreak,
       kContinue,
-      kFor,
       kDo,
       kInternal,
       kComponent,
@@ -100,7 +102,8 @@ public:
    };
 
    enum {
-      kClassBop = (1 << 0 | kNoClass)
+      kClassBop  = (1 << 0 | kNoClass),
+      kClassLoop = (1 << 1 | kNoClass),
    };
 
 protected:

@@ -1,0 +1,23 @@
+interface iStream {
+
+   public abstract printLn(msg : str) : void;
+
+}
+
+class stdout : iStream {
+
+   override printLn(msg : str) : void
+   {
+      ._print(msg);
+   }
+
+}
+
+abstract program {
+
+   [allow:consoleTarget] 
+   private _out : iStream;
+   public abstract run(args : str[]) : void;
+
+}
+

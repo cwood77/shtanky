@@ -45,7 +45,17 @@ void asmArgWriter::write(size_t orderNum, lirArg& a)
    else
    {
       if(stor == cmn::tgt::kStorageImmediate)
-         m_w[1] << a.getName();
+      {
+         if(auto *pLbl = dynamic_cast<lirArgLabel*>(&a))
+         {
+            if(pLbl->isCode)
+               m_w[1] << a.getName();
+            else
+               m_w[1] << "qwordptr " << a.getName();
+         }
+         else
+            m_w[1] << a.getName();
+      }
       else
          m_w[1] << m_t.getProc().getRegName(stor);
       writeDispIf(a.disp);
@@ -99,6 +109,8 @@ void asmCodeGen::handleInstr(lirInstr& i)
          {
             m_w[0] << i.comment << ":";
             m_w.advanceLine();
+            m_w[1] << "push, " << m_t.getProc().getRegName(cmn::tgt::kStorageStackFramePtr);
+            m_w.advanceLine();
             auto& regs = m_f.getUsedRegs();
             for(auto it=regs.begin();it!=regs.end();++it)
             {
@@ -108,6 +120,10 @@ void asmCodeGen::handleInstr(lirInstr& i)
                   m_w.advanceLine();
                }
             }
+            m_w[1] << "mov, "
+               << m_t.getProc().getRegName(cmn::tgt::kStorageStackFramePtr) << ", "
+               << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr);
+            m_w.advanceLine();
             size_t locals = m_f.getUsedStackSpace();
             if(locals)
             {
@@ -121,15 +137,10 @@ void asmCodeGen::handleInstr(lirInstr& i)
          break;
       case cmn::tgt::kExitFunc:
          {
-            size_t locals = m_f.getUsedStackSpace();
-            if(locals)
-            {
-               m_w[1]
-                  << "add, "
-                  << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
-                  << locals;
-               m_w.advanceLine();
-            }
+            m_w[1] << "mov, "
+               << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
+               << m_t.getProc().getRegName(cmn::tgt::kStorageStackFramePtr);
+            m_w.advanceLine();
             auto& regs = m_f.getUsedRegs();
             for(auto it=regs.rbegin();it!=regs.rend();++it)
             {
@@ -139,44 +150,29 @@ void asmCodeGen::handleInstr(lirInstr& i)
                   m_w.advanceLine();
                }
             }
+            m_w[1] << "pop, " << m_t.getProc().getRegName(cmn::tgt::kStorageStackFramePtr);
+            m_w.advanceLine();
             m_w[1] << "ret";
             m_w.advanceLine();
          }
          break;
-      case cmn::tgt::kReserveLocal: // TODO this stack space is duplicated by enter/exit func?
+      case cmn::tgt::kLabel:
          {
-            m_w[1]
-               << "sub, "
-               << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
-               << i.getArgs()[0]->getSize(); // this size is already real
+            m_w[0] << i.getArgs()[0]->getName() << ":";
             m_w.advanceLine();
          }
          break;
+      // no ops: any space has already be calculated and
+      //         reserved by kEnterFunc
+      case cmn::tgt::kReserveLocal:
       case cmn::tgt::kUnreserveLocal:
-         {
-            m_w[1]
-               << "add, "
-               << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
-               << i.getArgs()[0]->getSize(); // this size is already real
-            m_w.advanceLine();
-         }
+      case cmn::tgt::kRet: // the jump emitted by early return transform is enough
          break;
       case cmn::tgt::kGlobalConstData:
          {
             m_w[0] << i.comment << ":";
             m_w.advanceLine();
             m_w[0] << ".data, " << i.getArgs()[0]->getName();
-            m_w.advanceLine();
-         }
-         break;
-      case cmn::tgt::kPush:
-      case cmn::tgt::kPop:
-      case cmn::tgt::kMov:
-      case cmn::tgt::kRet:
-         {
-            m_w[1] << m_t.getProc().getInstr(i.instrId)->name << ",";
-            asmArgWriter(m_v,m_t,m_w).write(i);
-            handleComment(i);
             m_w.advanceLine();
          }
          break;
@@ -195,10 +191,13 @@ void asmCodeGen::handleInstr(lirInstr& i)
       case cmn::tgt::kPostCallStackAlloc:
          handlePrePostCallStackAlloc(i,cmn::tgt::kAdd);
          break;
-      case cmn::tgt::kSplit:
-         break;
       default:
-         throw std::runtime_error("unknown instruction in codegen!");
+         {
+            m_w[1] << m_t.getProc().getInstr(i.instrId)->name << ",";
+            asmArgWriter(m_v,m_t,m_w).write(i);
+            handleComment(i);
+            m_w.advanceLine();
+         }
    }
 }
 

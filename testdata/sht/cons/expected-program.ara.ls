@@ -18,7 +18,7 @@ func .sht.cons.stdout.printLn(
    self : .sht.cons.stdout,
    msg : .sht.core.string) : void
 {
-   ._osCall(1,msg);
+   ._print(msg);
 }
 
 func .sht.cons.stdout.cctor(
@@ -47,10 +47,13 @@ func .sht.cons.program.cdtor(
 {
 }
 
+[vtbl]
 const .sht.cons.iStream_vtbl_inst : .sht.cons.iStream_vtbl = { .sht.cons.iStream.printLn };
 
+[vtbl]
 const .sht.cons.program_vtbl_inst : .sht.cons.program_vtbl = { .sht.cons.program.run };
 
+[vtbl]
 const .sht.cons.stdout_vtbl_inst : .sht.cons.stdout_vtbl = { .sht.cons.stdout.printLn };
 
 func .sht.cons.iStream_sctor(
@@ -102,9 +105,9 @@ func .sht.cons.stdout_sdtor(
 }
 
 
-func ._osCall(code : str, payload : str) : void;
+ref "..\prims.lh";
 
-ref "program.ara.lh";
+ref ".\program.ara.lh";
 ref "..\core\array.ara.lh";
 ref "..\core\object.ara.lh";
 ref "..\core\string.ara.lh";

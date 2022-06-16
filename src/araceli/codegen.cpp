@@ -17,6 +17,8 @@ void fileRefs::flush(std::ostream& stream)
          continue; // don't depend on yourself... duh.
 
       auto resolvedPath = cmn::pathUtil::computeRefPath(destPath,*it);
+      if(resolvedPath.c_str()[0] != '.')
+         resolvedPath = std::string(".\\") + resolvedPath;
 
       stream << "ref \"" << resolvedPath << "\";" << std::endl;
    }
@@ -73,6 +75,18 @@ void liamTypeWriter::visit(cmn::strTypeNode& n)
    hNodeVisitor::visit(n);
 }
 
+void liamTypeWriter::visit(cmn::boolTypeNode& n)
+{
+   m_o << "bool";
+   hNodeVisitor::visit(n);
+}
+
+void liamTypeWriter::visit(cmn::intTypeNode& n)
+{
+   m_o << "int";
+   hNodeVisitor::visit(n);
+}
+
 void liamTypeWriter::visit(cmn::arrayTypeNode& n)
 {
    m_o << "[]";
@@ -114,11 +128,9 @@ codeGenBase::codeGenBase(cmn::outBundle& out, const std::string& path) : m_pOut(
 
 void codeGenBase::generatePrototype(cmn::funcNode& m)
 {
-   m_pOut->stream() << cmn::indent(*m_pOut);
+   writeAttributes(m);
 
-   if(m.attributes.size())
-      for(auto it=m.attributes.begin();it!=m.attributes.end();++it)
-         m_pOut->stream() << cmn::indent(*m_pOut) << "[" << *it << "]" << std::endl;
+   m_pOut->stream() << cmn::indent(*m_pOut);
 
    cmn::autoIndent _i(*m_pOut);
    m_pOut->stream()
@@ -145,6 +157,13 @@ void codeGenBase::generatePrototype(cmn::funcNode& m)
    m_pOut->stream() << ") : ";
    liamTypeWriter tyW(m_pOut->stream(),m_refColl);
    m.demandSoleChild<cmn::typeNode>().acceptVisitor(tyW);
+}
+
+void codeGenBase::writeAttributes(cmn::node& n)
+{
+   if(n.attributes.size())
+      for(auto it=n.attributes.begin();it!=n.attributes.end();++it)
+         m_pOut->stream() << cmn::indent(*m_pOut) << "[" << *it << "]" << std::endl;
 }
 
 void headerCodeGen::visit(cmn::classNode& n)
@@ -198,6 +217,7 @@ void headerCodeGen::visit(cmn::funcNode& n)
 
 void sourceCodeGen::visit(cmn::constNode& n)
 {
+   writeAttributes(n);
    m_pOut->stream() << cmn::indent(*m_pOut) << "const " << cmn::fullyQualifiedName::build(n,n.name) << " : ";
    liamTypeWriter tyW(m_pOut->stream(),m_refColl);
    n.getChildren()[0]->acceptVisitor(tyW);
@@ -221,13 +241,24 @@ void sourceCodeGen::visit(cmn::sequenceNode& n)
       cmn::autoIndent _i(*m_pOut);
       for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
       {
-         m_pOut->stream() << cmn::indent(*m_pOut);
+         bool isSeq = (dynamic_cast<cmn::sequenceNode*>(*it));
+         if(!isSeq)
+            m_pOut->stream() << cmn::indent(*m_pOut);
          (*it)->acceptVisitor(*this);
-         m_pOut->stream() << ";" << std::endl;
+         cmn::statementNeedsSemiColon sc;
+         (*it)->acceptVisitor(sc);
+         if(sc.needs())
+            m_pOut->stream() << ";" << std::endl;
       }
    }
    m_pOut->stream() << cmn::indent(*m_pOut) << "}" << std::endl;
    m_pOut->stream() << std::endl;
+}
+
+void sourceCodeGen::visit(cmn::returnNode& n)
+{
+   m_pOut->stream() << "return ";
+   hNodeVisitor::visit(n);
 }
 
 void sourceCodeGen::visit(cmn::invokeFuncPtrNode& n)
@@ -246,7 +277,9 @@ void sourceCodeGen::visit(cmn::fieldAccessNode& n)
 
 void sourceCodeGen::visit(cmn::callNode& n)
 {
-   m_pOut->stream() << n.pTarget.ref;
+   m_pOut->stream() << cmn::fullyQualifiedName::build(
+      n.pTarget.getRefee()->getNode(),
+      n.pTarget.getRefee()->getShortName());
    m_refColl.onLink(n.pTarget);
    generateCallFromOpenParen(n,false);
 }
@@ -282,6 +315,43 @@ void sourceCodeGen::visit(cmn::bopNode& n)
 {
    n.getChildren()[0]->acceptVisitor(*this);
    m_pOut->stream() << " " << n.op << " ";
+   n.getChildren()[1]->acceptVisitor(*this);
+}
+
+void sourceCodeGen::visit(cmn::ifNode& n)
+{
+   m_pOut->stream() << "if(";
+   n.getChildren()[0]->acceptVisitor(*this);
+   m_pOut->stream() << ")" << std::endl;
+
+   n.getChildren()[1]->acceptVisitor(*this);
+
+   if(n.getChildren().size() > 2)
+   {
+      m_pOut->stream() << std::endl << cmn::indent(*m_pOut) << "else" << std::endl;
+      n.getChildren()[2]->acceptVisitor(*this);
+   }
+}
+
+void sourceCodeGen::visit(cmn::forLoopNode& n)
+{
+   if(n.getChildren().size() != 2)
+      cdwTHROW("forLoopNode children is %d != 2",n.getChildren().size());
+
+   m_pOut->stream() << "for[" << n.name << "](";
+   n.getChildren()[0]->acceptVisitor(*this);
+   m_pOut->stream() << ")" << std::endl;
+   n.getChildren()[1]->acceptVisitor(*this);
+}
+
+void sourceCodeGen::visit(cmn::whileLoopNode& n)
+{
+   if(n.getChildren().size() != 2)
+      cdwTHROW("whileLoopNode children is %d != 2",n.getChildren().size());
+
+   m_pOut->stream() << "while[" << n.name << "](";
+   n.getChildren()[0]->acceptVisitor(*this);
+   m_pOut->stream() << ")" << std::endl;
    n.getChildren()[1]->acceptVisitor(*this);
 }
 

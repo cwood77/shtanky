@@ -1,0 +1,12 @@
+[program]
+class foo : .sht.cons.program {
+
+   override run(args : str[]) : void
+   {
+      ._print("starting program");
+      while[i](i < 2)
+         ._print("inside loop");
+      ._print("leaving program");
+   }
+
+}
