@@ -44,7 +44,7 @@ void selfDecomposition::visit(cmn::invokeNode& n)
       w
       .append<cmn::fieldAccessNode>([&](auto&f){f.name=n.proto.ref;})
          .append<cmn::fieldAccessNode>([](auto&f){f.name="_vtbl";})
-            .get().appendChild(cmn::cloneTree(*pInstance));
+            .get().appendChild(cmn::cloneTree(*pInstance,true));
       ;
    }
    else
@@ -68,6 +68,7 @@ void selfDecomposition::visit(cmn::invokeNode& n)
 
    // replace the invoke
    auto *pNaked = pLowered.get();
+   n.lTarget.tryMigrateRefers(*pNaked);
    delete n.getParent()->replaceChild(n,*pLowered.release());
 
    visitChildren(*pNaked);

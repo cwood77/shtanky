@@ -102,6 +102,13 @@ void codegen::visit(cmn::fieldNode& n)
 
    s.stream() << cmn::indent(s) << writeAttributes(n,s);
    visitNameTypePair(n,n.name);
+
+   if(n.getChildren().size() > 1)
+   {
+      s.stream() << " = ";
+      n.getChildren()[1]->acceptVisitor(*this);
+   }
+
    s.stream() << ";" << std::endl;
 }
 
@@ -181,8 +188,9 @@ void codegen::visit(cmn::sequenceNode& n)
          if(!isSeq)
             s.stream() << cmn::indent(s);
          (*it)->acceptVisitor(*this);
-         isSeq = isSeq || (dynamic_cast<cmn::forLoopNode*>(*it)); // TODO lame
-         if(!isSeq)
+         cmn::statementNeedsSemiColon sc;
+         (*it)->acceptVisitor(sc);
+         if(sc.needs())
             s.stream() << ";" << std::endl;
       }
    }
@@ -288,11 +296,31 @@ void codegen::visit(cmn::indexNode& n)
    s.stream() << "]";
 }
 
+void codegen::visit(cmn::ifNode& n)
+{
+   auto& s = getOutStream();
+
+   s.stream() << "if(";
+   n.getChildren()[0]->acceptVisitor(*this);
+   s.stream() << ")" << std::endl;
+
+   n.getChildren()[1]->acceptVisitor(*this);
+
+   if(n.getChildren().size() > 2)
+   {
+      s.stream() << cmn::indent(s) << "else" << std::endl;
+      n.getChildren()[2]->acceptVisitor(*this);
+   }
+}
+
+
+#if 0
 void codegen::visit(cmn::loopIntrinsicNode& n)
 {
    auto& s = getOutStream();
    s.stream() << "loop(" << n.name << ")";
 }
+#endif
 
 void codegen::visit(cmn::forLoopNode& n)
 {
@@ -301,6 +329,18 @@ void codegen::visit(cmn::forLoopNode& n)
 
    auto& s = getOutStream();
    s.stream() << "for[" << n.name << "](";
+   n.getChildren()[0]->acceptVisitor(*this);
+   s.stream() << ")" << std::endl;
+   n.getChildren()[1]->acceptVisitor(*this);
+}
+
+void codegen::visit(cmn::whileLoopNode& n)
+{
+   if(n.getChildren().size() != 2)
+      cdwTHROW("whileLoopNode children is %d != 2",n.getChildren().size());
+
+   auto& s = getOutStream();
+   s.stream() << "while[" << n.name << "](";
    n.getChildren()[0]->acceptVisitor(*this);
    s.stream() << ")" << std::endl;
    n.getChildren()[1]->acceptVisitor(*this);
@@ -315,7 +355,7 @@ void codegen::visit(cmn::stringLiteralNode& n)
 void codegen::visit(cmn::boolLiteralNode& n)
 {
    auto& s = getOutStream();
-   s.stream() << "\"" << (n.value ? "true" : "false" ) << "\"";
+   s.stream() << (n.value ? "true" : "false" );
 }
 
 void codegen::visit(cmn::intLiteralNode& n)
@@ -410,7 +450,7 @@ void codegen::visitNameTypePair(cmn::node& n, const std::string& name)
    auto& s = getOutStream();
 
    s.stream() << writeFlags(n) << name << " : ";
-   visitChildren(n);
+   n.getChildren()[0]->acceptVisitor(*this);
 }
 
 void codegen::visitCallLikeThingAtParens(cmn::node& n, size_t startIdx)

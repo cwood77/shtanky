@@ -142,6 +142,69 @@ araceliProjectNode targetType=ca
                   intTypeNode typeNode lineNumber=22
                fieldNode memberNode name=_ptr lineNumber=23 flags=-
                   ptrTypeNode typeNode lineNumber=23
+         fileNode fullPath=.\testdata\sht\core\loopInst.ara.ph lineNumber=1
+            classNode name=loopInstBase baseClasses=[ ] lineNumber=1 flags=a
+               fieldNode memberNode name=_up lineNumber=3 flags=-
+                  boolTypeNode typeNode lineNumber=3
+                  boolLiteralNode value=1 lineNumber=3
+               fieldNode memberNode name=_count lineNumber=4 flags=-
+                  intTypeNode typeNode lineNumber=4
+                  intLiteralNode lexeme=0 lineNumber=4
+               methodNode baseImpl=setDir->0 memberNode name=setDir lineNumber=5 flags=+
+                  argNode name=up lineNumber=5
+                     boolTypeNode typeNode lineNumber=5
+                  voidTypeNode typeNode lineNumber=5
+                  sequenceNode lineNumber=7
+                     assignmentNode lineNumber=7
+                        varRefNode pSrc=_up->N3cmn9fieldNodeE lineNumber=7
+                        varRefNode pSrc=up->N3cmn7argNodeE lineNumber=7
+               methodNode baseImpl=getCount->0 memberNode name=getCount lineNumber=9 flags=+
+                  intTypeNode typeNode lineNumber=9
+                  sequenceNode lineNumber=11
+                     returnNode lineNumber=11
+                        varRefNode pSrc=_count->N3cmn9fieldNodeE lineNumber=11
+               methodNode baseImpl=bump->0 memberNode name=bump lineNumber=13 flags=v+
+                  voidTypeNode typeNode lineNumber=13
+                  sequenceNode lineNumber=15
+                     ifNode lineNumber=15
+                        varRefNode pSrc=_up->N3cmn9fieldNodeE lineNumber=15
+                        sequenceNode lineNumber=17
+                           assignmentNode lineNumber=17
+                              varRefNode pSrc=_count->N3cmn9fieldNodeE lineNumber=17
+                              bopNode op=+ lineNumber=17
+                                 varRefNode pSrc=_count->N3cmn9fieldNodeE lineNumber=17
+                                 intLiteralNode lexeme=1 lineNumber=17
+               methodNode baseImpl=break->0 memberNode name=break lineNumber=20 flags=+
+                  voidTypeNode typeNode lineNumber=20
+                  sequenceNode lineNumber=22
+               methodNode baseImpl=breakWithReason->0 memberNode name=breakWithReason lineNumber=23 flags=+
+                  argNode name=reason lineNumber=23
+                     userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=23
+                  voidTypeNode typeNode lineNumber=23
+                  sequenceNode lineNumber=25
+               methodNode baseImpl=continue->0 memberNode name=continue lineNumber=26 flags=+
+                  voidTypeNode typeNode lineNumber=26
+                  sequenceNode lineNumber=28
+            classNode name=forLoopInst baseClasses=[ loopInstBase->N3cmn9classNodeE ] lineNumber=32
+               methodNode baseImpl=setBounds->0 memberNode name=setBounds lineNumber=34 flags=+
+                  argNode name=start lineNumber=34
+                     intTypeNode typeNode lineNumber=34
+                  argNode name=stop lineNumber=34
+                     intTypeNode typeNode lineNumber=34
+                  voidTypeNode typeNode lineNumber=34
+                  sequenceNode lineNumber=36
+               methodNode baseImpl=inBounds->0 memberNode name=inBounds lineNumber=37 flags=+
+                  boolTypeNode typeNode lineNumber=37
+                  sequenceNode lineNumber=39
+               methodNode baseImpl=getValue->0 memberNode name=getValue lineNumber=40 flags=+
+                  intTypeNode typeNode lineNumber=40
+                  sequenceNode lineNumber=42
+            classNode name=whileLoopInst baseClasses=[ loopInstBase->N3cmn9classNodeE ] lineNumber=46
+               methodNode baseImpl=getValue->0 memberNode name=getValue lineNumber=48 flags=+
+                  intTypeNode typeNode lineNumber=48
+                  sequenceNode lineNumber=50
+                     returnNode lineNumber=50
+                        callNode pTarget=getCount->N3cmn10methodNodeE lineNumber=50
          fileNode fullPath=.\testdata\sht\core\object.ara.ph lineNumber=1
             classNode name=object baseClasses=[ ] lineNumber=1
          fileNode fullPath=.\testdata\sht\core\string.ara.ph lineNumber=1

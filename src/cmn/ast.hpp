@@ -1,8 +1,9 @@
 #pragma once
-
+#include "global.hpp"
 #include "throw.hpp"
 #include <functional>
 #include <list>
+#include <map>
 #include <memory>
 #include <set>
 #include <sstream>
@@ -152,6 +153,36 @@ namespace nodeFlags {
    };
 };
 
+class linkBase {
+public:
+   linkBase() : m_pRefee(NULL) {}
+   ~linkBase();
+
+   virtual void bind(node& dest) = 0;
+   virtual bool tryBind(node& dest) = 0;
+
+   std::string ref;
+
+   node *_getRefee() { return m_pRefee; }
+
+protected:
+   node *m_pRefee;
+};
+
+class linkTarget {
+public:
+   void addRefer(linkBase& l);
+   void removeRefer(linkBase& l);
+
+   // 'try' b/c the migrate will fail if the link won't bind b/c type mismatch
+   void tryMigrateRefers(node& noob);
+
+   const std::set<linkBase*>& getRefers() const { return m_refers; }
+
+private:
+   std::set<linkBase*> m_refers;
+};
+
 class node {
 public:
    node() : lineNumber(0), flags(0), m_pParent(NULL) {}
@@ -160,6 +191,7 @@ public:
    unsigned long lineNumber;
    std::set<std::string> attributes;
    size_t flags;
+   linkTarget lTarget;
 
    node *getParent() { return m_pParent; }
    void injectAbove(node& n);
@@ -249,33 +281,78 @@ private:
    node& operator=(const node&);
 };
 
-class linkBase {
-public:
-   linkBase() : m_pRefee(NULL) {}
-
-   virtual void bind(node& dest) = 0;
-
-   std::string ref;
-
-   node *_getRefee() { return m_pRefee; }
-
-protected:
-   node *m_pRefee;
-};
-
 template<class T>
 class link : public linkBase {
 public:
    virtual void bind(node& dest)
    {
+      if(!tryBind(dest))
+         cdwTHROW(std::string("link expected node type ") + typeid(T).name());
+   }
+
+   virtual bool tryBind(node& dest)
+   {
       auto *p = dynamic_cast<T*>(&dest);
       if(!p)
-         cdwTHROW(
-            std::string("link expected node type ") + typeid(T).name());
+         return false;
+
+      if(m_pRefee)
+         m_pRefee->lTarget.removeRefer(*this);
       m_pRefee = &dest;
+      m_pRefee->lTarget.addRefer(*this);
+      return true;
    }
 
    T *getRefee() { return dynamic_cast<T*>(m_pRefee); }
+};
+
+class iNodeDeleteOperation {
+public:
+   virtual void onNodeDeleted(node& n) = 0;
+   virtual void onLinkDeleted(linkBase& n) = 0;
+   virtual void complete() = 0;
+};
+
+class rootNodeDeleteOperation : private iNodeDeleteOperation {
+public:
+   void push(iNodeDeleteOperation& o) { m_stack.push_front(&o); }
+   void pop() { m_stack.pop_front(); }
+
+   iNodeDeleteOperation& head();
+
+private:
+   virtual void onNodeDeleted(node& n);
+   virtual void onLinkDeleted(linkBase& n);
+   virtual void complete() {}
+
+   std::list<iNodeDeleteOperation*> m_stack;
+};
+
+extern timedGlobal<rootNodeDeleteOperation> gNodeDeleteOp;
+
+class scopedNodeDeleteOperation : public iNodeDeleteOperation {
+public:
+   virtual void onNodeDeleted(node& n);
+   virtual void onLinkDeleted(linkBase& n);
+   virtual void complete();
+
+private:
+   std::map<linkTarget*,std::set<linkBase*> > m_danglingLinks;
+   std::map<linkTarget*,std::string> m_nodeTypes;
+};
+
+class autoNodeDeleteOperation : public scopedNodeDeleteOperation {
+public:
+   autoNodeDeleteOperation()
+   {
+      gNodeDeleteOp->push(*this);
+   }
+
+   ~autoNodeDeleteOperation()
+   {
+      gNodeDeleteOp->head().complete();
+      gNodeDeleteOp->pop();
+   }
 };
 
 // ----------------------- interfaces -----------------------
@@ -947,8 +1024,10 @@ public:
 // Out of laziness, I implement these only when needed
 class fieldCopyingNodeVisitor : public hNodeVisitor {
 public:
-   explicit fieldCopyingNodeVisitor(node& n) : m_n(n) {}
+   explicit fieldCopyingNodeVisitor(node& n, bool copyLinks)
+   : m_n(n), m_copyLinks(copyLinks) {}
 
+   // commented lines here mean that function is "free" and doesn't need to be implemented
    virtual void visit(node& n);
    virtual void visit(araceliProjectNode& n) { unexpected(n); }
    virtual void visit(liamProjectNode& n) { unexpected(n); }
@@ -961,7 +1040,7 @@ public:
    //virtual void visit(fieldNode& n);
    virtual void visit(constNode& n) { unexpected(n); }
    virtual void visit(funcNode& n) { unexpected(n); }
-   //virtual void visit(intrinsicNode& n) { unexpected(n); }
+   //virtual void visit(intrinsicNode& n);
    virtual void visit(argNode& n);
    //virtual void visit(typeNode& n);
    //virtual void visit(strTypeNode& n);
@@ -971,31 +1050,31 @@ public:
    //virtual void visit(voidTypeNode& n);
    virtual void visit(userTypeNode& n);
    //virtual void visit(ptrTypeNode& n);
-   //virtual void visit(sequenceNode& n) { unexpected(n); }
+   //virtual void visit(sequenceNode& n);
    //virtual void visit(returnNode& n);
    virtual void visit(invokeNode& n) { unexpected(n); }
-   //virtual void visit(invokeFuncPtrNode& n) { unexpected(n); }
+   //virtual void visit(invokeFuncPtrNode& n);
    virtual void visit(invokeVTableNode& n);
    virtual void visit(fieldAccessNode& n) { unexpected(n); }
    virtual void visit(callNode& n);
    virtual void visit(localDeclNode& n) { unexpected(n); }
    virtual void visit(varRefNode& n);
-   //virtual void visit(assignmentNode& n) { unexpected(n); }
+   //virtual void visit(assignmentNode& n);
    virtual void visit(bopNode& n) { unexpected(n); }
-   //virtual void visit(indexNode& n) { unexpected(n); }
-   //virtual void visit(ifNode& n) { unexpected(n); }
+   //virtual void visit(indexNode& n);
+   //virtual void visit(ifNode& n);
    virtual void visit(loopIntrinsicNode& n) { unexpected(n); }
    virtual void visit(loopBaseNode& n);
-   virtual void visit(forLoopNode& n) { unexpected(n); }
-   virtual void visit(whileLoopNode& n) { unexpected(n); }
+   //virtual void visit(forLoopNode& n);
+   //virtual void visit(whileLoopNode& n);
    virtual void visit(loopStartNode& n) { unexpected(n); }
    virtual void visit(loopBreakNode& n) { unexpected(n); }
    virtual void visit(loopEndNode& n) { unexpected(n); }
-   virtual void visit(stringLiteralNode& n) { unexpected(n); }
-   virtual void visit(boolLiteralNode& n) { unexpected(n); }
-   virtual void visit(intLiteralNode& n) { unexpected(n); }
-   //virtual void visit(structLiteralNode& n) { unexpected(n); }
-   //virtual void visit(genericNode& n) { unexpected(n); }
+   virtual void visit(stringLiteralNode& n);
+   virtual void visit(boolLiteralNode& n);
+   virtual void visit(intLiteralNode& n);
+   //virtual void visit(structLiteralNode& n);
+   //virtual void visit(genericNode& n);
    virtual void visit(constraintNode& n) { unexpected(n); }
    virtual void visit(instantiateNode& n) { unexpected(n); }
 
@@ -1004,10 +1083,36 @@ public:
 private:
    template<class T> T& as() { return dynamic_cast<T&>(m_n); }
 
+   template<class L> void handleLink(link<L>& dest, link<L>& src)
+   {
+      if(m_copyLinks && src.getRefee())
+         dest.bind(*src._getRefee());
+   }
+
    node& m_n;
+   const bool m_copyLinks;
 };
 
-node& cloneTree(node& n);
+node& cloneTree(node& n, bool copyLinks);
+
+// whether a node appearing as a statement in a codegenerator, should be terminated by
+// a semicolon.  Things like if statements or nested sequences, etc., don't need this.
+class statementNeedsSemiColon : public hNodeVisitor {
+public:
+   statementNeedsSemiColon() : m_needs(true) {}
+
+   bool needs() const { return m_needs; }
+
+   virtual void visit(node& n) {}
+   virtual void visit(sequenceNode& n) { m_needs = false; }
+   virtual void visit(ifNode& n) { m_needs = false; }
+   virtual void visit(loopBaseNode& n) { m_needs = false; }
+
+   virtual void _implementLanguage() {} // all
+
+private:
+   bool m_needs;
+};
 
 // ----------------------- transform aids -----------------------
 
@@ -1041,7 +1146,7 @@ public:
       std::unique_ptr<T> pNode(new T());
       initializer(*pNode.get());
       auto *pNaked = pNode.get();
-      m_pNode->insertChildAfter(*pNode.release(),*m_pNode);
+      m_pNode->getParent()->insertChildAfter(*pNode.release(),*m_pNode);
       m_pNode = pNaked;
       return *this;
    }

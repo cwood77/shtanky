@@ -176,7 +176,7 @@ void classInstantiator::makeInstance(cmn::instantiateNode& n)
 
    // clone & rename
    std::unique_ptr<cmn::node> pInstance(
-      &cmn::cloneTree(pTemplate->demandSoleChild<cmn::classNode>()));
+      &cmn::cloneTree(pTemplate->demandSoleChild<cmn::classNode>(),false));
    dynamic_cast<cmn::classNode&>(*pInstance.get()).name
       = buildInstancePseudoName(base,args);
 
@@ -226,6 +226,8 @@ std::string classInstantiator::buildInstancePseudoName(const std::string& base, 
 
 void genericStripper::visit(cmn::fileNode& n)
 {
+   cmn::autoNodeDeleteOperation o;
+
    // remove generic classes
    auto gs = n.getChildrenOf<cmn::genericNode>();
    for(auto it=gs.begin();it!=gs.end();++it)

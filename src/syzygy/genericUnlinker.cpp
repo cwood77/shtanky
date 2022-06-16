@@ -93,10 +93,10 @@ bool unlinkGenerics(cmn::node& root, cmn::symbolTable& sTable)
    // from linking (e.g. 'T' won't be found)
    genericUnlinker v(sTable);
    root.acceptVisitor(v);
-   cdwVERBOSE("unlinked %lld generics\n",v.nChanges);
+   cdwVERBOSE("suppressed %lld unresolved links from inside generic templates\n",v.nChanges);
 
    size_t nChanges = genericUnlinker::ignoreRefsToGenerics(sTable);
-   cdwVERBOSE("unlinked %lld refs to generics\n",nChanges);
+   cdwVERBOSE("suppressed %lld unresolved links to generic symbols\n",nChanges);
 
    return v.nChanges + nChanges;
 }

@@ -245,8 +245,9 @@ void sourceCodeGen::visit(cmn::sequenceNode& n)
          if(!isSeq)
             m_pOut->stream() << cmn::indent(*m_pOut);
          (*it)->acceptVisitor(*this);
-         isSeq = isSeq || (dynamic_cast<cmn::forLoopNode*>(*it)); // TODO lame
-         if(!isSeq)
+         cmn::statementNeedsSemiColon sc;
+         (*it)->acceptVisitor(sc);
+         if(sc.needs())
             m_pOut->stream() << ";" << std::endl;
       }
    }
@@ -315,12 +316,38 @@ void sourceCodeGen::visit(cmn::bopNode& n)
    n.getChildren()[1]->acceptVisitor(*this);
 }
 
+void sourceCodeGen::visit(cmn::ifNode& n)
+{
+   m_pOut->stream() << "if(";
+   n.getChildren()[0]->acceptVisitor(*this);
+   m_pOut->stream() << ")";
+
+   n.getChildren()[1]->acceptVisitor(*this);
+
+   if(n.getChildren().size() > 2)
+   {
+      m_pOut->stream() << cmn::indent(*m_pOut) << "else" << std::endl;
+      n.getChildren()[2]->acceptVisitor(*this);
+   }
+}
+
 void sourceCodeGen::visit(cmn::forLoopNode& n)
 {
    if(n.getChildren().size() != 2)
       cdwTHROW("forLoopNode children is %d != 2",n.getChildren().size());
 
    m_pOut->stream() << "for[" << n.name << "](";
+   n.getChildren()[0]->acceptVisitor(*this);
+   m_pOut->stream() << ")" << std::endl;
+   n.getChildren()[1]->acceptVisitor(*this);
+}
+
+void sourceCodeGen::visit(cmn::whileLoopNode& n)
+{
+   if(n.getChildren().size() != 2)
+      cdwTHROW("whileLoopNode children is %d != 2",n.getChildren().size());
+
+   m_pOut->stream() << "while[" << n.name << "](";
    n.getChildren()[0]->acceptVisitor(*this);
    m_pOut->stream() << ")" << std::endl;
    n.getChildren()[1]->acceptVisitor(*this);

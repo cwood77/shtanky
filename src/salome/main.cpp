@@ -31,6 +31,8 @@ int _main(int argc, const char *argv[])
    cmn::globalPublishTo<cmn::userErrors> _ueReg(ue,cmn::gUserErrors);
 
    // setup project, target, AST; load & link
+   cmn::rootNodeDeleteOperation _rdo;
+   cmn::globalPublishTo<cmn::rootNodeDeleteOperation> _rdoRef(_rdo,cmn::gNodeDeleteOp);
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
    std::unique_ptr<araceli::iTarget> pTgt;
    frontend(projectDir,pPrj,pTgt).run();
@@ -67,6 +69,9 @@ int _main(int argc, const char *argv[])
    cmn::outBundle b;
    { syzygy::codegen v(b,"sa",/*add*/true); pPrj->acceptVisitor(v); }
    { cmn::unconditionalWriter f; b.updateDisk(f); }
+
+   // clear graph
+   { cmn::autoNodeDeleteOperation o; pPrj.reset(); }
 
    return 0;
 }

@@ -1,5 +1,6 @@
 #include "ast.hpp"
 #include "out.hpp"
+#include "stlutil.hpp"
 #include "trace.hpp"
 
 namespace cmn {
@@ -11,8 +12,32 @@ void iNodeVisitor::visitChildren(node& n)
       (*it)->acceptVisitor(*this);
 }
 
+linkBase::~linkBase()
+{
+   gNodeDeleteOp->head().onLinkDeleted(*this);
+}
+
+void linkTarget::addRefer(linkBase& l)
+{
+   m_refers.insert(&l);
+}
+
+void linkTarget::removeRefer(linkBase& l)
+{
+   m_refers.erase(&l);
+}
+
+void linkTarget::tryMigrateRefers(node& noob)
+{
+   std::set<linkBase*> copy = m_refers;
+   for(auto *pLink : copy)
+      pLink->tryBind(noob);
+}
+
 node::~node()
 {
+   gNodeDeleteOp->head().onNodeDeleted(*this);
+
    for(auto it=m_children.begin();it!=m_children.end();++it)
       delete *it;
 }
@@ -97,6 +122,84 @@ node *node::lastChild()
 {
    if(m_children.size() == 0) return NULL;
    return *(--(m_children.end()));
+}
+
+timedGlobal<rootNodeDeleteOperation> gNodeDeleteOp;
+
+iNodeDeleteOperation& rootNodeDeleteOperation::head()
+{
+   if(m_stack.size() == 0)
+      return *this;
+   return **m_stack.begin();
+}
+
+void rootNodeDeleteOperation::onNodeDeleted(node& n)
+{
+   // no outstanding refers, nothing to do
+   if(n.lTarget.getRefers().size() == 0) return;
+
+   cdwTHROW("deleting a node with outstanding refers; use a delete op\r\n");
+}
+
+void rootNodeDeleteOperation::onLinkDeleted(linkBase& n)
+{
+   node *pNodeTarget = n._getRefee();
+   // unlinked link; nothing to do
+   if(!pNodeTarget) return;
+
+   pNodeTarget->lTarget.removeRefer(n);
+}
+
+void scopedNodeDeleteOperation::onNodeDeleted(node& n)
+{
+   // no outstanding refers, nothing to do
+   if(n.lTarget.getRefers().size() == 0) return;
+
+   // record outstanding refers, but don't complain yet b/c they might also be in this
+   // delete operation
+   cdwDEBUG("noting that node %s was deleted with %lld outstanding refers\r\n",
+      typeid(n).name(),n.lTarget.getRefers().size());
+   m_nodeTypes[&n.lTarget] = typeid(n).name();
+   auto& ls = m_danglingLinks[&n.lTarget];
+   ls.insert(n.lTarget.getRefers().begin(),n.lTarget.getRefers().end());
+}
+
+void scopedNodeDeleteOperation::onLinkDeleted(linkBase& n)
+{
+   node *pNodeTarget = n._getRefee();
+   // unlinked link; nothing to do
+   if(!pNodeTarget) return;
+   auto& target = pNodeTarget->lTarget;
+
+   if(!has(m_danglingLinks,&target))
+      // live target, remove like normal
+      target.removeRefer(n);
+   else
+      // dead target! update notes so this link isn't counted as dangling at op close
+      m_danglingLinks[&target].erase(&n);
+}
+
+void scopedNodeDeleteOperation::complete()
+{
+   cdwDEBUG("examining delete operation with %lld nodes\r\n",m_danglingLinks.size());
+
+   std::stringstream stream;
+   bool bad = false;
+
+   for(auto it=m_danglingLinks.begin();it!=m_danglingLinks.end();++it)
+   {
+      stream << "refer:" << m_nodeTypes[it->first] << ":" << std::endl;
+      for(auto *pLink : it->second)
+      {
+         stream << "   refee link ref " << pLink->ref << std::endl;
+         bad = true;
+      }
+   }
+
+   if(!bad) return;
+
+   cdwDEBUG("ISE: dangling links after delete operation:\r\n%s",stream.str().c_str());
+   cdwTHROW("dangling links left on AST graph");
 }
 
 std::list<classNode*> classNode::computeLineage()
@@ -1115,8 +1218,7 @@ void fieldCopyingNodeVisitor::visit(memberNode& n)
 void fieldCopyingNodeVisitor::visit(methodNode& n)
 {
    as<methodNode>().baseImpl.ref = n.baseImpl.ref;
-   if(n.baseImpl.getRefee())
-      as<methodNode>().baseImpl.bind(*n.baseImpl.getRefee());
+   handleLink(as<methodNode>().baseImpl,n.baseImpl);
    hNodeVisitor::visit(n);
 }
 
@@ -1129,8 +1231,7 @@ void fieldCopyingNodeVisitor::visit(argNode& n)
 void fieldCopyingNodeVisitor::visit(userTypeNode& n)
 {
    as<userTypeNode>().pDef.ref = n.pDef.ref;
-   if(n.pDef._getRefee())
-      as<userTypeNode>().pDef.bind(*n.pDef._getRefee());
+   handleLink(as<userTypeNode>().pDef,n.pDef);
    hNodeVisitor::visit(n);
 }
 
@@ -1143,8 +1244,7 @@ void fieldCopyingNodeVisitor::visit(invokeVTableNode& n)
 void fieldCopyingNodeVisitor::visit(callNode& n)
 {
    as<callNode>().pTarget.ref = n.pTarget.ref;
-   if(n.pTarget._getRefee())
-      as<callNode>().pTarget.bind(*n.pTarget._getRefee());
+   handleLink(as<callNode>().pTarget,n.pTarget);
    hNodeVisitor::visit(n);
 }
 
@@ -1152,8 +1252,7 @@ void fieldCopyingNodeVisitor::visit(varRefNode& n)
 {
    hNodeVisitor::visit(n);
    as<varRefNode>().pSrc.ref = n.pSrc.ref;
-   if(n.pSrc._getRefee())
-      as<varRefNode>().pSrc.bind(*n.pSrc._getRefee());
+   handleLink(as<varRefNode>().pSrc,n.pSrc);
 }
 
 void fieldCopyingNodeVisitor::visit(loopBaseNode& n)
@@ -1164,14 +1263,32 @@ void fieldCopyingNodeVisitor::visit(loopBaseNode& n)
    hNodeVisitor::visit(n);
 }
 
-node& cloneTree(node& n)
+void fieldCopyingNodeVisitor::visit(stringLiteralNode& n)
+{
+   as<stringLiteralNode>().value = n.value;
+   hNodeVisitor::visit(n);
+}
+
+void fieldCopyingNodeVisitor::visit(boolLiteralNode& n)
+{
+   as<boolLiteralNode>().value = n.value;
+   hNodeVisitor::visit(n);
+}
+
+void fieldCopyingNodeVisitor::visit(intLiteralNode& n)
+{
+   as<intLiteralNode>().lexeme = n.lexeme;
+   hNodeVisitor::visit(n);
+}
+
+node& cloneTree(node& n, bool copyLinks)
 {
    creatingNodeVisitor creator;
    n.acceptVisitor(creator);
-   { fieldCopyingNodeVisitor v(*creator.inst.get()); n.acceptVisitor(v); }
+   { fieldCopyingNodeVisitor v(*creator.inst.get(), copyLinks); n.acceptVisitor(v); }
 
    for(auto it=n.getChildren().begin();it!=n.getChildren().end();++it)
-      creator.inst->appendChild(cloneTree(**it));
+      creator.inst->appendChild(cloneTree(**it,copyLinks));
 
    return *creator.inst.release();
 }

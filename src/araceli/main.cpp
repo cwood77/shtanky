@@ -39,11 +39,11 @@ void invokeSubProcess(const char *shortName, const char *ext, const char *addend
    childStream << "bin\\out\\debug\\" << shortName << ".exe ";
    childStream << projectDir;
    childStream << " " << ext;
-   // I require object of salome and philemon becaue I'm the one who will introduce this dependency;
-   // they don't know I'll do that.
+   // I require object of salome and philemon becaue I'm the one who will introduce
+   // this dependency;  they don't know I'll do that.
    childStream << " .\\testdata\\sht\\core\\object." << addendumFileExt;
-   // Similarly, philemon will introduce the dependency on arrays and strings, which salome can't
-   // anticipate, so give her a hint
+   // Similarly, philemon will introduce the dependency on arrays and strings, which
+   // salome can't anticipate, so give her a hint
    childStream << " .\\testdata\\sht\\core\\string." << addendumFileExt;
    childStream << " .\\testdata\\sht\\core\\array." << addendumFileExt;
    cdwVERBOSE("calling: %s\n",childStream.str().c_str());
@@ -80,6 +80,8 @@ int _main(int argc, const char *argv[])
    cmn::globalPublishTo<loaderPrefs> _lPrefs(lPrefs,gLoaderPrefs);
 
    // setup project, AST; load & link
+   cmn::rootNodeDeleteOperation _rdo;
+   cmn::globalPublishTo<cmn::rootNodeDeleteOperation> _rdoRef(_rdo,cmn::gNodeDeleteOp);
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
    std::unique_ptr<araceli::iTarget> pTgt;
    syzygy::frontend(projectDir,pPrj,pTgt).run();
@@ -163,7 +165,8 @@ int _main(int argc, const char *argv[])
    { selfDecomposition v; pPrj->acceptVisitor(v); } // add self param, scope self fields,
                                                     //   invoke decomp
    // basecall decomp
-   { methodMover v(cc); pPrj->acceptVisitor(v); }   // make methods functions
+   { cmn::autoNodeDeleteOperation o;                // make methods functions
+     methodMover v(cc); pPrj->acceptVisitor(v); }
    { vtableGenerator().generate(cc); }              // add vtable class and global instance
    { inheritImplementor().generate(cc); }           // inject fields into derived classes
    { matryoshkaDecomposition(cc).run(); }           // write sctor/sdtor
@@ -182,6 +185,10 @@ int _main(int argc, const char *argv[])
    { codeGen v(*pTgt.get(),out); pPrj->acceptVisitor(v); }
    { batGen v(*pTgt.get(),out.get<cmn::outStream>(batchBuild)); pPrj->acceptVisitor(v); }
    out.updateDisk(wr);
+
+   // clear graph
+   cdwDEBUG("destroying the graph\r\n");
+   { cmn::autoNodeDeleteOperation o; pPrj.reset(); }
 
    return 0;
 }

@@ -480,6 +480,8 @@ void commonParser::parseLoop(node& owner)
 {
    if(m_l.getToken() == commonLexor::kFor)
    {
+      m_l.advance();
+
       auto& l = m_nFac.appendNewChild<forLoopNode>(owner);
 
       parseLoopName(l);
@@ -498,6 +500,8 @@ void commonParser::parseLoop(node& owner)
    }
    else if(m_l.getToken() == commonLexor::kWhile)
    {
+      m_l.advance();
+
       auto& l = m_nFac.appendNewChild<whileLoopNode>(owner);
 
       parseLoopName(l);

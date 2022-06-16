@@ -24,6 +24,8 @@ int _main(int argc, const char *argv[])
    cmn::globalPublishTo<araceli::loaderPrefs> _lPrefs(lPrefs,araceli::gLoaderPrefs);
 
    // setup project, target, AST; load & link
+   cmn::rootNodeDeleteOperation _rdo;
+   cmn::globalPublishTo<cmn::rootNodeDeleteOperation> _rdoRef(_rdo,cmn::gNodeDeleteOp);
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
    std::unique_ptr<araceli::iTarget> pTgt;
    frontend(projectDir,pPrj,pTgt).run();
@@ -54,7 +56,7 @@ int _main(int argc, const char *argv[])
    // transform native array type to class
    { arrayDecomposition v; pPrj->acceptVisitor(v); v.run(*pPrj.get()); }
 
-   // subsequent link to load more
+   // subsequent link for new files/instances
    nodeLinker().linkGraph(*pPrj);
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
@@ -69,6 +71,9 @@ int _main(int argc, const char *argv[])
    cmn::outBundle b;
    { syzygy::codegen v(b,"ph",/*replace*/false); pPrj->acceptVisitor(v); }
    { cmn::unconditionalWriter f; b.updateDisk(f); }
+
+   // clear graph
+   { cmn::autoNodeDeleteOperation o; pPrj.reset(); }
 
    return 0;
 }

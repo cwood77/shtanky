@@ -66,7 +66,7 @@ void inheritImplementor::combineFieldsAndRemoveBases(classCatalog& cc)
       // inject inherited fields _above_ any fields I actually own
       // (do this by iterating backwards and injecting at head)
       for(auto fit=totalFields.rbegin();fit!=totalFields.rend();++fit)
-         ci.pNode->insertChild(0,cmn::cloneTree(**fit));
+         ci.pNode->insertChild(0,cmn::cloneTree(**fit,true));
 
       // now, remove the base classes
       ci.pNode->baseClasses.clear();

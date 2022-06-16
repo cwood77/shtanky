@@ -34,56 +34,63 @@ int _main(int argc,const char *argv[])
    dbgOut.scheduleAutoUpdate(wr);
 
    // load
-   cmn::liamProjectNode prj;
-   prj.sourceFullPath = cl.getNextArg("testdata\\test\\test.ara.ls");
-   projectBuilder::build(prj);
+   cmn::rootNodeDeleteOperation _rdo;
+   cmn::globalPublishTo<cmn::rootNodeDeleteOperation> _rdoRef(_rdo,cmn::gNodeDeleteOp);
+   std::unique_ptr<cmn::liamProjectNode> pPrj(new cmn::liamProjectNode());
+   pPrj->sourceFullPath = cl.getNextArg("testdata\\test\\test.ara.ls");
+   projectBuilder::build(*pPrj.get());
    cdwVERBOSE("graph after loading ----\n");
-   { cmn::diagVisitor v; prj.acceptVisitor(v); }
-   { auto& s = dbgOut.get<cmn::outStream>(prj.sourceFullPath + ".00init.ast");
-     cmn::astFormatter v(s); prj.acceptVisitor(v); }
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+   { auto& s = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath + ".00init.ast");
+     cmn::astFormatter v(s); pPrj->acceptVisitor(v); }
 
    // link
-   cmn::nodeLinker().linkGraph(prj);
+   cmn::nodeLinker().linkGraph(*pPrj.get());
    cdwVERBOSE("graph after linking ----\n");
-   { cmn::diagVisitor v; prj.acceptVisitor(v); }
+   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+
+   // type-agnostic AST transforms
+   { loopDecomposer v; pPrj->acceptVisitor(v); }
+   { auto& s = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath + ".01postXfrm.ast");
+     cmn::astFormatter v(s); pPrj->acceptVisitor(v); }
 
    cmn::tgt::w64EmuTargetInfo t;
    {
       // initial type propagation
+      cmn::nodeLinker().linkGraph(*pPrj.get());
       cmn::type::table                           _t;
       cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
       cmn::type::nodeCache                       _c;
       cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
-      cmn::propagateTypes(prj);
+      cmn::propagateTypes(*pPrj.get());
 
-      // AST transforms
-      { vTableInvokeDetector v(t); prj.acceptVisitor(v); }
-      { loopDecomposer v; prj.acceptVisitor(v); }
+      // type-aware AST transforms
+      { vTableInvokeDetector v(t); pPrj->acceptVisitor(v); }
       cdwVERBOSE("graph after transforms ----\n");
-      { cmn::diagVisitor v; prj.acceptVisitor(v); }
+      { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
    }
 
    // re-link
-   cmn::nodeLinker().linkGraph(prj);
+   cmn::nodeLinker().linkGraph(*pPrj.get());
 
    // final type propagation
    cmn::type::table                           _t;
    cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
    cmn::type::nodeCache                       _c;
    cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
-   cmn::propagateTypes(prj);
-   { auto& s = dbgOut.get<cmn::outStream>(prj.sourceFullPath + ".01postXfrm.ast");
-     cmn::astFormatter v(s); prj.acceptVisitor(v); }
+   cmn::propagateTypes(*pPrj.get());
+   { auto& s = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath + ".02postXfrm.ast");
+     cmn::astFormatter v(s); pPrj->acceptVisitor(v); }
 
    // generate LIR
    lirStreams lir;
-   { lirBuilder b(lir,t); astCodeGen v(b,t); prj.acceptVisitor(v); }
-   { auto& s = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir");
+   { lirBuilder b(lir,t); astCodeGen v(b,t); pPrj->acceptVisitor(v); }
+   { auto& s = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"lir");
      lirFormatter(s,t).format(lir); }
 
    // LIR transforms
    runLirTransforms(lir,t);
-   { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-post");
+   { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"lir-post");
      lirFormatter(sp,t).format(lir); }
 
    // ---------------- register allocation ----------------
@@ -107,7 +114,7 @@ int _main(int argc,const char *argv[])
          stackAllocator().run(vTbl,f);
          varAllocator(t).run(vTbl,f);
 
-         { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-postreg");
+         { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"lir-postreg");
            lirIncrementalFormatter(sp,t).format(*it); }
 
          if(it->segment == cmn::objfmt::obj::kLexCode)
@@ -116,18 +123,18 @@ int _main(int argc,const char *argv[])
             codeShapeTransform(vTbl,f,t).runStream(*it);
          }
 
-         { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-preasm");
+         { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"lir-preasm");
            lirIncrementalFormatter(sp,t).format(*it); }
 
          splitResolver(*it,vTbl).run();
 
-         asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(prj.sourceFullPath,"asm"));
+         asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(pPrj->sourceFullPath,"asm"));
       }
    }
    catch(std::exception&)
    {
       cdwINFO("handling exception; writing lir-crash file\n");
-      { auto& sp = dbgOut.get<cmn::outStream>(prj.sourceFullPath,"lir-crash");
+      { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"lir-crash");
         lirFormatter(sp,t).format(lir); }
       throw;
    }
@@ -136,6 +143,10 @@ int _main(int argc,const char *argv[])
    _c.dump();
 
    out.updateDisk(wr);
+
+   // clear graph
+   cdwDEBUG("destroying the graph\r\n");
+   { cmn::autoNodeDeleteOperation o; pPrj.reset(); }
 
    return 0;
 }

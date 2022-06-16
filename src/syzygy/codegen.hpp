@@ -42,8 +42,13 @@ public:
    virtual void visit(cmn::assignmentNode& n);
    virtual void visit(cmn::bopNode& n);
    virtual void visit(cmn::indexNode& n);
-   virtual void visit(cmn::loopIntrinsicNode& n);
+   virtual void visit(cmn::ifNode& n);
+   virtual void visit(cmn::loopIntrinsicNode& n) { unexpected(n); }
    virtual void visit(cmn::forLoopNode& n);
+   virtual void visit(cmn::whileLoopNode& n);
+   virtual void visit(cmn::loopStartNode& n) { unexpected(n); }
+   virtual void visit(cmn::loopBreakNode& n) { unexpected(n); }
+   virtual void visit(cmn::loopEndNode& n) { unexpected(n); }
    virtual void visit(cmn::stringLiteralNode& n);
    virtual void visit(cmn::boolLiteralNode& n);
    virtual void visit(cmn::intLiteralNode& n);

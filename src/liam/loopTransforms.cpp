@@ -38,7 +38,7 @@ void forLoopToWhileLoopConverter::visit(cmn::forLoopNode& n)
       .after<cmn::whileLoopNode>([&](auto& l)
       {
          // loops need even lineNumbers intact for GUID calculation, so copy everything
-         cmn::fieldCopyingNodeVisitor v(l);
+         cmn::fieldCopyingNodeVisitor v(l,false);
          v.visit(static_cast<cmn::loopBaseNode&>(n));
       })
          .after<cmn::callNode>([](auto& c){c.pTarget.ref=".sht.core.forLoopInst.inBounds";})
@@ -79,7 +79,9 @@ void loopDecomposer::visit(cmn::whileLoopNode& n)
          .append<cmn::fieldAccessNode>([](auto& f){ f.name = "bump"; })
             .append<cmn::fieldAccessNode>([](auto& f){ f.name = "_vtbl"; })
                .append<cmn::varRefNode>([&](auto& v){ v.pSrc.ref = n.name; })
-                  .backTo<cmn::sequenceNode>()
+                  .backTo<cmn::invokeFuncPtrNode>()
+         .append<cmn::varRefNode>([&](auto& v){ v.pSrc.ref = n.name; })
+            .backTo<cmn::sequenceNode>()
 
       // <loopend>
       .append<cmn::loopEndNode>([&](auto& b){ b.name = guid; })

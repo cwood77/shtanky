@@ -12,7 +12,7 @@ namespace liam {
 //       self
 //
 // so find invokeFuncPtrNodes with two fieldAccess nodes, where leafmost FA node is
-// accessing the name 'vtbl' and it's return type has the attribute '[vtbl]'
+// accessing the name 'vtbl'
 //
 void vTableInvokeDetector::visit(cmn::invokeFuncPtrNode& n)
 {

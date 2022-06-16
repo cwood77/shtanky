@@ -17,7 +17,7 @@ void abstractGenerator::generate(classCatalog& cc)
             if(mInfo.inherited)
             {
                // this is an abstract method I never implemented; implement it now
-               cInfo.pNode->appendChild(cmn::cloneTree(*mInfo.pMethod));
+               cInfo.pNode->appendChild(cmn::cloneTree(*mInfo.pMethod,true));
                pNoob = dynamic_cast<cmn::methodNode*>(cInfo.pNode->lastChild());
             }
             else

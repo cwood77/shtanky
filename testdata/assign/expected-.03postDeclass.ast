@@ -586,6 +586,259 @@ araceliProjectNode targetType=ca
                      varRefNode pSrc=self->0
                   callNode pTarget=.sht.core.object_sdtor->0
                      varRefNode pSrc=self->0
+         fileNode fullPath=.\testdata\sht\core\loopInst.ara.ph lineNumber=1
+            classNode name=loopInstBase baseClasses=[ ] lineNumber=1 flags=a
+               fieldNode memberNode name=_vtbl
+                  userTypeNode pDef=loopInstBase_vtbl->0 typeNode
+               fieldNode memberNode name=_up lineNumber=3 flags=-
+                  boolTypeNode typeNode lineNumber=3
+               fieldNode memberNode name=_count lineNumber=4 flags=-
+                  intTypeNode typeNode lineNumber=4
+            classNode name=forLoopInst baseClasses=[ ] lineNumber=32
+               fieldNode memberNode name=_vtbl
+                  userTypeNode pDef=forLoopInst_vtbl->0 typeNode
+               fieldNode memberNode name=_up lineNumber=3 flags=-
+                  boolTypeNode typeNode lineNumber=3
+               fieldNode memberNode name=_count lineNumber=4 flags=-
+                  intTypeNode typeNode lineNumber=4
+            classNode name=whileLoopInst baseClasses=[ ] lineNumber=46
+               fieldNode memberNode name=_vtbl
+                  userTypeNode pDef=whileLoopInst_vtbl->0 typeNode
+               fieldNode memberNode name=_up lineNumber=3 flags=-
+                  boolTypeNode typeNode lineNumber=3
+               fieldNode memberNode name=_count lineNumber=4 flags=-
+                  intTypeNode typeNode lineNumber=4
+            funcNode name=loopInstBase.setDir
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+               argNode name=up lineNumber=5
+                  boolTypeNode typeNode lineNumber=5
+               voidTypeNode typeNode lineNumber=5
+               sequenceNode lineNumber=7
+                  assignmentNode lineNumber=7
+                     fieldAccessNode name=_up
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=up->N3cmn7argNodeE lineNumber=7
+            funcNode name=loopInstBase.getCount
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+               intTypeNode typeNode lineNumber=9
+               sequenceNode lineNumber=11
+                  returnNode lineNumber=11
+                     fieldAccessNode name=_count
+                        varRefNode pSrc=self->0
+            funcNode name=loopInstBase.bump
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+               voidTypeNode typeNode lineNumber=13
+               sequenceNode lineNumber=15
+                  ifNode lineNumber=15
+                     fieldAccessNode name=_up
+                        varRefNode pSrc=self->0
+                     sequenceNode lineNumber=17
+                        assignmentNode lineNumber=17
+                           fieldAccessNode name=_count
+                              varRefNode pSrc=self->0
+                           bopNode op=+ lineNumber=17
+                              fieldAccessNode name=_count
+                                 varRefNode pSrc=self->0
+                              intLiteralNode lexeme=1 lineNumber=17
+            funcNode name=loopInstBase.break
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+               voidTypeNode typeNode lineNumber=20
+               sequenceNode lineNumber=22
+            funcNode name=loopInstBase.breakWithReason
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+               argNode name=reason lineNumber=23
+                  userTypeNode pDef=.sht.core.string->N3cmn9classNodeE typeNode lineNumber=23
+               voidTypeNode typeNode lineNumber=23
+               sequenceNode lineNumber=25
+            funcNode name=loopInstBase.continue
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+               voidTypeNode typeNode lineNumber=26
+               sequenceNode lineNumber=28
+            funcNode name=loopInstBase.cctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_up
+                        varRefNode pSrc=self->0
+                     boolLiteralNode value=1 lineNumber=3
+                  assignmentNode
+                     fieldAccessNode name=_count
+                        varRefNode pSrc=self->0
+                     intLiteralNode lexeme=0 lineNumber=4
+               userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+            funcNode name=loopInstBase.cdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+            funcNode name=forLoopInst.setBounds
+               argNode name=self
+                  userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
+               argNode name=start lineNumber=34
+                  intTypeNode typeNode lineNumber=34
+               argNode name=stop lineNumber=34
+                  intTypeNode typeNode lineNumber=34
+               voidTypeNode typeNode lineNumber=34
+               sequenceNode lineNumber=36
+            funcNode name=forLoopInst.inBounds
+               argNode name=self
+                  userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
+               boolTypeNode typeNode lineNumber=37
+               sequenceNode lineNumber=39
+            funcNode name=forLoopInst.getValue
+               argNode name=self
+                  userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
+               intTypeNode typeNode lineNumber=40
+               sequenceNode lineNumber=42
+            funcNode name=forLoopInst.cctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_up
+                        varRefNode pSrc=self->0
+                     boolLiteralNode value=1 lineNumber=3
+                  assignmentNode
+                     fieldAccessNode name=_count
+                        varRefNode pSrc=self->0
+                     intLiteralNode lexeme=0 lineNumber=4
+               userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
+            funcNode name=forLoopInst.cdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
+            funcNode name=whileLoopInst.getValue
+               argNode name=self
+                  userTypeNode pDef=.sht.core.whileLoopInst->0 typeNode
+               intTypeNode typeNode lineNumber=48
+               sequenceNode lineNumber=50
+                  returnNode lineNumber=50
+                     callNode pTarget=getCount->N3cmn8funcNodeE lineNumber=50
+            funcNode name=whileLoopInst.cctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.whileLoopInst->0 typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_up
+                        varRefNode pSrc=self->0
+                     boolLiteralNode value=1 lineNumber=3
+                  assignmentNode
+                     fieldAccessNode name=_count
+                        varRefNode pSrc=self->0
+                     intLiteralNode lexeme=0 lineNumber=4
+               userTypeNode pDef=.sht.core.whileLoopInst->0 typeNode
+            funcNode name=whileLoopInst.cdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.whileLoopInst->0 typeNode
+               sequenceNode
+               userTypeNode pDef=.sht.core.whileLoopInst->0 typeNode
+            classNode name=forLoopInst_vtbl baseClasses=[ ]
+               fieldNode memberNode name=bump
+                  ptrTypeNode typeNode
+            constNode name=forLoopInst_vtbl_inst attributes=[ vtbl ]
+               userTypeNode pDef=forLoopInst_vtbl->0 typeNode
+               structLiteralNode
+                  varRefNode pSrc=.sht.core.loopInstBase.bump->0
+            classNode name=loopInstBase_vtbl baseClasses=[ ]
+               fieldNode memberNode name=bump
+                  ptrTypeNode typeNode
+            constNode name=loopInstBase_vtbl_inst attributes=[ vtbl ]
+               userTypeNode pDef=loopInstBase_vtbl->0 typeNode
+               structLiteralNode
+                  varRefNode pSrc=.sht.core.loopInstBase.bump->0
+            classNode name=whileLoopInst_vtbl baseClasses=[ ]
+               fieldNode memberNode name=bump
+                  ptrTypeNode typeNode
+            constNode name=whileLoopInst_vtbl_inst attributes=[ vtbl ]
+               userTypeNode pDef=whileLoopInst_vtbl->0 typeNode
+               structLiteralNode
+                  varRefNode pSrc=.sht.core.loopInstBase.bump->0
+            funcNode name=forLoopInst_sctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  callNode pTarget=.sht.core.loopInstBase_sctor->0
+                     varRefNode pSrc=self->0
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.forLoopInst_vtbl_inst->0
+                  callNode pTarget=.sht.core.forLoopInst.cctor->0
+                     varRefNode pSrc=self->0
+            funcNode name=forLoopInst_sdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.forLoopInst_vtbl_inst->0
+                  callNode pTarget=.sht.core.forLoopInst.cdtor->0
+                     varRefNode pSrc=self->0
+                  callNode pTarget=.sht.core.loopInstBase_sdtor->0
+                     varRefNode pSrc=self->0
+            funcNode name=loopInstBase_sctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  callNode pTarget=.sht.core.object_sctor->0
+                     varRefNode pSrc=self->0
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.loopInstBase_vtbl_inst->0
+                  callNode pTarget=.sht.core.loopInstBase.cctor->0
+                     varRefNode pSrc=self->0
+            funcNode name=loopInstBase_sdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.loopInstBase_vtbl_inst->0
+                  callNode pTarget=.sht.core.loopInstBase.cdtor->0
+                     varRefNode pSrc=self->0
+                  callNode pTarget=.sht.core.object_sdtor->0
+                     varRefNode pSrc=self->0
+            funcNode name=whileLoopInst_sctor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.whileLoopInst->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  callNode pTarget=.sht.core.loopInstBase_sctor->0
+                     varRefNode pSrc=self->0
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.whileLoopInst_vtbl_inst->0
+                  callNode pTarget=.sht.core.whileLoopInst.cctor->0
+                     varRefNode pSrc=self->0
+            funcNode name=whileLoopInst_sdtor
+               argNode name=self
+                  userTypeNode pDef=.sht.core.whileLoopInst->0 typeNode
+               voidTypeNode typeNode
+               sequenceNode
+                  assignmentNode
+                     fieldAccessNode name=_vtbl
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=.sht.core.whileLoopInst_vtbl_inst->0
+                  callNode pTarget=.sht.core.whileLoopInst.cdtor->0
+                     varRefNode pSrc=self->0
+                  callNode pTarget=.sht.core.loopInstBase_sdtor->0
+                     varRefNode pSrc=self->0
          fileNode fullPath=.\testdata\sht\core\object.ara.ph lineNumber=1
             classNode name=object baseClasses=[ ] lineNumber=1
                fieldNode memberNode name=_vtbl
