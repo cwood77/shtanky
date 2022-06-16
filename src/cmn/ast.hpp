@@ -341,6 +341,10 @@ private:
    std::map<linkTarget*,std::string> m_nodeTypes;
 };
 
+// generally speaking, you don't need a delete op to delete nodes,
+// so long as you never delete a refee before deleting a refer.
+// if you're doing that, use a delete group so you aren't falsely
+// accused of leaving behind a dangling pointer
 class autoNodeDeleteOperation : public scopedNodeDeleteOperation {
 public:
    autoNodeDeleteOperation()

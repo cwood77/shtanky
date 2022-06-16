@@ -1,21 +1,21 @@
 .seg const
-.const0:
+._strLit_helloWorld_0:
 .data, "hello world!" <b> 0 
 
 .seg code       
 .test.test.run: 
-                push, rbp                  
-                push, rbx                  
-                mov, rbp, rsp              
-                sub, rsp, 32               
-                mov, rbx, [rcx+8]          ; fieldaccess: owner of _vtbl
-                lea, rdx, qwordptr .const0 
-                call, [rbx]                ; (vtbl call)
-                add, rsp, 32               
-                mov, rsp, rbp              
-                pop, rbx                   
-                pop, rbp                   
-                ret                        
+                push, rbp                                
+                push, rbx                                
+                mov, rbp, rsp                            
+                sub, rsp, 32                             
+                mov, rbx, [rcx+8]                        ; fieldaccess: owner of _vtbl
+                lea, rdx, qwordptr ._strLit_helloWorld_0 
+                call, [rbx]                              ; (vtbl call)
+                add, rsp, 32                             
+                mov, rsp, rbp                            
+                pop, rbx                                 
+                pop, rbp                                 
+                ret                                      
 
 .seg code         
 .test.test.cctor: 

@@ -1,10 +1,10 @@
-const .const0 : str = "hello world!";
+const ._strLit_helloWorld_0 : str = "hello world!";
 
 func .test.test.run(
    self : .test.test,
    args : .sht.core.array<.sht.core.string>) : void
 {
-   self:_out:_vtbl:printLn->(self:_out,.const0);
+   self:_out:_vtbl:printLn->(self:_out,._strLit_helloWorld_0);
 }
 
 func .test.test.cctor(
