@@ -257,7 +257,7 @@ void sourceCodeGen::visit(cmn::sequenceNode& n)
 
 void sourceCodeGen::visit(cmn::returnNode& n)
 {
-   m_pOut->stream() << cmn::indent(*m_pOut) << "return ";
+   m_pOut->stream() << "return ";
    hNodeVisitor::visit(n);
 }
 
@@ -322,13 +322,13 @@ void sourceCodeGen::visit(cmn::ifNode& n)
 {
    m_pOut->stream() << "if(";
    n.getChildren()[0]->acceptVisitor(*this);
-   m_pOut->stream() << ")";
+   m_pOut->stream() << ")" << std::endl;
 
    n.getChildren()[1]->acceptVisitor(*this);
 
    if(n.getChildren().size() > 2)
    {
-      m_pOut->stream() << cmn::indent(*m_pOut) << "else" << std::endl;
+      m_pOut->stream() << std::endl << cmn::indent(*m_pOut) << "else" << std::endl;
       n.getChildren()[2]->acceptVisitor(*this);
    }
 }
