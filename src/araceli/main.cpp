@@ -44,10 +44,8 @@ int _main(int argc, const char *argv[])
    dbgOut.scheduleAutoUpdate(wr);
 
    // invoke salome
-   invokeAraceliSliceProcess("salome",projectDir,"ara")
-      .withArg(".\\testdata\\sht\\core\\object.ara")
-      .withArg(".\\testdata\\sht\\core\\string.ara")
-      .withArg(".\\testdata\\sht\\core\\array.ara")
+   invokeAraceliSliceProcess("salome",projectDir,"ara") // TODO can philemon call salome?
+      .withArg(".\\testdata\\sht\\core")
       .runAndWait();
 
    // TODO - unneeded files should not get pulled in by symbol table
@@ -55,9 +53,7 @@ int _main(int argc, const char *argv[])
    //
    // invoke philemon
    invokeAraceliSliceProcess("philemon",projectDir,"sa")
-      .withArg(".\\testdata\\sht\\core\\object.ara.sa")
-      .withArg(".\\testdata\\sht\\core\\string.ara.sa")
-      .withArg(".\\testdata\\sht\\core\\array.ara.sa")
+      .withArg(".\\testdata\\sht\\core")
       .runAndWait();
 
    // I convert ph -> ara.lh/ls

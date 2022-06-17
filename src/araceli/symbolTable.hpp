@@ -7,6 +7,8 @@ public:
    explicit unloadedScopeFinder(const std::string& missingRef);
 
    bool any();
+
+   // the longest, unloaded scope whose name is a logical prefix of the missing ref
    cmn::scopeNode& mostLikely();
 
    virtual void visit(cmn::node& n) { visitChildren(n); }

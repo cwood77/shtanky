@@ -19,8 +19,11 @@ public:
    static void loadFolder(cmn::scopeNode& s);
 
    // typically, don't load files individually
+   // (used by target to load generated file)
    static void loadFile(cmn::scopeNode& s, const std::string& fullPath);
-   static void findScopeAndLoadFile(
+
+   // used in syzygy to implement args
+   static void findScopeAndLoadFolder(
       cmn::araceliProjectNode& s, const std::string& fullPath);
 
 private:

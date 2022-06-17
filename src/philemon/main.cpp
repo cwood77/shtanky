@@ -35,10 +35,8 @@ int _main(int argc, const char *argv[])
    frontend(projectDir,pPrj,pTgt).run();
 
    // load any additional files indicated on the command line
-   cl.addNextArgDefaultsIfNoneLeft(3,
-      ".\\testdata\\sht\\core\\object.ara.sa",
-      ".\\testdata\\sht\\core\\string.ara.sa",
-      ".\\testdata\\sht\\core\\array.ara.sa"
+   cl.addNextArgDefaultsIfNoneLeft(1,
+      ".\\testdata\\sht\\core"
    );
    for(size_t i=0;;i++)
    {
@@ -47,7 +45,7 @@ int _main(int argc, const char *argv[])
          break;
 
       cdwVERBOSE("loading explicit file '%s'\n",path.c_str());
-      araceli::loader::findScopeAndLoadFile(*pPrj.get(),path);
+      araceli::loader::findScopeAndLoadFolder(*pPrj.get(),path);
    }
 
    // run the instantiator to expand user generics
