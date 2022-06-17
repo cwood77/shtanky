@@ -713,6 +713,7 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+// a type argument to a template, like 'T'
 class constraintNode : public node {
 public:
    std::string name;

@@ -27,38 +27,12 @@
 #include "opOverloadDecomp.hpp"
 #include "selfDecomposition.hpp"
 #include "stackClassDecomposition.hpp"
+#include "subprocess.hpp"
 #include "symbolTable.hpp"
 #include "vtableGenerator.hpp"
 #include <string.h>
 
 using namespace araceli;
-
-void invokeSubProcess(const char *shortName, const char *ext, const char *addendumFileExt, const std::string& projectDir)
-{
-   std::stringstream childStream;
-   childStream << "bin\\out\\debug\\" << shortName << ".exe ";
-   childStream << projectDir;
-   childStream << " " << ext;
-   // I require object of salome and philemon becaue I'm the one who will introduce
-   // this dependency;  they don't know I'll do that.
-   childStream << " .\\testdata\\sht\\core\\object." << addendumFileExt;
-   // Similarly, philemon will introduce the dependency on arrays and strings, which
-   // salome can't anticipate, so give her a hint
-   childStream << " .\\testdata\\sht\\core\\string." << addendumFileExt;
-   childStream << " .\\testdata\\sht\\core\\array." << addendumFileExt;
-   cdwVERBOSE("calling: %s\n",childStream.str().c_str());
-   ::_flushall();
-   int rval = ::system(childStream.str().c_str());
-   cdwDEBUG("*************************************************\n");
-   cdwDEBUG("**   returned to araceli\n");
-   cdwDEBUG("*************************************************\n");
-   cdwVERBOSE("rval = %d\n",rval);
-   if(rval != 0)
-   {
-      cdwINFO("%s failed with code %d; aborting\n",shortName,rval);
-      cdwTHROW("child process failed");
-   }
-}
 
 int _main(int argc, const char *argv[])
 {
@@ -70,10 +44,21 @@ int _main(int argc, const char *argv[])
    dbgOut.scheduleAutoUpdate(wr);
 
    // invoke salome
-   invokeSubProcess("salome","ara","ara",projectDir);
+   invokeAraceliSliceProcess("salome",projectDir,"ara")
+      .withArg(".\\testdata\\sht\\core\\object.ara")
+      .withArg(".\\testdata\\sht\\core\\string.ara")
+      .withArg(".\\testdata\\sht\\core\\array.ara")
+      .runAndWait();
 
+   // TODO - unneeded files should not get pulled in by symbol table
+   //      - salome must parse generics enough to know what files to load...?
+   //
    // invoke philemon
-   invokeSubProcess("philemon","sa","ara.sa",projectDir);
+   invokeAraceliSliceProcess("philemon",projectDir,"sa")
+      .withArg(".\\testdata\\sht\\core\\object.ara.sa")
+      .withArg(".\\testdata\\sht\\core\\string.ara.sa")
+      .withArg(".\\testdata\\sht\\core\\array.ara.sa")
+      .runAndWait();
 
    // I convert ph -> ara.lh/ls
    loaderPrefs lPrefs = { "ph", "" };
