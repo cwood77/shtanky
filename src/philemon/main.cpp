@@ -18,6 +18,9 @@ int _main(int argc, const char *argv[])
    cmn::cmdLine cl(argc,argv);
    std::string projectDir = cl.getNextArg(".\\testdata\\philemon");
    std::string inExt = cl.getNextArg("sa");
+   cmn::outBundle dbgOut;
+   cmn::unconditionalWriter wr;
+   dbgOut.scheduleAutoUpdate(wr);
 
    // I convert * (arg) -> ph
    araceli::loaderPrefs lPrefs = { inExt, "" };
@@ -27,6 +30,7 @@ int _main(int argc, const char *argv[])
    cmn::rootNodeDeleteOperation _rdo;
    cmn::globalPublishTo<cmn::rootNodeDeleteOperation> _rdoRef(_rdo,cmn::gNodeDeleteOp);
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
+   cmn::astExceptionBarrier<cmn::araceliProjectNode> _aeb(pPrj,dbgOut,projectDir + "\\");
    std::unique_ptr<araceli::iTarget> pTgt;
    frontend(projectDir,pPrj,pTgt).run();
 
@@ -74,6 +78,7 @@ int _main(int argc, const char *argv[])
 
    // clear graph
    { cmn::autoNodeDeleteOperation o; pPrj.reset(); }
+   _aeb.disarm();
 
    return 0;
 }

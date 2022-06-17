@@ -36,18 +36,17 @@ int _main(int argc,const char *argv[])
    // load
    cmn::rootNodeDeleteOperation _rdo;
    cmn::globalPublishTo<cmn::rootNodeDeleteOperation> _rdoRef(_rdo,cmn::gNodeDeleteOp);
-   // use an unsmart ptr here so we don't try to delete the graph when handling an
-   // exception.  That's problematic because deletes need ops
-   auto *pPrj = new cmn::liamProjectNode();
+   std::unique_ptr<cmn::liamProjectNode> pPrj(new cmn::liamProjectNode());
    pPrj->sourceFullPath = cl.getNextArg("testdata\\test\\test.ara.ls");
-   projectBuilder::build(*pPrj);
+   cmn::astExceptionBarrier<cmn::liamProjectNode> _aeb(pPrj,dbgOut,pPrj->sourceFullPath);
+   projectBuilder::build(*pPrj.get());
    cdwVERBOSE("graph after loading ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
    { auto& s = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath + ".00init.ast");
      cmn::astFormatter v(s); pPrj->acceptVisitor(v); }
 
    // link
-   cmn::nodeLinker().linkGraph(*pPrj);
+   cmn::nodeLinker().linkGraph(*pPrj.get());
    cdwVERBOSE("graph after linking ----\n");
    { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
 
@@ -59,12 +58,12 @@ int _main(int argc,const char *argv[])
    cmn::tgt::w64EmuTargetInfo t;
    {
       // initial type propagation
-      cmn::nodeLinker().linkGraph(*pPrj);
+      cmn::nodeLinker().linkGraph(*pPrj.get());
       cmn::type::table                           _t;
       cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
       cmn::type::nodeCache                       _c;
       cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
-      cmn::propagateTypes(*pPrj);
+      cmn::propagateTypes(*pPrj.get());
 
       // type-aware AST transforms
       { vTableInvokeDetector v(t); pPrj->acceptVisitor(v); }
@@ -73,14 +72,14 @@ int _main(int argc,const char *argv[])
    }
 
    // re-link
-   cmn::nodeLinker().linkGraph(*pPrj);
+   cmn::nodeLinker().linkGraph(*pPrj.get());
 
    // final type propagation
    cmn::type::table                           _t;
    cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
    cmn::type::nodeCache                       _c;
    cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
-   cmn::propagateTypes(*pPrj);
+   cmn::propagateTypes(*pPrj.get());
    { auto& s = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath + ".02postXfrm.ast");
      cmn::astFormatter v(s); pPrj->acceptVisitor(v); }
 
@@ -148,7 +147,8 @@ int _main(int argc,const char *argv[])
 
    // clear graph
    cdwDEBUG("destroying the graph\r\n");
-   { cmn::autoNodeDeleteOperation o; delete pPrj; }
+   { cmn::autoNodeDeleteOperation o; pPrj.reset(); }
+   _aeb.disarm();
 
    return 0;
 }

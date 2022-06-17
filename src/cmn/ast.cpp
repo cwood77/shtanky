@@ -1145,6 +1145,13 @@ void astFormatter::visit(instantiateNode& n)
    cdwDumpAstEnd()
 }
 
+void astExceptionBarrierBase::dump(node& n)
+{
+   cdwVERBOSE("dumping AST on crash to %s\r\n",m_path.c_str());
+   auto& s = m_dbgOut.get<cmn::outStream>(m_path);
+   { astFormatter v(s); n.acceptVisitor(v); }
+}
+
 std::string fullyQualifiedName::build(cmn::node& n, const std::string& start)
 {
    if(!start.empty() && start.c_str()[0] == '.')

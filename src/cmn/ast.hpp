@@ -14,6 +14,7 @@
 
 namespace cmn {
 
+class outBundle;
 class outStream;
 
 class node;
@@ -912,6 +913,58 @@ public:
 
 private:
    outStream& m_s;
+};
+
+// ASTs can be tricky.  Deleting an AST requires a delete op, which generally means
+// destroying AST with RAII is problematic.  Use an exception barrier to address this,
+// along with getting an AST dump upon error.  Remember to disable the barrier in
+// non-exception (i.e. normal) cases.
+//
+// in summary, use a barrier when
+// - you want a AST dump file on throw
+//       -- or --
+// - your graph is complex enough to require a delete op to destroy
+//
+class astExceptionBarrierBase {
+public:
+   void disarm() { m_armed = false; }
+
+protected:
+   astExceptionBarrierBase(
+      outBundle& dbgOut,
+      const std::string& path)
+   : m_dbgOut(dbgOut), m_path(path), m_armed(true) {}
+
+   void dump(node& n);
+
+   outBundle& m_dbgOut;
+   std::string m_path;
+   bool m_armed;
+};
+
+template<class T>
+class astExceptionBarrier : public astExceptionBarrierBase {
+public:
+   astExceptionBarrier(
+      std::unique_ptr<T>& pRoot,
+      outBundle& dbgOut,
+      const std::string& pathPrefix)
+   : astExceptionBarrierBase(dbgOut,pathPrefix + ".99crash.ast")
+   , m_pRoot(pRoot)
+   {}
+
+   ~astExceptionBarrier()
+   {
+      if(m_armed)
+      {
+         dump(*m_pRoot.get());
+         m_pRoot.release();
+      }
+      m_armed = false;
+   }
+
+private:
+   std::unique_ptr<T>& m_pRoot;
 };
 
 template<class T = hNodeVisitor>

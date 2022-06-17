@@ -83,6 +83,7 @@ int _main(int argc, const char *argv[])
    cmn::rootNodeDeleteOperation _rdo;
    cmn::globalPublishTo<cmn::rootNodeDeleteOperation> _rdoRef(_rdo,cmn::gNodeDeleteOp);
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
+   cmn::astExceptionBarrier<cmn::araceliProjectNode> _aeb(pPrj,dbgOut,projectDir + "\\");
    std::unique_ptr<araceli::iTarget> pTgt;
    syzygy::frontend(projectDir,pPrj,pTgt).run();
    { auto& s = dbgOut.get<cmn::outStream>(projectDir + "\\.00init.ast");
@@ -189,6 +190,7 @@ int _main(int argc, const char *argv[])
    // clear graph
    cdwDEBUG("destroying the graph\r\n");
    { cmn::autoNodeDeleteOperation o; pPrj.reset(); }
+   _aeb.disarm();
 
    return 0;
 }
