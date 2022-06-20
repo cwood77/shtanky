@@ -46,6 +46,7 @@ int _main(int argc, const char *argv[])
    // invoke salome
    invokeAraceliSliceProcess("salome",projectDir,"ara") // TODO can philemon call salome?
       .withArg(".\\testdata\\sht\\core")
+      .withArg(".\\testdata\\sht\\cons")
       .runAndWait();
 
    // TODO - unneeded files should not get pulled in by symbol table
@@ -54,6 +55,7 @@ int _main(int argc, const char *argv[])
    // invoke philemon
    invokeAraceliSliceProcess("philemon",projectDir,"sa")
       .withArg(".\\testdata\\sht\\core")
+      .withArg(".\\testdata\\sht\\cons")
       .runAndWait();
 
    // I convert ph -> ara.lh/ls

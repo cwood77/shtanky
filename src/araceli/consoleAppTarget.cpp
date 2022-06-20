@@ -146,22 +146,36 @@ void consoleAppTarget::araceliCodegen(cmn::araceliProjectNode& root, metadata& m
       << "   [entrypoint]" << std::endl
       << "   static main(args : .sht.core.string[]) : void" << std::endl
       << "   {" << std::endl
-      << "      var cout : .sht.cons.stdout;" << std::endl
-      << std::endl
    ;
+
+   bool overallWantsStream = false;
+   for(auto *pNode : topLevels)
+   {
+      auto pClass = dynamic_cast<cmn::classNode*>(pNode);
+      if(!pClass)
+         cdwTHROW("everything marked with [program] must be a class");
+
+      if(wantsStream(*pClass))
+         overallWantsStream = true;
+   }
+   if(overallWantsStream)
+   {
+      stream.stream()
+         << "      var cout : .sht.cons.stdout;" << std::endl
+         << std::endl
+      ;
+   }
 
    size_t i=0;
    for(auto it=topLevels.begin();it!=topLevels.end();++it,i++)
    {
-      auto pClass = dynamic_cast<cmn::classNode*>(*it);
-      if(!pClass)
-         cdwTHROW("everything marked with [program] must be a class");
+      auto& rClass = *dynamic_cast<cmn::classNode*>(*it);
 
       stream.stream()
          << "      var obj" << i << " : "
-         << cmn::fullyQualifiedName::build(*pClass) << ";" << std::endl
+         << cmn::fullyQualifiedName::build(rClass) << ";" << std::endl
       ;
-      if(wantsStream(*pClass))
+      if(wantsStream(rClass))
          stream.stream()
             << "      obj" << i << ":_out = cout;" << std::endl
          ;
@@ -171,7 +185,7 @@ void consoleAppTarget::araceliCodegen(cmn::araceliProjectNode& root, metadata& m
 
    i=0;
    for(auto it=topLevels.begin();it!=topLevels.end();++it,i++)
-      stream.stream() << "      obj" << i << "->run(args);" << std::endl;
+      callRunMethod(**it,i,stream);
 
    stream.stream()
       << "   }" << std::endl
@@ -231,6 +245,43 @@ bool consoleAppTarget::wantsStream(cmn::classNode& n)
       if(cmn::fullyQualifiedName::build(**it) == ".sht.cons.program")
          return true;
    return false;
+}
+
+void consoleAppTarget::callRunMethod(cmn::node& obj, size_t instNum, cmn::outStream& s)
+{
+   cmn::methodNode *pMethod = NULL;
+   auto ancestors = dynamic_cast<cmn::classNode&>(obj).computeLineage();
+   for(auto it=ancestors.rbegin();it!=ancestors.rend();++it)
+   {
+      auto hits = (*it)->filterChildren<cmn::methodNode>(
+         [](auto& m){ return m.name == "run"; });
+      if(hits.size() > 0)
+      {
+         pMethod = hits[0];
+         break;
+      }
+   }
+   if(!pMethod)
+      return; // don't generate any call if no 'run' method found
+
+   auto args = pMethod->getChildrenOf<cmn::argNode>();
+   if(args.size() == 1 && args[0]->name == "args")
+   {
+      auto& ty = args[0]->demandSoleChild<cmn::typeNode>();
+      auto *pUdTy = dynamic_cast<cmn::userTypeNode*>(&ty);
+      if(pUdTy && pUdTy->pDef.ref == ".sht.core.array<.sht.core.string>")
+      {
+         // it has the right number of args; arg has right name and type, so pass it
+         s.stream() << "      obj" << instNum << "->run(args);" << std::endl;
+         return;
+      }
+   }
+
+   if(args.size() == 0)
+      // zero-paramed run methods are easy to call
+      s.stream() << "      obj" << instNum << "->run();" << std::endl;
+
+   // otherwise it doesn't have a run or I don't know how to call it
 }
 
 } // namespace araceli

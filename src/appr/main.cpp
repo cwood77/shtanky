@@ -18,6 +18,17 @@ int main(int argc, const char *argv[])
 
    // ------------------ tests start ------------------
 
+   testWriter(s,subset,cl).add("uats",[](auto& is){
+      araceliTest(is,".\\testdata\\uats")
+         .wholeApp()
+         .expectLiamOf(".\\testdata\\uats\\if.ara")
+         .expectLiamOf(".\\testdata\\sht\\cons\\program.ara")
+         .expectLiamOf(".\\testdata\\sht\\core\\object.ara")
+         .expectLiamOf(".\\testdata\\uats\\.target.ara",false) // false = no philemon
+         .emulateAndCheckOutput()
+      ;
+   });
+
    testWriter(s,subset,cl).add("assign",[](auto& is){
       araceliTest(is,".\\testdata\\assign")
          .verifyAdditionalArtifact(".\\testdata\\assign\\.00init.ast","init AST")
