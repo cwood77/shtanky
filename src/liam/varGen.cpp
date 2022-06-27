@@ -223,6 +223,18 @@ void var::format(cmn::outStream& s)
                << std::endl;
    }
    s.stream() << cmn::indent(s) << "}" << std::endl;
+
+   s.stream() << cmn::indent(s) << "storageDisambiguators = {" << std::endl;
+   {
+      cmn::autoIndent _i(s);
+      for(auto it=storageDisambiguators.begin();it!=storageDisambiguators.end();++it)
+         s.stream()
+            << cmn::indent(s) << lirIncrementalFormatter::argToString(*it->first)
+            << "(" << (size_t)it->first << "): "
+            << storageToString(it->second)
+            << std::endl;
+   }
+   s.stream() << cmn::indent(s) << "}" << std::endl;
 }
 
 std::string var::storageToString(size_t s)
