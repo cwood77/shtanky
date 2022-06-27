@@ -18,6 +18,7 @@
                           sub, rsp, 32                      
                           mov, rdi, [rbx+8]                 ; fieldaccess: owner of _vtbl
                           sub, rsp, 32                      
+                          mov, rdx, 0                       ;       (0 req for rdx) [splitter]
                           call, .sht.core.string.indexOpGet ; (call label)
                           add, rsp, 32                      
                           mov, rdx, rax                     ;       (rval1 req for rdx) [splitter]

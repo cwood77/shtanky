@@ -142,6 +142,36 @@ lirStream& lirStreams::addNewObject(const std::string& name, const std::string& 
    return last;
 }
 
+std::string lirIncrementalFormatter::argToString(lirArg& a)
+{
+   std::stringstream stream;
+
+   const char *pType = "$";
+   if(dynamic_cast<lirArgLabel*>(&a))
+      pType = "!";
+   else if(dynamic_cast<lirArgConst*>(&a))
+      pType = "@";
+   else if(dynamic_cast<lirArgTemp*>(&a))
+      pType = "~";
+
+   if(a.addrOf)
+      stream << "[";
+
+   stream << pType << a.getName();
+
+   if(a.disp && 0 < a.disp)
+      stream << "+" << a.disp;
+   if(a.disp && 0 > a.disp)
+      stream << a.disp;
+
+   if(a.addrOf)
+      stream << "]";
+
+   stream << "/" << a.getSize();
+
+   return stream.str();
+}
+
 void lirIncrementalFormatter::start(lirStreams& s)
 {
    m_s.stream() << "=== LIR bundle has " << s.objects.size() << " objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)" << std::endl;
@@ -189,37 +219,11 @@ void lirIncrementalFormatter::format(lirInstr& i, cmn::textTableLineWriter& t)
    {
       if(it != i.getArgs().begin())
          t[2] << ", ";
-      format(**it,t);
+      t[2] << argToString(**it);
    }
 
    if(!i.comment.empty())
    t[3] << ";;; " << i.comment;
-}
-
-void lirIncrementalFormatter::format(lirArg& a, cmn::textTableLineWriter& t)
-{
-   const char *pType = "$";
-   if(dynamic_cast<lirArgLabel*>(&a))
-      pType = "!";
-   else if(dynamic_cast<lirArgConst*>(&a))
-      pType = "@";
-   else if(dynamic_cast<lirArgTemp*>(&a))
-      pType = "~";
-
-   if(a.addrOf)
-      t[2] << "[";
-
-   t[2] << pType << a.getName();
-
-   if(a.disp && 0 < a.disp)
-      t[2] << "+" << a.disp;
-   if(a.disp && 0 > a.disp)
-      t[2] << a.disp;
-
-   if(a.addrOf)
-      t[2] << "]";
-
-   t[2] << "/" << a.getSize();
 }
 
 void lirIncrementalFormatter::appendTargetHints()

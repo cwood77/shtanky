@@ -39,6 +39,11 @@ void varSplitter::checkVar(var& v)
 
       auto it=v.instrToStorageMap.begin();
       auto pPrevSs = &it->second;
+
+      // implement first storage requirements
+      implementFirstStorageRequirements(v, it->first,it->second);
+
+      // for each subsequent requirement, implement it if not already the case
       for(++it;it!=v.instrToStorageMap.end();++it)
       {
          size_t currI = it->first;
@@ -68,13 +73,39 @@ void varSplitter::checkVar(var& v)
    m_newInstrs.clear();
 }
 
+// even initial requirements may require implementation if there's multiple of them
+// for example, consider "function(1)"; in this case @1 will have two initial requirements:
+// one for immediate, and one for rcx.  The splitter needs to inject "mov, rcx, 1".
+void varSplitter::implementFirstStorageRequirements(var& v, size_t orderNum, std::set<size_t>& reqs)
+{
+   if(reqs.size() == 1)
+      return;
+
+   // search for at least one primordial source (e.g. immediate storage)
+   auto primordialStorage=reqs.begin();
+   for(;primordialStorage!=reqs.end();++primordialStorage)
+      if(*primordialStorage == cmn::tgt::kStorageImmediate)
+         break;
+   if(primordialStorage == reqs.end())
+      cdwTHROW("can't implement first storage requirements");
+
+   for(auto it=reqs.begin();it!=reqs.end();++it)
+   {
+      if(it == primordialStorage)
+         continue;
+      emitMoveBefore(v,orderNum,*primordialStorage,*it);
+   }
+}
+
 void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t destStor)
 {
    cdwDEBUG("emitting move for split before %lld (%lld -> %lld)\n",orderNum,srcStor,destStor);
 
+   const bool hasImm = (srcStor == cmn::tgt::kStorageImmediate);
+
    auto& mov = m_s.pTail
       ->searchUp([=](auto& i){ return i.orderNum == orderNum; })
-         .injectBefore(*new lirInstr(cmn::tgt::kSplit));
+         .injectBefore(*new lirInstr(hasImm ? cmn::tgt::kMov : cmn::tgt::kSplit));
    mov.comment = cmn::fmt("      (%s req for %s) [splitter]",
       v.name.c_str(),
       m_t.getProc().getRegName(destStor));
@@ -82,7 +113,7 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
    auto& dest = mov.addArg<lirArgVar>("spltD",v.getSize());
 
    lirArg *pSrc = NULL;
-   if(srcStor == cmn::tgt::kStorageImmediate)
+   if(hasImm)
       pSrc = &mov.addArg<lirArgConst>(v.getImmediateData(),v.getSize());
    else
    {
@@ -98,6 +129,10 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
    m_newInstrs.push_back(std::make_pair<lirInstr*,size_t>(&mov,(size_t)destStor));
 
    v.storageDisambiguators[&dest] = destStor;
+
+   if(hasImm)
+      // kMov won't have a 2nd splitter pass, so do some extra stuff now
+      v.storageDisambiguators[pSrc] = cmn::tgt::kStorageImmediate;
 }
 
 void varSplitter::preserveDisp(var& v, size_t orderNum, lirArg& splitSrcArg)
@@ -128,7 +163,7 @@ void splitResolver::run()
          if(prev.size() != 1)
             cdwTHROW("insane!  too many previous storages!");
 
-         src.requireStorage(pInstr->orderNum,*prev.begin());
+         src.requireStorage(pInstr->orderNum,*prev.begin()); // TODO - necessary?
          src.storageDisambiguators[pInstr->getArgs()[1]] = *prev.begin();
 
          pInstr->instrId = cmn::tgt::kMov;

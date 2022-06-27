@@ -550,7 +550,7 @@ public:
 
 class invokeNode : public node {
 public:
-   link<methodNode> proto;
+   link<iInvokeTargetNode> proto;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };

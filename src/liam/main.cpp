@@ -104,6 +104,8 @@ int _main(int argc,const char *argv[])
 
          varTable vTbl;
          lirVarGen(vTbl).runStream(*it);
+         { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"vars-postgen");
+           vTbl.format(sp); }
 
          instrPrefs::publishRequirements(*it,vTbl,t);
 
@@ -117,6 +119,8 @@ int _main(int argc,const char *argv[])
 
          { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"lir-postreg");
            lirIncrementalFormatter(sp,t).format(*it); }
+         { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"vars-postreg");
+           vTbl.format(sp); }
 
          if(it->segment == cmn::objfmt::obj::kLexCode)
          {
@@ -126,6 +130,8 @@ int _main(int argc,const char *argv[])
 
          { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"lir-preasm");
            lirIncrementalFormatter(sp,t).format(*it); }
+         { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"vars-preasm");
+           vTbl.format(sp); }
 
          splitResolver(*it,vTbl).run();
 

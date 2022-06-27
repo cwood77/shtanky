@@ -1,3 +1,4 @@
+#include "../cmn/out.cpp"
 #include "../cmn/throw.cpp"
 #include "../cmn/trace.cpp"
 #include "lir.hpp"
@@ -182,6 +183,92 @@ void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
    }
 }
 
+void var::format(cmn::outStream& s)
+{
+   s.stream() << cmn::indent(s) << "name=" << name << std::endl;
+
+   s.stream() << cmn::indent(s) << "refs = {" << std::endl;
+   {
+      cmn::autoIndent _i(s);
+      for(auto it=refs.begin();it!=refs.end();++it)
+         for(auto *pArg : it->second)
+            s.stream()
+               << cmn::indent(s) << "i" << it->first << ": "
+               << lirIncrementalFormatter::argToString(*pArg)
+               << "(" << (size_t)pArg << ")"
+               << std::endl;
+   }
+   s.stream() << cmn::indent(s) << "}" << std::endl;
+
+   s.stream() << cmn::indent(s) << "instrToStorageMap = {" << std::endl;
+   {
+      cmn::autoIndent _i(s);
+      for(auto it=instrToStorageMap.begin();it!=instrToStorageMap.end();++it)
+         for(auto stor : it->second)
+            s.stream()
+               << cmn::indent(s) << "i" << it->first << ": "
+               << storageToString(stor)
+               << std::endl;
+   }
+   s.stream() << cmn::indent(s) << "}" << std::endl;
+
+   s.stream() << cmn::indent(s) << "storageToInstrMap = {" << std::endl;
+   {
+      cmn::autoIndent _i(s);
+      for(auto it=storageToInstrMap.begin();it!=storageToInstrMap.end();++it)
+         for(auto instr : it->second)
+            s.stream()
+               << cmn::indent(s) << storageToString(it->first) << ": "
+               << "i" << instr
+               << std::endl;
+   }
+   s.stream() << cmn::indent(s) << "}" << std::endl;
+}
+
+std::string var::storageToString(size_t s)
+{
+   switch(s)
+   {
+      case cmn::tgt::kStorageUnassigned:
+         return "sUndecided";
+      case cmn::tgt::kStorageStackPtr:
+         return "sStackPtr";
+      case cmn::tgt::kStorageStackFramePtr:
+         return "sStackFramePtr";
+      case cmn::tgt::kStorageImmediate:
+         return "sImm";
+      case cmn::tgt::kStorageUndecidedStack:
+         return "sUndecidedStack";
+      default:
+         {
+            std::stringstream stream;
+            if(cmn::tgt::isStackStorage(s))
+            {
+               int d = cmn::tgt::getStackDisp(s);
+               if(d > 0)
+                  stream << "sStack[+" << d << "]";
+               else
+                  stream << "sStack[" << d << "]";
+               return stream.str();
+            }
+            else if(cmn::tgt::isVStack(s))
+            {
+               int d = cmn::tgt::getVStackInt(s);
+               if(d > 0)
+                  stream << "sVStack[+" << d << "]";
+               else
+                  stream << "sVStack[" << d << "]";
+               return stream.str();
+            }
+            else
+            {
+               stream << "r" << s;
+               return stream.str();
+            }
+         }
+   }
+}
+
 size_t virtStackTable::reserveVirtStorage(size_t real)
 {
    size_t v = cmn::tgt::makeVStack(m_next++);
@@ -195,6 +282,14 @@ size_t virtStackTable::mapToReal(size_t virt)
    if(it == m_map.end())
       cdwTHROW("unknown virtual stack storage %lld",virt);
    return it->second;
+}
+
+void virtStackTable::format(cmn::outStream& s)
+{
+   if(m_map.size()==0)
+      return;
+
+   s.stream() << cmn::indent(s) << "VIRTSTACKUNIMPLED!" << std::endl;
 }
 
 varTable::~varTable()
@@ -258,6 +353,19 @@ var *varTable::fetch(lirArg& a)
       }
       cdwTHROW("INSANITY! lirArg %s has %lld variables associated?!",a.getName().c_str(),ans.size());
    }
+}
+
+void varTable::format(cmn::outStream& s)
+{
+   for(auto it=m_vars.begin();it!=m_vars.end();++it)
+   {
+      s.stream() << cmn::indent(s) << "VAR " << it->first << std::endl;
+      cmn::autoIndent _i(s);
+      it->second->format(s);
+      s.stream() << std::endl;
+   }
+
+   m_vSTable.format(s);
 }
 
 } // namespace liam

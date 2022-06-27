@@ -2,6 +2,7 @@
 #include "iTarget.hpp"
 
 namespace cmn { class classNode; }
+namespace cmn { class node; }
 namespace cmn { class outStream; }
 namespace cmn { class scopeNode; }
 

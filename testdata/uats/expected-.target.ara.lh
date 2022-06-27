@@ -1,0 +1,24 @@
+class .uats.consoleTarget {
+   _vtbl : .uats.consoleTarget_vtbl;
+}
+
+[entrypoint]
+func .uats.consoleTarget.main(
+   args : .sht.core.string[]) : void;
+
+func .uats.consoleTarget.cctor(
+   self : .uats.consoleTarget) : .uats.consoleTarget;
+
+func .uats.consoleTarget.cdtor(
+   self : .uats.consoleTarget) : .uats.consoleTarget;
+
+class .uats.consoleTarget_vtbl {
+}
+
+func .uats.consoleTarget_sctor(
+   self : .uats.consoleTarget) : void;
+
+func .uats.consoleTarget_sdtor(
+   self : .uats.consoleTarget) : void;
+
+ref "..\sht\core\string.ara.lh";

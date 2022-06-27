@@ -130,6 +130,8 @@ public:
 
 class lirIncrementalFormatter {
 public:
+   static std::string argToString(lirArg& a);
+
    lirIncrementalFormatter(cmn::outStream& s, cmn::tgt::iTargetInfo& t) : m_s(s), m_t(t) {}
 
    void start(lirStreams& s);
@@ -139,7 +141,6 @@ public:
 private:
    void _format(lirStream& s);
    void format(lirInstr& i, cmn::textTableLineWriter& t);
-   void format(lirArg& a, cmn::textTableLineWriter& t);
    void appendTargetHints();
 
    cmn::outStream& m_s;

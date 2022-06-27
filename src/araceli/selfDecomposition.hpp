@@ -12,7 +12,14 @@ public:
 
    virtual void visit(cmn::methodNode& n);
    virtual void visit(cmn::invokeNode& n);
+   virtual void visit(cmn::callNode& n);
    virtual void visit(cmn::varRefNode& n);
+
+private:
+   void handleCall(
+      cmn::node *pInstance,
+      cmn::link<cmn::iInvokeTargetNode>& pTarget,
+      cmn::node& n);
 };
 
 } // namespace araceli

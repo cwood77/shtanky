@@ -721,7 +721,8 @@ araceliProjectNode targetType=ca
                intTypeNode typeNode lineNumber=48
                sequenceNode lineNumber=50
                   returnNode lineNumber=50
-                     callNode pTarget=getCount->N3cmn8funcNodeE lineNumber=50
+                     callNode pTarget=.sht.core.loopInstBase.getCount->0
+                        varRefNode pSrc=self->0
             funcNode name=whileLoopInst.cctor
                argNode name=self
                   userTypeNode pDef=.sht.core.whileLoopInst->0 typeNode
