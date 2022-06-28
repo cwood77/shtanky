@@ -1,4 +1,5 @@
 #pragma once
+#include "autoDump.hpp"
 #include "global.hpp"
 #include <map>
 #include <typeinfo>
@@ -120,6 +121,16 @@ private:
 };
 
 extern timedGlobal<nodeCache> gNodeCache;
+
+class typeAutoLogger : public cmn::iLogger {
+public:
+   typedef void *argType;
+
+   explicit typeAutoLogger(argType unused) {}
+
+   virtual std::string getExt() { return ".types"; }
+   virtual void dump(cmn::outStream& s);
+};
 
 } // namespace type
 } // namespace cmn

@@ -1,4 +1,5 @@
 #pragma once
+#include "autoDump.hpp"
 #include "global.hpp"
 #include "throw.hpp"
 #include <functional>
@@ -966,6 +967,21 @@ public:
 
 private:
    std::unique_ptr<T>& m_pRoot;
+};
+
+template<class T>
+class astFirewall : public iLogger {
+public:
+   typedef std::unique_ptr<T> argType;
+
+   explicit astFirewall(argType& n) : m_pPtr(n) {}
+
+   virtual void onThrow() { m_pPtr.release(); }
+   virtual std::string getExt() { return ".ast"; }
+   virtual void dump(outStream& s) { astFormatter v(s); m_pPtr->acceptVisitor(v); }
+
+private:
+   std::unique_ptr<T>& m_pPtr;
 };
 
 template<class T = hNodeVisitor>

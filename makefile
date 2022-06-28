@@ -69,6 +69,7 @@ dirs:
 CMN_SRC = \
 	src/cmn/align.cpp \
 	src/cmn/ast.cpp \
+	src/cmn/autoDump.cpp \
 	src/cmn/binReader.cpp \
 	src/cmn/binWriter.cpp \
 	src/cmn/cmdline.cpp \

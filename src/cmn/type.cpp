@@ -1,4 +1,5 @@
 #include "ast.hpp"
+#include "out.hpp"
 #include "target.hpp"
 #include "throw.hpp"
 #include "trace.hpp"
@@ -363,6 +364,21 @@ void nodeCache::dump()
       cdwDEBUG("   %s\n",typeid(*it->first).name());
       cdwDEBUG("       %s\n",it->second->getName().c_str());
    }
+}
+
+void typeAutoLogger::dump(cmn::outStream& s)
+{
+   if(gTable.isValid())
+      gTable->dump();
+   else
+      s.stream() << "table is not available to dump" << std::endl;
+
+   s.stream() << std::endl;
+
+   if(gNodeCache.isValid())
+      gNodeCache->dump();
+   else
+      s.stream() << "node cache is not available to dump" << std::endl;
 }
 
 } // namespace type

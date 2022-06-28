@@ -78,4 +78,17 @@ private:
    virtStackTable m_vSTable;
 };
 
+class varTableAutoLogger : public cmn::iLogger {
+public:
+   typedef varTable argType;
+
+   explicit varTableAutoLogger(varTable& vt) : m_vt(vt) {}
+
+   virtual std::string getExt() { return ".vars"; }
+   virtual void dump(cmn::outStream& s) { m_vt.format(s); }
+
+private:
+   varTable& m_vt;
+};
+
 } // namespace liam

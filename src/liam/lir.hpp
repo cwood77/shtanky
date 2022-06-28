@@ -1,4 +1,5 @@
 #pragma once
+#include "../cmn/autoDump.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/type.hpp"
 #include <functional>
@@ -156,6 +157,48 @@ public:
 private:
    cmn::outStream& m_s;
    cmn::tgt::iTargetInfo& m_t;
+};
+
+class lirAutoLogger : public cmn::iLogger {
+public:
+   typedef lirStreams argType;
+
+   explicit lirAutoLogger(lirStreams& lir)
+   : m_lir(lir), m_pStream(NULL), m_pTarget(NULL) {}
+
+   lirAutoLogger& set(cmn::tgt::iTargetInfo& t)
+   { m_pTarget = &t; return *this; }
+
+   virtual std::string getExt() { return ".lir"; }
+
+   virtual void dump(cmn::outStream& s)
+   {
+      if(m_pStream)
+      { lirIncrementalFormatter(s,*m_pTarget).format(*m_pStream); }
+      else
+      { lirFormatter(s,*m_pTarget).format(m_lir); }
+   }
+
+   void setIncremental(lirStream *pStream) { m_pStream = pStream; }
+
+private:
+   lirStreams& m_lir;
+   lirStream *m_pStream;
+   cmn::tgt::iTargetInfo *m_pTarget;
+};
+
+class autoIncrementalSetting {
+public:
+   explicit autoIncrementalSetting(lirAutoLogger& l, lirStream& s)
+   : m_lirLogger(l), m_stream(s)
+   { m_lirLogger.setIncremental(&s); }
+
+   ~autoIncrementalSetting()
+   { m_lirLogger.setIncremental(NULL); }
+
+private:
+   lirAutoLogger& m_lirLogger;
+   lirStream& m_stream;
 };
 
 class lirBuilder {

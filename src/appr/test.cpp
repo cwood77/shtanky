@@ -148,14 +148,6 @@ liamTest::liamTest(instrStream& s, const std::string& file)
       .withControl(cmn::pathUtil::addPrefixToFilePart(asmFile,"expected-"))
       .withVariable(asmFile)
       .because("generated assembly");
-   s.appendNew<compareInstr>()
-      .withControl(cmn::pathUtil::addPrefixToFilePart(lirFile,"expected-"))
-      .withVariable(lirFile)
-      .because("LIR early dump");
-   s.appendNew<compareInstr>()
-      .withControl(cmn::pathUtil::addPrefixToFilePart(lirPostFile,"expected-"))
-      .withVariable(lirPostFile)
-      .because("LIR late dump");
 
    recordFileForNextStage(asmFile);
 }
