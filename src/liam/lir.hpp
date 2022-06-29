@@ -161,22 +161,17 @@ private:
 
 class lirAutoLogger : public cmn::iLogger {
 public:
-   typedef lirStreams argType;
-
-   explicit lirAutoLogger(lirStreams& lir)
-   : m_lir(lir), m_pStream(NULL), m_pTarget(NULL) {}
-
-   lirAutoLogger& set(cmn::tgt::iTargetInfo& t)
-   { m_pTarget = &t; return *this; }
+   lirAutoLogger(lirStreams& lir, cmn::tgt::iTargetInfo& t)
+   : m_lir(lir), m_pStream(NULL), m_tgt(t) {}
 
    virtual std::string getExt() { return ".lir"; }
 
    virtual void dump(cmn::outStream& s)
    {
       if(m_pStream)
-      { lirIncrementalFormatter(s,*m_pTarget).format(*m_pStream); }
+      { lirIncrementalFormatter(s,m_tgt).format(*m_pStream); }
       else
-      { lirFormatter(s,*m_pTarget).format(m_lir); }
+      { lirFormatter(s,m_tgt).format(m_lir); }
    }
 
    void setIncremental(lirStream *pStream) { m_pStream = pStream; }
@@ -184,7 +179,7 @@ public:
 private:
    lirStreams& m_lir;
    lirStream *m_pStream;
-   cmn::tgt::iTargetInfo *m_pTarget;
+   cmn::tgt::iTargetInfo& m_tgt;
 };
 
 class autoIncrementalSetting {

@@ -103,8 +103,7 @@ int _main(int argc,const char *argv[])
 
    // generate LIR
    lirStreams lir;
-   lirAutoLogger lirLogger(lir);
-   lirLogger.set(t);
+   lirAutoLogger lirLogger(lir,t);
    cmn::firewallRegistrar _llr(xf,lirLogger);
    { lirBuilder b(lir,t); astCodeGen v(b,t); pPrj->acceptVisitor(v); }
    xf.log(kLogPostLir);
@@ -148,7 +147,7 @@ int _main(int argc,const char *argv[])
 
       asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(pPrj->sourceFullPath,"asm"));
 
-   //   cdwTHROW("fake exception");
+//cdwTHROW("fake error");
 
       fr.disarm();
    }
@@ -158,7 +157,6 @@ int _main(int argc,const char *argv[])
    // clear graph
    cdwDEBUG("destroying the graph\r\n");
    { cmn::autoNodeDeleteOperation o; pPrj.reset(); }
-   fr.disarm();
    xf.disarm();
 
    return 0;
