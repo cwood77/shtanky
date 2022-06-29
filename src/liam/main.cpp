@@ -78,10 +78,14 @@ int _main(int argc,const char *argv[])
       cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
       cmn::type::nodeCache                       _c;
       cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
+      cmn::type::typeAutoLogger tyLogger;
+      cmn::firewallRegistrar fr(xf,tyLogger);
       cmn::propagateTypes(*pPrj.get());
 
       // type-aware AST transforms
       { vTableInvokeDetector v(t); pPrj->acceptVisitor(v); }
+
+      fr.disarm();
    }
 
    // re-link
@@ -92,6 +96,8 @@ int _main(int argc,const char *argv[])
    cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
    cmn::type::nodeCache                       _c;
    cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
+   cmn::type::typeAutoLogger tyLogger;
+   cmn::firewallRegistrar fr(xf,tyLogger);
    cmn::propagateTypes(*pPrj.get());
    xf.log(kLogPostTypeXfrm);
 
@@ -143,14 +149,12 @@ int _main(int argc,const char *argv[])
       fr.disarm();
    }
 
-   _t.dump();
-   _c.dump();
-
    out.updateDisk(wr);
 
    // clear graph
    cdwDEBUG("destroying the graph\r\n");
    { cmn::autoNodeDeleteOperation o; pPrj.reset(); }
+   fr.disarm();
    xf.disarm();
 
    return 0;

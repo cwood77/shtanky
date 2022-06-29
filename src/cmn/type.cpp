@@ -2,7 +2,6 @@
 #include "out.hpp"
 #include "target.hpp"
 #include "throw.hpp"
-#include "trace.hpp"
 #include "type-i.hpp"
 #include "type.hpp"
 
@@ -193,11 +192,12 @@ iType& table::publish(iType *pType)
    return *pAns;
 }
 
-void table::dump()
+void table::dump(cmn::outStream& s)
 {
-   cdwDEBUG("::global type table has %lld entries\n",m_allTypes.size());
+   s.stream() << cmn::indent(s) << "::global type table has " << m_allTypes.size() << "entries" << std::endl;
+   cmn::autoIndent _ai(s);
    for(auto it=m_allTypes.begin();it!=m_allTypes.end();++it)
-      cdwDEBUG("   %s - %s\n",it->first.c_str(),typeid(*it->second).name());
+      s.stream() << cmn::indent(s) << it->first << " - " << typeid(*it->second).name() << std::endl;
 }
 
 typeBuilder *typeBuilder::createString()
@@ -336,11 +336,7 @@ bool nodeCache::hasType(const node& n) const
 iType& nodeCache::demand(const node& n)
 {
    if(!hasType(n))
-   {
-      gTable->dump();
-      dump();
       cdwTHROW("type not in node cache");
-   }
 
    return *m_cache[&n];
 }
@@ -348,35 +344,34 @@ iType& nodeCache::demand(const node& n)
 void nodeCache::publish(const node& n, iType& t)
 {
    if(hasType(n))
-   {
-      dump();
       cdwTHROW("double publish!");
-   }
 
    m_cache[&n] = &t;
 }
 
-void nodeCache::dump()
+void nodeCache::dump(cmn::outStream& s)
 {
-   cdwDEBUG("::node cache has %lld entries\n",m_cache.size());
+   s.stream() << cmn::indent(s) << "::node cache has " << m_cache.size() << " entries" << std::endl;
+   cmn::autoIndent _ai(s);
    for(auto it=m_cache.begin();it!=m_cache.end();++it)
    {
-      cdwDEBUG("   %s\n",typeid(*it->first).name());
-      cdwDEBUG("       %s\n",it->second->getName().c_str());
+      s.stream() << cmn::indent(s) << typeid(*it->first).name() << std::endl;
+      cmn::autoIndent _ai2(s);
+      s.stream() << cmn::indent(s) << it->second->getName() << std::endl;
    }
 }
 
 void typeAutoLogger::dump(cmn::outStream& s)
 {
    if(gTable.isValid())
-      gTable->dump();
+      gTable->dump(s);
    else
       s.stream() << "table is not available to dump" << std::endl;
 
    s.stream() << std::endl;
 
    if(gNodeCache.isValid())
-      gNodeCache->dump();
+      gNodeCache->dump(s);
    else
       s.stream() << "node cache is not available to dump" << std::endl;
 }
