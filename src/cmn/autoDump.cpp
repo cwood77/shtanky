@@ -58,7 +58,7 @@ void exceptionFirewall::remove(iExceptionFirewall& w)
 
 void exceptionFirewall::log(size_t f)
 {
-   cdwVERBOSE("logging '%s'\r\n",(const char *)f);
+   cdwVERBOSE(" -- logging '%s' --\r\n",(const char *)f);
 
    for(auto it=m_logs.begin();it!=m_logs.end();++it)
       logOne(*it->first,f);
@@ -81,6 +81,11 @@ void exceptionFirewall::deletePreExistingLog(iExceptionFirewall& w)
 {
    auto *pL = dynamic_cast<iLogger*>(&w);
    if(!pL) return;
+
+   size_t oldSeen = m_seenLoggers.size();
+   m_seenLoggers.insert(pL->getExt());
+   if(m_seenLoggers.size() == oldSeen)
+      return; // already seen this logger
 
    for(auto it=m_fileNames.begin();it!=m_fileNames.end();++it)
       deletePreExistingLog(*pL,it->first);

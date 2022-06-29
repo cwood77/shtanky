@@ -6,6 +6,12 @@
 
 // this component solves two closely-related problems: logging various objects at different
 // points in compilation, and handling exception/crash scenarios (including more logging)
+//
+// for the AST, this is even more complex because the graph is so complex that deleting the AST
+// could possible throw _more_ exceptions; so upon an exception throw the graph is leaked
+//
+// the logger deletes old logs the first time a logger is attached to it; but not before.
+// this means old logs may still exist upon a crash if the app crashed before attaching.
 
 namespace cmn {
 
@@ -71,6 +77,7 @@ private:
    std::map<size_t,std::string> m_fileNames;
    std::set<iExceptionFirewall*> m_walls;
    std::map<iLogger*,std::string> m_logs;
+   std::set<std::string> m_seenLoggers;
 };
 
 class firewallRegistrar {
