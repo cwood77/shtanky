@@ -41,17 +41,21 @@ exceptionFirewall& exceptionFirewall::registerFile(size_t f)
    return *this;
 }
 
-void exceptionFirewall::add(iExceptionFirewall& w)
+void exceptionFirewall::add(iExceptionFirewall& w, firewallRegistrar *pReg)
 {
    m_walls.insert(&w);
    auto *pL = dynamic_cast<iLogger*>(&w);
    m_logs[pL] = pL->getExt();
+   if(pReg)
+      m_regs.insert(pReg);
 
    deletePreExistingLog(w);
 }
 
-void exceptionFirewall::remove(iExceptionFirewall& w)
+void exceptionFirewall::remove(iExceptionFirewall& w, firewallRegistrar *pReg)
 {
+   if(pReg)
+      m_regs.erase(pReg);
    m_logs.erase(dynamic_cast<iLogger*>(&w));
    m_walls.erase(&w);
 }
@@ -75,6 +79,14 @@ void exceptionFirewall::logOne(iLogger& l, size_t f)
 
    auto& s = m_dbgOut.get<outStream>(path.str());
    l.dump(s);
+}
+
+void exceptionFirewall::disarm()
+{
+   for(auto *pReg : m_regs)
+      pReg->disarm();
+
+   m_armed = false;
 }
 
 void exceptionFirewall::deletePreExistingLog(iExceptionFirewall& w)
@@ -117,7 +129,7 @@ firewallRegistrar::firewallRegistrar(exceptionFirewall& xf, iLogger& l)
 , m_xf(xf)
 , m_l(l)
 {
-   m_xf.add(m_l);
+   m_xf.add(m_l,this);
 }
 
 firewallRegistrar::~firewallRegistrar()
@@ -125,7 +137,7 @@ firewallRegistrar::~firewallRegistrar()
    if(m_armed)
       m_xf.logOne(m_l,exceptionFirewall::kCrashLogFile);
 
-   m_xf.remove(m_l);
+   m_xf.remove(m_l,this);
 }
 
 } // namespace cmn

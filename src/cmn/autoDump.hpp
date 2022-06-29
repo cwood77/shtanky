@@ -31,6 +31,9 @@ public:
    virtual void dump(outStream& s) = 0;
 };
 
+class firewallRegistrar;
+
+// remember to disam
 class exceptionFirewall {
 public:
    static size_t kCrashLogFile;
@@ -41,8 +44,8 @@ public:
    // register all files _before_ adding any firewalls
    exceptionFirewall& registerFile(size_t f);
 
-   void add(iExceptionFirewall& w);
-   void remove(iExceptionFirewall& w);
+   void add(iExceptionFirewall& w, firewallRegistrar *pReg = NULL);
+   void remove(iExceptionFirewall& w, firewallRegistrar *pReg = NULL);
 
    template<class T>
    T& add(typename T::argType& o)
@@ -64,7 +67,7 @@ public:
    void log(size_t f);
    void logOne(iLogger& l, size_t f);
 
-   void disarm() { m_armed = false; }
+   void disarm();
 
 private:
    void deletePreExistingLog(iExceptionFirewall& w);
@@ -78,8 +81,11 @@ private:
    std::set<iExceptionFirewall*> m_walls;
    std::map<iLogger*,std::string> m_logs;
    std::set<std::string> m_seenLoggers;
+   std::set<firewallRegistrar*> m_regs;
 };
 
+// use a registrar if the datum you're logging has a finite lifetime
+// the firewall will disarm for you if you don't
 class firewallRegistrar {
 public:
    firewallRegistrar(exceptionFirewall& xf, iLogger& l);

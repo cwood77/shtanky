@@ -103,7 +103,9 @@ int _main(int argc,const char *argv[])
 
    // generate LIR
    lirStreams lir;
-   xf.add<lirAutoLogger>(lir).set(t);
+   lirAutoLogger lirLogger(lir);
+   lirLogger.set(t);
+   cmn::firewallRegistrar _llr(xf,lirLogger);
    { lirBuilder b(lir,t); astCodeGen v(b,t); pPrj->acceptVisitor(v); }
    xf.log(kLogPostLir);
 
@@ -116,7 +118,7 @@ int _main(int argc,const char *argv[])
    for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
    {
       cdwVERBOSE("backend passes on %s\n",it->name.c_str());
-      autoIncrementalSetting _s(xf.fetch<lirAutoLogger>(),*it);
+      autoIncrementalSetting _s(lirLogger,*it);
 
       varTable vTbl;
       varTableAutoLogger varLogger(vTbl);
@@ -145,6 +147,8 @@ int _main(int argc,const char *argv[])
       splitResolver(*it,vTbl).run();
 
       asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(pPrj->sourceFullPath,"asm"));
+
+   //   cdwTHROW("fake exception");
 
       fr.disarm();
    }
