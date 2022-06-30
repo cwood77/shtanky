@@ -49,10 +49,11 @@ void testBase::setupAutoShlink(const std::string& appPath)
    m_appPath = appPath;
    m_pLTest.reset(new shlinkTest(m_stream,appPath));
 
-   shtasmTest(m_stream,".\\testdata\\sht\\oscall.asm").andLink(*m_pLTest.get());
-   shtasmTest(m_stream,".\\testdata\\sht\\flags.asm").andLink(*m_pLTest.get());
-   shtasmTest(m_stream,".\\testdata\\sht\\string.asm").andLink(*m_pLTest.get());
+   // built-in asm files
    shtasmTest(m_stream,".\\testdata\\sht\\array.asm").andLink(*m_pLTest.get());
+   shtasmTest(m_stream,".\\testdata\\sht\\flags.asm").andLink(*m_pLTest.get());
+   shtasmTest(m_stream,".\\testdata\\sht\\oscall.asm").andLink(*m_pLTest.get());
+   shtasmTest(m_stream,".\\testdata\\sht\\string.asm").andLink(*m_pLTest.get());
 }
 
 void testBase::emulateAndCheckOutput()
@@ -88,6 +89,25 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
       .withControl(folder + "\\expected-.build.bat")
       .withVariable(folder + "\\.build.bat")
       .because("generated batch file");
+}
+
+araceliTest& araceliTest::useFullBuildStack()
+{
+   setupAutoShlink(m_folder + "\\.app");
+
+   // include the standard library
+   expectLiamOf(".\\testdata\\sht\\cons\\program.ara");
+   expectLiamOf(".\\testdata\\sht\\core\\array.ara");
+   expectLiamOf(".\\testdata\\sht\\core\\loopInst.ara");
+   expectLiamOf(".\\testdata\\sht\\core\\object.ara");
+   expectLiamOf(".\\testdata\\sht\\core\\string.ara");
+   // unreferenced
+   //expectLiamOf(".\\testdata\\sht\\mem\\map\\prims.ara");
+
+   // include the generated target file
+   expectLiamOf(m_folder + "\\.target.ara", /* hasPhilemon */ false);
+
+   return *this;
 }
 
 araceliTest& araceliTest::expectLiamOf(const std::string& path, bool hasPhilemon)

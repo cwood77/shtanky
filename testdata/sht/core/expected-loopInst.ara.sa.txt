@@ -1,0 +1,66 @@
+abstract loopInstBase {
+
+   private _up : bool = true;
+   private _count : int = 0;
+   public setDir(up : bool) : void
+   {
+      _up = up;
+   }
+   public getCount() : int
+   {
+            return _count;
+   }
+   public virtual bump() : void
+   {
+      if(_up)
+      {
+         _count = _count + 1;
+      }
+   }
+   public break() : void
+   {
+   }
+   public breakWithReason(reason : str) : void
+   {
+   }
+   public continue() : void
+   {
+   }
+
+}
+
+class forLoopInst : loopInstBase {
+
+   public setBounds(start : int, stop : int) : void
+   {
+   }
+   public inBounds() : bool
+   {
+   }
+   public getValue() : int
+   {
+   }
+
+}
+
+class whileLoopInst : loopInstBase {
+
+   public getValue() : int
+   {
+            return getCount();
+   }
+
+}
+
+generic<T>
+class forEachLoopInst : loopInstBase {
+
+   override bump() : void
+   {
+   }
+   public getValue() : T
+   {
+   }
+
+}
+

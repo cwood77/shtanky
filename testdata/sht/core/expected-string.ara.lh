@@ -1,0 +1,36 @@
+class .sht.core.string {
+   _vtbl : .sht.core.string_vtbl;
+   _p : ptr;
+}
+
+func .sht.core.string.set(
+   self : .sht.core.string,
+   literal : ptr) : void;
+
+func .sht.core.string.length(
+   self : .sht.core.string) : int;
+
+func .sht.core.string.indexOpGet(
+   self : .sht.core.string,
+   i : int) : int;
+
+func .sht.core.string.indexOpSet(
+   self : .sht.core.string,
+   i : int,
+   val : int) : void;
+
+func .sht.core.string.cctor(
+   self : .sht.core.string) : .sht.core.string;
+
+func .sht.core.string.cdtor(
+   self : .sht.core.string) : .sht.core.string;
+
+class .sht.core.string_vtbl {
+}
+
+func .sht.core.string_sctor(
+   self : .sht.core.string) : void;
+
+func .sht.core.string_sdtor(
+   self : .sht.core.string) : void;
+
