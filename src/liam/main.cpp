@@ -1,6 +1,7 @@
 #include "../cmn/ast.hpp"
 #include "../cmn/autoDump.hpp"
 #include "../cmn/cmdline.hpp"
+#include "../cmn/fmt.hpp"
 #include "../cmn/global.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/main.hpp"
@@ -116,8 +117,8 @@ int _main(int argc,const char *argv[])
 
    for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
    {
-      cdwVERBOSE("backend passes on %s\n",it->name.c_str());
-      autoIncrementalSetting _s(lirLogger,*it);
+      cmn::loggerLoop _ll(xf,cmn::fmt("stream passes on %s",it->name.c_str()));
+      autoIncrementalSetting _s(xf.fetch<lirAutoLogger>(),*it);
 
       varTable vTbl;
       varTableAutoLogger varLogger(vTbl);

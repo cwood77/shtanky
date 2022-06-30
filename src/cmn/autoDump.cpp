@@ -9,11 +9,22 @@ namespace cmn {
 
 size_t exceptionFirewall::kCrashLogFile = (size_t)"crash";
 
+void rootLoggerContext::logOne(iLogger& l, size_t f, outStream& s)
+{
+   size_t cnt = m_writtenFiles.size();
+   m_writtenFiles.insert(s.getFullPath());
+   if(cnt == m_writtenFiles.size())
+      cdwTHROW("re-writing file %s",s.getFullPath().c_str());
+
+   l.dump(s);
+}
+
 exceptionFirewall::exceptionFirewall(outBundle& dbgOut, const std::string& pathPrefix)
 : m_dbgOut(dbgOut)
 , m_pathPrefix(pathPrefix)
 , m_armed(true)
 {
+   pushContext(m_rootContext);
 }
 
 exceptionFirewall::~exceptionFirewall()
@@ -78,7 +89,8 @@ void exceptionFirewall::logOne(iLogger& l, size_t f)
       << m_logs[&l];
 
    auto& s = m_dbgOut.get<outStream>(path.str());
-   l.dump(s);
+
+   context().logOne(l,f,s);
 }
 
 void exceptionFirewall::disarm()
@@ -138,6 +150,27 @@ firewallRegistrar::~firewallRegistrar()
       m_xf.logOne(m_l,exceptionFirewall::kCrashLogFile);
 
    m_xf.remove(m_l,this);
+}
+
+loggerLoop::loggerLoop(exceptionFirewall& xf, const std::string& annotation)
+: m_xf(xf), m_annotation(annotation)
+{
+   cdwVERBOSE(" ( entering '%s' )\r\n",m_annotation.c_str());
+   m_xf.pushContext(*this);
+}
+
+loggerLoop::~loggerLoop()
+{
+   cdwVERBOSE(" ( leaving '%s' )\r\n",m_annotation.c_str());
+   m_xf.popContext();
+}
+
+void loggerLoop::logOne(iLogger& l, size_t f, outStream& s)
+{
+   s.stream() << std::endl;
+   s.stream() << m_annotation << std::endl;
+   s.stream() << std::endl;
+   l.dump(s);
 }
 
 } // namespace cmn

@@ -20,6 +20,7 @@ class iOutStream {
 public:
    virtual ~iOutStream() {}
 
+   virtual const std::string& getFullPath() const = 0;
    virtual void updateDisk(iFileWriter& f) = 0;
 };
 
@@ -27,7 +28,7 @@ class outStream : public iOutStream {
 public:
    explicit outStream(const std::string& fullPath) : m_fullPath(fullPath), m_indent(0) {}
 
-   const std::string& getFullPath() const { return m_fullPath; }
+   virtual const std::string& getFullPath() const { return m_fullPath; }
    std::ostream& stream() { return m_stream; }
 
    virtual void updateDisk(iFileWriter& f);

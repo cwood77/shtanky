@@ -1,5 +1,6 @@
 #pragma once
 #include "throw.hpp"
+#include <list>
 #include <map>
 #include <set>
 #include <string>
@@ -24,16 +25,33 @@ public:
    virtual void onThrow() = 0;
 };
 
+// incremental loggers add to existing log files when re-run with a different datum.
+// if a logger is not incremental but is logged a second time, it just appends redundant text.
 class iLogger : public iExceptionFirewall {
 public:
    virtual void onThrow() {}
+
    virtual std::string getExt() = 0;
    virtual void dump(outStream& s) = 0;
 };
 
+class iLoggerContext {
+public:
+   virtual void logOne(iLogger& l, size_t f, outStream& s) = 0;
+};
+
+// complains when a logger is invoked a second time, as this shouldn't happen outside loops
+class rootLoggerContext : public iLoggerContext {
+public:
+   virtual void logOne(iLogger& l, size_t f, outStream& s);
+
+private:
+   std::set<std::string> m_writtenFiles;
+};
+
 class firewallRegistrar;
 
-// remember to disam
+// remember to disarm
 class exceptionFirewall {
 public:
    static size_t kCrashLogFile;
@@ -69,6 +87,10 @@ public:
 
    void disarm();
 
+   void pushContext(iLoggerContext& c) { return m_contextStack.push_back(&c); }
+   void popContext() { m_contextStack.pop_back(); }
+   iLoggerContext& context() { return *m_contextStack.back(); }
+
 private:
    void deletePreExistingLog(iExceptionFirewall& w);
    void deletePreExistingLog(iLogger& l, size_t f);
@@ -82,6 +104,8 @@ private:
    std::map<iLogger*,std::string> m_logs;
    std::set<std::string> m_seenLoggers;
    std::set<firewallRegistrar*> m_regs;
+   rootLoggerContext m_rootContext;
+   std::list<iLoggerContext*> m_contextStack;
 };
 
 // use a registrar if the datum you're logging has a finite lifetime
@@ -97,6 +121,18 @@ private:
    bool m_armed;
    exceptionFirewall& m_xf;
    iLogger& m_l;
+};
+
+class loggerLoop : private iLoggerContext {
+public:
+   loggerLoop(exceptionFirewall& xf, const std::string& annotation);
+   ~loggerLoop();
+
+private:
+   virtual void logOne(iLogger& l, size_t f, outStream& s);
+
+   exceptionFirewall& m_xf;
+   std::string m_annotation;
 };
 
 } // namespace cmn
