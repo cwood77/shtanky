@@ -91,7 +91,7 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
       .because("generated batch file");
 }
 
-araceliTest& araceliTest::useFullBuildStack()
+araceliTest& araceliTest::runFullBuildStack()
 {
    setupAutoShlink(m_folder + "\\.app");
 

@@ -19,7 +19,7 @@ int main(int argc, const char *argv[])
 
    testWriter(s,subset,cl).add("uats",[](auto& is){
       araceliTest(is,".\\testdata\\uats")
-         .useFullBuildStack()
+         .runFullBuildStack()
          .expectLiamOf(".\\testdata\\uats\\if.ara")
          .emulateAndCheckOutput()
       ;
@@ -42,7 +42,7 @@ int main(int argc, const char *argv[])
 
    testWriter(s,subset,cl).add("test",[](auto& is){
       araceliTest(is,".\\testdata\\test")
-         .useFullBuildStack()
+         .runFullBuildStack()
          .expectLiamOf(".\\testdata\\test\\test.ara")
          .emulateAndCheckOutput()
       ;
@@ -50,7 +50,7 @@ int main(int argc, const char *argv[])
 
    testWriter(s,subset,cl).add("nostromo",[](auto& is){
       araceliTest(is,".\\testdata\\nostromo")
-         .useFullBuildStack()
+         .runFullBuildStack()
          .expectLiamOf(".\\testdata\\nostromo\\boot.ara")
          .expectLiamOf(".\\testdata\\nostromo\\stringout.ara")
          .expectLiamOf(".\\testdata\\nostromo\\uart16550\\driver.ara")
@@ -61,21 +61,21 @@ int main(int argc, const char *argv[])
 
    testWriter(s,subset,cl).skipByDefault("shtemu",[](auto& is){
       shtasmTest(is,".\\testdata\\shtemu\\basic.asm")
-         .useFullBuildStack(".\\testdata\\shtemu\\basic.app")
+         .runFullBuildStack(".\\testdata\\shtemu\\basic.app")
          .emulateAndCheckOutput()
       ;
    });
 
    testWriter(s,subset,cl).skipByDefault("shtemu.ls",[](auto& is){
       liamTest(is,".\\testdata\\shtemu\\basic.ls")
-         .useFullBuildStack(".\\testdata\\shtemu\\basic.ls.app")
+         .runFullBuildStack(".\\testdata\\shtemu\\basic.ls.app")
          .emulateAndCheckOutput()
       ;
    });
 
    testWriter(s,subset,cl).skipByDefault("shtemu.ara",[](auto& is){
       araceliTest(is,".\\testdata\\shtemu")
-         .useFullBuildStack()
+         .runFullBuildStack()
          .expectLiamOf(".\\testdata\\shtemu\\basic.ara")
          .emulateAndCheckOutput()
       ;
