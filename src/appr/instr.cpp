@@ -30,7 +30,7 @@ std::string scriptState::reserveLabel(const std::string& hint)
 void scriptStream::silenceTestExeIf()
 {
    if(m_pState->shouldSilenceExes())
-      stream() << " >nul 2>&1" << std::endl;
+      stream() << "-trace i >nul 2>&1" << std::endl;
    else
       stream() << std::endl;
 }
