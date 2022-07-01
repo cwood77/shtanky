@@ -26,6 +26,7 @@
 
 using namespace liam;
 
+// note: keep this list up-to-date with liamTest is appraiser
 static const size_t kLogPostLoad       = (size_t)"postLoad";
 static const size_t kLogPostUntypeXfrm = (size_t)"postUntypeXfrm";
 static const size_t kLogPostTypeXfrm   = (size_t)"postTypeXfrm";

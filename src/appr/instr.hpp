@@ -128,6 +128,7 @@ public:
    explicit doInstr(class script& s) : instr(s) {}
 
    doInstr& usingApp(const std::string& exeName);
+   doInstr& withDbgLog(const std::string& pattern);
    doInstr& withArg(const std::string& arg);
    doInstr& withArgs(const std::list<std::string>& args);
    doInstr& thenCheckReturnValue(const std::string& errorHint)
@@ -138,7 +139,11 @@ public:
 
 class compareInstr : public instr {
 public:
-   explicit compareInstr(class script& s) : instr(s) {}
+   explicit compareInstr(class script& s) : instr(s), m_isNoisey(false) {}
+
+   // noisey compares are compares I still want to be notified about, but don't want to
+   // actually diff for correctness.  These compares can ge suppressed with unbless.
+   compareInstr& flagNoisey() { m_isNoisey = true; return *this; }
 
    compareInstr& withControl(const std::string& path);
    compareInstr& withVariable(const std::string& path);
@@ -147,4 +152,5 @@ public:
 
 private:
    std::string m_controlPath;
+   bool m_isNoisey;
 };

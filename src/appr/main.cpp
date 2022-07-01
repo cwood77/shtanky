@@ -27,6 +27,7 @@ int main(int argc, const char *argv[])
 
    testWriter(s,subset,cl).add("assign",[](auto& is){
       araceliTest(is,".\\testdata\\assign")
+         .expectLiamOf(".\\testdata\\assign\\main.ara")
          .verifyAdditionalArtifact(".\\testdata\\assign\\.00init.ast","init AST")
          .verifyAdditionalArtifact(".\\testdata\\assign\\.01postlink.ast","postlink AST")
          .verifyAdditionalArtifact(".\\testdata\\assign\\.02preDeclass.ast","preDeclass AST")

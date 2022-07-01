@@ -17,12 +17,14 @@ shlinkTest& shlinkTest::test()
       .thenCheckReturnValue("link");
 
    m_stream.appendNew<compareInstr>()
+      .flagNoisey()
       .withControl(cmn::pathUtil::addPrefixToFilePart(m_outFile,"expected-"))
       .withVariable(m_outFile)
       .because("linked app");
 
    auto listFile = cmn::pathUtil::addExt(m_outFile,cmn::pathUtil::kExtList);
    m_stream.appendNew<compareInstr>()
+      .flagNoisey()
       .withControl(cmn::pathUtil::addPrefixToFilePart(listFile,"expected-"))
       .withVariable(listFile)
       .because("object listing");
@@ -82,6 +84,12 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
 {
    m_stream.appendNew<doInstr>()
       .usingApp("araceli.exe")
+      .withDbgLog(folder + "\\.00init.ast")
+      .withDbgLog(folder + "\\.01postLink.ast")
+      .withDbgLog(folder + "\\.02preDeclass.ast")
+      .withDbgLog(folder + "\\.03postDeclass.ast")
+      .withDbgLog(folder + "\\.classInfo")
+      .withDbgLog(folder + "\\.target.ara*")
       .withArg(folder)
       .thenCheckReturnValue("araceli compile");
 
@@ -157,12 +165,18 @@ liamTest::liamTest(instrStream& s, const std::string& file)
 {
    s.appendNew<doInstr>()
       .usingApp("liam.exe")
+      .withDbgLog(file + "*postLoad*")
+      .withDbgLog(file + "*postUntypeXfrm*")
+      .withDbgLog(file + "*postTypeXfrm*")
+      .withDbgLog(file + "*postLir*")
+      .withDbgLog(file + "*postLirXfrm*")
+      .withDbgLog(file + "*postVarGen*")
+      .withDbgLog(file + "*postRegAlloc*")
+      .withDbgLog(file + "*preasm*")
       .withArg(file)
       .thenCheckReturnValue("liam compile");
 
    auto asmFile = cmn::pathUtil::addExt(file,cmn::pathUtil::kExtAsm);
-   auto lirFile = cmn::pathUtil::addExt(file,cmn::pathUtil::kExtLir);
-   auto lirPostFile = cmn::pathUtil::addExt(file,cmn::pathUtil::kExtLirPost);
 
    s.appendNew<compareInstr>()
       .withControl(cmn::pathUtil::addPrefixToFilePart(asmFile,"expected-"))
@@ -182,6 +196,7 @@ shtasmTest::shtasmTest(instrStream& s, const std::string& file)
 {
    s.appendNew<doInstr>()
       .usingApp("shtasm.exe")
+      .withDbgLog(file + ".o.mcODAlist")
       .withArg(file)
       .thenCheckReturnValue("shtasm assemble");
 
@@ -190,16 +205,19 @@ shtasmTest::shtasmTest(instrStream& s, const std::string& file)
    auto oListFile = cmn::pathUtil::addExt(oFile,cmn::pathUtil::kExtList);
 
    s.appendNew<compareInstr>()
+      .flagNoisey()
       .withControl(cmn::pathUtil::addPrefixToFilePart(oFile,"expected-"))
       .withVariable(oFile)
       .because("object binary");
 
    s.appendNew<compareInstr>()
+      .flagNoisey()
       .withControl(cmn::pathUtil::addPrefixToFilePart(mcListFile,"expected-"))
       .withVariable(mcListFile)
       .because("mc listing");
 
    s.appendNew<compareInstr>()
+      .flagNoisey()
       .withControl(cmn::pathUtil::addPrefixToFilePart(oListFile,"expected-"))
       .withVariable(oListFile)
       .because("object listing");

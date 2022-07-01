@@ -100,7 +100,7 @@ op(e8)co32(00-00-00-00)
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 70:              sub, rsp, 32              
 rex(48)op(83)modR/M(ec)i8(20)
-// 71:              call, [rbx]               ; (vtbl call)
+// 71:              call, [rbx]               ; vtbl call to .v::f0
 rex(48)op(ff)modR/M(13)
 // 72:              add, rsp, 32              
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
@@ -116,13 +116,13 @@ rex(49)op(ba)i64(05-00-00-00,00-00-00-00)
 rex(4c)op(01)modR/M(55)d8(f8)
 // 78:              lea, rdi, [rbp-8]         
 rex(48)op(8d)modR/M(7d)d8(f8)
-// 79:              call, [rdi]               ; (vtbl call)
+// 79:              call, [rdi]               ; vtbl call to .v::f1
 rex(48)op(ff)modR/M(17)
 // 80:              add, rsp, 32              
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 81:              sub, rsp, 32              
 rex(48)op(83)modR/M(ec)i8(20)
-// 82:              call, [rbx]               ; (vtbl call)
+// 82:              call, [rbx]               ; vtbl call to .v::f0
 rex(48)op(ff)modR/M(13)
 // 83:              add, rsp, 32              
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
@@ -138,7 +138,7 @@ rex(49)op(ba)i64(05-00-00-00,00-00-00-00)
 rex(4c)op(01)modR/M(55)d8(f0)
 // 89:              lea, rbx, [rbp-16]        
 rex(48)op(8d)modR/M(5d)d8(f0)
-// 90:              call, [rbx]               ; (vtbl call)
+// 90:              call, [rbx]               ; vtbl call to .v::f1
 rex(48)op(ff)modR/M(13)
 // 91:              add, rsp, 32              
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)

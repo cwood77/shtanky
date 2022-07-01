@@ -115,6 +115,12 @@ doInstr& doInstr::usingApp(const std::string& exeName)
    return *this;
 }
 
+doInstr& doInstr::withDbgLog(const std::string& pattern)
+{
+   s().get(kStreamClean).stream() << "del \"" << pattern << "\" >nul 2>&1" << std::endl;
+   return *this;
+}
+
 doInstr& doInstr::withArg(const std::string& arg)
 {
    s().get(kStreamCmd).stream() << "\"" << arg << "\" ";
@@ -167,6 +173,7 @@ compareInstr& compareInstr::withControl(const std::string& path)
    // args are backwards for bless stream, so just stash for now
    m_controlPath = path;
 
+   if(m_isNoisey)
    {
       auto& ss = s().get(kStreamUnbless);
       ss.stream() << "git restore \"" << path << "\"" << std::endl;

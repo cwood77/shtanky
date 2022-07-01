@@ -1,0 +1,24 @@
+class .shtemu.consoleTarget {
+   _vtbl : .shtemu.consoleTarget_vtbl;
+}
+
+[entrypoint]
+func .shtemu.consoleTarget.main(
+   args : .sht.core.string[]) : void;
+
+func .shtemu.consoleTarget.cctor(
+   self : .shtemu.consoleTarget) : .shtemu.consoleTarget;
+
+func .shtemu.consoleTarget.cdtor(
+   self : .shtemu.consoleTarget) : .shtemu.consoleTarget;
+
+class .shtemu.consoleTarget_vtbl {
+}
+
+func .shtemu.consoleTarget_sctor(
+   self : .shtemu.consoleTarget) : void;
+
+func .shtemu.consoleTarget_sdtor(
+   self : .shtemu.consoleTarget) : void;
+
+ref "..\sht\core\string.ara.lh";
