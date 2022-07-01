@@ -250,7 +250,15 @@ void codegen::visit(cmn::localDeclNode& n)
    auto& s = getOutStream();
 
    s.stream() << "var " << n.name << " : ";
-   hNodeVisitor::visit(n);
+   n.getChildren()[0]->acceptVisitor(*this);
+   if(n.getChildren().size() > 1)
+   {
+      if(n.getChildren().size() != 2)
+         cdwTHROW("insanity");
+
+      s.stream() << " = ";
+      n.getChildren()[1]->acceptVisitor(*this);
+   }
 }
 
 void codegen::visit(cmn::varRefNode& n)
