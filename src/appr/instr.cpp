@@ -225,3 +225,29 @@ compareInstr& compareInstr::because(const std::string& reason)
    markComplete();
    return *this;
 }
+
+deprecatedCompareInstr& deprecatedCompareInstr::withControl(const std::string& path)
+{
+   {
+      auto& ss = s().get(kStreamClean);
+      ss.stream() << "del \"" << path << "\" >nul 2>&1" << std::endl;
+   }
+
+   return *this;
+}
+
+deprecatedCompareInstr& deprecatedCompareInstr::withVariable(const std::string& path)
+{
+   {
+      auto& ss = s().get(kStreamClean);
+      ss.stream() << "del \"" << path << "\" >nul 2>&1" << std::endl;
+   }
+
+   return *this;
+}
+
+deprecatedCompareInstr& deprecatedCompareInstr::because(const std::string& reason)
+{
+   markComplete();
+   return *this;
+}

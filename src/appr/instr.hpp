@@ -154,3 +154,15 @@ private:
    std::string m_controlPath;
    bool m_isNoisey;
 };
+
+// for things that used to be compared, but aren't anymore
+// this will removed the 'expected' files from git, if any exist
+class deprecatedCompareInstr : public instr {
+public:
+   explicit deprecatedCompareInstr(class script& s) : instr(s) {}
+
+   deprecatedCompareInstr& withControl(const std::string& path);
+   deprecatedCompareInstr& withVariable(const std::string& path);
+
+   deprecatedCompareInstr& because(const std::string& reason);
+};
