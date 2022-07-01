@@ -44,6 +44,7 @@ static const lexemeInfo scanTable[] = {
    { lexemeInfo::kAlphanumeric, commonLexor::kBoolLiteral, "false",      "boolean literal" },
 
    { lexemeInfo::kSymbolic,     commonLexor::kPlus,        "+",          "plus"            },
+   { lexemeInfo::kSymbolic,     commonLexor::kDoubleEquals,"==",         "double equals"   },
 
    { lexemeInfo::kAlphanumeric, commonLexor::kGeneric,     "generic",    "generic"         },
    { lexemeInfo::kAlphanumeric, commonLexor::kInstantiate, "instantiate","instantiate"     },
@@ -122,6 +123,7 @@ static const lexemeClassInfo classTable[] = {
          commonLexor::kPlus,
          commonLexor::kLessThan,
          commonLexor::kGreaterThan,
+         commonLexor::kDoubleEquals,
          0,
       } },
 

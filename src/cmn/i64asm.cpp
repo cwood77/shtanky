@@ -130,6 +130,13 @@ static const genInfo kGenInfo[] = {
    },
    { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
+   { "SETE{REX + 0F 94}", (unsigned char[]){
+      genInfo::kOpcode2, 0x0F, 0x94,
+      genInfo::kArgFmtBytes,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+
    { "SUB{REX.W + 83 /5 ib}", (unsigned char[]){
       genInfo::kOpcode1, 0x83,
       genInfo::kArgFmtBytesWithFixedOp, 0x5,

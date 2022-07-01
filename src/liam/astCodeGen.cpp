@@ -368,6 +368,15 @@ void astCodeGen::visit(cmn::bopNode& n)
             .inheritArgFromChild(*n.getChildren()[1])
             .returnToParent(0);
    }
+   else if(n.op == "==")
+   {
+      m_b.forNode(n)
+         .append(cmn::tgt::kMacroIsEqualTo)
+            .withArg<lirArgTemp>(m_u.makeUnique("eq"),0)
+            .inheritArgFromChild(*n.getChildren()[0])
+            .inheritArgFromChild(*n.getChildren()[1])
+            .returnToParent(0);
+   }
    else
       cdwTHROW("unimplemented bop %s",n.op.c_str());
 }

@@ -109,6 +109,13 @@ static const instrFmt sltsFmts[] = {
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
+static const instrFmt setFmts[] = {
+   { "SETE{REX + 0F 94}",
+      kR64,
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
 static const instrFmt jumpEqualFmts[] = {
    { "JE{0F 84 cd}",
       kI32, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
@@ -151,8 +158,10 @@ static const instrInfo kInstrs[] = {
    { "<split>",           NULL, false, NULL     },
 
    { "<isLessThan?>",     NULL, false, NULL     },
+   { "<isEqualTo?>",      NULL, false, NULL     },
    { "cmp",               "rr", false, (const instrFmt*)&cmpFmts },
    { "setlts",            "w",  false, (const instrFmt*)&sltsFmts },
+   { "setet",             "w",  false, (const instrFmt*)&setFmts },
 
    { "<ifFalse>",         NULL, false, NULL     },
    { "je",                "rx", false, (const instrFmt*)&jumpEqualFmts },

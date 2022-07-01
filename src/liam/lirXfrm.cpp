@@ -220,6 +220,24 @@ void lirComparisonOpDecomposition::runInstr(lirInstr& i)
       pXor->addArg(noob->getArgs()[0]->clone());
       scheduleInjectBefore(*pXor,i);
    }
+   else if(i.instrId == cmn::tgt::kMacroIsEqualTo)
+   {
+      // inject a SETcc instruction after me
+      auto noob = new lirInstr(cmn::tgt::kSetEqualTo);
+      noob->addArg(*i.getArgs()[0]);
+      scheduleInjectAfter(*noob,i);
+
+      // repurpose my instruction as a compare
+      i.instrId = cmn::tgt::kCmp;
+      i.getArgs().erase(i.getArgs().begin()); // I gave this arg away
+
+      // inject an xor before the compare, since SETcc
+      // only writes to a byte
+      auto *pXor = new lirInstr(cmn::tgt::kXor);
+      pXor->addArg(noob->getArgs()[0]->clone());
+      pXor->addArg(noob->getArgs()[0]->clone());
+      scheduleInjectBefore(*pXor,i);
+   }
 
    lirTransform::runInstr(i);
 }

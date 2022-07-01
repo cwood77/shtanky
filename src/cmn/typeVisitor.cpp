@@ -236,7 +236,7 @@ void typePropagator::visit(bopNode& n)
 
    if(n.op == "+")
       type::gNodeCache->publish(n,type::gNodeCache->demand(*n.getChildren()[0]));
-   else if(n.op == "<")
+   else if(n.op == "<" || n.op == "==")
       type::gNodeCache->publish(n,type::gTable->fetch("bool"));
    else
       cdwTHROW("unknown bop %s",n.op.c_str());

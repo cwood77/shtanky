@@ -17,6 +17,13 @@ int main(int argc, const char *argv[])
 
    // ------------------ tests start ------------------
 
+   testWriter(s,subset,cl).add("lats",[](auto& is){
+      liamTest(is,".\\testdata\\lats\\main.ls")
+         .runFullBuildStack(".\\testdata\\lats\\main.ls.app")
+         .emulateAndCheckOutput()
+      ;
+   });
+
    testWriter(s,subset,cl).add("uats",[](auto& is){
       araceliTest(is,".\\testdata\\uats")
          .runFullBuildStack()
