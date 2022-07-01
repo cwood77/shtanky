@@ -25,7 +25,7 @@ private:
    void checkVar(var& v);
    void implementFirstStorageRequirements(var& v, size_t orderNum, std::set<size_t>& reqs);
    void emitMoveBefore(var& v, size_t orderNum, size_t src, size_t dest);
-   void preserveDisp(var& v, size_t orderNum, lirArg& splitSrcArg);
+   void tryPreserveDisp(var& v, size_t orderNum, lirArg& splitSrcArg);
 
    lirStream& m_s;
    varTable& m_v;

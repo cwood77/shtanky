@@ -118,7 +118,7 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
    else
    {
       pSrc = &mov.addArg<lirArgVar>("spltS",v.getSize());
-      preserveDisp(v,orderNum,*pSrc);
+      tryPreserveDisp(v,orderNum,*pSrc);
    }
 
    v.refs[mov.orderNum].push_back(&dest);
@@ -135,19 +135,41 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
       v.storageDisambiguators[pSrc] = cmn::tgt::kStorageImmediate;
 }
 
-void varSplitter::preserveDisp(var& v, size_t orderNum, lirArg& splitSrcArg)
+void varSplitter::tryPreserveDisp(var& v, size_t orderNum, lirArg& splitSrcArg)
 {
    // consider returning a field (e.g. "ret [rcx+8]").  In this case, I'll split rcx -> rax,
    // when I really want to split [rcx+8] -> rax.  So, preserve any displacement
    // while splitting
 
    auto& args = v.refs[orderNum];
-   if(args.size() != 1)
+   if(args.size() < 1)
       cdwTHROW("insanity");
-   auto& origArg = **args.begin();
 
-   splitSrcArg.disp = origArg.disp;
-   splitSrcArg.addrOf = origArg.addrOf;
+   // it's possible to have multiple refs on the same instr (e.g. consider x->foo(), which
+   // will translate to call [foo], foo if foo is the first vtbl entry
+   // in the case of multiple, choose the disp if all args are identical; otherwise use no
+   // disp
+   int disp = 0;
+   bool addrOf = false;
+   bool conflict = false;
+   {
+      auto& origArg = **args.begin();
+      disp = origArg.disp;
+      addrOf = origArg.addrOf;
+   }
+   for(auto it=++(args.begin());!conflict && it!=args.end();++it)
+   {
+      if(disp != (*it)->disp)
+         conflict = true;
+      if(addrOf != (*it)->addrOf)
+         conflict = true;
+   }
+
+   if(conflict)
+      return;
+
+   splitSrcArg.disp = disp;
+   splitSrcArg.addrOf = addrOf;
 }
 
 void splitResolver::run()

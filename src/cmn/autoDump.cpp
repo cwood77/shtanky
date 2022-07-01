@@ -90,7 +90,23 @@ void exceptionFirewall::logOne(iLogger& l, size_t f)
 
    auto& s = m_dbgOut.get<outStream>(path.str());
 
-   context().logOne(l,f,s);
+   if(f == kCrashLogFile)
+   {
+      try
+      {
+         context().logOne(l,f,s);
+      }
+      catch(std::exception& x)
+      {
+         cdwDEBUG("caught exception '%s' logging crash log; continuing to log\r\n",x.what());
+      }
+      catch(...)
+      {
+         cdwDEBUG("caught unknown exception logging crash log; continuing to log\r\n");
+      }
+   }
+   else
+      context().logOne(l,f,s);
 }
 
 void exceptionFirewall::disarm()

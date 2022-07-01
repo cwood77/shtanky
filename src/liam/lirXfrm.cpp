@@ -454,7 +454,10 @@ void spuriousVarStripper::runInstr(lirInstr& i)
    else if(i.instrId == cmn::tgt::kRet)
    {
       for(auto *pA : i.getArgs())
+      {
+         m_v.demand(*pA).unbindArgButKeepStorage(i,*pA);
          delete pA;
+      }
       i.getArgs().clear();
    }
 
