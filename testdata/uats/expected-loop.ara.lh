@@ -1,0 +1,31 @@
+class .uats.loopTest {
+   _vtbl : .uats.loopTest_vtbl;
+   _out : .sht.cons.iStream;
+}
+
+func .uats.loopTest.run(
+   self : .uats.loopTest,
+   args : .sht.core.array<.sht.core.string>) : void;
+
+func .uats.loopTest.printI(
+   self : .uats.loopTest,
+   i : int) : void;
+
+func .uats.loopTest.cctor(
+   self : .uats.loopTest) : .uats.loopTest;
+
+func .uats.loopTest.cdtor(
+   self : .uats.loopTest) : .uats.loopTest;
+
+class .uats.loopTest_vtbl {
+   run : ptr;
+}
+
+func .uats.loopTest_sctor(
+   self : .uats.loopTest) : void;
+
+func .uats.loopTest_sdtor(
+   self : .uats.loopTest) : void;
+
+ref "..\sht\cons\program.ara.lh";
+ref "..\sht\core\array.ara.lh";

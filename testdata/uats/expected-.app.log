@@ -24,4 +24,6 @@
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '---'
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '3-4'
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '4'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '===for'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '(1-4)'
 [shtemu.exe:i:src/shtemu/main.cpp-32] control returned to shtemu

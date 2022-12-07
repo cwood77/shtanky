@@ -8,6 +8,8 @@ class .sht.core.forLoopInst {
    _vtbl : .sht.core.forLoopInst_vtbl;
    _up : bool;
    _count : int;
+   _start : int;
+   _stop : int;
 }
 
 class .sht.core.whileLoopInst {
@@ -35,6 +37,10 @@ func .sht.core.loopInstBase.breakWithReason(
 
 func .sht.core.loopInstBase.continue(
    self : .sht.core.loopInstBase) : void;
+
+func .sht.core.loopInstBase.setCount(
+   self : .sht.core.loopInstBase,
+   val : int) : void;
 
 func .sht.core.loopInstBase.cctor(
    self : .sht.core.loopInstBase) : .sht.core.loopInstBase;

@@ -328,20 +328,27 @@ void sourceCodeGen::visit(cmn::ifNode& n)
 
    if(n.getChildren().size() > 2)
    {
-      m_pOut->stream() << std::endl << cmn::indent(*m_pOut) << "else" << std::endl;
+      m_pOut->stream() << std::endl << cmn::indent(*m_pOut) << "else";
+      const bool isNested = dynamic_cast<cmn::ifNode*>(n.getChildren()[2]);
+      if(isNested)
+         m_pOut->stream() << " ";
+      else
+         m_pOut->stream() << std::endl;
       n.getChildren()[2]->acceptVisitor(*this);
    }
 }
 
 void sourceCodeGen::visit(cmn::forLoopNode& n)
 {
-   if(n.getChildren().size() != 2)
-      cdwTHROW("forLoopNode children is %d != 2",n.getChildren().size());
+   if(n.getChildren().size() != 3)
+      cdwTHROW("forLoopNode children is %d != 3",n.getChildren().size());
 
    m_pOut->stream() << "for[" << n.name << "](";
    n.getChildren()[0]->acceptVisitor(*this);
-   m_pOut->stream() << ")" << std::endl;
+   m_pOut->stream() << ",";
    n.getChildren()[1]->acceptVisitor(*this);
+   m_pOut->stream() << ")" << std::endl;
+   n.getChildren()[2]->acceptVisitor(*this);
 }
 
 void sourceCodeGen::visit(cmn::whileLoopNode& n)

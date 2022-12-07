@@ -5,22 +5,24 @@
 // and one in liam.  Idea is to do as little at link time as is possible.
 //
 // original code
-//     for[+-i][0:7)
+//     for[-i][0,7)
 //     {
 //        _uart->write8(msg[i]);
 //        loop(i)->break();
 //     }
 //
 // --during link-- (required here to avoid unresolved links)
-// replace loop(i) func calls with intrinsic node             ----+
-// replace refs of 'i' with 'i->getCount()'                       |
-// drop a loop instance and replace intrinsics with varRefs   <---+
+// replace loop(i) func calls with intrinsic node             --+   [loopIntrinsicDecomp]
+// replace refs of 'i' with 'i->getCount()'                     |   [loopVarRefFixup]     *
+// drop a loop instance and replace intrinsics with varRefs   <-+   [loopInstDropper]     *
+//                                                                * skippable in some langs
+//                                                                  (like philemon)
 //
 //     var i : .sht.core.loopInst; // if public
 //     {
 //        var i : .sht.core.loopInst; // if private
 //
-//        for[-i][0:7)
+//        for[-i][0,7)
 //        {
 //           _uart->write8(msg[i->count()]);
 //           i->break();
@@ -30,7 +32,7 @@
 // this should be a fully linkable graph
 
 // --in liam--
-// for to while loop transform
+// for-to-while loop transform
 //
 //     var i : .sht.core.loopInst; // if public
 //     {

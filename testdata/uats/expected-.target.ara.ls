@@ -7,7 +7,12 @@ func .uats.consoleTarget.main(
    var obj0 : .uats.ifTest;
    .uats.ifTest_sctor(obj0);
    obj0:_out = cout;
+   var obj1 : .uats.loopTest;
+   .uats.loopTest_sctor(obj1);
+   obj1:_out = cout;
    obj0:_vtbl:run->(obj0,args);
+   obj1:_vtbl:run->(obj1,args);
+   .uats.loopTest_sdtor(obj1);
    .uats.ifTest_sdtor(obj0);
    .sht.cons.stdout_sdtor(cout);
 }
@@ -49,3 +54,4 @@ ref "..\sht\core\object.ara.lh";
 ref "..\sht\core\string.ara.lh";
 ref ".target.ara.lh";
 ref ".\if.ara.lh";
+ref ".\loop.ara.lh";

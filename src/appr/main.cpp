@@ -28,6 +28,7 @@ int main(int argc, const char *argv[])
       araceliTest(is,".\\testdata\\uats")
          .runFullBuildStack()
          .expectLiamOf(".\\testdata\\uats\\if.ara")
+         .expectLiamOf(".\\testdata\\uats\\loop.ara")
          .emulateAndCheckOutput()
       ;
    });

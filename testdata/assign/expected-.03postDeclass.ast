@@ -594,14 +594,18 @@ araceliProjectNode targetType=ca
                   boolTypeNode typeNode lineNumber=3
                fieldNode memberNode name=_count lineNumber=4 flags=-
                   intTypeNode typeNode lineNumber=4
-            classNode name=forLoopInst baseClasses=[ ] lineNumber=32
+            classNode name=forLoopInst baseClasses=[ ] lineNumber=36
                fieldNode memberNode name=_vtbl
                   userTypeNode pDef=forLoopInst_vtbl->0 typeNode
                fieldNode memberNode name=_up lineNumber=3 flags=-
                   boolTypeNode typeNode lineNumber=3
                fieldNode memberNode name=_count lineNumber=4 flags=-
                   intTypeNode typeNode lineNumber=4
-            classNode name=whileLoopInst baseClasses=[ ] lineNumber=46
+               fieldNode memberNode name=_start lineNumber=38 flags=-
+                  intTypeNode typeNode lineNumber=38
+               fieldNode memberNode name=_stop lineNumber=39 flags=-
+                  intTypeNode typeNode lineNumber=39
+            classNode name=whileLoopInst baseClasses=[ ] lineNumber=64
                fieldNode memberNode name=_vtbl
                   userTypeNode pDef=whileLoopInst_vtbl->0 typeNode
                fieldNode memberNode name=_up lineNumber=3 flags=-
@@ -660,6 +664,17 @@ araceliProjectNode targetType=ca
                   userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
                voidTypeNode typeNode lineNumber=26
                sequenceNode lineNumber=28
+            funcNode name=loopInstBase.setCount
+               argNode name=self
+                  userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
+               argNode name=val lineNumber=29
+                  intTypeNode typeNode lineNumber=29
+               voidTypeNode typeNode lineNumber=29
+               sequenceNode lineNumber=31
+                  assignmentNode lineNumber=31
+                     fieldAccessNode name=_count
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=val->N3cmn7argNodeE lineNumber=31
             funcNode name=loopInstBase.cctor
                argNode name=self
                   userTypeNode pDef=.sht.core.loopInstBase->0 typeNode
@@ -681,22 +696,52 @@ araceliProjectNode targetType=ca
             funcNode name=forLoopInst.setBounds
                argNode name=self
                   userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
-               argNode name=start lineNumber=34
-                  intTypeNode typeNode lineNumber=34
-               argNode name=stop lineNumber=34
-                  intTypeNode typeNode lineNumber=34
-               voidTypeNode typeNode lineNumber=34
-               sequenceNode lineNumber=36
+               argNode name=start lineNumber=40
+                  intTypeNode typeNode lineNumber=40
+               argNode name=stop lineNumber=40
+                  intTypeNode typeNode lineNumber=40
+               voidTypeNode typeNode lineNumber=40
+               sequenceNode lineNumber=42
+                  callNode pTarget=.sht.core.loopInstBase.setCount->0
+                     varRefNode pSrc=self->0
+                     varRefNode pSrc=start->N3cmn7argNodeE lineNumber=42
+                  assignmentNode lineNumber=43
+                     fieldAccessNode name=_stop
+                        varRefNode pSrc=self->0
+                     varRefNode pSrc=stop->N3cmn7argNodeE lineNumber=43
             funcNode name=forLoopInst.inBounds
                argNode name=self
                   userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
-               boolTypeNode typeNode lineNumber=37
-               sequenceNode lineNumber=39
+               boolTypeNode typeNode lineNumber=45
+               sequenceNode lineNumber=47
+                  ifNode lineNumber=47
+                     bopNode op=< lineNumber=47
+                        callNode pTarget=.sht.core.loopInstBase.getCount->0
+                           varRefNode pSrc=self->0
+                        fieldAccessNode name=_start
+                           varRefNode pSrc=self->0
+                     sequenceNode lineNumber=49
+                        returnNode lineNumber=49
+                           boolLiteralNode value=0 lineNumber=49
+                  ifNode lineNumber=51
+                     bopNode op=< lineNumber=51
+                        fieldAccessNode name=_stop
+                           varRefNode pSrc=self->0
+                        callNode pTarget=.sht.core.loopInstBase.getCount->0
+                           varRefNode pSrc=self->0
+                     sequenceNode lineNumber=53
+                        returnNode lineNumber=53
+                           boolLiteralNode value=0 lineNumber=53
+                  returnNode lineNumber=55
+                     boolLiteralNode value=1 lineNumber=55
             funcNode name=forLoopInst.getValue
                argNode name=self
                   userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
-               intTypeNode typeNode lineNumber=40
-               sequenceNode lineNumber=42
+               intTypeNode typeNode lineNumber=57
+               sequenceNode lineNumber=59
+                  returnNode lineNumber=59
+                     callNode pTarget=.sht.core.loopInstBase.getCount->0
+                        varRefNode pSrc=self->0
             funcNode name=forLoopInst.cctor
                argNode name=self
                   userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
@@ -709,6 +754,14 @@ araceliProjectNode targetType=ca
                      fieldAccessNode name=_count
                         varRefNode pSrc=self->0
                      intLiteralNode lexeme=0 lineNumber=4
+                  assignmentNode
+                     fieldAccessNode name=_start
+                        varRefNode pSrc=self->0
+                     intLiteralNode lexeme=0 lineNumber=38
+                  assignmentNode
+                     fieldAccessNode name=_stop
+                        varRefNode pSrc=self->0
+                     intLiteralNode lexeme=0 lineNumber=39
                userTypeNode pDef=.sht.core.forLoopInst->0 typeNode
             funcNode name=forLoopInst.cdtor
                argNode name=self
@@ -718,9 +771,9 @@ araceliProjectNode targetType=ca
             funcNode name=whileLoopInst.getValue
                argNode name=self
                   userTypeNode pDef=.sht.core.whileLoopInst->0 typeNode
-               intTypeNode typeNode lineNumber=48
-               sequenceNode lineNumber=50
-                  returnNode lineNumber=50
+               intTypeNode typeNode lineNumber=66
+               sequenceNode lineNumber=68
+                  returnNode lineNumber=68
                      callNode pTarget=.sht.core.loopInstBase.getCount->0
                         varRefNode pSrc=self->0
             funcNode name=whileLoopInst.cctor

@@ -46,8 +46,7 @@ func .uats.ifTest.doTest(
    }
 
 
-   else
-if(flag < 3)
+   else if(flag < 3)
    {
       ._print(._strLit_2_7);
    }

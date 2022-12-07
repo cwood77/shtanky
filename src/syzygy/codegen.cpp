@@ -316,7 +316,12 @@ void codegen::visit(cmn::ifNode& n)
 
    if(n.getChildren().size() > 2)
    {
-      s.stream() << cmn::indent(s) << "else" << std::endl;
+      s.stream() << cmn::indent(s) << "else";
+      const bool isNested = dynamic_cast<cmn::ifNode*>(n.getChildren()[2]);
+      if(isNested)
+         s.stream() << " ";
+      else
+         s.stream() << std::endl;
       n.getChildren()[2]->acceptVisitor(*this);
    }
 }
@@ -332,14 +337,16 @@ void codegen::visit(cmn::loopIntrinsicNode& n)
 
 void codegen::visit(cmn::forLoopNode& n)
 {
-   if(n.getChildren().size() != 2)
-      cdwTHROW("forLoopNode children is %d != 2",n.getChildren().size());
+   if(n.getChildren().size() != 3)
+      cdwTHROW("forLoopNode children is %d != 3",n.getChildren().size());
 
    auto& s = getOutStream();
    s.stream() << "for[" << n.name << "](";
    n.getChildren()[0]->acceptVisitor(*this);
-   s.stream() << ")" << std::endl;
+   s.stream() << ",";
    n.getChildren()[1]->acceptVisitor(*this);
+   s.stream() << ")" << std::endl;
+   n.getChildren()[2]->acceptVisitor(*this);
 }
 
 void codegen::visit(cmn::whileLoopNode& n)

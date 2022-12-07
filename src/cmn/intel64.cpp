@@ -99,6 +99,10 @@ static const instrFmt cmpFmts[] = {
       kR64 | kM64,
       kI32,
       kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { "CMP{REX.W + 3B /r}",
+      kR64,
+      kR64 | kM64,
+      kArgTypeNone, kArgTypeNone, NULL, 0 },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 

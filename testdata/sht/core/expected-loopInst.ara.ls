@@ -37,6 +37,13 @@ func .sht.core.loopInstBase.continue(
 {
 }
 
+func .sht.core.loopInstBase.setCount(
+   self : .sht.core.loopInstBase,
+   val : int) : void
+{
+   self:_count = val;
+}
+
 func .sht.core.loopInstBase.cctor(
    self : .sht.core.loopInstBase) : .sht.core.loopInstBase
 {
@@ -54,16 +61,30 @@ func .sht.core.forLoopInst.setBounds(
    start : int,
    stop : int) : void
 {
+   .sht.core.loopInstBase.setCount(self,start);
+   self:_stop = stop;
 }
 
 func .sht.core.forLoopInst.inBounds(
    self : .sht.core.forLoopInst) : bool
 {
+   if(.sht.core.loopInstBase.getCount(self) < self:_start)
+   {
+      return 0;
+   }
+
+   if(self:_stop < .sht.core.loopInstBase.getCount(self))
+   {
+      return 0;
+   }
+
+   return 1;
 }
 
 func .sht.core.forLoopInst.getValue(
    self : .sht.core.forLoopInst) : int
 {
+   return .sht.core.loopInstBase.getCount(self);
 }
 
 func .sht.core.forLoopInst.cctor(
@@ -71,6 +92,8 @@ func .sht.core.forLoopInst.cctor(
 {
    self:_up = 1;
    self:_count = 0;
+   self:_start = 0;
+   self:_stop = 0;
 }
 
 func .sht.core.forLoopInst.cdtor(

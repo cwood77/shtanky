@@ -64,6 +64,15 @@
                                  pop, rbp
                                  ret
 
+.seg code                        
+.sht.core.loopInstBase.setCount: 
+                                 push, rbp          
+                                 mov, rbp, rsp      
+                                 mov, [rcx+16], rdx ; =
+                                 mov, rsp, rbp      
+                                 pop, rbp           
+                                 ret                
+
 .seg code                     
 .sht.core.loopInstBase.cctor: 
                               push, rbp        
@@ -84,27 +93,83 @@
 
 .seg code                        
 .sht.core.forLoopInst.setBounds: 
-                                 push, rbp
-                                 mov, rbp, rsp
-                                 mov, rsp, rbp
-                                 pop, rbp
-                                 ret
+                                 push, rbp                             
+                                 push, rbx                             
+                                 mov, rbp, rsp                         
+                                 sub, rsp, 32                          
+                                 mov, rbx, r8                          ; (preserve) [combiner]
+                                 call, .sht.core.loopInstBase.setCount ; (call label)
+                                 add, rsp, 32                          
+                                 mov, [rcx+32], rbx                    ; =
+                                 mov, rsp, rbp                         
+                                 pop, rbx                              
+                                 pop, rbp                              
+                                 ret                                   
 
-.seg code                       
-.sht.core.forLoopInst.inBounds: 
-                                push, rbp
-                                mov, rbp, rsp
-                                mov, rsp, rbp
-                                pop, rbp
-                                ret
+.seg code                               
+.sht.core.forLoopInst.inBounds:         
+                                        push, rbp                                    
+                                        push, rbx                                    
+                                        push, rdi                                    
+                                        mov, rbp, rsp                                
+                                        sub, rsp, 32                                 
+                                        call, .sht.core.loopInstBase.getCount        ; (call label)
+                                        add, rsp, 32                                 
+                                        xor, rbx, rbx                                
+                                        cmp, rax, [rcx+24]                           
+                                        setlts, rbx                                  
+                                        cmp, rbx, 0                                  
+                                        je, .sht.core.forLoopInst.inBounds.else.0    
+                                        mov, rax, 0                                  ;       (0 req for rax) [splitter]
+                                        goto, .sht.core.forLoopInst.inBounds.end     ; early return
+                                        goto, .sht.core.forLoopInst.inBounds.endif.1 
+.seg code                               
+.sht.core.forLoopInst.inBounds.else.0:  
+                                        goto, .sht.core.forLoopInst.inBounds.endif.1 ; label decomp
+.seg code                               
+.sht.core.forLoopInst.inBounds.endif.1: 
+                                        sub, rsp, 32                                 
+                                        mov, rbx, rax                                ; (preserve) [combiner]
+                                        call, .sht.core.loopInstBase.getCount        ; (call label)
+                                        add, rsp, 32                                 
+                                        xor, rdi, rdi                                
+                                        mov, r10, [rcx+32]                           ; codeshape decomp
+                                        cmp, r10, rax                                
+                                        setlts, rdi                                  
+                                        cmp, rdi, 0                                  
+                                        je, .sht.core.forLoopInst.inBounds.else.2    
+                                        mov, rax, rbx                                ; (restore [combiner])
+                                        mov, rax, 0                                  ;       (0 req for rax) [splitter]
+                                        goto, .sht.core.forLoopInst.inBounds.end     ; early return
+                                        goto, .sht.core.forLoopInst.inBounds.endif.3 
+.seg code                               
+.sht.core.forLoopInst.inBounds.else.2:  
+                                        goto, .sht.core.forLoopInst.inBounds.endif.3 ; label decomp
+.seg code                               
+.sht.core.forLoopInst.inBounds.endif.3: 
+                                        mov, rax, 1                                  ;       (1 req for rax) [splitter]
+                                        goto, .sht.core.forLoopInst.inBounds.end     ; early return
+.seg code                               
+.sht.core.forLoopInst.inBounds.end:     
+                                        mov, rsp, rbp                                
+                                        pop, rdi                                     
+                                        pop, rbx                                     
+                                        pop, rbp                                     
+                                        ret                                          
 
-.seg code                       
-.sht.core.forLoopInst.getValue: 
-                                push, rbp
-                                mov, rbp, rsp
-                                mov, rsp, rbp
-                                pop, rbp
-                                ret
+.seg code                           
+.sht.core.forLoopInst.getValue:     
+                                    push, rbp                                
+                                    mov, rbp, rsp                            
+                                    sub, rsp, 32                             
+                                    call, .sht.core.loopInstBase.getCount    ; (call label)
+                                    add, rsp, 32                             
+                                    goto, .sht.core.forLoopInst.getValue.end ; early return
+.seg code                           
+.sht.core.forLoopInst.getValue.end: 
+                                    mov, rsp, rbp                            
+                                    pop, rbp                                 
+                                    ret                                      
 
 .seg code                    
 .sht.core.forLoopInst.cctor: 
@@ -112,6 +177,8 @@
                              mov, rbp, rsp    
                              mov, [rcx+8], 1  ; =
                              mov, [rcx+16], 0 ; =
+                             mov, [rcx+24], 0 ; =
+                             mov, [rcx+32], 0 ; =
                              mov, rsp, rbp    
                              pop, rbp         
                              ret              

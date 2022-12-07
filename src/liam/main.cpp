@@ -69,6 +69,7 @@ int _main(int argc,const char *argv[])
    cmn::nodeLinker().linkGraph(*pPrj.get());
 
    // type-agnostic AST transforms
+   { forLoopToWhileLoopConverter v; pPrj->acceptVisitor(v); }
    { loopDecomposer v; pPrj->acceptVisitor(v); }
    xf.log(kLogPostUntypeXfrm);
 

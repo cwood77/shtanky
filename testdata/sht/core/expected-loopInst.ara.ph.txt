@@ -26,19 +26,37 @@ abstract loopInstBase {
    public continue() : void
    {
    }
+   protected setCount(val : int) : void
+   {
+      _count = val;
+   }
 
 }
 
 class forLoopInst : loopInstBase {
 
+   private _start : int = 0;
+   private _stop : int = 0;
    public setBounds(start : int, stop : int) : void
    {
+      setCount(start);
+      _stop = stop;
    }
    public inBounds() : bool
    {
+      if(getCount() < _start)
+      {
+                  return false;
+      }
+      if(_stop < getCount())
+      {
+                  return false;
+      }
+            return true;
    }
    public getValue() : int
    {
+            return getCount();
    }
 
 }

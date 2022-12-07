@@ -185,26 +185,63 @@ araceliProjectNode targetType=ca
                methodNode baseImpl=continue->0 memberNode name=continue lineNumber=26 flags=+
                   voidTypeNode typeNode lineNumber=26
                   sequenceNode lineNumber=28
-            classNode name=forLoopInst baseClasses=[ loopInstBase->N3cmn9classNodeE ] lineNumber=32
-               methodNode baseImpl=setBounds->0 memberNode name=setBounds lineNumber=34 flags=+
-                  argNode name=start lineNumber=34
-                     intTypeNode typeNode lineNumber=34
-                  argNode name=stop lineNumber=34
-                     intTypeNode typeNode lineNumber=34
-                  voidTypeNode typeNode lineNumber=34
-                  sequenceNode lineNumber=36
-               methodNode baseImpl=inBounds->0 memberNode name=inBounds lineNumber=37 flags=+
-                  boolTypeNode typeNode lineNumber=37
-                  sequenceNode lineNumber=39
-               methodNode baseImpl=getValue->0 memberNode name=getValue lineNumber=40 flags=+
-                  intTypeNode typeNode lineNumber=40
+               methodNode baseImpl=setCount->0 memberNode name=setCount lineNumber=29 flags=#
+                  argNode name=val lineNumber=29
+                     intTypeNode typeNode lineNumber=29
+                  voidTypeNode typeNode lineNumber=29
+                  sequenceNode lineNumber=31
+                     assignmentNode lineNumber=31
+                        varRefNode pSrc=_count->N3cmn9fieldNodeE lineNumber=31
+                        varRefNode pSrc=val->N3cmn7argNodeE lineNumber=31
+            classNode name=forLoopInst baseClasses=[ loopInstBase->N3cmn9classNodeE ] lineNumber=36
+               fieldNode memberNode name=_start lineNumber=38 flags=-
+                  intTypeNode typeNode lineNumber=38
+                  intLiteralNode lexeme=0 lineNumber=38
+               fieldNode memberNode name=_stop lineNumber=39 flags=-
+                  intTypeNode typeNode lineNumber=39
+                  intLiteralNode lexeme=0 lineNumber=39
+               methodNode baseImpl=setBounds->0 memberNode name=setBounds lineNumber=40 flags=+
+                  argNode name=start lineNumber=40
+                     intTypeNode typeNode lineNumber=40
+                  argNode name=stop lineNumber=40
+                     intTypeNode typeNode lineNumber=40
+                  voidTypeNode typeNode lineNumber=40
                   sequenceNode lineNumber=42
-            classNode name=whileLoopInst baseClasses=[ loopInstBase->N3cmn9classNodeE ] lineNumber=46
-               methodNode baseImpl=getValue->0 memberNode name=getValue lineNumber=48 flags=+
-                  intTypeNode typeNode lineNumber=48
-                  sequenceNode lineNumber=50
-                     returnNode lineNumber=50
-                        callNode pTarget=getCount->N3cmn10methodNodeE lineNumber=50
+                     callNode pTarget=setCount->N3cmn10methodNodeE lineNumber=42
+                        varRefNode pSrc=start->N3cmn7argNodeE lineNumber=42
+                     assignmentNode lineNumber=43
+                        varRefNode pSrc=_stop->N3cmn9fieldNodeE lineNumber=43
+                        varRefNode pSrc=stop->N3cmn7argNodeE lineNumber=43
+               methodNode baseImpl=inBounds->0 memberNode name=inBounds lineNumber=45 flags=+
+                  boolTypeNode typeNode lineNumber=45
+                  sequenceNode lineNumber=47
+                     ifNode lineNumber=47
+                        bopNode op=< lineNumber=47
+                           callNode pTarget=getCount->N3cmn10methodNodeE lineNumber=47
+                           varRefNode pSrc=_start->N3cmn9fieldNodeE lineNumber=47
+                        sequenceNode lineNumber=49
+                           returnNode lineNumber=49
+                              boolLiteralNode value=0 lineNumber=49
+                     ifNode lineNumber=51
+                        bopNode op=< lineNumber=51
+                           varRefNode pSrc=_stop->N3cmn9fieldNodeE lineNumber=51
+                           callNode pTarget=getCount->N3cmn10methodNodeE lineNumber=51
+                        sequenceNode lineNumber=53
+                           returnNode lineNumber=53
+                              boolLiteralNode value=0 lineNumber=53
+                     returnNode lineNumber=55
+                        boolLiteralNode value=1 lineNumber=55
+               methodNode baseImpl=getValue->0 memberNode name=getValue lineNumber=57 flags=+
+                  intTypeNode typeNode lineNumber=57
+                  sequenceNode lineNumber=59
+                     returnNode lineNumber=59
+                        callNode pTarget=getCount->N3cmn10methodNodeE lineNumber=59
+            classNode name=whileLoopInst baseClasses=[ loopInstBase->N3cmn9classNodeE ] lineNumber=64
+               methodNode baseImpl=getValue->0 memberNode name=getValue lineNumber=66 flags=+
+                  intTypeNode typeNode lineNumber=66
+                  sequenceNode lineNumber=68
+                     returnNode lineNumber=68
+                        callNode pTarget=getCount->N3cmn10methodNodeE lineNumber=68
          fileNode fullPath=.\testdata\sht\core\object.ara.ph lineNumber=1
             classNode name=object baseClasses=[ ] lineNumber=1
          fileNode fullPath=.\testdata\sht\core\string.ara.ph lineNumber=1
