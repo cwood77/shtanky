@@ -173,7 +173,7 @@ rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 118:                                         xor, rbx, rbx                                
 rex(48)op(31)modR/M(db)
 // 119:                                         cmp, rax, [rcx+24]                           
-rex(48)op(38)modR/M(41)d8(18)
+rex(48)op(3b)modR/M(41)d8(18)
 // 120:                                         setlts, rbx                                  
 rex(48)op(0f-9c)modR/M(c3)
 // 121:                                         cmp, rbx, 0                                  
@@ -203,7 +203,7 @@ rex(48)op(31)modR/M(ff)
 // 136:                                         mov, r10, [rcx+32]                           ; codeshape decomp
 rex(4c)op(8b)modR/M(51)d8(20)
 // 137:                                         cmp, r10, rax                                
-rex(4c)op(38)modR/M(d0)
+rex(4c)op(3b)modR/M(d0)
 // 138:                                         setlts, rdi                                  
 rex(48)op(0f-9c)modR/M(c7)
 // 139:                                         cmp, rdi, 0                                  

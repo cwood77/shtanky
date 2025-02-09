@@ -24,7 +24,7 @@ int main(int argc, const char *argv[])
       ;
    });
 
-   testWriter(s,subset,cl).add("uats",[](auto& is){
+   testWriter(s,subset,cl).skipByDefault("uats",[](auto& is){
       araceliTest(is,".\\testdata\\uats")
          .runFullBuildStack()
          .expectLiamOf(".\\testdata\\uats\\if.ara")

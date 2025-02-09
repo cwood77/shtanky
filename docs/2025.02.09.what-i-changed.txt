@@ -1,0 +1,70 @@
+overall, a combination of QoL features (e.g. logging) and new work (== operator)
+
+-- loose / top-level files --
+moved i64asm.cpp into source instead of stupidly at the top level
+added cmn/autoDump.cpp and araceli/subprocess.cpp to makefile
+
+-- cmn --
+in cmn/ast.hpp
+  added astExceptionBarrierBase
+  added astExceptionBarrier<>
+  added astFirewall
+added trace options to cmn/cmdline
+added == to cmn/commonLexor
+allow kGenericTypeExpr in fileNodes and LValues (parser)
+added timedGlobal::isValid()
+added two new instructions CMP 0x38 (<isEqualTo?>) and SETE 0x0F,0x94 (setet)
+made getFullPath() virtual in cmn/out.hpp
+added new instructions in cmn/target.hpp
+added filter to trace (which cmndline sets)
+added dumping to cmn/type.*
+accounted for == [equality test] in cmn/typeVisitor.cpp
+
+-- liam --
+(conceptual-level notes, not file-by-file)
+support for == [equality test]
+temporarily SHORT CIRCUITED an if on line 340 lirXfrm.cpp???????
+temporarily SHORT CIRCUITED an if on line 399 lirXfrm.cpp???????
+temporarily resurrected TODOed code on 435 lirXfrm.cpp??????????
+   comments on 370-1 are new and may be related
+significant work on the loop transforms
+   - setBounds args 2,3 no longer bound to (0,1) hardcoded
+   - after>append the inbounds call
+   - not sure I understand the significance of this and may have missed things
+
+significant thinking/work on the varSplitter, with new length comments
+   - this was problably to support passing literals to functions
+   - some opaque comments in tryPreserveDisp that I don't follow
+   - new TODO on 188 in varSplitter.cpp seems alarming??????
+
+-- araceli --
+support for nested if structures
+tweaks on for loop syntax
+consoleAppTarget.cpp looks like a smarter support for different apps?
+selfDecomposition support for call nodes?
+
+-- syzygy --
+var decls can have an inital value (?)
+same tweaks as in araceli for nested if and loop syntax (why dup'd?)
+
+-- philemon / salome --
+just logging
+
+-- shlink --
+make 'target' switch into '-target'
+
+-- testdata/test --
+I don't know how this used to work...?  what it's doing now seems right
+
+-- appr --
+added lats and uats here...?
+do I want to keep these?
+  - I think lats makes sense for liam-specifics like splitter, .etc
+
+-- testdata/assign --
+-- testdata/lats --
+-- testdata/nostromo --
+-- testdata/sht/cons --
+-- testdata/sht/core --
+-- testdata/shtemu --
+-- testdata/uats --
