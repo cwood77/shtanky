@@ -1,0 +1,26 @@
+class array<.sht.core.string> {
+
+   public resize(size : int) : void
+   {
+      _ptr = ._arrresize(_ptr,_length,size);
+      _length = size;
+   }
+   public getLength() : int
+   {
+   }
+   public append(value : .sht.core.string) : void
+   {
+   }
+   public indexOpGet(i : int) : .sht.core.string
+   {
+      ._arrgidx(_ptr,i);
+   }
+   public indexOpSet(i : int, val : .sht.core.string) : void
+   {
+      ._arrsidx(_ptr,i,val);
+   }
+   private _length : int;
+   private _ptr : ptr;
+
+}
+

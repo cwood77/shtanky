@@ -18,6 +18,8 @@ public:
    void addNextArgDefaultsIfNoneLeft(size_t cnt, ...);
 
 private:
+   void configTrace();
+
    std::vector<std::string> m_args;
    size_t m_i;
 };

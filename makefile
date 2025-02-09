@@ -69,6 +69,7 @@ dirs:
 CMN_SRC = \
 	src/cmn/align.cpp \
 	src/cmn/ast.cpp \
+	src/cmn/autoDump.cpp \
 	src/cmn/binReader.cpp \
 	src/cmn/binWriter.cpp \
 	src/cmn/cmdline.cpp \
@@ -256,6 +257,7 @@ ARACELI_SRC = \
 	src/araceli/opOverloadDecomp.cpp \
 	src/araceli/selfDecomposition.cpp \
 	src/araceli/stackClassDecomposition.cpp \
+	src/araceli/subprocess.cpp \
 	src/araceli/vtableGenerator.cpp \
 
 ARACELI_DEBUG_OBJ = $(subst src,$(OBJ_DIR)/debug,$(patsubst %.cpp,%.o,$(ARACELI_SRC)))

@@ -99,11 +99,22 @@ static const instrFmt cmpFmts[] = {
       kR64 | kM64,
       kI32,
       kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { "CMP{REX.W + 3B /r}",
+      kR64,
+      kR64 | kM64,
+      kArgTypeNone, kArgTypeNone, NULL, 0 },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
 };
 
 static const instrFmt sltsFmts[] = {
    { "SETL{REX + 0F 9C}",
+      kR64,
+      kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+   { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
+};
+
+static const instrFmt setFmts[] = {
+   { "SETE{REX + 0F 94}",
       kR64,
       kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
    { NULL,  kArgTypeNone, kArgTypeNone, kArgTypeNone, kArgTypeNone, NULL, 0 },
@@ -151,8 +162,10 @@ static const instrInfo kInstrs[] = {
    { "<split>",           NULL, false, NULL     },
 
    { "<isLessThan?>",     NULL, false, NULL     },
+   { "<isEqualTo?>",      NULL, false, NULL     },
    { "cmp",               "rr", false, (const instrFmt*)&cmpFmts },
    { "setlts",            "w",  false, (const instrFmt*)&sltsFmts },
+   { "setet",             "w",  false, (const instrFmt*)&setFmts },
 
    { "<ifFalse>",         NULL, false, NULL     },
    { "je",                "rx", false, (const instrFmt*)&jumpEqualFmts },

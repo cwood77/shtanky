@@ -5,6 +5,7 @@
 #include <string>
 
 namespace cmn { class node; }
+namespace cmn { class outStream; }
 
 namespace liam {
 
@@ -38,6 +39,9 @@ public:
    void requireStorage(size_t orderNum, size_t s);
    void changeStorage(size_t orderNum, size_t old, size_t nu);
    void updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu);
+
+   void format(cmn::outStream& s);
+   std::string storageToString(size_t s);
 };
 
 class virtStackTable {
@@ -46,6 +50,8 @@ public:
 
    size_t reserveVirtStorage(size_t real);
    size_t mapToReal(size_t virt);
+
+   void format(cmn::outStream& s);
 
 private:
    std::map<size_t,size_t> m_map;
@@ -65,9 +71,24 @@ public:
 
    virtStackTable& getVirtualStack() { return m_vSTable; }
 
+   void format(cmn::outStream& s);
+
 private:
    std::map<std::string,var*> m_vars;
    virtStackTable m_vSTable;
+};
+
+class varTableAutoLogger : public cmn::iLogger {
+public:
+   typedef varTable argType;
+
+   explicit varTableAutoLogger(varTable& vt) : m_vt(vt) {}
+
+   virtual std::string getExt() { return ".vars"; }
+   virtual void dump(cmn::outStream& s) { m_vt.format(s); }
+
+private:
+   varTable& m_vt;
 };
 
 } // namespace liam

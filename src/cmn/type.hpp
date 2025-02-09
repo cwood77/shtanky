@@ -1,4 +1,5 @@
 #pragma once
+#include "autoDump.hpp"
 #include "global.hpp"
 #include <map>
 #include <typeinfo>
@@ -63,7 +64,7 @@ public:
    // makes sure only one instance of any given type is maintained
    iType& publish(iType *pType);
 
-   void dump();
+   void dump(cmn::outStream& s);
 
 private:
    std::map<std::string,iType*> m_allTypes;
@@ -113,13 +114,19 @@ public:
    iType& demand(const node& n);
    void publish(const node& n, iType& t);
 
-   void dump();
+   void dump(cmn::outStream& s);
 
 private:
    std::map<const node*,iType*> m_cache;
 };
 
 extern timedGlobal<nodeCache> gNodeCache;
+
+class typeAutoLogger : public cmn::iLogger {
+public:
+   virtual std::string getExt() { return ".types"; }
+   virtual void dump(cmn::outStream& s);
+};
 
 } // namespace type
 } // namespace cmn

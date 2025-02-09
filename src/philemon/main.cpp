@@ -18,6 +18,9 @@ int _main(int argc, const char *argv[])
    cmn::cmdLine cl(argc,argv);
    std::string projectDir = cl.getNextArg(".\\testdata\\philemon");
    std::string inExt = cl.getNextArg("sa");
+   cmn::outBundle dbgOut;
+   cmn::unconditionalWriter wr;
+   dbgOut.scheduleAutoUpdate(wr);
 
    // I convert * (arg) -> ph
    araceli::loaderPrefs lPrefs = { inExt, "" };
@@ -27,14 +30,13 @@ int _main(int argc, const char *argv[])
    cmn::rootNodeDeleteOperation _rdo;
    cmn::globalPublishTo<cmn::rootNodeDeleteOperation> _rdoRef(_rdo,cmn::gNodeDeleteOp);
    std::unique_ptr<cmn::araceliProjectNode> pPrj;
+   cmn::astExceptionBarrier<cmn::araceliProjectNode> _aeb(pPrj,dbgOut,projectDir + "\\");
    std::unique_ptr<araceli::iTarget> pTgt;
    frontend(projectDir,pPrj,pTgt).run();
 
    // load any additional files indicated on the command line
-   cl.addNextArgDefaultsIfNoneLeft(3,
-      ".\\testdata\\sht\\core\\object.ara.sa",
-      ".\\testdata\\sht\\core\\string.ara.sa",
-      ".\\testdata\\sht\\core\\array.ara.sa"
+   cl.addNextArgDefaultsIfNoneLeft(1,
+      ".\\testdata\\sht\\core"
    );
    for(size_t i=0;;i++)
    {
@@ -43,7 +45,7 @@ int _main(int argc, const char *argv[])
          break;
 
       cdwVERBOSE("loading explicit file '%s'\n",path.c_str());
-      araceli::loader::findScopeAndLoadFile(*pPrj.get(),path);
+      araceli::loader::findScopeAndLoadFolder(*pPrj.get(),path);
    }
 
    // run the instantiator to expand user generics
@@ -74,6 +76,7 @@ int _main(int argc, const char *argv[])
 
    // clear graph
    { cmn::autoNodeDeleteOperation o; pPrj.reset(); }
+   _aeb.disarm();
 
    return 0;
 }

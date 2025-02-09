@@ -68,7 +68,7 @@
              call, ._print             ; (call label)
              add, rsp, 32              
              sub, rsp, 32              
-             call, [rbx]               ; (vtbl call)
+             call, [rbx]               ; vtbl call to .v::f0
              add, rsp, 32              
              sub, rsp, 32              
              mov, r10, [rbx]           ; codeshape decomp
@@ -76,10 +76,10 @@
              mov, r10, 5               ; codeshape decomp
              add, [rbp-8], r10         
              lea, rdi, [rbp-8]         
-             call, [rdi]               ; (vtbl call)
+             call, [rdi]               ; vtbl call to .v::f1
              add, rsp, 32              
              sub, rsp, 32              
-             call, [rbx]               ; (vtbl call)
+             call, [rbx]               ; vtbl call to .v::f0
              add, rsp, 32              
              sub, rsp, 32              
              mov, r10, [rbx]           ; codeshape decomp
@@ -87,7 +87,7 @@
              mov, r10, 5               ; codeshape decomp
              add, [rbp-16], r10        
              lea, rbx, [rbp-16]        
-             call, [rbx]               ; (vtbl call)
+             call, [rbx]               ; vtbl call to .v::f1
              add, rsp, 32              
              mov, rsp, rbp             
              pop, rdi                  

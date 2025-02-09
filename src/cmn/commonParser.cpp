@@ -238,7 +238,7 @@ void commonParser::parseGlobalConst(fileNode& f)
 
    auto& n = m_nFac.appendNewChild<constNode>(f);
 
-   m_l.demand(cdwLoc,commonLexor::kName);
+   m_l.demandOneOf(cdwLoc,2,commonLexor::kName,commonLexor::kGenericTypeExpr);
    n.name = m_l.getLexeme();
    m_l.advance();
 
@@ -547,7 +547,7 @@ void commonParser::parseLoopName(loopBaseNode& l)
 
 node& commonParser::parseLValue()
 {
-   m_l.demand(cdwLoc,commonLexor::kName);
+   m_l.demandOneOf(cdwLoc,2,commonLexor::kName,commonLexor::kGenericTypeExpr);
    auto name = m_l.getLexeme();
    m_l.advance();
 

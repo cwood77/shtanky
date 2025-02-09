@@ -142,6 +142,36 @@ lirStream& lirStreams::addNewObject(const std::string& name, const std::string& 
    return last;
 }
 
+std::string lirIncrementalFormatter::argToString(lirArg& a)
+{
+   std::stringstream stream;
+
+   const char *pType = "$";
+   if(dynamic_cast<lirArgLabel*>(&a))
+      pType = "!";
+   else if(dynamic_cast<lirArgConst*>(&a))
+      pType = "@";
+   else if(dynamic_cast<lirArgTemp*>(&a))
+      pType = "~";
+
+   if(a.addrOf)
+      stream << "[";
+
+   stream << pType << a.getName();
+
+   if(a.disp && 0 < a.disp)
+      stream << "+" << a.disp;
+   if(a.disp && 0 > a.disp)
+      stream << a.disp;
+
+   if(a.addrOf)
+      stream << "]";
+
+   stream << "/" << a.getSize();
+
+   return stream.str();
+}
+
 void lirIncrementalFormatter::start(lirStreams& s)
 {
    m_s.stream() << "=== LIR bundle has " << s.objects.size() << " objects(s) ===   (hint: $=var, ~=temp, @=immediate, !=label)" << std::endl;
@@ -189,37 +219,11 @@ void lirIncrementalFormatter::format(lirInstr& i, cmn::textTableLineWriter& t)
    {
       if(it != i.getArgs().begin())
          t[2] << ", ";
-      format(**it,t);
+      t[2] << argToString(**it);
    }
 
    if(!i.comment.empty())
    t[3] << ";;; " << i.comment;
-}
-
-void lirIncrementalFormatter::format(lirArg& a, cmn::textTableLineWriter& t)
-{
-   const char *pType = "$";
-   if(dynamic_cast<lirArgLabel*>(&a))
-      pType = "!";
-   else if(dynamic_cast<lirArgConst*>(&a))
-      pType = "@";
-   else if(dynamic_cast<lirArgTemp*>(&a))
-      pType = "~";
-
-   if(a.addrOf)
-      t[2] << "[";
-
-   t[2] << pType << a.getName();
-
-   if(a.disp && 0 < a.disp)
-      t[2] << "+" << a.disp;
-   if(a.disp && 0 > a.disp)
-      t[2] << a.disp;
-
-   if(a.addrOf)
-      t[2] << "]";
-
-   t[2] << "/" << a.getSize();
 }
 
 void lirIncrementalFormatter::appendTargetHints()
@@ -288,74 +292,6 @@ void lirFormatter::format(lirStreams& s)
 
    fmt.end();
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////
-//
-// NEW LIR API
-//
-////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////
-
-lirGenerator::lirGenerator(lirStreams& lir, cmn::tgt::iTargetInfo& t)
-: m_lir(lir), m_t(t), m_pCurrStream(NULL)
-{
-}
-
-void lirGenerator::createNewStream(const std::string& segment, const std::string& comment)
-{
-   m_pCurrStream = &m_lir.addNewObject(comment,segment);
-}
-
-instrBuilder lirGenerator::append(cmn::node& n, cmn::tgt::instrIds id)
-{
-   auto *pInstr = new lirInstr(id);
-   if(!m_pCurrStream->pTail)
-      m_pCurrStream->pTail = pInstr;
-   else
-      m_pCurrStream->pTail->append(*pInstr);
-   return instrBuilder(*this,m_t,*pInstr,n);
-}
-
-instructionless lirGenerator::noInstr(cmn::node& n)
-{
-   return instructionless(*this,n);
-}
-
-void lirGenerator::bindArg(cmn::node& n, lirArg& a)
-{
-   // I'm borrowing from an instr, so don't delete these
-   m_nodeTable[&n] = &a;
-}
-
-void lirGenerator::addArgFromNode(cmn::node& n, lirInstr& i)
-{
-   // because instrs own their args, make a copy
-   i.addArg(m_nodeTable[&n]->clone());
-}
-
-const lirArg& instructionless::borrowArgFromChild(cmn::node& n)
-{
-   return *m_g.m_nodeTable[&n]; // TODO HACK- method?
-}
-
-instructionless& instructionless::returnToParent(lirArg& a)
-{
-   m_g.bindArg(m_n,a);
-   m_g.m_adoptedOrphans.insert(&a); // TODO HACK- method?
-   return *this;
-}
-
-
-
-
-
-// ******************************************************************************
-// ******************************************************************************
-// ******************************************************************************
-// ******************************************************************************
-// ******************************************************************************
-
 
 lirBuilder::~lirBuilder()
 {

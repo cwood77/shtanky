@@ -2,6 +2,8 @@
 #include "iTarget.hpp"
 
 namespace cmn { class classNode; }
+namespace cmn { class node; }
+namespace cmn { class outStream; }
 namespace cmn { class scopeNode; }
 
 namespace araceli {
@@ -18,6 +20,7 @@ public:
 private:
    cmn::scopeNode& findProjectScope(cmn::araceliProjectNode& root);
    bool wantsStream(cmn::classNode& n);
+   void callRunMethod(cmn::node& obj, size_t instNum, cmn::outStream& s);
 };
 
 } // namespace araceli

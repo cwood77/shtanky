@@ -1,0 +1,188 @@
+// 2: .entrypoint: 
+// 3:              push, rbp                    
+rex(48)op(ff)modR/M(f5)
+// 4:              push, rbx                    
+rex(48)op(ff)modR/M(f3)
+// 5:              push, rsi                    
+rex(48)op(ff)modR/M(f6)
+// 6:              push, rdi                    
+rex(48)op(ff)modR/M(f7)
+// 7:              mov, rbp, rsp                
+rex(48)op(89)modR/M(e5)
+// 8:              sub, rsp, 40                 
+rex(48)op(83)modR/M(ec)i8(28)
+// 9:              mov, rbx, rcx                ; (preserve) [combiner]
+rex(48)op(89)modR/M(cb)
+// 10:              lea, rcx, [rbp-8]            ; cout
+rex(48)op(8d)modR/M(4d)d8(f8)
+// 11:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 12:              call, .sht.cons.stdout_sctor ; (call label)
+op(e8)co32(00-00-00-00)
+// 13:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 14:              mov, rdi, rcx                ; (preserve) [combiner]
+rex(48)op(89)modR/M(cf)
+// 15:              lea, rcx, [rbp-24]           ; obj0
+rex(48)op(8d)modR/M(4d)d8(e8)
+// 16:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 17:              call, .uats.ifTest_sctor     ; (call label)
+op(e8)co32(00-00-00-00)
+// 18:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 19:              mov, [rcx+8], rdi            ; =
+rex(48)op(89)modR/M(79)d8(08)
+// 20:              mov, rsi, rcx                ; (preserve) [combiner]
+rex(48)op(89)modR/M(ce)
+// 21:              lea, rcx, [rbp-40]           ; obj1
+rex(48)op(8d)modR/M(4d)d8(d8)
+// 22:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 23:              call, .uats.loopTest_sctor   ; (call label)
+op(e8)co32(00-00-00-00)
+// 24:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 25:              mov, [rcx+8], rdi            ; =
+rex(48)op(89)modR/M(79)d8(08)
+// 26:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 27:              mov, rdx, rbx                ;       (args req for rdx) [splitter]
+rex(48)op(89)modR/M(da)
+// 28:              mov, rbx, rcx                ; (preserve) [combiner]
+rex(48)op(89)modR/M(cb)
+// 29:              mov, rcx, rsi                ; (restore [combiner])
+rex(48)op(89)modR/M(f1)
+// 30:              call, [rcx]                  ; vtbl call to .uats.ifTest_vtbl::run
+rex(48)op(ff)modR/M(11)
+// 31:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 32:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 33:              mov, rsi, rcx                ; (preserve) [combiner]
+rex(48)op(89)modR/M(ce)
+// 34:              mov, rcx, rbx                ; (restore [combiner])
+rex(48)op(89)modR/M(d9)
+// 35:              call, [rcx]                  ; vtbl call to .uats.loopTest_vtbl::run
+rex(48)op(ff)modR/M(11)
+// 36:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 37:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 38:              call, .uats.loopTest_sdtor   ; (call label)
+op(e8)co32(00-00-00-00)
+// 39:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 40:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 41:              mov, rcx, rsi                ; (restore [combiner])
+rex(48)op(89)modR/M(f1)
+// 42:              call, .uats.ifTest_sdtor     ; (call label)
+op(e8)co32(00-00-00-00)
+// 43:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 44:              sub, rsp, 32                 
+rex(48)op(83)modR/M(ec)i8(20)
+// 45:              mov, rcx, rdi                ; (restore [combiner])
+rex(48)op(89)modR/M(f9)
+// 46:              call, .sht.cons.stdout_sdtor ; (call label)
+op(e8)co32(00-00-00-00)
+// 47:              add, rsp, 32                 
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 48:              mov, rsp, rbp                
+rex(48)op(89)modR/M(ec)
+// 49:              pop, rdi                     
+rex(48)op(8f)modR/M(c7)
+// 50:              pop, rsi                     
+rex(48)op(8f)modR/M(c6)
+// 51:              pop, rbx                     
+rex(48)op(8f)modR/M(c3)
+// 52:              pop, rbp                     
+rex(48)op(8f)modR/M(c5)
+// 53:              ret                          
+op(c3)
+// 56: .uats.consoleTarget.cctor: 
+// 57:                            push, rbp
+rex(48)op(ff)modR/M(f5)
+// 58:                            mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 59:                            mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 60:                            pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 61:                            ret
+op(c3)
+// 64: .uats.consoleTarget.cdtor: 
+// 65:                            push, rbp
+rex(48)op(ff)modR/M(f5)
+// 66:                            mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 67:                            mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 68:                            pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 69:                            ret
+op(c3)
+// 72: .uats.consoleTarget_vtbl_inst:
+// 75: .uats.consoleTarget_sctor: 
+// 76:                            push, rbp                                        
+rex(48)op(ff)modR/M(f5)
+// 77:                            push, rbx                                        
+rex(48)op(ff)modR/M(f3)
+// 78:                            mov, rbp, rsp                                    
+rex(48)op(89)modR/M(e5)
+// 79:                            sub, rsp, 32                                     
+rex(48)op(83)modR/M(ec)i8(20)
+// 80:                            call, .sht.core.object_sctor                     ; (call label)
+op(e8)co32(00-00-00-00)
+// 81:                            add, rsp, 32                                     
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 82:                            lea, rbx, qwordptr .uats.consoleTarget_vtbl_inst 
+rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
+// 83:                            mov, [rcx], rbx                                  ; =
+rex(48)op(89)modR/M(19)
+// 84:                            sub, rsp, 32                                     
+rex(48)op(83)modR/M(ec)i8(20)
+// 85:                            call, .uats.consoleTarget.cctor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 86:                            add, rsp, 32                                     
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 87:                            mov, rsp, rbp                                    
+rex(48)op(89)modR/M(ec)
+// 88:                            pop, rbx                                         
+rex(48)op(8f)modR/M(c3)
+// 89:                            pop, rbp                                         
+rex(48)op(8f)modR/M(c5)
+// 90:                            ret                                              
+op(c3)
+// 93: .uats.consoleTarget_sdtor: 
+// 94:                            push, rbp                                        
+rex(48)op(ff)modR/M(f5)
+// 95:                            push, rbx                                        
+rex(48)op(ff)modR/M(f3)
+// 96:                            mov, rbp, rsp                                    
+rex(48)op(89)modR/M(e5)
+// 97:                            lea, rbx, qwordptr .uats.consoleTarget_vtbl_inst 
+rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
+// 98:                            mov, [rcx], rbx                                  ; =
+rex(48)op(89)modR/M(19)
+// 99:                            sub, rsp, 32                                     
+rex(48)op(83)modR/M(ec)i8(20)
+// 100:                            call, .uats.consoleTarget.cdtor                  ; (call label)
+op(e8)co32(00-00-00-00)
+// 101:                            add, rsp, 32                                     
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 102:                            sub, rsp, 32                                     
+rex(48)op(83)modR/M(ec)i8(20)
+// 103:                            call, .sht.core.object_sdtor                     ; (call label)
+op(e8)co32(00-00-00-00)
+// 104:                            add, rsp, 32                                     
+rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 105:                            mov, rsp, rbp                                    
+rex(48)op(89)modR/M(ec)
+// 106:                            pop, rbx                                         
+rex(48)op(8f)modR/M(c3)
+// 107:                            pop, rbp                                         
+rex(48)op(8f)modR/M(c5)
+// 108:                            ret                                              
+op(c3)

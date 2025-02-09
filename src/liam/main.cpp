@@ -1,5 +1,7 @@
 #include "../cmn/ast.hpp"
+#include "../cmn/autoDump.hpp"
 #include "../cmn/cmdline.hpp"
+#include "../cmn/fmt.hpp"
 #include "../cmn/global.hpp"
 #include "../cmn/intel64.hpp"
 #include "../cmn/main.hpp"
@@ -24,6 +26,16 @@
 
 using namespace liam;
 
+// note: keep this list up-to-date with liamTest is appraiser
+static const size_t kLogPostLoad       = (size_t)"postLoad";
+static const size_t kLogPostUntypeXfrm = (size_t)"postUntypeXfrm";
+static const size_t kLogPostTypeXfrm   = (size_t)"postTypeXfrm";
+static const size_t kLogPostLir        = (size_t)"postLir";
+static const size_t kLogPostLirXfrm    = (size_t)"postLirXfrm";
+static const size_t kLogPostVarGen     = (size_t)"postVarGen";
+static const size_t kLogPostRegAlloc   = (size_t)"postRegAlloc";
+static const size_t kLogPreAsm         = (size_t)"preasm";
+
 int _main(int argc,const char *argv[])
 {
    cdwDEBUG("compiled with C++ %u\n",__cplusplus);
@@ -36,119 +48,119 @@ int _main(int argc,const char *argv[])
    // load
    cmn::rootNodeDeleteOperation _rdo;
    cmn::globalPublishTo<cmn::rootNodeDeleteOperation> _rdoRef(_rdo,cmn::gNodeDeleteOp);
-   // use an unsmart ptr here so we don't try to delete the graph when handling an
-   // exception.  That's problematic because deletes need ops
-   auto *pPrj = new cmn::liamProjectNode();
+   std::unique_ptr<cmn::liamProjectNode> pPrj(new cmn::liamProjectNode());
    pPrj->sourceFullPath = cl.getNextArg("testdata\\test\\test.ara.ls");
-   projectBuilder::build(*pPrj);
-   cdwVERBOSE("graph after loading ----\n");
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
-   { auto& s = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath + ".00init.ast");
-     cmn::astFormatter v(s); pPrj->acceptVisitor(v); }
+   cmn::exceptionFirewall xf(dbgOut,pPrj->sourceFullPath);
+   xf
+      .registerFile(kLogPostLoad)
+      .registerFile(kLogPostUntypeXfrm)
+      .registerFile(kLogPostTypeXfrm)
+      .registerFile(kLogPostLir)
+      .registerFile(kLogPostLirXfrm)
+      .registerFile(kLogPostVarGen)
+      .registerFile(kLogPostRegAlloc)
+      .registerFile(kLogPreAsm)
+   ;
+   xf.add<cmn::astFirewall<cmn::liamProjectNode> >(pPrj);
+   projectBuilder::build(*pPrj.get());
+   xf.log(kLogPostLoad);
 
    // link
-   cmn::nodeLinker().linkGraph(*pPrj);
-   cdwVERBOSE("graph after linking ----\n");
-   { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+   cmn::nodeLinker().linkGraph(*pPrj.get());
 
    // type-agnostic AST transforms
+   { forLoopToWhileLoopConverter v; pPrj->acceptVisitor(v); }
    { loopDecomposer v; pPrj->acceptVisitor(v); }
-   { auto& s = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath + ".01postXfrm.ast");
-     cmn::astFormatter v(s); pPrj->acceptVisitor(v); }
+   xf.log(kLogPostUntypeXfrm);
 
    cmn::tgt::w64EmuTargetInfo t;
    {
       // initial type propagation
-      cmn::nodeLinker().linkGraph(*pPrj);
+      cmn::nodeLinker().linkGraph(*pPrj.get());
       cmn::type::table                           _t;
       cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
       cmn::type::nodeCache                       _c;
       cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
-      cmn::propagateTypes(*pPrj);
+      cmn::type::typeAutoLogger tyLogger;
+      cmn::firewallRegistrar fr(xf,tyLogger);
+      cmn::propagateTypes(*pPrj.get());
 
       // type-aware AST transforms
       { vTableInvokeDetector v(t); pPrj->acceptVisitor(v); }
-      cdwVERBOSE("graph after transforms ----\n");
-      { cmn::diagVisitor v; pPrj->acceptVisitor(v); }
+
+      fr.disarm();
    }
 
    // re-link
-   cmn::nodeLinker().linkGraph(*pPrj);
+   cmn::nodeLinker().linkGraph(*pPrj.get());
 
    // final type propagation
    cmn::type::table                           _t;
    cmn::globalPublishTo<cmn::type::table>     _tReg(_t,cmn::type::gTable);
    cmn::type::nodeCache                       _c;
    cmn::globalPublishTo<cmn::type::nodeCache> _cReg(_c,cmn::type::gNodeCache);
-   cmn::propagateTypes(*pPrj);
-   { auto& s = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath + ".02postXfrm.ast");
-     cmn::astFormatter v(s); pPrj->acceptVisitor(v); }
+   cmn::type::typeAutoLogger tyLogger;
+   cmn::firewallRegistrar fr(xf,tyLogger);
+   cmn::propagateTypes(*pPrj.get());
+   xf.log(kLogPostTypeXfrm);
 
    // generate LIR
    lirStreams lir;
+   lirAutoLogger lirLogger(lir,t);
+   cmn::firewallRegistrar _llr(xf,lirLogger);
    { lirBuilder b(lir,t); astCodeGen v(b,t); pPrj->acceptVisitor(v); }
-   { auto& s = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"lir");
-     lirFormatter(s,t).format(lir); }
+   xf.log(kLogPostLir);
 
    // LIR transforms
    runLirTransforms(lir,t);
-   { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"lir-post");
-     lirFormatter(sp,t).format(lir); }
+   xf.log(kLogPostLirXfrm);
 
    // ---------------- register allocation ----------------
 
-   try
+   for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
    {
-      for(auto it=lir.objects.begin();it!=lir.objects.end();++it)
+      cmn::loggerLoop _ll(xf,cmn::fmt("stream passes on %s",it->name.c_str()));
+      autoIncrementalSetting _s(xf.fetch<lirAutoLogger>(),*it);
+
+      varTable vTbl;
+      varTableAutoLogger varLogger(vTbl);
+      cmn::firewallRegistrar fr(xf,varLogger);
+      lirVarGen(vTbl).runStream(*it);
+      xf.log(kLogPostVarGen);
+
+      instrPrefs::publishRequirements(*it,vTbl,t);
+
+      varSplitter::split(*it,vTbl,t);
+
+      varFinder f(t);
+      { varCombiner p(*it,vTbl,f); p.run(); }
+
+      stackAllocator().run(vTbl,f);
+      varAllocator(t).run(vTbl,f);
+      xf.log(kLogPostRegAlloc);
+
+      if(it->segment == cmn::objfmt::obj::kLexCode)
       {
-         cdwVERBOSE("backend passes on %s\n",it->name.c_str());
-
-         varTable vTbl;
-         lirVarGen(vTbl).runStream(*it);
-
-         instrPrefs::publishRequirements(*it,vTbl,t);
-
-         varSplitter::split(*it,vTbl,t);
-
-         varFinder f(t);
-         { varCombiner p(*it,vTbl,f); p.run(); }
-
-         stackAllocator().run(vTbl,f);
-         varAllocator(t).run(vTbl,f);
-
-         { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"lir-postreg");
-           lirIncrementalFormatter(sp,t).format(*it); }
-
-         if(it->segment == cmn::objfmt::obj::kLexCode)
-         {
-            spuriousVarStripper(vTbl).runStream(*it);
-            codeShapeTransform(vTbl,f,t).runStream(*it);
-         }
-
-         { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"lir-preasm");
-           lirIncrementalFormatter(sp,t).format(*it); }
-
-         splitResolver(*it,vTbl).run();
-
-         asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(pPrj->sourceFullPath,"asm"));
+         spuriousVarStripper(vTbl).runStream(*it);
+         codeShapeTransform(vTbl,f,t).runStream(*it);
       }
-   }
-   catch(std::exception&)
-   {
-      cdwINFO("handling exception; writing lir-crash file\n");
-      { auto& sp = dbgOut.get<cmn::outStream>(pPrj->sourceFullPath,"lir-crash");
-        lirFormatter(sp,t).format(lir); }
-      throw;
-   }
 
-   _t.dump();
-   _c.dump();
+      xf.log(kLogPreAsm);
+      splitResolver(*it,vTbl).run();
+
+      asmCodeGen::generate(*it,vTbl,f,t,out.get<cmn::outStream>(pPrj->sourceFullPath,"asm"));
+
+//cdwTHROW("fake error");
+
+      fr.disarm();
+   }
 
    out.updateDisk(wr);
 
    // clear graph
    cdwDEBUG("destroying the graph\r\n");
-   { cmn::autoNodeDeleteOperation o; delete pPrj; }
+   { cmn::autoNodeDeleteOperation o; pPrj.reset(); }
+   xf.disarm();
 
    return 0;
 }

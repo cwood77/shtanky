@@ -1,4 +1,5 @@
 #pragma once
+#include "../cmn/autoDump.hpp"
 #include "../cmn/target.hpp"
 #include "../cmn/type.hpp"
 #include <functional>
@@ -130,6 +131,8 @@ public:
 
 class lirIncrementalFormatter {
 public:
+   static std::string argToString(lirArg& a);
+
    lirIncrementalFormatter(cmn::outStream& s, cmn::tgt::iTargetInfo& t) : m_s(s), m_t(t) {}
 
    void start(lirStreams& s);
@@ -139,7 +142,6 @@ public:
 private:
    void _format(lirStream& s);
    void format(lirInstr& i, cmn::textTableLineWriter& t);
-   void format(lirArg& a, cmn::textTableLineWriter& t);
    void appendTargetHints();
 
    cmn::outStream& m_s;
@@ -157,105 +159,41 @@ private:
    cmn::tgt::iTargetInfo& m_t;
 };
 
-////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////
-//
-// NEW LIR API
-//
-////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////
-
-class instrBuilder;
-class instructionless;
-
-// maybe instead it's
-//
-// m_lGen
-//    .forNode(n)              // returns 'instructionless' API
-//    .append(cmn::tgt::kCall) // returns instr API
-//    .addArg()                // returns arg
-//
-// you can re-run forNode() to add more
-
-class lirGenerator { // lirBuilder?
+class lirAutoLogger : public cmn::iLogger {
 public:
-   lirGenerator(lirStreams& lir, cmn::tgt::iTargetInfo& t);
+   lirAutoLogger(lirStreams& lir, cmn::tgt::iTargetInfo& t)
+   : m_lir(lir), m_pStream(NULL), m_tgt(t) {}
 
-   // ditch this?
-   void createNewStream(const std::string& segment, const std::string& comment);
+   virtual std::string getExt() { return ".lir"; }
 
-   instrBuilder append(cmn::node& n, cmn::tgt::instrIds id);
+   virtual void dump(cmn::outStream& s)
+   {
+      if(m_pStream)
+      { lirIncrementalFormatter(s,m_tgt).format(*m_pStream); }
+      else
+      { lirFormatter(s,m_tgt).format(m_lir); }
+   }
 
-   instructionless noInstr(cmn::node& n);
+   void setIncremental(lirStream *pStream) { m_pStream = pStream; }
 
 private:
-   void bindArg(cmn::node& n, lirArg& a);
-   void addArgFromNode(cmn::node& n, lirInstr& i);
-
    lirStreams& m_lir;
-   cmn::tgt::iTargetInfo& m_t;
-   lirStream *m_pCurrStream;
-   std::set<std::string> m_nameTable;
-   std::map<cmn::node*,lirArg*> m_nodeTable;
-   std::set<lirArg*> m_adoptedOrphans; // TODO delete these
-
-friend class instrBuilder;
-friend class instructionless;
+   lirStream *m_pStream;
+   cmn::tgt::iTargetInfo& m_tgt;
 };
 
-class instrBuilder {
+class autoIncrementalSetting {
 public:
-   instrBuilder(lirGenerator& g, cmn::tgt::iTargetInfo& t, lirInstr& i, cmn::node& n)
-   : m_g(g), m_t(t), m_i(i), m_n(n) {}
+   explicit autoIncrementalSetting(lirAutoLogger& l, lirStream& s)
+   : m_lirLogger(l), m_stream(s)
+   { m_lirLogger.setIncremental(&s); }
 
-   instrBuilder& withArg(lirArg& a)
-   {
-      m_i.addArg(a);
-      return *this;
-   }
-
-   template<class T>
-   instrBuilder& withArg(const std::string& name, size_t s)
-   {
-      m_i.addArg<T>(name,s);
-      return *this;
-   }
-
-   template<class T>
-   instrBuilder& withArg(const std::string& name, cmn::node& n)
-   {
-      auto nSize = cmn::type::gNodeCache->demand(n).getPseudoRefSize();
-      m_i.addArg<T>(name,nSize);
-      return *this;
-   }
-
-   instrBuilder& inheritArgFromChild(cmn::node& n) //?method name follows a different pattern
-   { m_g.addArgFromNode(n,m_i); return *this; }
-
-   instrBuilder& withComment(const std::string& c)
-   { m_i.comment = c; return *this; }
-
-   instrBuilder& returnToParent(size_t nArg)
-   { m_g.bindArg(m_n,*m_i.getArgs()[nArg]); return *this; }
+   ~autoIncrementalSetting()
+   { m_lirLogger.setIncremental(NULL); }
 
 private:
-   lirGenerator& m_g;
-   cmn::tgt::iTargetInfo& m_t;
-   lirInstr& m_i;
-   cmn::node& m_n;
-};
-
-class instructionless {
-public:
-   instructionless(lirGenerator& g, cmn::node& n) : m_g(g), m_n(n) {}
-
-   const lirArg& borrowArgFromChild(cmn::node& n);
-
-   instructionless& returnToParent(lirArg& a);
-
-private:
-   lirGenerator& m_g;
-   cmn::node& m_n;
+   lirAutoLogger& m_lirLogger;
+   lirStream& m_stream;
 };
 
 class lirBuilder {

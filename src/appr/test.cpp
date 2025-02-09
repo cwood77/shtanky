@@ -17,12 +17,14 @@ shlinkTest& shlinkTest::test()
       .thenCheckReturnValue("link");
 
    m_stream.appendNew<compareInstr>()
+      .flagNoisey()
       .withControl(cmn::pathUtil::addPrefixToFilePart(m_outFile,"expected-"))
       .withVariable(m_outFile)
       .because("linked app");
 
    auto listFile = cmn::pathUtil::addExt(m_outFile,cmn::pathUtil::kExtList);
    m_stream.appendNew<compareInstr>()
+      .flagNoisey()
       .withControl(cmn::pathUtil::addPrefixToFilePart(listFile,"expected-"))
       .withVariable(listFile)
       .because("object listing");
@@ -49,10 +51,11 @@ void testBase::setupAutoShlink(const std::string& appPath)
    m_appPath = appPath;
    m_pLTest.reset(new shlinkTest(m_stream,appPath));
 
-   shtasmTest(m_stream,".\\testdata\\sht\\oscall.asm").andLink(*m_pLTest.get());
-   shtasmTest(m_stream,".\\testdata\\sht\\flags.asm").andLink(*m_pLTest.get());
-   shtasmTest(m_stream,".\\testdata\\sht\\string.asm").andLink(*m_pLTest.get());
+   // built-in asm files
    shtasmTest(m_stream,".\\testdata\\sht\\array.asm").andLink(*m_pLTest.get());
+   shtasmTest(m_stream,".\\testdata\\sht\\flags.asm").andLink(*m_pLTest.get());
+   shtasmTest(m_stream,".\\testdata\\sht\\oscall.asm").andLink(*m_pLTest.get());
+   shtasmTest(m_stream,".\\testdata\\sht\\string.asm").andLink(*m_pLTest.get());
 }
 
 void testBase::emulateAndCheckOutput()
@@ -81,6 +84,12 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
 {
    m_stream.appendNew<doInstr>()
       .usingApp("araceli.exe")
+      .withDbgLog(folder + "\\.00init.ast")
+      .withDbgLog(folder + "\\.01postLink.ast")
+      .withDbgLog(folder + "\\.02preDeclass.ast")
+      .withDbgLog(folder + "\\.03postDeclass.ast")
+      .withDbgLog(folder + "\\.classInfo")
+      .withDbgLog(folder + "\\.target.ara*")
       .withArg(folder)
       .thenCheckReturnValue("araceli compile");
 
@@ -88,6 +97,25 @@ araceliTest::araceliTest(instrStream& s, const std::string& folder)
       .withControl(folder + "\\expected-.build.bat")
       .withVariable(folder + "\\.build.bat")
       .because("generated batch file");
+}
+
+araceliTest& araceliTest::runFullBuildStack()
+{
+   setupAutoShlink(m_folder + "\\.app");
+
+   // include the standard library
+   expectLiamOf(".\\testdata\\sht\\cons\\program.ara");
+   expectLiamOf(".\\testdata\\sht\\core\\array.ara");
+   expectLiamOf(".\\testdata\\sht\\core\\loopInst.ara");
+   expectLiamOf(".\\testdata\\sht\\core\\object.ara");
+   expectLiamOf(".\\testdata\\sht\\core\\string.ara");
+   // unreferenced
+   //expectLiamOf(".\\testdata\\sht\\mem\\map\\prims.ara");
+
+   // include the generated target file
+   expectLiamOf(m_folder + "\\.target.ara", /* hasPhilemon */ false);
+
+   return *this;
 }
 
 araceliTest& araceliTest::expectLiamOf(const std::string& path, bool hasPhilemon)
@@ -137,6 +165,14 @@ liamTest::liamTest(instrStream& s, const std::string& file)
 {
    s.appendNew<doInstr>()
       .usingApp("liam.exe")
+      .withDbgLog(file + "*postLoad*")
+      .withDbgLog(file + "*postUntypeXfrm*")
+      .withDbgLog(file + "*postTypeXfrm*")
+      .withDbgLog(file + "*postLir*")
+      .withDbgLog(file + "*postLirXfrm*")
+      .withDbgLog(file + "*postVarGen*")
+      .withDbgLog(file + "*postRegAlloc*")
+      .withDbgLog(file + "*preasm*")
       .withArg(file)
       .thenCheckReturnValue("liam compile");
 
@@ -148,11 +184,11 @@ liamTest::liamTest(instrStream& s, const std::string& file)
       .withControl(cmn::pathUtil::addPrefixToFilePart(asmFile,"expected-"))
       .withVariable(asmFile)
       .because("generated assembly");
-   s.appendNew<compareInstr>()
+   s.appendNew<deprecatedCompareInstr>()
       .withControl(cmn::pathUtil::addPrefixToFilePart(lirFile,"expected-"))
       .withVariable(lirFile)
       .because("LIR early dump");
-   s.appendNew<compareInstr>()
+   s.appendNew<deprecatedCompareInstr>()
       .withControl(cmn::pathUtil::addPrefixToFilePart(lirPostFile,"expected-"))
       .withVariable(lirPostFile)
       .because("LIR late dump");
@@ -170,6 +206,7 @@ shtasmTest::shtasmTest(instrStream& s, const std::string& file)
 {
    s.appendNew<doInstr>()
       .usingApp("shtasm.exe")
+      .withDbgLog(file + ".o.mcODAlist")
       .withArg(file)
       .thenCheckReturnValue("shtasm assemble");
 
@@ -178,16 +215,19 @@ shtasmTest::shtasmTest(instrStream& s, const std::string& file)
    auto oListFile = cmn::pathUtil::addExt(oFile,cmn::pathUtil::kExtList);
 
    s.appendNew<compareInstr>()
+      .flagNoisey()
       .withControl(cmn::pathUtil::addPrefixToFilePart(oFile,"expected-"))
       .withVariable(oFile)
       .because("object binary");
 
    s.appendNew<compareInstr>()
+      .flagNoisey()
       .withControl(cmn::pathUtil::addPrefixToFilePart(mcListFile,"expected-"))
       .withVariable(mcListFile)
       .because("mc listing");
 
    s.appendNew<compareInstr>()
+      .flagNoisey()
       .withControl(cmn::pathUtil::addPrefixToFilePart(oListFile,"expected-"))
       .withVariable(oListFile)
       .because("object listing");

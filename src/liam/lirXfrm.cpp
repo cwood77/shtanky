@@ -220,6 +220,24 @@ void lirComparisonOpDecomposition::runInstr(lirInstr& i)
       pXor->addArg(noob->getArgs()[0]->clone());
       scheduleInjectBefore(*pXor,i);
    }
+   else if(i.instrId == cmn::tgt::kMacroIsEqualTo)
+   {
+      // inject a SETcc instruction after me
+      auto noob = new lirInstr(cmn::tgt::kSetEqualTo);
+      noob->addArg(*i.getArgs()[0]);
+      scheduleInjectAfter(*noob,i);
+
+      // repurpose my instruction as a compare
+      i.instrId = cmn::tgt::kCmp;
+      i.getArgs().erase(i.getArgs().begin()); // I gave this arg away
+
+      // inject an xor before the compare, since SETcc
+      // only writes to a byte
+      auto *pXor = new lirInstr(cmn::tgt::kXor);
+      pXor->addArg(noob->getArgs()[0]->clone());
+      pXor->addArg(noob->getArgs()[0]->clone());
+      scheduleInjectBefore(*pXor,i);
+   }
 
    lirTransform::runInstr(i);
 }
@@ -319,7 +337,7 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
    // for now, only handle special cases
 
    // call can't handle immediate passed args
-   if(i.instrId == cmn::tgt::kCall) // splitter should be able to handle this
+   if(false && i.instrId == cmn::tgt::kCall) // splitter should be able to handle this
    {
       auto& args = i.getArgs();
       for(size_t j=2;j<args.size();j++)
@@ -349,6 +367,8 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
 
    // call can't handle any addr modifications (i.e. displacemnets or derefs)
    if(i.instrId == cmn::tgt::kCall) // splitter should be able to handle this
+                                    // that's possible but proven difficult, perhaps impossible
+                                    // consider "foo(self:x,self:y)", here the only var is 'self'
    {
       auto& args = i.getArgs();
       for(size_t j=2;j<args.size();j++)
@@ -376,7 +396,7 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
    }
 
    // temp hack for bops masquarading as =
-   if(i.instrId == cmn::tgt::kMov) // don't think I do this anymore; unattested in testdata
+   if(false && i.instrId == cmn::tgt::kMov) // don't think I do this anymore; unattested in testdata
    {
       auto *pArg = dynamic_cast<lirArgConst*>(i.getArgs()[0]);
       if(pArg)
@@ -412,7 +432,7 @@ void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
    { lirBranchDecomposition xfrm; xfrm.runStreams(lir); }
    { lirEarlyReturnDecomposition xfrm; xfrm.runStreams(lir); }
    { lirLabelDecomposition xfrm; xfrm.runStreams(lir); }
-   //{ lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); } // TODO this whole transform is legacy
+   { lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); } // TODO this whole transform is legacy
    { lirNumberingTransform xfrm; xfrm.runStreams(lir); }
 }
 
@@ -452,7 +472,10 @@ void spuriousVarStripper::runInstr(lirInstr& i)
    else if(i.instrId == cmn::tgt::kRet)
    {
       for(auto *pA : i.getArgs())
+      {
+         m_v.demand(*pA).unbindArgButKeepStorage(i,*pA);
          delete pA;
+      }
       i.getArgs().clear();
    }
 

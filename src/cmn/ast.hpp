@@ -1,4 +1,5 @@
 #pragma once
+#include "autoDump.hpp"
 #include "global.hpp"
 #include "throw.hpp"
 #include <functional>
@@ -14,6 +15,7 @@
 
 namespace cmn {
 
+class outBundle;
 class outStream;
 
 class node;
@@ -549,7 +551,7 @@ public:
 
 class invokeNode : public node {
 public:
-   link<methodNode> proto;
+   link<iInvokeTargetNode> proto;
 
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
@@ -712,6 +714,7 @@ public:
    virtual void acceptVisitor(iNodeVisitor& v) { v.visit(*this); }
 };
 
+// a type argument to a template, like 'T'
 class constraintNode : public node {
 public:
    std::string name;
@@ -912,6 +915,73 @@ public:
 
 private:
    outStream& m_s;
+};
+
+// ASTs can be tricky.  Deleting an AST requires a delete op, which generally means
+// destroying AST with RAII is problematic.  Use an exception barrier to address this,
+// along with getting an AST dump upon error.  Remember to disable the barrier in
+// non-exception (i.e. normal) cases.
+//
+// in summary, use a barrier when
+// - you want a AST dump file on throw
+//       -- or --
+// - your graph is complex enough to require a delete op to destroy
+//
+class astExceptionBarrierBase {
+public:
+   void disarm() { m_armed = false; }
+
+protected:
+   astExceptionBarrierBase(
+      outBundle& dbgOut,
+      const std::string& path)
+   : m_dbgOut(dbgOut), m_path(path), m_armed(true) {}
+
+   void dump(node& n);
+
+   outBundle& m_dbgOut;
+   std::string m_path;
+   bool m_armed;
+};
+
+template<class T>
+class astExceptionBarrier : public astExceptionBarrierBase {
+public:
+   astExceptionBarrier(
+      std::unique_ptr<T>& pRoot,
+      outBundle& dbgOut,
+      const std::string& pathPrefix)
+   : astExceptionBarrierBase(dbgOut,pathPrefix + ".99crash.ast")
+   , m_pRoot(pRoot)
+   {}
+
+   ~astExceptionBarrier()
+   {
+      if(m_armed)
+      {
+         dump(*m_pRoot.get());
+         m_pRoot.release();
+      }
+      m_armed = false;
+   }
+
+private:
+   std::unique_ptr<T>& m_pRoot;
+};
+
+template<class T>
+class astFirewall : public iLogger {
+public:
+   typedef std::unique_ptr<T> argType;
+
+   explicit astFirewall(argType& n) : m_pPtr(n) {}
+
+   virtual void onThrow() { m_pPtr.release(); }
+   virtual std::string getExt() { return ".ast"; }
+   virtual void dump(outStream& s) { astFormatter v(s); m_pPtr->acceptVisitor(v); }
+
+private:
+   std::unique_ptr<T>& m_pPtr;
 };
 
 template<class T = hNodeVisitor>

@@ -33,20 +33,38 @@ abstract loopInstBase {
    {
    }
 
+   protected setCount(val : int) : void
+   {
+      _count = val;
+   }
+
 }
 
 class forLoopInst : loopInstBase {
 
+   _start : int = 0;
+   _stop : int = 0;
+
    public setBounds(start : int, stop : int) : void
    {
+      // TODO HACK this should be illegal but isn't?
+      //_count = start;
+      setCount(start);
+      _stop = stop;
    }
 
    public inBounds() : bool
    {
+      if(getCount() < _start)
+         return false;
+      if(_stop < getCount())
+         return false;
+      return true;
    }
 
    public getValue() : int
    {
+      return getCount();
    }
 
 }

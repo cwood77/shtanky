@@ -1,0 +1,25 @@
+[program]
+class loopTest : .sht.cons.program {
+
+   override run(args : str[]) : void
+   {
+      ._print("===for");
+      ._print("(1-4)");
+      for[i](1,6)
+         printI(i);
+   }
+
+   private printI(i : int) : void
+   {
+      if(i < 1)
+         ._print("  0");
+      else if(i < 2)
+         ._print("  1");
+      else if(i < 3)
+         ._print("  2");
+      else if(i < 4)
+         ._print("  3");
+      else
+         ._print("  4");
+   }
+}

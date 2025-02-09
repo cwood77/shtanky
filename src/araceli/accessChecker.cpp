@@ -11,10 +11,10 @@ void memberAccessChecker::visit(cmn::invokeNode& n)
 {
    enforce(
       n,
-      n.proto.getRefee()->attributes,
-      n.proto.getRefee()->getAncestor<cmn::classNode>(),
+      n.proto.getRefee()->getNode().attributes,
+      n.proto.getRefee()->getNode().getAncestor<cmn::classNode>(),
       n.getAncestor<cmn::classNode>(),
-      n.proto.getRefee()->flags & cmn::nodeFlags::kAccessSpecifierMask);
+      n.proto.getRefee()->getNode().flags & cmn::nodeFlags::kAccessSpecifierMask);
 
    hNodeVisitor::visit(n);
 }

@@ -1,0 +1,72 @@
+abstract loopInstBase {
+
+   private _up : bool = true;
+   private _count : int = 0;
+   public setDir(up : bool) : void
+   {
+      _up = up;
+   }
+   public getCount() : int
+   {
+            return _count;
+   }
+   public virtual bump() : void
+   {
+      if(_up)
+      {
+         _count = _count + 1;
+      }
+   }
+   public break() : void
+   {
+   }
+   public breakWithReason(reason : .sht.core.string) : void
+   {
+   }
+   public continue() : void
+   {
+   }
+   protected setCount(val : int) : void
+   {
+      _count = val;
+   }
+
+}
+
+class forLoopInst : loopInstBase {
+
+   private _start : int = 0;
+   private _stop : int = 0;
+   public setBounds(start : int, stop : int) : void
+   {
+      setCount(start);
+      _stop = stop;
+   }
+   public inBounds() : bool
+   {
+      if(getCount() < _start)
+      {
+                  return false;
+      }
+      if(_stop < getCount())
+      {
+                  return false;
+      }
+            return true;
+   }
+   public getValue() : int
+   {
+            return getCount();
+   }
+
+}
+
+class whileLoopInst : loopInstBase {
+
+   public getValue() : int
+   {
+            return getCount();
+   }
+
+}
+

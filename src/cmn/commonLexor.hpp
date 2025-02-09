@@ -46,6 +46,7 @@ public:
       kBoolLiteral,
 
       kPlus,
+      kDoubleEquals,
 
       kGeneric,
       kInstantiate,

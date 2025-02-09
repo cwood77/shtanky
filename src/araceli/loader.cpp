@@ -75,14 +75,10 @@ void loader::loadFile(cmn::scopeNode& s, const std::string& fullPath)
    s.appendChild(*file.release());
 }
 
-void loader::findScopeAndLoadFile(cmn::araceliProjectNode& s, const std::string& fullPath)
+void loader::findScopeAndLoadFolder(cmn::araceliProjectNode& s, const std::string& fullPath)
 {
-   std::string fileName = cmn::pathUtil::getLastPart(fullPath);
-   std::string folderName(fullPath.c_str(),fullPath.length() - fileName.length() - 1);
-   cdwDEBUG("searching for scope '%s'\n",folderName.c_str());
-
-   auto& scope = findScope(s,folderName);
-   loadFile(scope,fullPath);
+   auto& scope = findScope(s,fullPath);
+   loadFolder(scope);
 }
 
 bool startsWith(const std::string& thing, const std::string& prefix)

@@ -8,7 +8,7 @@ namespace shlink {
 
 iTarget *createTarget(cmn::cmdLine& cl)
 {
-   std::string name = cl.getOption("target","shtanky-app");
+   std::string name = cl.getOption("-target","shtanky-app");
    if(name != "shtanky-app")
       cdwTHROW("unknown target");
 

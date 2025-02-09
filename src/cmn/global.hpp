@@ -24,6 +24,8 @@ public:
    T& demand();
    const T& demand() const;
 
+   bool isValid() const { return m_pPtr != NULL; }
+
 private:
    T *m_pPtr;
 

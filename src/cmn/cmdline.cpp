@@ -1,4 +1,5 @@
 #include "cmdline.hpp"
+#include "trace.hpp"
 #include <stdarg.h>
 
 namespace cmn {
@@ -8,6 +9,8 @@ cmdLine::cmdLine(int argc, const char *argv[]) : m_i(0)
    m_args.reserve(argc-1);
    for(int i=1;i<argc;i++)
       m_args.push_back(argv[i]);
+
+   configTrace();
 }
 
 bool cmdLine::getSwitch(const std::string& on, const std::string& off, bool defValue)
@@ -63,6 +66,17 @@ void cmdLine::addNextArgDefaultsIfNoneLeft(size_t cnt, ...)
    }
 
    va_end(ap);
+}
+
+void cmdLine::configTrace()
+{
+   auto setting = getOption("-trace","d");
+   if(setting == "i")
+      trace::filter = trace::kInfo;
+   else if(setting == "v")
+      trace::filter = trace::kVerbose;
+   else if(setting == "d")
+      trace::filter = trace::kDebug;
 }
 
 } // namespace cmn

@@ -1,0 +1,22 @@
+class string {
+
+   public set(literal : ptr) : void
+   {
+      _p = ._strld(literal);
+   }
+   public length() : int
+   {
+      ._strlen(_p);
+   }
+   public indexOpGet(i : int) : int
+   {
+      ._strgidx(_p);
+   }
+   public indexOpSet(i : int, val : int) : void
+   {
+      ._strsidx(_p,i,val);
+   }
+   private _p : ptr;
+
+}
+

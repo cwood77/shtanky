@@ -1,0 +1,31 @@
+class .uats.ifTest {
+   _vtbl : .uats.ifTest_vtbl;
+   _out : .sht.cons.iStream;
+}
+
+func .uats.ifTest.run(
+   self : .uats.ifTest,
+   args : .sht.core.array<.sht.core.string>) : void;
+
+func .uats.ifTest.doTest(
+   self : .uats.ifTest,
+   flag : int) : void;
+
+func .uats.ifTest.cctor(
+   self : .uats.ifTest) : .uats.ifTest;
+
+func .uats.ifTest.cdtor(
+   self : .uats.ifTest) : .uats.ifTest;
+
+class .uats.ifTest_vtbl {
+   run : ptr;
+}
+
+func .uats.ifTest_sctor(
+   self : .uats.ifTest) : void;
+
+func .uats.ifTest_sdtor(
+   self : .uats.ifTest) : void;
+
+ref "..\sht\cons\program.ara.lh";
+ref "..\sht\core\array.ara.lh";

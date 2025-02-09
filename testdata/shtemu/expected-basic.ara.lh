@@ -1,0 +1,27 @@
+class .shtemu.foo {
+   _vtbl : .shtemu.foo_vtbl;
+   _out : .sht.cons.iStream;
+}
+
+func .shtemu.foo.run(
+   self : .shtemu.foo,
+   args : .sht.core.array<.sht.core.string>) : void;
+
+func .shtemu.foo.cctor(
+   self : .shtemu.foo) : .shtemu.foo;
+
+func .shtemu.foo.cdtor(
+   self : .shtemu.foo) : .shtemu.foo;
+
+class .shtemu.foo_vtbl {
+   run : ptr;
+}
+
+func .shtemu.foo_sctor(
+   self : .shtemu.foo) : void;
+
+func .shtemu.foo_sdtor(
+   self : .shtemu.foo) : void;
+
+ref "..\sht\cons\program.ara.lh";
+ref "..\sht\core\array.ara.lh";

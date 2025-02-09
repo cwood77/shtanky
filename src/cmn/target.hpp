@@ -65,10 +65,12 @@ enum instrIds {
    kSplit,
 
    kMacroIsLessThan,
+   kMacroIsEqualTo, // 20
    kCmp,
    kSetLessThanSigned,
+   kSetEqualTo,
 
-   kMacroIfFalse, // 22
+   kMacroIfFalse, // 24
    kJumpEqual,
    kGoto,
 

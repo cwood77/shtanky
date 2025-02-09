@@ -53,6 +53,13 @@ static const genInfo kGenInfo[] = {
    },
    { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
 
+   { "CMP{REX.W + 3B /r}", (unsigned char[]){
+      genInfo::kOpcode1, 0x3B,
+      genInfo::kArgFmtBytes,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kModRmReg, genInfo::kModRmRm, genInfo::kNa, genInfo::kNa } },
+
    { "JE{0F 84 cd}", (unsigned char[]){
       genInfo::kOpcode2, 0x0F, 0x84,
       genInfo::kCodeOffset32,
@@ -125,6 +132,13 @@ static const genInfo kGenInfo[] = {
 
    { "SETL{REX + 0F 9C}", (unsigned char[]){
       genInfo::kOpcode2, 0x0F, 0x9C,
+      genInfo::kArgFmtBytes,
+      genInfo::kEndOfInstr,
+   },
+   { genInfo::kModRmRm, genInfo::kNa, genInfo::kNa, genInfo::kNa } },
+
+   { "SETE{REX + 0F 94}", (unsigned char[]){
+      genInfo::kOpcode2, 0x0F, 0x94,
       genInfo::kArgFmtBytes,
       genInfo::kEndOfInstr,
    },

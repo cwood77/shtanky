@@ -30,7 +30,7 @@ std::string scriptState::reserveLabel(const std::string& hint)
 void scriptStream::silenceTestExeIf()
 {
    if(m_pState->shouldSilenceExes())
-      stream() << " >nul 2>&1" << std::endl;
+      stream() << "-trace i >nul 2>&1" << std::endl;
    else
       stream() << std::endl;
 }
@@ -115,6 +115,12 @@ doInstr& doInstr::usingApp(const std::string& exeName)
    return *this;
 }
 
+doInstr& doInstr::withDbgLog(const std::string& pattern)
+{
+   s().get(kStreamClean).stream() << "del \"" << pattern << "\" >nul 2>&1" << std::endl;
+   return *this;
+}
+
 doInstr& doInstr::withArg(const std::string& arg)
 {
    s().get(kStreamCmd).stream() << "\"" << arg << "\" ";
@@ -167,6 +173,7 @@ compareInstr& compareInstr::withControl(const std::string& path)
    // args are backwards for bless stream, so just stash for now
    m_controlPath = path;
 
+   if(m_isNoisey)
    {
       auto& ss = s().get(kStreamUnbless);
       ss.stream() << "git restore \"" << path << "\"" << std::endl;
@@ -215,6 +222,32 @@ compareInstr& compareInstr::because(const std::string& reason)
       ss.stream() << ":" << passLbl << std::endl;
    }
 
+   markComplete();
+   return *this;
+}
+
+deprecatedCompareInstr& deprecatedCompareInstr::withControl(const std::string& path)
+{
+   {
+      auto& ss = s().get(kStreamClean);
+      ss.stream() << "del \"" << path << "\" >nul 2>&1" << std::endl;
+   }
+
+   return *this;
+}
+
+deprecatedCompareInstr& deprecatedCompareInstr::withVariable(const std::string& path)
+{
+   {
+      auto& ss = s().get(kStreamClean);
+      ss.stream() << "del \"" << path << "\" >nul 2>&1" << std::endl;
+   }
+
+   return *this;
+}
+
+deprecatedCompareInstr& deprecatedCompareInstr::because(const std::string& reason)
+{
    markComplete();
    return *this;
 }

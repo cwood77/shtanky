@@ -1,0 +1,29 @@
+[shtemu.exe:D:src/shtemu/osCall.cpp-16] service registered 1 => N6shtemu12printServiceE
+[shtemu.exe:i:src/shtemu/main.cpp-11] --- win64 shtanky emulator ---
+[shtemu.exe:i:src/shtemu/main.cpp-15] loading file .\testdata\uats\.app
+[shtemu.exe:v:src/shtemu/loader.cpp-44] loading '.\testdata\uats\.app'
+[shtemu.exe:D:src/shtemu/loader.cpp-19]   osCall is offset 60
+[shtemu.exe:D:src/shtemu/loader.cpp-26]   flags is offset 28
+[shtemu.exe:D:src/shtemu/loader.cpp-32]     setting flags to {0,1,2,3}
+[shtemu.exe:i:src/shtemu/main.cpp-30] passing control to app
+[shtemu.exe:D:src/shtemu/loader.cpp-12]   entrypoint is offset 68
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '===if'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '1)'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '---'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '1'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '1-3'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '2)'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '---'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '2'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '1-3'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '3)'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '---'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '3-4'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '1-3'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '4)'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '---'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '3-4'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '4'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '===for'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '(1-4)'
+[shtemu.exe:i:src/shtemu/main.cpp-32] control returned to shtemu

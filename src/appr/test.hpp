@@ -50,7 +50,7 @@ class araceliTest : public testBase {
 public:
    araceliTest(instrStream& s, const std::string& folder);
 
-   araceliTest& wholeApp() { setupAutoShlink(m_folder + "\\.app"); return *this; }
+   araceliTest& runFullBuildStack();
    araceliTest& verifyAdditionalArtifact(const std::string& path, const std::string& cuz)
    { testBase::verifyAdditionalArtifact(path,cuz); return *this; }
    araceliTest& expectLiamOf(const std::string& path, bool hasPhilemon = true);
@@ -84,7 +84,7 @@ class liamTest : public intermediateTest {
 public:
    liamTest(instrStream& s, const std::string& file);
 
-   liamTest& wholeApp(const std::string& appPath)
+   liamTest& runFullBuildStack(const std::string& appPath)
    { setupAutoShlink(appPath); return *this; }
 
    liamTest& emulateAndCheckOutput()
@@ -97,7 +97,7 @@ class shtasmTest : public intermediateTest {
 public:
    shtasmTest(instrStream& s, const std::string& file);
 
-   shtasmTest& wholeApp(const std::string& appPath)
+   shtasmTest& runFullBuildStack(const std::string& appPath)
    { setupAutoShlink(appPath); return *this; }
 
    shtasmTest& emulateAndCheckOutput()

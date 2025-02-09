@@ -27,6 +27,8 @@ public:
       kDebug,
    };
 
+   static levels filter;
+
    trace(levels level, const char *file, unsigned long line, const char *context)
    : m_le(level), m_fi(file), m_li(line), m_context(context) {}
 

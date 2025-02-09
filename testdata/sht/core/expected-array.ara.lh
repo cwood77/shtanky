@@ -1,0 +1,42 @@
+class .sht.core.array<.sht.core.string> {
+   _vtbl : .sht.core.array<.sht.core.string>_vtbl;
+   _length : int;
+   _ptr : ptr;
+}
+
+func .sht.core.array<.sht.core.string>.resize(
+   self : .sht.core.array<.sht.core.string>,
+   size : int) : void;
+
+func .sht.core.array<.sht.core.string>.getLength(
+   self : .sht.core.array<.sht.core.string>) : int;
+
+func .sht.core.array<.sht.core.string>.append(
+   self : .sht.core.array<.sht.core.string>,
+   value : .sht.core.string) : void;
+
+func .sht.core.array<.sht.core.string>.indexOpGet(
+   self : .sht.core.array<.sht.core.string>,
+   i : int) : .sht.core.string;
+
+func .sht.core.array<.sht.core.string>.indexOpSet(
+   self : .sht.core.array<.sht.core.string>,
+   i : int,
+   val : .sht.core.string) : void;
+
+func .sht.core.array<.sht.core.string>.cctor(
+   self : .sht.core.array<.sht.core.string>) : .sht.core.array<.sht.core.string>;
+
+func .sht.core.array<.sht.core.string>.cdtor(
+   self : .sht.core.array<.sht.core.string>) : .sht.core.array<.sht.core.string>;
+
+class .sht.core.array<.sht.core.string>_vtbl {
+}
+
+func .sht.core.array<.sht.core.string>_sctor(
+   self : .sht.core.array<.sht.core.string>) : void;
+
+func .sht.core.array<.sht.core.string>_sdtor(
+   self : .sht.core.array<.sht.core.string>) : void;
+
+ref ".\string.ara.lh";

@@ -1,0 +1,18 @@
+[program] 
+class foo : .sht.cons.program {
+
+   override run(args : .sht.core.array<.sht.core.string>) : void
+   {
+      ._print("starting program");
+      {
+         var i : .sht.core.whileLoopInst;
+         while[i](i->getValue() < 2)
+         {
+            ._print("inside loop");
+         }
+      }
+      ._print("leaving program");
+   }
+
+}
+

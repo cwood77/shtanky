@@ -1,0 +1,107 @@
+class .sht.core.loopInstBase {
+   _vtbl : .sht.core.loopInstBase_vtbl;
+   _up : bool;
+   _count : int;
+}
+
+class .sht.core.forLoopInst {
+   _vtbl : .sht.core.forLoopInst_vtbl;
+   _up : bool;
+   _count : int;
+   _start : int;
+   _stop : int;
+}
+
+class .sht.core.whileLoopInst {
+   _vtbl : .sht.core.whileLoopInst_vtbl;
+   _up : bool;
+   _count : int;
+}
+
+func .sht.core.loopInstBase.setDir(
+   self : .sht.core.loopInstBase,
+   up : bool) : void;
+
+func .sht.core.loopInstBase.getCount(
+   self : .sht.core.loopInstBase) : int;
+
+func .sht.core.loopInstBase.bump(
+   self : .sht.core.loopInstBase) : void;
+
+func .sht.core.loopInstBase.break(
+   self : .sht.core.loopInstBase) : void;
+
+func .sht.core.loopInstBase.breakWithReason(
+   self : .sht.core.loopInstBase,
+   reason : .sht.core.string) : void;
+
+func .sht.core.loopInstBase.continue(
+   self : .sht.core.loopInstBase) : void;
+
+func .sht.core.loopInstBase.setCount(
+   self : .sht.core.loopInstBase,
+   val : int) : void;
+
+func .sht.core.loopInstBase.cctor(
+   self : .sht.core.loopInstBase) : .sht.core.loopInstBase;
+
+func .sht.core.loopInstBase.cdtor(
+   self : .sht.core.loopInstBase) : .sht.core.loopInstBase;
+
+func .sht.core.forLoopInst.setBounds(
+   self : .sht.core.forLoopInst,
+   start : int,
+   stop : int) : void;
+
+func .sht.core.forLoopInst.inBounds(
+   self : .sht.core.forLoopInst) : bool;
+
+func .sht.core.forLoopInst.getValue(
+   self : .sht.core.forLoopInst) : int;
+
+func .sht.core.forLoopInst.cctor(
+   self : .sht.core.forLoopInst) : .sht.core.forLoopInst;
+
+func .sht.core.forLoopInst.cdtor(
+   self : .sht.core.forLoopInst) : .sht.core.forLoopInst;
+
+func .sht.core.whileLoopInst.getValue(
+   self : .sht.core.whileLoopInst) : int;
+
+func .sht.core.whileLoopInst.cctor(
+   self : .sht.core.whileLoopInst) : .sht.core.whileLoopInst;
+
+func .sht.core.whileLoopInst.cdtor(
+   self : .sht.core.whileLoopInst) : .sht.core.whileLoopInst;
+
+class .sht.core.forLoopInst_vtbl {
+   bump : ptr;
+}
+
+class .sht.core.loopInstBase_vtbl {
+   bump : ptr;
+}
+
+class .sht.core.whileLoopInst_vtbl {
+   bump : ptr;
+}
+
+func .sht.core.forLoopInst_sctor(
+   self : .sht.core.forLoopInst) : void;
+
+func .sht.core.forLoopInst_sdtor(
+   self : .sht.core.forLoopInst) : void;
+
+func .sht.core.loopInstBase_sctor(
+   self : .sht.core.loopInstBase) : void;
+
+func .sht.core.loopInstBase_sdtor(
+   self : .sht.core.loopInstBase) : void;
+
+func .sht.core.whileLoopInst_sctor(
+   self : .sht.core.whileLoopInst) : void;
+
+func .sht.core.whileLoopInst_sdtor(
+   self : .sht.core.whileLoopInst) : void;
+
+ref ".\string.ara.lh";

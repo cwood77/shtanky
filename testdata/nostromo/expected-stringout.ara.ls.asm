@@ -18,10 +18,11 @@
                           sub, rsp, 32                      
                           mov, rdi, [rbx+8]                 ; fieldaccess: owner of _vtbl
                           sub, rsp, 32                      
+                          mov, rdx, 0                       ;       (0 req for rdx) [splitter]
                           call, .sht.core.string.indexOpGet ; (call label)
                           add, rsp, 32                      
+                          mov, rcx, [rbx+8]                 ; shape:hoist addrOf from call
                           mov, rdx, rax                     ;       (rval1 req for rdx) [splitter]
-                          mov, rcx, rbx                     ; (restore [combiner])
                           call, [rdi]                       ; vtbl call to .nostromo.uart16550.driver_vtbl::write8
                           add, rsp, 32                      
                           mov, rsp, rbp                     

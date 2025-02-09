@@ -7,53 +7,55 @@ void forLoopToWhileLoopConverter::visit(cmn::forLoopNode& n)
 {
    hNodeVisitor::visit(n);
 
+   if(n.getChildren().size() != 3)
+      cdwTHROW("forLoopNode children is %d != 3",n.getChildren().size());
+
    // replace this for loop with a while loop
 
    // i->setBounds(min,max)
    cmn::fileNode root;
-   cmn::treeWriter(root)
+   auto& c = cmn::treeWriter(root)
       .append<cmn::callNode>([](auto& c){c.pTarget.ref=".sht.core.forLoopInst.setBounds";})
          .append<cmn::varRefNode>([&](auto& v){ v.pSrc.ref = n.name; })
-            .backTo<cmn::callNode>()
-         .append<cmn::intLiteralNode>([](auto& i){ i.lexeme="0"; })
-            .backTo<cmn::callNode>()
-         .append<cmn::intLiteralNode>([](auto& i){ i.lexeme="1"; })
+            .backTo<cmn::callNode>().get()
    ;
+   c.appendChild(*n.getChildren()[0]); n.getChildren().erase(n.getChildren().begin());
+   c.appendChild(*n.getChildren()[0]); n.getChildren().erase(n.getChildren().begin());
 
-   auto *pCall = root.getChildren()[0];
-   std::unique_ptr<cmn::node> pOld(n.getParent()->replaceChild(n,*pCall));
+   // replace old loop with set bounds, but keep old copy for later
+   auto *pSetBnds = root.getChildren()[0];
+   std::unique_ptr<cmn::node> pOldLoop(n.getParent()->replaceChild(n,*pSetBnds));
    root.getChildren().clear();
 
-   // i->setDir(true)
-   cmn::treeWriter(*pCall)
+   auto& w = cmn::treeWriter(*pSetBnds)
+      // i->setDir(true)
       .after<cmn::callNode>([](auto& c){c.pTarget.ref=".sht.core.loopInstBase.setDir";})
          .append<cmn::varRefNode>([&](auto& v){ v.pSrc.ref = n.name; })
             .backTo<cmn::callNode>()
          .append<cmn::boolLiteralNode>([](auto& i){ i.value=true; })
             .backTo<cmn::callNode>()
-   ;
 
-   // while(i->inBounds())
-   auto& w = cmn::treeWriter(*pCall)
+      // while(i->inBounds())
       .after<cmn::whileLoopNode>([&](auto& l)
       {
          // loops need even lineNumbers intact for GUID calculation, so copy everything
          cmn::fieldCopyingNodeVisitor v(l,false);
          v.visit(static_cast<cmn::loopBaseNode&>(n));
       })
-         .after<cmn::callNode>([](auto& c){c.pTarget.ref=".sht.core.forLoopInst.inBounds";})
+         .append<cmn::callNode>([](auto& c){c.pTarget.ref=".sht.core.forLoopInst.inBounds";})
             .append<cmn::varRefNode>([&](auto& v){ v.pSrc.ref = n.name; })
                .backTo<cmn::whileLoopNode>().get()
    ;
 
    // transfer over loop body
-   for(auto *pChild : pOld->getChildren())
-      w.appendChild(*pChild);
-   pOld->getChildren().clear();
+   w.appendChild(*pOldLoop->getChildren()[0]); pOldLoop->getChildren().clear();
 }
 
 void loopDecomposer::visit(cmn::whileLoopNode& n)
 {
+   if(n.getChildren().size() != 2)
+      cdwTHROW("whileLoop children is %d != 2",n.getChildren().size());
+
    auto& seq = n.demandSoleChild<cmn::sequenceNode>();
    auto guid = n.computeLoopGuid();
 
@@ -90,7 +92,7 @@ void loopDecomposer::visit(cmn::whileLoopNode& n)
    // fill in the condition of the if
    ifNode.insertChild(0,*n.getChildren()[0]);
 
-   // delete myself and orphan my kids (they're adopted now)
+   // delete myself and disown my kids (they're adopted now)
    n.getChildren().clear();
    delete n.getParent()->replaceChild(n,seq);
 }

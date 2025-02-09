@@ -1,12 +1,43 @@
+interface iFoo {
+   speak() : void;
+}
+
+class cat : iFoo {
+   override speak() : void { ._print("meow"); }
+}
+
+class dog : iFoo {
+   override speak() : void { ._print("woof"); }
+}
+
+class goon {
+   public makeTalk(prisoner : iFoo) : void
+   {
+      prisoner->speak();
+   }
+}
+
 [program]
 class foo : .sht.cons.program {
 
    override run(args : str[]) : void
    {
-      ._print("starting program");
-      while[i](i < 2)
-         ._print("inside loop");
-      ._print("leaving program");
+//     ._print("===while");
+//
+//     while[i](i < 2)
+//     {
+//        ._print("   inside loop");
+//     }
+
+      ._print("===starting");
+
+      {
+         var prisoner : cat;
+         var g : goon;
+         g->makeTalk(prisoner);
+      }
+
+      ._print("===done");
    }
 
 }

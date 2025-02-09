@@ -6,13 +6,17 @@
 .test.test.run: 
                 push, rbp                                
                 push, rbx                                
+                push, rdi                                
                 mov, rbp, rsp                            
                 sub, rsp, 32                             
-                mov, rbx, [rcx+8]                        ; fieldaccess: owner of _vtbl
+                mov, rdi, [rcx+8]                        ; fieldaccess: owner of _vtbl
                 lea, rdx, qwordptr ._strLit_helloWorld_0 
-                call, [rbx]                              ; vtbl call to .sht.cons.iStream_vtbl::printLn
+                mov, rbx, rcx                            ; (preserve) [combiner]
+                mov, rcx, [rbx+8]                        ; shape:hoist addrOf from call
+                call, [rdi]                              ; vtbl call to .sht.cons.iStream_vtbl::printLn
                 add, rsp, 32                             
                 mov, rsp, rbp                            
+                pop, rdi                                 
                 pop, rbx                                 
                 pop, rbp                                 
                 ret                                      

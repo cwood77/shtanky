@@ -2,45 +2,22 @@ const .text0 : str = "text 0";
 const .text1 : str = "text 1";
 const .text2 : str = "text 2";
 
-func .virtFunc0() : void
+func ._getflg(index : int) : int;
+func ._osCall(code : str, payload : str) : void;
+func ._print(msg : str) : void;
+
+func .subFunc2(x : int, y : int) : int
 {
-   ._print(.text0);
+   return x + y;
 }
 
-func .virtFunc1() : void
+func .subFunc1(x : int) : int
 {
-   ._print(.text1);
-}
-
-class .v {
-   f0 : ptr;
-   f1 : ptr;
-}
-
-[vtbl]
-const .vinst : .v = { .virtFunc0, .virtFunc1 };
-
-class .obj {
-   _vtbl : .v;
-}
-
-func .ctor(self : .obj) : void
-{
-   self:_vtbl = .vinst;
+   return .subFunc2(7, x);
 }
 
 [entrypoint]
 func .whatever() : void
 {
-   var o : .obj;
-   .ctor(o);
-   ._print(.text2);
-   o:_vtbl:f0->();
-   o:_vtbl:f1->();
-   o:_vtbl:f0->();
-   o:_vtbl:f1->();
+   .subFunc1(12);
 }
-
-func ._getflg(index : int) : int;
-func ._osCall(code : str, payload : str) : void;
-func ._print(msg : str) : void;
