@@ -15,7 +15,14 @@
 
 .seg code
 ._print:
+   push, rbp
+   mov, rbp, rsp
+   sub, rsp, 32
+
    mov, rdx, rcx
    mov, rcx, 1
    call, ._osCall
+
+   mov, rsp, rbp
+   pop, rbp
    ret

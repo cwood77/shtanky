@@ -32,12 +32,12 @@ rex(48)op(89)modR/M(e5)
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 26:                         mov, [rcx], rbx                               ; =
 rex(48)op(89)modR/M(19)
-// 27:                         sub, rsp, 32                                  
-rex(48)op(83)modR/M(ec)i8(20)
+// 27:                         sub, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 28:                         call, .sht.core.object.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 29:                         add, rsp, 32                                  
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 29:                         add, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 30:                         mov, rsp, rbp                                 
 rex(48)op(89)modR/M(ec)
 // 31:                         pop, rbx                                      
@@ -57,12 +57,12 @@ rex(48)op(89)modR/M(e5)
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 41:                         mov, [rcx], rbx                               ; =
 rex(48)op(89)modR/M(19)
-// 42:                         sub, rsp, 32                                  
-rex(48)op(83)modR/M(ec)i8(20)
+// 42:                         sub, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 43:                         call, .sht.core.object.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 44:                         add, rsp, 32                                  
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 44:                         add, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 45:                         mov, rsp, rbp                                 
 rex(48)op(89)modR/M(ec)
 // 46:                         pop, rbx                                      

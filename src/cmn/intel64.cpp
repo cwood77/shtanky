@@ -1,3 +1,4 @@
+#include "align.hpp"
 #include "intel64.hpp"
 #include "throw.hpp"
 
@@ -343,6 +344,14 @@ void w64CallingConvention::createScratchRegisterBank(std::vector<size_t>& v) con
    // volatile - saved around subcalls and not in the calling conventions
    v.push_back(i64::kReg10);
    v.push_back(i64::kReg11);
+}
+
+size_t w64CallingConvention::alignStackForSubcall(const size_t& currentAlignment) const
+{
+   unsigned long total = currentAlignment + 8; // add 8 for return address
+                                               // that 'call' will push
+   unsigned long fixed = align16(total);
+   return fixed - currentAlignment - 8;
 }
 
 const iSyscallConvention& w64EmuTargetInfo::getSyscallConvention() const

@@ -107,9 +107,12 @@ void asmCodeGen::handleInstr(lirInstr& i)
          break;
       case cmn::tgt::kEnterFunc:
          {
+            m_stackAlignment = 0;
+
             m_w[0] << i.comment << ":";
             m_w.advanceLine();
             m_w[1] << "push, " << m_t.getProc().getRegName(cmn::tgt::kStorageStackFramePtr);
+            m_stackAlignment += 8;
             m_w.advanceLine();
             auto& regs = m_f.getUsedRegs();
             for(auto it=regs.begin();it!=regs.end();++it)
@@ -117,6 +120,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
                if(m_t.getCallConvention().requiresPrologEpilogSave(*it))
                {
                   m_w[1] << "push, " << m_t.getProc().getRegName(*it);
+                  m_stackAlignment += 8;
                   m_w.advanceLine();
                }
             }
@@ -131,6 +135,7 @@ void asmCodeGen::handleInstr(lirInstr& i)
                   << "sub, "
                   << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr) << ", "
                   << locals;
+               m_stackAlignment += locals;
                m_w.advanceLine();
             }
          }
@@ -206,6 +211,15 @@ void asmCodeGen::handlePrePostCallStackAlloc(lirInstr& i, cmn::tgt::instrIds x)
    size_t size = i.getArgs()[0]->getSize();
    if(size == 0)
       m_w[1] << "; ";
+
+   // calculate stack alignment
+   auto pad = m_t.getCallConvention().alignStackForSubcall(m_stackAlignment+size);
+   std::stringstream annotation;
+   annotation
+      << (size+pad) << " = (passing size)" << size << " + (align pad)" << pad;
+   ;
+   i.comment += annotation.str();
+   size += pad;
 
    m_w[1] << m_t.getProc().getInstr(x)->name
       << ", " << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr)

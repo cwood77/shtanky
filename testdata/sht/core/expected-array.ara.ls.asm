@@ -4,14 +4,14 @@
                                           push, rbx          
                                           push, rdi          
                                           mov, rbp, rsp      
-                                          sub, rsp, 32       
+                                          sub, rsp, 32       ; 32 = (passing size)32 + (align pad)0
                                           mov, rbx, rcx      ; (preserve) [combiner]
                                           mov, rcx, [rbx+16] ; shape:hoist addrOf from call
                                           mov, rdi, rdx      ; (preserve) [combiner]
                                           mov, rdx, [rbx+8]  ; shape:hoist addrOf from call
                                           mov, r8, rdi       ;       (size req for r8) [splitter]
                                           call, ._arrresize  ; (call label)
-                                          add, rsp, 32       
+                                          add, rsp, 32       ; 32 = (passing size)32 + (align pad)0
                                           mov, [rbx+16], rax ; =
                                           mov, [rbx+8], r8   ; =
                                           mov, rsp, rbp      
@@ -41,11 +41,11 @@
                                               push, rbp          
                                               push, rbx          
                                               mov, rbp, rsp      
-                                              sub, rsp, 32       
+                                              sub, rsp, 40       ; 40 = (passing size)32 + (align pad)8
                                               mov, rbx, rcx      ; (preserve) [combiner]
                                               mov, rcx, [rbx+16] ; shape:hoist addrOf from call
                                               call, ._arrgidx    ; (call label)
-                                              add, rsp, 32       
+                                              add, rsp, 40       ; 40 = (passing size)32 + (align pad)8
                                               mov, rsp, rbp      
                                               pop, rbx           
                                               pop, rbp           
@@ -56,11 +56,11 @@
                                               push, rbp          
                                               push, rbx          
                                               mov, rbp, rsp      
-                                              sub, rsp, 32       
+                                              sub, rsp, 40       ; 40 = (passing size)32 + (align pad)8
                                               mov, rbx, rcx      ; (preserve) [combiner]
                                               mov, rcx, [rbx+16] ; shape:hoist addrOf from call
                                               call, ._arrsidx    ; (call label)
-                                              add, rsp, 32       
+                                              add, rsp, 40       ; 40 = (passing size)32 + (align pad)8
                                               mov, rsp, rbp      
                                               pop, rbx           
                                               pop, rbp           
@@ -92,14 +92,14 @@
                                          push, rbp                                                      
                                          push, rbx                                                      
                                          mov, rbp, rsp                                                  
-                                         sub, rsp, 32                                                   
+                                         sub, rsp, 40                                                   ; 40 = (passing size)32 + (align pad)8
                                          call, .sht.core.object_sctor                                   ; (call label)
-                                         add, rsp, 32                                                   
+                                         add, rsp, 40                                                   ; 40 = (passing size)32 + (align pad)8
                                          lea, rbx, qwordptr .sht.core.array<.sht.core.string>_vtbl_inst 
                                          mov, [rcx], rbx                                                ; =
-                                         sub, rsp, 32                                                   
+                                         sub, rsp, 40                                                   ; 40 = (passing size)32 + (align pad)8
                                          call, .sht.core.array<.sht.core.string>.cctor                  ; (call label)
-                                         add, rsp, 32                                                   
+                                         add, rsp, 40                                                   ; 40 = (passing size)32 + (align pad)8
                                          mov, rsp, rbp                                                  
                                          pop, rbx                                                       
                                          pop, rbp                                                       
@@ -112,12 +112,12 @@
                                          mov, rbp, rsp                                                  
                                          lea, rbx, qwordptr .sht.core.array<.sht.core.string>_vtbl_inst 
                                          mov, [rcx], rbx                                                ; =
-                                         sub, rsp, 32                                                   
+                                         sub, rsp, 40                                                   ; 40 = (passing size)32 + (align pad)8
                                          call, .sht.core.array<.sht.core.string>.cdtor                  ; (call label)
-                                         add, rsp, 32                                                   
-                                         sub, rsp, 32                                                   
+                                         add, rsp, 40                                                   ; 40 = (passing size)32 + (align pad)8
+                                         sub, rsp, 40                                                   ; 40 = (passing size)32 + (align pad)8
                                          call, .sht.core.object_sdtor                                   ; (call label)
-                                         add, rsp, 32                                                   
+                                         add, rsp, 40                                                   ; 40 = (passing size)32 + (align pad)8
                                          mov, rsp, rbp                                                  
                                          pop, rbx                                                       
                                          pop, rbp                                                       

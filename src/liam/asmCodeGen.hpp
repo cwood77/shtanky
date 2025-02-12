@@ -35,7 +35,7 @@ public:
 
 private:
    asmCodeGen(varTable& v, varFinder& f, cmn::tgt::iTargetInfo& t, cmn::textTableLineWriter& w)
-   : m_v(v), m_f(f), m_t(t), m_w(w) {}
+   : m_v(v), m_f(f), m_t(t), m_w(w), m_stackAlignment(0) {}
 
    void handleInstr(lirInstr& i);
    void handlePrePostCallStackAlloc(lirInstr& i, cmn::tgt::instrIds x);
@@ -45,6 +45,7 @@ private:
    varFinder& m_f;
    cmn::tgt::iTargetInfo& m_t;
    cmn::textTableLineWriter& m_w;
+   size_t m_stackAlignment;
 };
 
 } // namespace liam

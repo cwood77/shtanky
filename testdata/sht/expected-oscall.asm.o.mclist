@@ -16,11 +16,21 @@ rex(48)op(8f)modR/M(c5)
 // 14:    ret
 op(c3)
 // 17: ._print:
-// 18:    mov, rdx, rcx
+// 18:    push, rbp
+rex(48)op(ff)modR/M(f5)
+// 19:    mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 20:    sub, rsp, 32
+rex(48)op(83)modR/M(ec)i8(20)
+// 22:    mov, rdx, rcx
 rex(48)op(89)modR/M(ca)
-// 19:    mov, rcx, 1
+// 23:    mov, rcx, 1
 rex(48)op(b9)i64(01-00-00-00,00-00-00-00)
-// 20:    call, ._osCall
+// 24:    call, ._osCall
 op(e8)co32(00-00-00-00)
-// 21:    ret
+// 26:    mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 27:    pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 28:    ret
 op(c3)

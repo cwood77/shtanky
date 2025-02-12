@@ -24,9 +24,9 @@
                         mov, rbp, rsp                                 
                         lea, rbx, qwordptr .sht.core.object_vtbl_inst 
                         mov, [rcx], rbx                               ; =
-                        sub, rsp, 32                                  
+                        sub, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
                         call, .sht.core.object.cctor                  ; (call label)
-                        add, rsp, 32                                  
+                        add, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
                         mov, rsp, rbp                                 
                         pop, rbx                                      
                         pop, rbp                                      
@@ -39,9 +39,9 @@
                         mov, rbp, rsp                                 
                         lea, rbx, qwordptr .sht.core.object_vtbl_inst 
                         mov, [rcx], rbx                               ; =
-                        sub, rsp, 32                                  
+                        sub, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
                         call, .sht.core.object.cdtor                  ; (call label)
-                        add, rsp, 32                                  
+                        add, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
                         mov, rsp, rbp                                 
                         pop, rbx                                      
                         pop, rbp                                      

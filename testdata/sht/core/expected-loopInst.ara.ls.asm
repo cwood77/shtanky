@@ -96,10 +96,10 @@
                                  push, rbp                             
                                  push, rbx                             
                                  mov, rbp, rsp                         
-                                 sub, rsp, 32                          
+                                 sub, rsp, 40                          ; 40 = (passing size)32 + (align pad)8
                                  mov, rbx, r8                          ; (preserve) [combiner]
                                  call, .sht.core.loopInstBase.setCount ; (call label)
-                                 add, rsp, 32                          
+                                 add, rsp, 40                          ; 40 = (passing size)32 + (align pad)8
                                  mov, [rcx+32], rbx                    ; =
                                  mov, rsp, rbp                         
                                  pop, rbx                              
@@ -112,9 +112,9 @@
                                         push, rbx                                    
                                         push, rdi                                    
                                         mov, rbp, rsp                                
-                                        sub, rsp, 32                                 
+                                        sub, rsp, 32                                 ; 32 = (passing size)32 + (align pad)0
                                         call, .sht.core.loopInstBase.getCount        ; (call label)
-                                        add, rsp, 32                                 
+                                        add, rsp, 32                                 ; 32 = (passing size)32 + (align pad)0
                                         xor, rbx, rbx                                
                                         cmp, rax, [rcx+24]                           
                                         setlts, rbx                                  
@@ -128,10 +128,10 @@
                                         goto, .sht.core.forLoopInst.inBounds.endif.1 ; label decomp
 .seg code                               
 .sht.core.forLoopInst.inBounds.endif.1: 
-                                        sub, rsp, 32                                 
+                                        sub, rsp, 32                                 ; 32 = (passing size)32 + (align pad)0
                                         mov, rbx, rax                                ; (preserve) [combiner]
                                         call, .sht.core.loopInstBase.getCount        ; (call label)
-                                        add, rsp, 32                                 
+                                        add, rsp, 32                                 ; 32 = (passing size)32 + (align pad)0
                                         xor, rdi, rdi                                
                                         mov, r10, [rcx+32]                           ; codeshape decomp
                                         cmp, r10, rax                                
@@ -161,9 +161,9 @@
 .sht.core.forLoopInst.getValue:     
                                     push, rbp                                
                                     mov, rbp, rsp                            
-                                    sub, rsp, 32                             
+                                    sub, rsp, 32                             ; 32 = (passing size)32 + (align pad)0
                                     call, .sht.core.loopInstBase.getCount    ; (call label)
-                                    add, rsp, 32                             
+                                    add, rsp, 32                             ; 32 = (passing size)32 + (align pad)0
                                     goto, .sht.core.forLoopInst.getValue.end ; early return
 .seg code                           
 .sht.core.forLoopInst.getValue.end: 
@@ -195,9 +195,9 @@
 .sht.core.whileLoopInst.getValue:     
                                       push, rbp                                  
                                       mov, rbp, rsp                              
-                                      sub, rsp, 32                               
+                                      sub, rsp, 32                               ; 32 = (passing size)32 + (align pad)0
                                       call, .sht.core.loopInstBase.getCount      ; (call label)
-                                      add, rsp, 32                               
+                                      add, rsp, 32                               ; 32 = (passing size)32 + (align pad)0
                                       goto, .sht.core.whileLoopInst.getValue.end ; early return
 .seg code                             
 .sht.core.whileLoopInst.getValue.end: 
@@ -240,14 +240,14 @@
                              push, rbp                                          
                              push, rbx                                          
                              mov, rbp, rsp                                      
-                             sub, rsp, 32                                       
+                             sub, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
                              call, .sht.core.loopInstBase_sctor                 ; (call label)
-                             add, rsp, 32                                       
+                             add, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
                              lea, rbx, qwordptr .sht.core.forLoopInst_vtbl_inst 
                              mov, [rcx], rbx                                    ; =
-                             sub, rsp, 32                                       
+                             sub, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
                              call, .sht.core.forLoopInst.cctor                  ; (call label)
-                             add, rsp, 32                                       
+                             add, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
                              mov, rsp, rbp                                      
                              pop, rbx                                           
                              pop, rbp                                           
@@ -260,12 +260,12 @@
                              mov, rbp, rsp                                      
                              lea, rbx, qwordptr .sht.core.forLoopInst_vtbl_inst 
                              mov, [rcx], rbx                                    ; =
-                             sub, rsp, 32                                       
+                             sub, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
                              call, .sht.core.forLoopInst.cdtor                  ; (call label)
-                             add, rsp, 32                                       
-                             sub, rsp, 32                                       
+                             add, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
+                             sub, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
                              call, .sht.core.loopInstBase_sdtor                 ; (call label)
-                             add, rsp, 32                                       
+                             add, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
                              mov, rsp, rbp                                      
                              pop, rbx                                           
                              pop, rbp                                           
@@ -276,14 +276,14 @@
                               push, rbp                                           
                               push, rbx                                           
                               mov, rbp, rsp                                       
-                              sub, rsp, 32                                        
+                              sub, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               call, .sht.core.object_sctor                        ; (call label)
-                              add, rsp, 32                                        
+                              add, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               lea, rbx, qwordptr .sht.core.loopInstBase_vtbl_inst 
                               mov, [rcx], rbx                                     ; =
-                              sub, rsp, 32                                        
+                              sub, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               call, .sht.core.loopInstBase.cctor                  ; (call label)
-                              add, rsp, 32                                        
+                              add, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               mov, rsp, rbp                                       
                               pop, rbx                                            
                               pop, rbp                                            
@@ -296,12 +296,12 @@
                               mov, rbp, rsp                                       
                               lea, rbx, qwordptr .sht.core.loopInstBase_vtbl_inst 
                               mov, [rcx], rbx                                     ; =
-                              sub, rsp, 32                                        
+                              sub, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               call, .sht.core.loopInstBase.cdtor                  ; (call label)
-                              add, rsp, 32                                        
-                              sub, rsp, 32                                        
+                              add, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
+                              sub, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               call, .sht.core.object_sdtor                        ; (call label)
-                              add, rsp, 32                                        
+                              add, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               mov, rsp, rbp                                       
                               pop, rbx                                            
                               pop, rbp                                            
@@ -312,14 +312,14 @@
                                push, rbp                                            
                                push, rbx                                            
                                mov, rbp, rsp                                        
-                               sub, rsp, 32                                         
+                               sub, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
                                call, .sht.core.loopInstBase_sctor                   ; (call label)
-                               add, rsp, 32                                         
+                               add, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
                                lea, rbx, qwordptr .sht.core.whileLoopInst_vtbl_inst 
                                mov, [rcx], rbx                                      ; =
-                               sub, rsp, 32                                         
+                               sub, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
                                call, .sht.core.whileLoopInst.cctor                  ; (call label)
-                               add, rsp, 32                                         
+                               add, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
                                mov, rsp, rbp                                        
                                pop, rbx                                             
                                pop, rbp                                             
@@ -332,12 +332,12 @@
                                mov, rbp, rsp                                        
                                lea, rbx, qwordptr .sht.core.whileLoopInst_vtbl_inst 
                                mov, [rcx], rbx                                      ; =
-                               sub, rsp, 32                                         
+                               sub, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
                                call, .sht.core.whileLoopInst.cdtor                  ; (call label)
-                               add, rsp, 32                                         
-                               sub, rsp, 32                                         
+                               add, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
+                               sub, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
                                call, .sht.core.loopInstBase_sdtor                   ; (call label)
-                               add, rsp, 32                                         
+                               add, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
                                mov, rsp, rbp                                        
                                pop, rbx                                             
                                pop, rbp                                             

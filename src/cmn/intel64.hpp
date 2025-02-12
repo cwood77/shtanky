@@ -49,6 +49,7 @@ public:
    virtual bool requiresSubCallSave(size_t r) const;
    virtual void createRegisterBankInPreferredOrder(std::vector<size_t>& v) const;
    virtual void createScratchRegisterBank(std::vector<size_t>& v) const;
+   virtual size_t alignStackForSubcall(const size_t& currentAlignment) const;
 };
 
 class w64EmuTargetInfo : public tgt::iTargetInfo {

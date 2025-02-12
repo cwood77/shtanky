@@ -59,14 +59,14 @@
                                   push, rbp                                               
                                   push, rbx                                               
                                   mov, rbp, rsp                                           
-                                  sub, rsp, 32                                            
+                                  sub, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
                                   call, .nostromo.uart16550.fakeBase_sctor                ; (call label)
-                                  add, rsp, 32                                            
+                                  add, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
                                   lea, rbx, qwordptr .nostromo.uart16550.driver_vtbl_inst 
                                   mov, [rcx], rbx                                         ; =
-                                  sub, rsp, 32                                            
+                                  sub, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
                                   call, .nostromo.uart16550.driver.cctor                  ; (call label)
-                                  add, rsp, 32                                            
+                                  add, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
                                   mov, rsp, rbp                                           
                                   pop, rbx                                                
                                   pop, rbp                                                
@@ -79,12 +79,12 @@
                                   mov, rbp, rsp                                           
                                   lea, rbx, qwordptr .nostromo.uart16550.driver_vtbl_inst 
                                   mov, [rcx], rbx                                         ; =
-                                  sub, rsp, 32                                            
+                                  sub, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
                                   call, .nostromo.uart16550.driver.cdtor                  ; (call label)
-                                  add, rsp, 32                                            
-                                  sub, rsp, 32                                            
+                                  add, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
+                                  sub, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
                                   call, .nostromo.uart16550.fakeBase_sdtor                ; (call label)
-                                  add, rsp, 32                                            
+                                  add, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
                                   mov, rsp, rbp                                           
                                   pop, rbx                                                
                                   pop, rbp                                                
@@ -95,14 +95,14 @@
                                     push, rbp                                                 
                                     push, rbx                                                 
                                     mov, rbp, rsp                                             
-                                    sub, rsp, 32                                              
+                                    sub, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
                                     call, .sht.core.object_sctor                              ; (call label)
-                                    add, rsp, 32                                              
+                                    add, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
                                     lea, rbx, qwordptr .nostromo.uart16550.fakeBase_vtbl_inst 
                                     mov, [rcx], rbx                                           ; =
-                                    sub, rsp, 32                                              
+                                    sub, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
                                     call, .nostromo.uart16550.fakeBase.cctor                  ; (call label)
-                                    add, rsp, 32                                              
+                                    add, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
                                     mov, rsp, rbp                                             
                                     pop, rbx                                                  
                                     pop, rbp                                                  
@@ -115,12 +115,12 @@
                                     mov, rbp, rsp                                             
                                     lea, rbx, qwordptr .nostromo.uart16550.fakeBase_vtbl_inst 
                                     mov, [rcx], rbx                                           ; =
-                                    sub, rsp, 32                                              
+                                    sub, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
                                     call, .nostromo.uart16550.fakeBase.cdtor                  ; (call label)
-                                    add, rsp, 32                                              
-                                    sub, rsp, 32                                              
+                                    add, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
+                                    sub, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
                                     call, .sht.core.object_sdtor                              ; (call label)
-                                    add, rsp, 32                                              
+                                    add, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
                                     mov, rsp, rbp                                             
                                     pop, rbx                                                  
                                     pop, rbp                                                  
