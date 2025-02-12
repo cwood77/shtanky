@@ -76,7 +76,7 @@ int main(int argc, const char *argv[])
    });
 
    // another sandbox test for experimenting with Win64 ABI
-   testWriter(s,subset,cl).add("shtemu.s",[](auto& is){
+   testWriter(s,subset,cl).skipByDefault("shtemu.s",[](auto& is){
       shtasmTest(is,".\\testdata\\shtemu\\simple.asm")
          .runFullBuildStack(".\\testdata\\shtemu\\simple.app")
          .emulateAndCheckOutput()

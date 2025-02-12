@@ -12,6 +12,11 @@ SCRIPTLIB = scriptlib/xcopy-deploy.bat
 dtest: debug
 	@cmd /c appr.bat
 
+rtest: all
+	@cmd /c appr.bat rel
+
+atest: dtest rtest
+
 debug: \
 	dirs \
 	$(OUT_DIR)/debug/appr.exe \
@@ -61,7 +66,7 @@ dirs:
 	@mkdir -p $(OUT_DIR)/debug
 	@mkdir -p $(OUT_DIR)/release
 
-.PHONY: debug all clean dirs
+.PHONY: dtest rtest atest debug all clean dirs
 
 # ----------------------------------------------------------------------
 # cmn
