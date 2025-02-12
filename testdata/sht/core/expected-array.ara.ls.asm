@@ -41,11 +41,11 @@
                                               push, rbp          
                                               push, rbx          
                                               mov, rbp, rsp      
-                                              sub, rsp, 32       
+                                              sub, rsp, 40       
                                               mov, rbx, rcx      ; (preserve) [combiner]
                                               mov, rcx, [rbx+16] ; shape:hoist addrOf from call
                                               call, ._arrgidx    ; (call label)
-                                              add, rsp, 32       
+                                              add, rsp, 40       
                                               mov, rsp, rbp      
                                               pop, rbx           
                                               pop, rbp           
@@ -56,11 +56,11 @@
                                               push, rbp          
                                               push, rbx          
                                               mov, rbp, rsp      
-                                              sub, rsp, 32       
+                                              sub, rsp, 40       
                                               mov, rbx, rcx      ; (preserve) [combiner]
                                               mov, rcx, [rbx+16] ; shape:hoist addrOf from call
                                               call, ._arrsidx    ; (call label)
-                                              add, rsp, 32       
+                                              add, rsp, 40       
                                               mov, rsp, rbp      
                                               pop, rbx           
                                               pop, rbp           
@@ -92,14 +92,14 @@
                                          push, rbp                                                      
                                          push, rbx                                                      
                                          mov, rbp, rsp                                                  
-                                         sub, rsp, 32                                                   
+                                         sub, rsp, 40                                                   
                                          call, .sht.core.object_sctor                                   ; (call label)
-                                         add, rsp, 32                                                   
+                                         add, rsp, 40                                                   
                                          lea, rbx, qwordptr .sht.core.array<.sht.core.string>_vtbl_inst 
                                          mov, [rcx], rbx                                                ; =
-                                         sub, rsp, 32                                                   
+                                         sub, rsp, 40                                                   
                                          call, .sht.core.array<.sht.core.string>.cctor                  ; (call label)
-                                         add, rsp, 32                                                   
+                                         add, rsp, 40                                                   
                                          mov, rsp, rbp                                                  
                                          pop, rbx                                                       
                                          pop, rbp                                                       
@@ -112,12 +112,12 @@
                                          mov, rbp, rsp                                                  
                                          lea, rbx, qwordptr .sht.core.array<.sht.core.string>_vtbl_inst 
                                          mov, [rcx], rbx                                                ; =
-                                         sub, rsp, 32                                                   
+                                         sub, rsp, 40                                                   
                                          call, .sht.core.array<.sht.core.string>.cdtor                  ; (call label)
-                                         add, rsp, 32                                                   
-                                         sub, rsp, 32                                                   
+                                         add, rsp, 40                                                   
+                                         sub, rsp, 40                                                   
                                          call, .sht.core.object_sdtor                                   ; (call label)
-                                         add, rsp, 32                                                   
+                                         add, rsp, 40                                                   
                                          mov, rsp, rbp                                                  
                                          pop, rbx                                                       
                                          pop, rbp                                                       

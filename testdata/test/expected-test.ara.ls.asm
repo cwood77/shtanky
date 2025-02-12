@@ -46,14 +46,14 @@
                   push, rbp                               
                   push, rbx                               
                   mov, rbp, rsp                           
-                  sub, rsp, 32                            
+                  sub, rsp, 40                            
                   call, .sht.cons.program_sctor           ; (call label)
-                  add, rsp, 32                            
+                  add, rsp, 40                            
                   lea, rbx, qwordptr .test.test_vtbl_inst 
                   mov, [rcx], rbx                         ; =
-                  sub, rsp, 32                            
+                  sub, rsp, 40                            
                   call, .test.test.cctor                  ; (call label)
-                  add, rsp, 32                            
+                  add, rsp, 40                            
                   mov, rsp, rbp                           
                   pop, rbx                                
                   pop, rbp                                
@@ -66,12 +66,12 @@
                   mov, rbp, rsp                           
                   lea, rbx, qwordptr .test.test_vtbl_inst 
                   mov, [rcx], rbx                         ; =
-                  sub, rsp, 32                            
+                  sub, rsp, 40                            
                   call, .test.test.cdtor                  ; (call label)
-                  add, rsp, 32                            
-                  sub, rsp, 32                            
+                  add, rsp, 40                            
+                  sub, rsp, 40                            
                   call, .sht.cons.program_sdtor           ; (call label)
-                  add, rsp, 32                            
+                  add, rsp, 40                            
                   mov, rsp, rbp                           
                   pop, rbx                                
                   pop, rbp                                

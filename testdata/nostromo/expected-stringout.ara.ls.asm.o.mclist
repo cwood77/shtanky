@@ -11,38 +11,38 @@ rex(48)op(ff)modR/M(f7)
 rex(48)op(89)modR/M(e5)
 // 11:                           sub, rsp, 8                       
 rex(48)op(83)modR/M(ec)i8(08)
-// 12:                           sub, rsp, 32                      
-rex(48)op(83)modR/M(ec)i8(20)
+// 12:                           sub, rsp, 40                      
+rex(48)op(83)modR/M(ec)i8(28)
 // 13:                           mov, rbx, rcx                     ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
 // 14:                           mov, rcx, rdx                     ;       (msg req for rcx) [splitter]
 rex(48)op(89)modR/M(d1)
 // 15:                           call, .sht.core.string.length     ; (call label)
 op(e8)co32(00-00-00-00)
-// 16:                           add, rsp, 32                      
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 16:                           add, rsp, 40                      
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 17:                           mov, [rbp-8], rax                 ; =
 rex(48)op(89)modR/M(45)d8(f8)
-// 18:                           sub, rsp, 32                      
-rex(48)op(83)modR/M(ec)i8(20)
+// 18:                           sub, rsp, 40                      
+rex(48)op(83)modR/M(ec)i8(28)
 // 19:                           mov, rdi, [rbx+8]                 ; fieldaccess: owner of _vtbl
 rex(48)op(8b)modR/M(7b)d8(08)
-// 20:                           sub, rsp, 32                      
-rex(48)op(83)modR/M(ec)i8(20)
+// 20:                           sub, rsp, 40                      
+rex(48)op(83)modR/M(ec)i8(28)
 // 21:                           mov, rdx, 0                       ;       (0 req for rdx) [splitter]
 rex(48)op(ba)i64(00-00-00-00,00-00-00-00)
 // 22:                           call, .sht.core.string.indexOpGet ; (call label)
 op(e8)co32(00-00-00-00)
-// 23:                           add, rsp, 32                      
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 23:                           add, rsp, 40                      
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 24:                           mov, rcx, [rbx+8]                 ; shape:hoist addrOf from call
 rex(48)op(8b)modR/M(4b)d8(08)
 // 25:                           mov, rdx, rax                     ;       (rval1 req for rdx) [splitter]
 rex(48)op(89)modR/M(c2)
 // 26:                           call, [rdi]                       ; vtbl call to .nostromo.uart16550.driver_vtbl::write8
 rex(48)op(ff)modR/M(17)
-// 27:                           add, rsp, 32                      
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 27:                           add, rsp, 40                      
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 28:                           mov, rsp, rbp                     
 rex(48)op(89)modR/M(ec)
 // 29:                           pop, rdi                          
@@ -83,22 +83,22 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 57:                           mov, rbp, rsp                                   
 rex(48)op(89)modR/M(e5)
-// 58:                           sub, rsp, 32                                    
-rex(48)op(83)modR/M(ec)i8(20)
+// 58:                           sub, rsp, 40                                    
+rex(48)op(83)modR/M(ec)i8(28)
 // 59:                           call, .sht.core.object_sctor                    ; (call label)
 op(e8)co32(00-00-00-00)
-// 60:                           add, rsp, 32                                    
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 60:                           add, rsp, 40                                    
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 61:                           lea, rbx, qwordptr .nostromo.debugOut_vtbl_inst 
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 62:                           mov, [rcx], rbx                                 ; =
 rex(48)op(89)modR/M(19)
-// 63:                           sub, rsp, 32                                    
-rex(48)op(83)modR/M(ec)i8(20)
+// 63:                           sub, rsp, 40                                    
+rex(48)op(83)modR/M(ec)i8(28)
 // 64:                           call, .nostromo.debugOut.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 65:                           add, rsp, 32                                    
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 65:                           add, rsp, 40                                    
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 66:                           mov, rsp, rbp                                   
 rex(48)op(89)modR/M(ec)
 // 67:                           pop, rbx                                        
@@ -118,18 +118,18 @@ rex(48)op(89)modR/M(e5)
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 77:                           mov, [rcx], rbx                                 ; =
 rex(48)op(89)modR/M(19)
-// 78:                           sub, rsp, 32                                    
-rex(48)op(83)modR/M(ec)i8(20)
+// 78:                           sub, rsp, 40                                    
+rex(48)op(83)modR/M(ec)i8(28)
 // 79:                           call, .nostromo.debugOut.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 80:                           add, rsp, 32                                    
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 81:                           sub, rsp, 32                                    
-rex(48)op(83)modR/M(ec)i8(20)
+// 80:                           add, rsp, 40                                    
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
+// 81:                           sub, rsp, 40                                    
+rex(48)op(83)modR/M(ec)i8(28)
 // 82:                           call, .sht.core.object_sdtor                    ; (call label)
 op(e8)co32(00-00-00-00)
-// 83:                           add, rsp, 32                                    
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 83:                           add, rsp, 40                                    
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 84:                           mov, rsp, rbp                                   
 rex(48)op(89)modR/M(ec)
 // 85:                           pop, rbx                                        

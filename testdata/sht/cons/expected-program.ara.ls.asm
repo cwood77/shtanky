@@ -91,14 +91,14 @@
                          push, rbp                                      
                          push, rbx                                      
                          mov, rbp, rsp                                  
-                         sub, rsp, 32                                   
+                         sub, rsp, 40                                   
                          call, .sht.core.object_sctor                   ; (call label)
-                         add, rsp, 32                                   
+                         add, rsp, 40                                   
                          lea, rbx, qwordptr .sht.cons.iStream_vtbl_inst 
                          mov, [rcx], rbx                                ; =
-                         sub, rsp, 32                                   
+                         sub, rsp, 40                                   
                          call, .sht.cons.iStream.cctor                  ; (call label)
-                         add, rsp, 32                                   
+                         add, rsp, 40                                   
                          mov, rsp, rbp                                  
                          pop, rbx                                       
                          pop, rbp                                       
@@ -111,12 +111,12 @@
                          mov, rbp, rsp                                  
                          lea, rbx, qwordptr .sht.cons.iStream_vtbl_inst 
                          mov, [rcx], rbx                                ; =
-                         sub, rsp, 32                                   
+                         sub, rsp, 40                                   
                          call, .sht.cons.iStream.cdtor                  ; (call label)
-                         add, rsp, 32                                   
-                         sub, rsp, 32                                   
+                         add, rsp, 40                                   
+                         sub, rsp, 40                                   
                          call, .sht.core.object_sdtor                   ; (call label)
-                         add, rsp, 32                                   
+                         add, rsp, 40                                   
                          mov, rsp, rbp                                  
                          pop, rbx                                       
                          pop, rbp                                       
@@ -127,14 +127,14 @@
                          push, rbp                                      
                          push, rbx                                      
                          mov, rbp, rsp                                  
-                         sub, rsp, 32                                   
+                         sub, rsp, 40                                   
                          call, .sht.core.object_sctor                   ; (call label)
-                         add, rsp, 32                                   
+                         add, rsp, 40                                   
                          lea, rbx, qwordptr .sht.cons.program_vtbl_inst 
                          mov, [rcx], rbx                                ; =
-                         sub, rsp, 32                                   
+                         sub, rsp, 40                                   
                          call, .sht.cons.program.cctor                  ; (call label)
-                         add, rsp, 32                                   
+                         add, rsp, 40                                   
                          mov, rsp, rbp                                  
                          pop, rbx                                       
                          pop, rbp                                       
@@ -147,12 +147,12 @@
                          mov, rbp, rsp                                  
                          lea, rbx, qwordptr .sht.cons.program_vtbl_inst 
                          mov, [rcx], rbx                                ; =
-                         sub, rsp, 32                                   
+                         sub, rsp, 40                                   
                          call, .sht.cons.program.cdtor                  ; (call label)
-                         add, rsp, 32                                   
-                         sub, rsp, 32                                   
+                         add, rsp, 40                                   
+                         sub, rsp, 40                                   
                          call, .sht.core.object_sdtor                   ; (call label)
-                         add, rsp, 32                                   
+                         add, rsp, 40                                   
                          mov, rsp, rbp                                  
                          pop, rbx                                       
                          pop, rbp                                       
@@ -163,14 +163,14 @@
                         push, rbp                                     
                         push, rbx                                     
                         mov, rbp, rsp                                 
-                        sub, rsp, 32                                  
+                        sub, rsp, 40                                  
                         call, .sht.cons.iStream_sctor                 ; (call label)
-                        add, rsp, 32                                  
+                        add, rsp, 40                                  
                         lea, rbx, qwordptr .sht.cons.stdout_vtbl_inst 
                         mov, [rcx], rbx                               ; =
-                        sub, rsp, 32                                  
+                        sub, rsp, 40                                  
                         call, .sht.cons.stdout.cctor                  ; (call label)
-                        add, rsp, 32                                  
+                        add, rsp, 40                                  
                         mov, rsp, rbp                                 
                         pop, rbx                                      
                         pop, rbp                                      
@@ -183,12 +183,12 @@
                         mov, rbp, rsp                                 
                         lea, rbx, qwordptr .sht.cons.stdout_vtbl_inst 
                         mov, [rcx], rbx                               ; =
-                        sub, rsp, 32                                  
+                        sub, rsp, 40                                  
                         call, .sht.cons.stdout.cdtor                  ; (call label)
-                        add, rsp, 32                                  
-                        sub, rsp, 32                                  
+                        add, rsp, 40                                  
+                        sub, rsp, 40                                  
                         call, .sht.cons.iStream_sdtor                 ; (call label)
-                        add, rsp, 32                                  
+                        add, rsp, 40                                  
                         mov, rsp, rbp                                 
                         pop, rbx                                      
                         pop, rbp                                      

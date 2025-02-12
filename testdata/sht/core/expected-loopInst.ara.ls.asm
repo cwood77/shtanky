@@ -96,10 +96,10 @@
                                  push, rbp                             
                                  push, rbx                             
                                  mov, rbp, rsp                         
-                                 sub, rsp, 32                          
+                                 sub, rsp, 40                          
                                  mov, rbx, r8                          ; (preserve) [combiner]
                                  call, .sht.core.loopInstBase.setCount ; (call label)
-                                 add, rsp, 32                          
+                                 add, rsp, 40                          
                                  mov, [rcx+32], rbx                    ; =
                                  mov, rsp, rbp                         
                                  pop, rbx                              
@@ -240,14 +240,14 @@
                              push, rbp                                          
                              push, rbx                                          
                              mov, rbp, rsp                                      
-                             sub, rsp, 32                                       
+                             sub, rsp, 40                                       
                              call, .sht.core.loopInstBase_sctor                 ; (call label)
-                             add, rsp, 32                                       
+                             add, rsp, 40                                       
                              lea, rbx, qwordptr .sht.core.forLoopInst_vtbl_inst 
                              mov, [rcx], rbx                                    ; =
-                             sub, rsp, 32                                       
+                             sub, rsp, 40                                       
                              call, .sht.core.forLoopInst.cctor                  ; (call label)
-                             add, rsp, 32                                       
+                             add, rsp, 40                                       
                              mov, rsp, rbp                                      
                              pop, rbx                                           
                              pop, rbp                                           
@@ -260,12 +260,12 @@
                              mov, rbp, rsp                                      
                              lea, rbx, qwordptr .sht.core.forLoopInst_vtbl_inst 
                              mov, [rcx], rbx                                    ; =
-                             sub, rsp, 32                                       
+                             sub, rsp, 40                                       
                              call, .sht.core.forLoopInst.cdtor                  ; (call label)
-                             add, rsp, 32                                       
-                             sub, rsp, 32                                       
+                             add, rsp, 40                                       
+                             sub, rsp, 40                                       
                              call, .sht.core.loopInstBase_sdtor                 ; (call label)
-                             add, rsp, 32                                       
+                             add, rsp, 40                                       
                              mov, rsp, rbp                                      
                              pop, rbx                                           
                              pop, rbp                                           
@@ -276,14 +276,14 @@
                               push, rbp                                           
                               push, rbx                                           
                               mov, rbp, rsp                                       
-                              sub, rsp, 32                                        
+                              sub, rsp, 40                                        
                               call, .sht.core.object_sctor                        ; (call label)
-                              add, rsp, 32                                        
+                              add, rsp, 40                                        
                               lea, rbx, qwordptr .sht.core.loopInstBase_vtbl_inst 
                               mov, [rcx], rbx                                     ; =
-                              sub, rsp, 32                                        
+                              sub, rsp, 40                                        
                               call, .sht.core.loopInstBase.cctor                  ; (call label)
-                              add, rsp, 32                                        
+                              add, rsp, 40                                        
                               mov, rsp, rbp                                       
                               pop, rbx                                            
                               pop, rbp                                            
@@ -296,12 +296,12 @@
                               mov, rbp, rsp                                       
                               lea, rbx, qwordptr .sht.core.loopInstBase_vtbl_inst 
                               mov, [rcx], rbx                                     ; =
-                              sub, rsp, 32                                        
+                              sub, rsp, 40                                        
                               call, .sht.core.loopInstBase.cdtor                  ; (call label)
-                              add, rsp, 32                                        
-                              sub, rsp, 32                                        
+                              add, rsp, 40                                        
+                              sub, rsp, 40                                        
                               call, .sht.core.object_sdtor                        ; (call label)
-                              add, rsp, 32                                        
+                              add, rsp, 40                                        
                               mov, rsp, rbp                                       
                               pop, rbx                                            
                               pop, rbp                                            
@@ -312,14 +312,14 @@
                                push, rbp                                            
                                push, rbx                                            
                                mov, rbp, rsp                                        
-                               sub, rsp, 32                                         
+                               sub, rsp, 40                                         
                                call, .sht.core.loopInstBase_sctor                   ; (call label)
-                               add, rsp, 32                                         
+                               add, rsp, 40                                         
                                lea, rbx, qwordptr .sht.core.whileLoopInst_vtbl_inst 
                                mov, [rcx], rbx                                      ; =
-                               sub, rsp, 32                                         
+                               sub, rsp, 40                                         
                                call, .sht.core.whileLoopInst.cctor                  ; (call label)
-                               add, rsp, 32                                         
+                               add, rsp, 40                                         
                                mov, rsp, rbp                                        
                                pop, rbx                                             
                                pop, rbp                                             
@@ -332,12 +332,12 @@
                                mov, rbp, rsp                                        
                                lea, rbx, qwordptr .sht.core.whileLoopInst_vtbl_inst 
                                mov, [rcx], rbx                                      ; =
-                               sub, rsp, 32                                         
+                               sub, rsp, 40                                         
                                call, .sht.core.whileLoopInst.cdtor                  ; (call label)
-                               add, rsp, 32                                         
-                               sub, rsp, 32                                         
+                               add, rsp, 40                                         
+                               sub, rsp, 40                                         
                                call, .sht.core.loopInstBase_sdtor                   ; (call label)
-                               add, rsp, 32                                         
+                               add, rsp, 40                                         
                                mov, rsp, rbp                                        
                                pop, rbx                                             
                                pop, rbp                                             

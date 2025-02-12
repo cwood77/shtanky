@@ -345,6 +345,14 @@ void w64CallingConvention::createScratchRegisterBank(std::vector<size_t>& v) con
    v.push_back(i64::kReg11);
 }
 
+void w64CallingConvention::alignStackForSubcall(const size_t& currentAlignment, size_t& adjustment) const
+{
+   unsigned long total = currentAlignment + adjustment;
+   unsigned long fixed = (total + 15) & ~0xF;
+   fixed -= currentAlignment;
+   adjustment = fixed;
+}
+
 const iSyscallConvention& w64EmuTargetInfo::getSyscallConvention() const
 {
    cdwTHROW("unimpled");
