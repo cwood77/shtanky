@@ -17,7 +17,6 @@ func .main.entrypoint() : void
 
 func .main.check(label : str, value : bool) : void
 {
-   var unused_for_stack_padding : bool;
    ._print(label);
    if(value)
       ._print(.main.passLabel);
