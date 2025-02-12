@@ -125,6 +125,10 @@ By milestone
 - [x] handle volatile regs (i.e. regs must be preserved around calls if in use)
 - [x] impl frame ptrs
 
+### Fundamental
+- [ ] Can't use - in loopInst.ara?
+- [ ] function calls in liam aren't correctly trashing registers (see lats combiner)
+
 ### Must, but Later
 - [x] int literals
 - [x] invoke is sometimes a nonvirtual call
