@@ -1,0 +1,20 @@
+// 2: .here0:
+// 3: .data, "print works!" <b> 0 
+_strdata(70-72-69-6e,74-20-77-6f,72-6b-73-21)_intdata(00)
+// 6: .entrypoint:
+// 7:    push, rbp
+rex(48)op(ff)modR/M(f5)
+// 8:    mov, rbp, rsp
+rex(48)op(89)modR/M(e5)
+// 10:    sub, rsp, 32                                  
+rex(48)op(83)modR/M(ec)i8(20)
+// 11:    lea, rcx, qwordptr .here0
+rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
+// 12:    call, ._print
+op(e8)co32(00-00-00-00)
+// 14:    mov, rsp, rbp
+rex(48)op(89)modR/M(ec)
+// 15:    pop, rbp
+rex(48)op(8f)modR/M(c5)
+// 16:    ret
+op(c3)

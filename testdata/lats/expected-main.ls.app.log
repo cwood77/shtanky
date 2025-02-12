@@ -9,6 +9,10 @@
 [shtemu.exe:D:src/shtemu/loader.cpp-12]   entrypoint is offset 68
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '~~ lats start ~~'
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '- splitter'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '       progress'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '       progress'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '       progress'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '       progress'
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '  - simple'
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '    pass'
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '~~ lats end ~~'
