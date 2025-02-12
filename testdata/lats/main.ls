@@ -11,6 +11,7 @@ func .main.entrypoint() : void
    ._print(.main.startLabel);
 
    .splitter.test();
+   .combiner.test();
 
    ._print(.main.endLabel);
 }
@@ -25,3 +26,4 @@ func .main.check(label : str, value : bool) : void
 }
 
 ref ".\splitter.ls";
+ref ".\combiner.ls";

@@ -26,6 +26,9 @@
              call, .splitter.test                ; (call label)
              add, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
              sub, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
+             call, .combiner.test                ; (call label)
+             add, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
+             sub, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
              lea, rcx, qwordptr .main.endLabel   
              call, ._print                       ; (call label)
              add, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
@@ -62,6 +65,70 @@
                      pop, rbx                           
                      pop, rbp                           
                      ret                                
+
+.seg const
+.combiner.label:
+.data, "- combiner" <b> 0 
+
+.seg const
+.combiner.test.label:
+.data, "  - simple" <b> 0 
+
+.seg code           
+.combiner.subFunc2: 
+                    push, rbp
+                    mov, rbp, rsp
+                    mov, rsp, rbp
+                    pop, rbp
+                    ret
+
+.seg code           
+.combiner.subFunc1: 
+                    push, rbp                               
+                    push, rbx                               
+                    mov, rbp, rsp                           
+                    sub, rsp, 8                             
+                    xor, rbx, rbx                           
+                    cmp, rdx, 2                             
+                    setet, rbx                              
+                    mov, [rbp-8], rbx                       ; =
+                    sub, rsp, 32                            ; 32 = (passing size)32 + (align pad)0
+                    lea, rcx, qwordptr .combiner.test.label 
+                    mov, rdx, [rbp-8]                       ;       (sanity req for rdx) [splitter]
+                    call, .main.check                       ; (call label)
+                    add, rsp, 32                            ; 32 = (passing size)32 + (align pad)0
+                    sub, rsp, 32                            ; 32 = (passing size)32 + (align pad)0
+                    mov, rcx, 3                             ;       (3 req for rcx) [splitter]
+                    mov, rbx, rdx                           ; (preserve) [combiner]
+                    mov, rdx, 3                             ;       (3 req for rdx) [splitter]
+                    mov, r8, 3                              ;       (3 req for r8) [splitter]
+                    call, .combiner.subFunc2                ; (call label)
+                    add, rsp, 32                            ; 32 = (passing size)32 + (align pad)0
+                    mov, rsp, rbp                           
+                    pop, rbx                                
+                    pop, rbp                                
+                    ret                                     
+
+.seg code       
+.combiner.test: 
+                push, rbp                          
+                mov, rbp, rsp                      
+                sub, rsp, 32                       ; 32 = (passing size)32 + (align pad)0
+                lea, rcx, qwordptr .combiner.label 
+                call, ._print                      ; (call label)
+                add, rsp, 32                       ; 32 = (passing size)32 + (align pad)0
+                sub, rsp, 32                       ; 32 = (passing size)32 + (align pad)0
+                mov, rcx, 1                        ;       (1 req for rcx) [splitter]
+                mov, rdx, 2                        ;       (2 req for rdx) [splitter]
+                mov, r8, 3                         ;       (3 req for r8) [splitter]
+                call, .combiner.subFunc1           ; (call label)
+                add, rsp, 32                       ; 32 = (passing size)32 + (align pad)0
+                sub, rsp, 32                       ; 32 = (passing size)32 + (align pad)0
+                call, .combiner.subFunc1           ; (call label)
+                add, rsp, 32                       ; 32 = (passing size)32 + (align pad)0
+                mov, rsp, rbp                      
+                pop, rbp                           
+                ret                                
 
 .seg const
 .splitter.label:

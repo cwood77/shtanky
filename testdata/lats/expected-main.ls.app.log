@@ -11,5 +11,10 @@
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '- splitter'
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '  - simple'
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '    pass'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '- combiner'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '  - simple'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '    pass'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '  - simple'
+[shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '    !!!!!!!! FAIL !!!!!!!!'
 [shtemu.exe:i:src/shtemu/servicePrint.cpp-10] [printService] '~~ lats end ~~'
 [shtemu.exe:i:src/shtemu/main.cpp-32] control returned to shtemu

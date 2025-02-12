@@ -1,5 +1,5 @@
 // class objFile
-thumbprint(63-64-77-65,20-6f-66-6d,74)version(00-00-00-00)numentries(0f-00-00-00,00-00-00-00)
+thumbprint(63-64-77-65,20-6f-66-6d,74)version(00-00-00-00)numentries(14-00-00-00,00-00-00-00)
 // class obj
 flags(41-00-00-00)
 // class exportTable
@@ -42,18 +42,20 @@ flags(03-00-00-00)
 numentries(01-00-00-00,00-00-00-00)
 name:len(0b-00-00-00,00-00-00-00)name:bytes(2e-65-6e-74,72-79-70-6f,69-6e-74)offset(00-00-00-00)
 // class importTable
-numentries(04-00-00-00,00-00-00-00)
+numentries(05-00-00-00,00-00-00-00)
 name:len(07-00-00-00,00-00-00-00)name:bytes(2e-5f-70-72,69-6e-74)numentries(02-00-00-00,00-00-00-00)
 type(01)offset(12-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
-type(01)offset(39-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
+type(01)offset(49-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
+name:len(0e-00-00-00,00-00-00-00)name:bytes(2e-63-6f-6d,62-69-6e-65,72-2e-74-65,73-74)numentries(01-00-00-00,00-00-00-00)
+type(01)offset(32-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
 name:len(0e-00-00-00,00-00-00-00)name:bytes(2e-6d-61-69,6e-2e-65-6e,64-4c-61-62,65-6c)numentries(01-00-00-00,00-00-00-00)
-type(01)offset(34-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
+type(01)offset(44-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
 name:len(10-00-00-00,00-00-00-00)name:bytes(2e-6d-61-69,6e-2e-73-74,61-72-74-4c,61-62-65-6c)numentries(01-00-00-00,00-00-00-00)
 type(01)offset(0d-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
 name:len(0e-00-00-00,00-00-00-00)name:bytes(2e-73-70-6c,69-74-74-65,72-2e-74-65,73-74)numentries(01-00-00-00,00-00-00-00)
 type(01)offset(22-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
 // returnedto: class obj
-blockSize(4b-00-00-00,00-00-00-00)block(48-ff-f5-48,89-e5-48-83,ec-20-48-8d,0d-00-00-00,00-e8-00-00,00-00-48-81,c4-20-00-00,00-48-83-ec,20-e8-00-00,00-00-48-81,c4-20-00-00,00-48-83-ec,20-48-8d-0d,00-00-00-00,e8-00-00-00,00-48-81-c4,20-00-00-00,48-89-ec-48,8f-c5-c3)
+blockSize(5b-00-00-00,00-00-00-00)block(48-ff-f5-48,89-e5-48-83,ec-20-48-8d,0d-00-00-00,00-e8-00-00,00-00-48-81,c4-20-00-00,00-48-83-ec,20-e8-00-00,00-00-48-81,c4-20-00-00,00-48-83-ec,20-e8-00-00,00-00-48-81,c4-20-00-00,00-48-83-ec,20-48-8d-0d,00-00-00-00,e8-00-00-00,00-48-81-c4,20-00-00-00,48-89-ec-48,8f-c5-c3)
 // class obj
 flags(03-00-00-00)
 // class exportTable
@@ -96,6 +98,64 @@ name:len(13-00-00-00,00-00-00-00)name:bytes(2e-6d-61-69,6e-2e-63-68,65-63-6b-2e,
 numentries(00-00-00-00,00-00-00-00)
 // returnedto: class obj
 blockSize(0a-00-00-00,00-00-00-00)block(48-89-ec-48,8f-c3-48-8f,c5-c3)
+// class obj
+flags(41-00-00-00)
+// class exportTable
+numentries(01-00-00-00,00-00-00-00)
+name:len(0f-00-00-00,00-00-00-00)name:bytes(2e-63-6f-6d,62-69-6e-65,72-2e-6c-61,62-65-6c)offset(00-00-00-00)
+// class importTable
+numentries(00-00-00-00,00-00-00-00)
+// returnedto: class obj
+blockSize(0b-00-00-00,00-00-00-00)block(2d-20-63-6f,6d-62-69-6e,65-72-00)
+// class obj
+flags(41-00-00-00)
+// class exportTable
+numentries(01-00-00-00,00-00-00-00)
+name:len(14-00-00-00,00-00-00-00)name:bytes(2e-63-6f-6d,62-69-6e-65,72-2e-74-65,73-74-2e-6c,61-62-65-6c)offset(00-00-00-00)
+// class importTable
+numentries(00-00-00-00,00-00-00-00)
+// returnedto: class obj
+blockSize(0b-00-00-00,00-00-00-00)block(20-20-2d-20,73-69-6d-70,6c-65-00)
+// class obj
+flags(03-00-00-00)
+// class exportTable
+numentries(01-00-00-00,00-00-00-00)
+name:len(12-00-00-00,00-00-00-00)name:bytes(2e-63-6f-6d,62-69-6e-65,72-2e-73-75,62-46-75-6e,63-32)offset(00-00-00-00)
+// class importTable
+numentries(00-00-00-00,00-00-00-00)
+// returnedto: class obj
+blockSize(0d-00-00-00,00-00-00-00)block(48-ff-f5-48,89-e5-48-89,ec-48-8f-c5,c3)
+// class obj
+flags(03-00-00-00)
+// class exportTable
+numentries(01-00-00-00,00-00-00-00)
+name:len(12-00-00-00,00-00-00-00)name:bytes(2e-63-6f-6d,62-69-6e-65,72-2e-73-75,62-46-75-6e,63-31)offset(00-00-00-00)
+// class importTable
+numentries(03-00-00-00,00-00-00-00)
+name:len(12-00-00-00,00-00-00-00)name:bytes(2e-63-6f-6d,62-69-6e-65,72-2e-73-75,62-46-75-6e,63-32)numentries(01-00-00-00,00-00-00-00)
+type(01)offset(60-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
+name:len(14-00-00-00,00-00-00-00)name:bytes(2e-63-6f-6d,62-69-6e-65,72-2e-74-65,73-74-2e-6c,61-62-65-6c)numentries(01-00-00-00,00-00-00-00)
+type(01)offset(26-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
+name:len(0b-00-00-00,00-00-00-00)name:bytes(2e-6d-61-69,6e-2e-63-68,65-63-6b)numentries(01-00-00-00,00-00-00-00)
+type(01)offset(2f-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
+// returnedto: class obj
+blockSize(75-00-00-00,00-00-00-00)block(48-ff-f5-48,ff-f3-48-89,e5-48-83-ec,08-48-31-db,48-81-fa-02,00-00-00-48,0f-94-c3-48,89-5d-f8-48,83-ec-20-48,8d-0d-00-00,00-00-48-8b,55-f8-e8-00,00-00-00-48,81-c4-20-00,00-00-48-83,ec-20-48-b9,03-00-00-00,00-00-00-00,48-89-d3-48,ba-03-00-00,00-00-00-00,00-49-b8-03,00-00-00-00,00-00-00-e8,00-00-00-00,48-81-c4-20,00-00-00-48,89-ec-48-8f,c3-48-8f-c5,c3)
+// class obj
+flags(03-00-00-00)
+// class exportTable
+numentries(01-00-00-00,00-00-00-00)
+name:len(0e-00-00-00,00-00-00-00)name:bytes(2e-63-6f-6d,62-69-6e-65,72-2e-74-65,73-74)offset(00-00-00-00)
+// class importTable
+numentries(03-00-00-00,00-00-00-00)
+name:len(07-00-00-00,00-00-00-00)name:bytes(2e-5f-70-72,69-6e-74)numentries(01-00-00-00,00-00-00-00)
+type(01)offset(12-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
+name:len(0f-00-00-00,00-00-00-00)name:bytes(2e-63-6f-6d,62-69-6e-65,72-2e-6c-61,62-65-6c)numentries(01-00-00-00,00-00-00-00)
+type(01)offset(0d-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
+name:len(12-00-00-00,00-00-00-00)name:bytes(2e-63-6f-6d,62-69-6e-65,72-2e-73-75,62-46-75-6e,63-31)numentries(02-00-00-00,00-00-00-00)
+type(01)offset(40-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
+type(01)offset(50-00-00-00)fromOffsetToEndOfInstr(04-00-00-00)
+// returnedto: class obj
+blockSize(62-00-00-00,00-00-00-00)block(48-ff-f5-48,89-e5-48-83,ec-20-48-8d,0d-00-00-00,00-e8-00-00,00-00-48-81,c4-20-00-00,00-48-83-ec,20-48-b9-01,00-00-00-00,00-00-00-48,ba-02-00-00,00-00-00-00,00-49-b8-03,00-00-00-00,00-00-00-e8,00-00-00-00,48-81-c4-20,00-00-00-48,83-ec-20-e8,00-00-00-00,48-81-c4-20,00-00-00-48,89-ec-48-8f,c5-c3)
 // class obj
 flags(41-00-00-00)
 // class exportTable
