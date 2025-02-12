@@ -13,45 +13,45 @@ rex(48)op(83)modR/M(ec)i8(18)
 rex(48)op(89)modR/M(cb)
 // 9:              lea, rcx, [rbp-8]                  ; cout
 rex(48)op(8d)modR/M(4d)d8(f8)
-// 10:              sub, rsp, 40                       
+// 10:              sub, rsp, 40                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 11:              call, .sht.cons.stdout_sctor       ; (call label)
 op(e8)co32(00-00-00-00)
-// 12:              add, rsp, 40                       
+// 12:              add, rsp, 40                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 13:              mov, rdi, rcx                      ; (preserve) [combiner]
 rex(48)op(89)modR/M(cf)
 // 14:              lea, rcx, [rbp-24]                 ; obj0
 rex(48)op(8d)modR/M(4d)d8(e8)
-// 15:              sub, rsp, 40                       
+// 15:              sub, rsp, 40                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 16:              call, .nostromo.bootstrapper_sctor ; (call label)
 op(e8)co32(00-00-00-00)
-// 17:              add, rsp, 40                       
+// 17:              add, rsp, 40                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 18:              mov, [rcx+8], rdi                  ; =
 rex(48)op(89)modR/M(79)d8(08)
-// 19:              sub, rsp, 40                       
+// 19:              sub, rsp, 40                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 20:              mov, rdx, rbx                      ;       (args req for rdx) [splitter]
 rex(48)op(89)modR/M(da)
 // 21:              call, [rcx]                        ; vtbl call to .nostromo.bootstrapper_vtbl::run
 rex(48)op(ff)modR/M(11)
-// 22:              add, rsp, 40                       
+// 22:              add, rsp, 40                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
-// 23:              sub, rsp, 40                       
+// 23:              sub, rsp, 40                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 24:              call, .nostromo.bootstrapper_sdtor ; (call label)
 op(e8)co32(00-00-00-00)
-// 25:              add, rsp, 40                       
+// 25:              add, rsp, 40                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
-// 26:              sub, rsp, 40                       
+// 26:              sub, rsp, 40                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 27:              mov, rcx, rdi                      ; (restore [combiner])
 rex(48)op(89)modR/M(f9)
 // 28:              call, .sht.cons.stdout_sdtor       ; (call label)
 op(e8)co32(00-00-00-00)
-// 29:              add, rsp, 40                       
+// 29:              add, rsp, 40                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 30:              mov, rsp, rbp                      
 rex(48)op(89)modR/M(ec)
@@ -93,21 +93,21 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 59:                                mov, rbp, rsp                                        
 rex(48)op(89)modR/M(e5)
-// 60:                                sub, rsp, 40                                         
+// 60:                                sub, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 61:                                call, .sht.core.object_sctor                         ; (call label)
 op(e8)co32(00-00-00-00)
-// 62:                                add, rsp, 40                                         
+// 62:                                add, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 63:                                lea, rbx, qwordptr .nostromo.consoleTarget_vtbl_inst 
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 64:                                mov, [rcx], rbx                                      ; =
 rex(48)op(89)modR/M(19)
-// 65:                                sub, rsp, 40                                         
+// 65:                                sub, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 66:                                call, .nostromo.consoleTarget.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 67:                                add, rsp, 40                                         
+// 67:                                add, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 68:                                mov, rsp, rbp                                        
 rex(48)op(89)modR/M(ec)
@@ -128,17 +128,17 @@ rex(48)op(89)modR/M(e5)
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 79:                                mov, [rcx], rbx                                      ; =
 rex(48)op(89)modR/M(19)
-// 80:                                sub, rsp, 40                                         
+// 80:                                sub, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 81:                                call, .nostromo.consoleTarget.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 82:                                add, rsp, 40                                         
+// 82:                                add, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
-// 83:                                sub, rsp, 40                                         
+// 83:                                sub, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 84:                                call, .sht.core.object_sdtor                         ; (call label)
 op(e8)co32(00-00-00-00)
-// 85:                                add, rsp, 40                                         
+// 85:                                add, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 86:                                mov, rsp, rbp                                        
 rex(48)op(89)modR/M(ec)

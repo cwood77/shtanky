@@ -5,7 +5,7 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 5:                       mov, rbp, rsp     
 rex(48)op(89)modR/M(e5)
-// 6:                       sub, rsp, 40      
+// 6:                       sub, rsp, 40      ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 7:                       mov, rbx, rcx     ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
@@ -13,7 +13,7 @@ rex(48)op(89)modR/M(cb)
 rex(48)op(89)modR/M(d1)
 // 9:                       call, ._strld     ; (call label)
 op(e8)co32(00-00-00-00)
-// 10:                       add, rsp, 40      
+// 10:                       add, rsp, 40      ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 11:                       mov, [rbx+8], rax ; =
 rex(48)op(89)modR/M(43)d8(08)
@@ -32,7 +32,7 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 21:                          mov, rbp, rsp     
 rex(48)op(89)modR/M(e5)
-// 22:                          sub, rsp, 40      
+// 22:                          sub, rsp, 40      ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 23:                          mov, rbx, rcx     ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
@@ -40,7 +40,7 @@ rex(48)op(89)modR/M(cb)
 rex(48)op(8b)modR/M(4b)d8(08)
 // 25:                          call, ._strlen    ; (call label)
 op(e8)co32(00-00-00-00)
-// 26:                          add, rsp, 40      
+// 26:                          add, rsp, 40      ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 27:                          mov, rsp, rbp     
 rex(48)op(89)modR/M(ec)
@@ -57,7 +57,7 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 36:                              mov, rbp, rsp     
 rex(48)op(89)modR/M(e5)
-// 37:                              sub, rsp, 40      
+// 37:                              sub, rsp, 40      ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 38:                              mov, rbx, rcx     ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
@@ -65,7 +65,7 @@ rex(48)op(89)modR/M(cb)
 rex(48)op(8b)modR/M(4b)d8(08)
 // 40:                              call, ._strgidx   ; (call label)
 op(e8)co32(00-00-00-00)
-// 41:                              add, rsp, 40      
+// 41:                              add, rsp, 40      ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 42:                              mov, rsp, rbp     
 rex(48)op(89)modR/M(ec)
@@ -82,7 +82,7 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 51:                              mov, rbp, rsp     
 rex(48)op(89)modR/M(e5)
-// 52:                              sub, rsp, 40      
+// 52:                              sub, rsp, 40      ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 53:                              mov, rbx, rcx     ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
@@ -90,7 +90,7 @@ rex(48)op(89)modR/M(cb)
 rex(48)op(8b)modR/M(4b)d8(08)
 // 55:                              call, ._strsidx   ; (call label)
 op(e8)co32(00-00-00-00)
-// 56:                              add, rsp, 40      
+// 56:                              add, rsp, 40      ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 57:                              mov, rsp, rbp     
 rex(48)op(89)modR/M(ec)
@@ -132,21 +132,21 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 86:                         mov, rbp, rsp                                 
 rex(48)op(89)modR/M(e5)
-// 87:                         sub, rsp, 40                                  
+// 87:                         sub, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 88:                         call, .sht.core.object_sctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 89:                         add, rsp, 40                                  
+// 89:                         add, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 90:                         lea, rbx, qwordptr .sht.core.string_vtbl_inst 
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 91:                         mov, [rcx], rbx                               ; =
 rex(48)op(89)modR/M(19)
-// 92:                         sub, rsp, 40                                  
+// 92:                         sub, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 93:                         call, .sht.core.string.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 94:                         add, rsp, 40                                  
+// 94:                         add, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 95:                         mov, rsp, rbp                                 
 rex(48)op(89)modR/M(ec)
@@ -167,17 +167,17 @@ rex(48)op(89)modR/M(e5)
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 106:                         mov, [rcx], rbx                               ; =
 rex(48)op(89)modR/M(19)
-// 107:                         sub, rsp, 40                                  
+// 107:                         sub, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 108:                         call, .sht.core.string.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 109:                         add, rsp, 40                                  
+// 109:                         add, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
-// 110:                         sub, rsp, 40                                  
+// 110:                         sub, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 111:                         call, .sht.core.object_sdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 112:                         add, rsp, 40                                  
+// 112:                         add, rsp, 40                                  ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 113:                         mov, rsp, rbp                                 
 rex(48)op(89)modR/M(ec)

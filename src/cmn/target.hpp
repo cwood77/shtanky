@@ -186,7 +186,7 @@ public:
    // registers that don't require prolog/epilog save
    virtual void createScratchRegisterBank(std::vector<size_t>& v) const = 0;
 
-   virtual void alignStackForSubcall(const size_t& currentAlignment, size_t& adjustment) const = 0;
+   virtual size_t alignStackForSubcall(const size_t& currentAlignment) const = 0;
 };
 
 class iSyscallConvention : public iCallingConvention {

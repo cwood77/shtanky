@@ -137,13 +137,13 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 98:                                  mov, rbp, rsp                         
 rex(48)op(89)modR/M(e5)
-// 99:                                  sub, rsp, 40                          
+// 99:                                  sub, rsp, 40                          ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 100:                                  mov, rbx, r8                          ; (preserve) [combiner]
 rex(4c)op(89)modR/M(c3)
 // 101:                                  call, .sht.core.loopInstBase.setCount ; (call label)
 op(e8)co32(00-00-00-00)
-// 102:                                  add, rsp, 40                          
+// 102:                                  add, rsp, 40                          ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 103:                                  mov, [rcx+32], rbx                    ; =
 rex(48)op(89)modR/M(59)d8(20)
@@ -164,11 +164,11 @@ rex(48)op(ff)modR/M(f3)
 rex(48)op(ff)modR/M(f7)
 // 114:                                         mov, rbp, rsp                                
 rex(48)op(89)modR/M(e5)
-// 115:                                         sub, rsp, 32                                 
+// 115:                                         sub, rsp, 32                                 ; 32 = (passing size)32 + (align pad)0
 rex(48)op(83)modR/M(ec)i8(20)
 // 116:                                         call, .sht.core.loopInstBase.getCount        ; (call label)
 op(e8)co32(00-00-00-00)
-// 117:                                         add, rsp, 32                                 
+// 117:                                         add, rsp, 32                                 ; 32 = (passing size)32 + (align pad)0
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 118:                                         xor, rbx, rbx                                
 rex(48)op(31)modR/M(db)
@@ -190,13 +190,13 @@ op(e9)co32(00-00-00-00)
 // 128:                                         goto, .sht.core.forLoopInst.inBounds.endif.1 ; label decomp
 op(e9)co32(00-00-00-00)
 // 130: .sht.core.forLoopInst.inBounds.endif.1: 
-// 131:                                         sub, rsp, 32                                 
+// 131:                                         sub, rsp, 32                                 ; 32 = (passing size)32 + (align pad)0
 rex(48)op(83)modR/M(ec)i8(20)
 // 132:                                         mov, rbx, rax                                ; (preserve) [combiner]
 rex(48)op(89)modR/M(c3)
 // 133:                                         call, .sht.core.loopInstBase.getCount        ; (call label)
 op(e8)co32(00-00-00-00)
-// 134:                                         add, rsp, 32                                 
+// 134:                                         add, rsp, 32                                 ; 32 = (passing size)32 + (align pad)0
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 135:                                         xor, rdi, rdi                                
 rex(48)op(31)modR/M(ff)
@@ -242,11 +242,11 @@ op(c3)
 rex(48)op(ff)modR/M(f5)
 // 163:                                     mov, rbp, rsp                            
 rex(48)op(89)modR/M(e5)
-// 164:                                     sub, rsp, 32                             
+// 164:                                     sub, rsp, 32                             ; 32 = (passing size)32 + (align pad)0
 rex(48)op(83)modR/M(ec)i8(20)
 // 165:                                     call, .sht.core.loopInstBase.getCount    ; (call label)
 op(e8)co32(00-00-00-00)
-// 166:                                     add, rsp, 32                             
+// 166:                                     add, rsp, 32                             ; 32 = (passing size)32 + (align pad)0
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 167:                                     goto, .sht.core.forLoopInst.getValue.end ; early return
 op(e9)co32(00-00-00-00)
@@ -292,11 +292,11 @@ op(c3)
 rex(48)op(ff)modR/M(f5)
 // 197:                                       mov, rbp, rsp                              
 rex(48)op(89)modR/M(e5)
-// 198:                                       sub, rsp, 32                               
+// 198:                                       sub, rsp, 32                               ; 32 = (passing size)32 + (align pad)0
 rex(48)op(83)modR/M(ec)i8(20)
 // 199:                                       call, .sht.core.loopInstBase.getCount      ; (call label)
 op(e8)co32(00-00-00-00)
-// 200:                                       add, rsp, 32                               
+// 200:                                       add, rsp, 32                               ; 32 = (passing size)32 + (align pad)0
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 201:                                       goto, .sht.core.whileLoopInst.getValue.end ; early return
 op(e9)co32(00-00-00-00)
@@ -349,21 +349,21 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 242:                              mov, rbp, rsp                                      
 rex(48)op(89)modR/M(e5)
-// 243:                              sub, rsp, 40                                       
+// 243:                              sub, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 244:                              call, .sht.core.loopInstBase_sctor                 ; (call label)
 op(e8)co32(00-00-00-00)
-// 245:                              add, rsp, 40                                       
+// 245:                              add, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 246:                              lea, rbx, qwordptr .sht.core.forLoopInst_vtbl_inst 
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 247:                              mov, [rcx], rbx                                    ; =
 rex(48)op(89)modR/M(19)
-// 248:                              sub, rsp, 40                                       
+// 248:                              sub, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 249:                              call, .sht.core.forLoopInst.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 250:                              add, rsp, 40                                       
+// 250:                              add, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 251:                              mov, rsp, rbp                                      
 rex(48)op(89)modR/M(ec)
@@ -384,17 +384,17 @@ rex(48)op(89)modR/M(e5)
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 262:                              mov, [rcx], rbx                                    ; =
 rex(48)op(89)modR/M(19)
-// 263:                              sub, rsp, 40                                       
+// 263:                              sub, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 264:                              call, .sht.core.forLoopInst.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 265:                              add, rsp, 40                                       
+// 265:                              add, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
-// 266:                              sub, rsp, 40                                       
+// 266:                              sub, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 267:                              call, .sht.core.loopInstBase_sdtor                 ; (call label)
 op(e8)co32(00-00-00-00)
-// 268:                              add, rsp, 40                                       
+// 268:                              add, rsp, 40                                       ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 269:                              mov, rsp, rbp                                      
 rex(48)op(89)modR/M(ec)
@@ -411,21 +411,21 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 278:                               mov, rbp, rsp                                       
 rex(48)op(89)modR/M(e5)
-// 279:                               sub, rsp, 40                                        
+// 279:                               sub, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 280:                               call, .sht.core.object_sctor                        ; (call label)
 op(e8)co32(00-00-00-00)
-// 281:                               add, rsp, 40                                        
+// 281:                               add, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 282:                               lea, rbx, qwordptr .sht.core.loopInstBase_vtbl_inst 
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 283:                               mov, [rcx], rbx                                     ; =
 rex(48)op(89)modR/M(19)
-// 284:                               sub, rsp, 40                                        
+// 284:                               sub, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 285:                               call, .sht.core.loopInstBase.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 286:                               add, rsp, 40                                        
+// 286:                               add, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 287:                               mov, rsp, rbp                                       
 rex(48)op(89)modR/M(ec)
@@ -446,17 +446,17 @@ rex(48)op(89)modR/M(e5)
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 298:                               mov, [rcx], rbx                                     ; =
 rex(48)op(89)modR/M(19)
-// 299:                               sub, rsp, 40                                        
+// 299:                               sub, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 300:                               call, .sht.core.loopInstBase.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 301:                               add, rsp, 40                                        
+// 301:                               add, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
-// 302:                               sub, rsp, 40                                        
+// 302:                               sub, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 303:                               call, .sht.core.object_sdtor                        ; (call label)
 op(e8)co32(00-00-00-00)
-// 304:                               add, rsp, 40                                        
+// 304:                               add, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 305:                               mov, rsp, rbp                                       
 rex(48)op(89)modR/M(ec)
@@ -473,21 +473,21 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 314:                                mov, rbp, rsp                                        
 rex(48)op(89)modR/M(e5)
-// 315:                                sub, rsp, 40                                         
+// 315:                                sub, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 316:                                call, .sht.core.loopInstBase_sctor                   ; (call label)
 op(e8)co32(00-00-00-00)
-// 317:                                add, rsp, 40                                         
+// 317:                                add, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 318:                                lea, rbx, qwordptr .sht.core.whileLoopInst_vtbl_inst 
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 319:                                mov, [rcx], rbx                                      ; =
 rex(48)op(89)modR/M(19)
-// 320:                                sub, rsp, 40                                         
+// 320:                                sub, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 321:                                call, .sht.core.whileLoopInst.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 322:                                add, rsp, 40                                         
+// 322:                                add, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 323:                                mov, rsp, rbp                                        
 rex(48)op(89)modR/M(ec)
@@ -508,17 +508,17 @@ rex(48)op(89)modR/M(e5)
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 334:                                mov, [rcx], rbx                                      ; =
 rex(48)op(89)modR/M(19)
-// 335:                                sub, rsp, 40                                         
+// 335:                                sub, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 336:                                call, .sht.core.whileLoopInst.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 337:                                add, rsp, 40                                         
+// 337:                                add, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
-// 338:                                sub, rsp, 40                                         
+// 338:                                sub, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 339:                                call, .sht.core.loopInstBase_sdtor                   ; (call label)
 op(e8)co32(00-00-00-00)
-// 340:                                add, rsp, 40                                         
+// 340:                                add, rsp, 40                                         ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 341:                                mov, rsp, rbp                                        
 rex(48)op(89)modR/M(ec)

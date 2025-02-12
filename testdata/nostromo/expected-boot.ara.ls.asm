@@ -31,14 +31,14 @@
                               push, rbp                                           
                               push, rbx                                           
                               mov, rbp, rsp                                       
-                              sub, rsp, 40                                        
+                              sub, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               call, .sht.cons.program_sctor                       ; (call label)
-                              add, rsp, 40                                        
+                              add, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               lea, rbx, qwordptr .nostromo.bootstrapper_vtbl_inst 
                               mov, [rcx], rbx                                     ; =
-                              sub, rsp, 40                                        
+                              sub, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               call, .nostromo.bootstrapper.cctor                  ; (call label)
-                              add, rsp, 40                                        
+                              add, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               mov, rsp, rbp                                       
                               pop, rbx                                            
                               pop, rbp                                            
@@ -51,12 +51,12 @@
                               mov, rbp, rsp                                       
                               lea, rbx, qwordptr .nostromo.bootstrapper_vtbl_inst 
                               mov, [rcx], rbx                                     ; =
-                              sub, rsp, 40                                        
+                              sub, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               call, .nostromo.bootstrapper.cdtor                  ; (call label)
-                              add, rsp, 40                                        
-                              sub, rsp, 40                                        
+                              add, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
+                              sub, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               call, .sht.cons.program_sdtor                       ; (call label)
-                              add, rsp, 40                                        
+                              add, rsp, 40                                        ; 40 = (passing size)32 + (align pad)8
                               mov, rsp, rbp                                       
                               pop, rbx                                            
                               pop, rbp                                            

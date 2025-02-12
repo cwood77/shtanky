@@ -77,21 +77,21 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 61:                                   mov, rbp, rsp                                           
 rex(48)op(89)modR/M(e5)
-// 62:                                   sub, rsp, 40                                            
+// 62:                                   sub, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 63:                                   call, .nostromo.uart16550.fakeBase_sctor                ; (call label)
 op(e8)co32(00-00-00-00)
-// 64:                                   add, rsp, 40                                            
+// 64:                                   add, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 65:                                   lea, rbx, qwordptr .nostromo.uart16550.driver_vtbl_inst 
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 66:                                   mov, [rcx], rbx                                         ; =
 rex(48)op(89)modR/M(19)
-// 67:                                   sub, rsp, 40                                            
+// 67:                                   sub, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 68:                                   call, .nostromo.uart16550.driver.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 69:                                   add, rsp, 40                                            
+// 69:                                   add, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 70:                                   mov, rsp, rbp                                           
 rex(48)op(89)modR/M(ec)
@@ -112,17 +112,17 @@ rex(48)op(89)modR/M(e5)
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 81:                                   mov, [rcx], rbx                                         ; =
 rex(48)op(89)modR/M(19)
-// 82:                                   sub, rsp, 40                                            
+// 82:                                   sub, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 83:                                   call, .nostromo.uart16550.driver.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 84:                                   add, rsp, 40                                            
+// 84:                                   add, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
-// 85:                                   sub, rsp, 40                                            
+// 85:                                   sub, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 86:                                   call, .nostromo.uart16550.fakeBase_sdtor                ; (call label)
 op(e8)co32(00-00-00-00)
-// 87:                                   add, rsp, 40                                            
+// 87:                                   add, rsp, 40                                            ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 88:                                   mov, rsp, rbp                                           
 rex(48)op(89)modR/M(ec)
@@ -139,21 +139,21 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 97:                                     mov, rbp, rsp                                             
 rex(48)op(89)modR/M(e5)
-// 98:                                     sub, rsp, 40                                              
+// 98:                                     sub, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 99:                                     call, .sht.core.object_sctor                              ; (call label)
 op(e8)co32(00-00-00-00)
-// 100:                                     add, rsp, 40                                              
+// 100:                                     add, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 101:                                     lea, rbx, qwordptr .nostromo.uart16550.fakeBase_vtbl_inst 
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 102:                                     mov, [rcx], rbx                                           ; =
 rex(48)op(89)modR/M(19)
-// 103:                                     sub, rsp, 40                                              
+// 103:                                     sub, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 104:                                     call, .nostromo.uart16550.fakeBase.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 105:                                     add, rsp, 40                                              
+// 105:                                     add, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 106:                                     mov, rsp, rbp                                             
 rex(48)op(89)modR/M(ec)
@@ -174,17 +174,17 @@ rex(48)op(89)modR/M(e5)
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 117:                                     mov, [rcx], rbx                                           ; =
 rex(48)op(89)modR/M(19)
-// 118:                                     sub, rsp, 40                                              
+// 118:                                     sub, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 119:                                     call, .nostromo.uart16550.fakeBase.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 120:                                     add, rsp, 40                                              
+// 120:                                     add, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
-// 121:                                     sub, rsp, 40                                              
+// 121:                                     sub, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
 rex(48)op(83)modR/M(ec)i8(28)
 // 122:                                     call, .sht.core.object_sdtor                              ; (call label)
 op(e8)co32(00-00-00-00)
-// 123:                                     add, rsp, 40                                              
+// 123:                                     add, rsp, 40                                              ; 40 = (passing size)32 + (align pad)8
 rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 124:                                     mov, rsp, rbp                                             
 rex(48)op(89)modR/M(ec)

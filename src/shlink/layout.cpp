@@ -36,7 +36,10 @@ void segmentBlock::setOffset(unsigned long o)
 {
    unsigned long pad = 0;
    if(m_align && false)
-      pad = cmn::align16(o) - o;
+      // I read in some online lab assignment that Win64 required 16-byte aligned code, but
+      // have not found this in any official documentation nor does it seem to be supported
+      // by experiment.  I'm disabling this until it proves necessary.
+      pad = /*cmn::align16(o)*/o - o;
    m_offset = pad + o;
    m_size += pad;
 }
@@ -45,7 +48,10 @@ unsigned long segmentBlock::append(cmn::objfmt::obj& o)
 {
    unsigned long pad = 0;
    if(m_align)
-      pad = cmn::align16(m_size) - m_size;
+      // I read in some online lab assignment that Win64 required 16-byte aligned code, but
+      // have not found this in any official documentation nor does it seem to be supported
+      // by experiment.  I'm disabling this until it proves necessary.
+      pad = /*cmn::align16(m_size)*/m_size - m_size;
    unsigned long startOffset = m_size + pad;
 
    auto left = m_bytes.size() - m_size;

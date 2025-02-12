@@ -213,8 +213,13 @@ void asmCodeGen::handlePrePostCallStackAlloc(lirInstr& i, cmn::tgt::instrIds x)
       m_w[1] << "; ";
 
    // calculate stack alignment
-   // (add 8 for return address)
-   m_t.getCallConvention().alignStackForSubcall(m_stackAlignment+8,size);
+   auto pad = m_t.getCallConvention().alignStackForSubcall(m_stackAlignment+size);
+   std::stringstream annotation;
+   annotation
+      << (size+pad) << " = (passing size)" << size << " + (align pad)" << pad;
+   ;
+   i.comment += annotation.str();
+   size += pad;
 
    m_w[1] << m_t.getProc().getInstr(x)->name
       << ", " << m_t.getProc().getRegName(cmn::tgt::kStorageStackPtr)

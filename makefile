@@ -9,13 +9,13 @@ RELEASE_LNK_FLAGS_POST = -static-libgcc -static-libstdc++ -static
 
 SCRIPTLIB = scriptlib/xcopy-deploy.bat
 
+atest: dtest rtest
+
 dtest: debug
 	@cmd /c appr.bat
 
 rtest: all
 	@cmd /c appr.bat rel
-
-atest: dtest rtest
 
 debug: \
 	dirs \
