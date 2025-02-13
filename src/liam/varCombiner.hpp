@@ -25,6 +25,8 @@ public:
    virtual void onInstrWithAvailVar(lirInstr& i);
 
 private:
+   void resolveCollision(lirInstr& i, size_t storage, std::set<var*>& vars);
+
    void emitMoveBefore(
       lirInstr& antecedent,
       var& v,
