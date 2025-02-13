@@ -341,6 +341,8 @@ void w64CallingConvention::createRegisterBankInPreferredOrder(std::vector<size_t
 
 void w64CallingConvention::createScratchRegisterBank(std::vector<size_t>& v) const
 {
+   // n.b. don't clear the vector here in case it's nonempty
+
    // volatile - saved around subcalls and not in the calling conventions
    v.push_back(i64::kReg10);
    v.push_back(i64::kReg11);

@@ -1,4 +1,5 @@
 #pragma once
+#include "../cmn/unique.hpp"
 #include "availVarPass.hpp"
 #include <list>
 
@@ -180,6 +181,20 @@ private:
    unsigned long m_next;
 };
 
+// create fake args on postcalls to trash register
+// this implements nonvolitile registers for transforms
+class lirVolatileRegisterTrashingTransform : public lirTransform {
+public:
+   lirVolatileRegisterTrashingTransform(cmn::tgt::iTargetInfo& t) : m_t(t) {}
+
+protected:
+   virtual void runInstr(lirInstr& i);
+
+private:
+   cmn::uniquifier m_u;
+   cmn::tgt::iTargetInfo& m_t;
+};
+
 // TODO is this a good idea?  Prolly not
 void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t);
 
@@ -208,6 +223,11 @@ private:
    varTable& m_v;
 };
 
+// find unsupported instr formats and implement them in terms of supported ones
+// e.g.
+//       mov [memA] [memB]  =>  mov tempReg [memB]
+//                              mov [memA] tempReg
+//
 class codeShapeTransform : public lirTransform {
 public:
    codeShapeTransform(varTable& v, varFinder& f, cmn::tgt::iTargetInfo& t)

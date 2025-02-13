@@ -96,6 +96,7 @@ size_t var::getStorageFor(size_t orderNum, lirArg& a)
    return *(stors.begin());
 }
 
+// whens the next (i.e. after 'orderNum') requirement on 'storage'?
 size_t var::requiresStorageNext(size_t orderNum, size_t storage)
 {
    for(auto it=instrToStorageMap.begin();it!=instrToStorageMap.end();++it)
@@ -117,6 +118,7 @@ bool var::alreadyWantedStorage(size_t orderNum, size_t storage)
    return lastStorage.find(storage)!=lastStorage.end();
 }
 
+// n.b. add a new requirement, but don't change existing requirements
 void var::requireStorage(size_t orderNum, size_t s)
 {
    instrToStorageMap[orderNum].insert(s);
@@ -137,6 +139,10 @@ void var::changeStorage(size_t orderNum, size_t old, size_t nu)
          it->second = nu;
 }
 
+// why is this so different from changeStorage above?
+// TODO - this seems highly questionable!!?
+//        search all instructions for no good reason
+//        if instr i doesn't have a storage req on old, add one for nu
 void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
 {
    cdwDEBUG("--updateStorageHereAndAfter[%lld,%lld->%lld]\n",i.orderNum,old,nu);

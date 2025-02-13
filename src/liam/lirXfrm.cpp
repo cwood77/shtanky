@@ -5,6 +5,7 @@
 #include "lirXfrm.hpp"
 #include "varFinder.hpp"
 #include "varGen.hpp"
+#include <sstream>
 
 namespace liam {
 
@@ -331,39 +332,7 @@ void lirNumberingTransform::runInstr(lirInstr& i)
 
 void lirCodeShapeDecomposition::runInstr(lirInstr& i)
 {
-   // eventually, genericize this to notice when any instr fmt is unimplementable
-   // and tweak until it's ok
-   //
-   // for now, only handle special cases
-
-   // call can't handle immediate passed args
-   if(false && i.instrId == cmn::tgt::kCall) // splitter should be able to handle this
-   {
-      auto& args = i.getArgs();
-      for(size_t j=2;j<args.size();j++)
-      {
-         lirArg *pArg = args[j];
-         lirArgConst *pImm = dynamic_cast<lirArgConst*>(pArg);
-         if(!pImm)
-            continue;
-
-         cmn::uniquifier u;
-         lirNameCollector(u).runStream(getCurrentStream());
-
-         auto pTmp = new lirArgTemp(u.makeUnique("t"),pImm->getSize());
-
-         auto pMov = new lirInstr(cmn::tgt::kMov);
-         pMov->addArg(*pTmp);
-         pMov->addArg(*pImm);
-         pMov->comment = "shape:hoist imm from call";
-
-         scheduleInjectBefore(*pMov,i);
-
-         // go ahead and swap out the arg directly; this is safe b/c I haven't
-         // traversed it yet
-         args[j] = &pTmp->clone();
-      }
-   }
+   // really, only handle special cases, which may move elsewhere later on
 
    // call can't handle any addr modifications (i.e. displacemnets or derefs)
    if(i.instrId == cmn::tgt::kCall) // splitter should be able to handle this
@@ -396,12 +365,15 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
    }
 
    // temp hack for bops masquarading as =
-   if(false && i.instrId == cmn::tgt::kMov) // don't think I do this anymore; unattested in testdata
+   if(i.instrId == cmn::tgt::kMov)
    {
       auto *pArg = dynamic_cast<lirArgConst*>(i.getArgs()[0]);
       if(pArg)
       {
          // obviously you can't mov into a literal
+
+         // unreacahble case I keep around just in case
+         cdwTHROW("unimpled");
 
          cmn::uniquifier u;
          lirNameCollector(u).runStream(getCurrentStream());
@@ -424,6 +396,31 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
    lirTransform::runInstr(i);
 }
 
+void lirVolatileRegisterTrashingTransform::runInstr(lirInstr& i)
+{
+   cdwTHROW("unreachable");
+
+   if(i.instrId == cmn::tgt::kPreCallStackAlloc)
+   {
+      std::vector<size_t> argStorage;
+      m_t.getCallConvention().getRValAndArgBank(argStorage);
+      m_t.getCallConvention().createScratchRegisterBank(argStorage);
+
+      // add dummies for trashed args as required for calling convention
+      for(size_t j=0;j<argStorage.size();j++)
+      {
+         size_t stor = argStorage[j];
+
+         std::stringstream nameHint;
+         nameHint << m_t.getProc().getRegName(stor) << "_trash";
+
+         i.addArg<lirArgTemp>(m_u.makeUnique(nameHint.str()),0);
+      }
+   }
+
+   lirTransform::runInstr(i);
+}
+
 void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
 {
    { lirCallVirtualStackCalculation xfrm(t); xfrm.runStreams(lir); }
@@ -434,6 +431,7 @@ void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
    { lirLabelDecomposition xfrm; xfrm.runStreams(lir); }
    { lirCodeShapeDecomposition xfrm; xfrm.runStreams(lir); } // TODO this whole transform is legacy
    { lirNumberingTransform xfrm; xfrm.runStreams(lir); }
+   //{ lirVolatileRegisterTrashingTransform xfrm(t); xfrm.runStreams(lir); }
 }
 
 void lirVarGen::runArg(lirInstr& i, lirArg& a)
@@ -533,6 +531,8 @@ void codeShapeTransform::runInstr(lirInstr& i)
 
       scheduleInjectBefore(push,i);
       scheduleVarBind(push,arg,m_v,altStor);
+
+      cdwTHROW("unimpled - this breaks stack alignment");
    }
 
    // mov [memA] [memB]

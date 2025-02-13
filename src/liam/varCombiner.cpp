@@ -55,10 +55,14 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
       std::set<var*> winners;
       for(auto pVar=it->second.begin();pVar!=it->second.end();++pVar)
       {
+         // i.e. if this variable's most previous storage is different (or unspecified)
+         //      i.e. this instruction is the _first_ to introduce this requirement
+         //      TODO > what if the most recent instr has no reqs?
          if(!(*pVar)->alreadyWantedStorage(i.orderNum,it->first))
             winners.insert(*pVar);
          else
          {
+            // i.e. where is this storage required next after i.orderNum (0==never)
             size_t priority = (*pVar)->requiresStorageNext(i.orderNum,it->first);
 
             cdwDEBUG("   %s requires storage %lld after instr #%lld at #%lld\n",
@@ -94,7 +98,8 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
          losers.erase(pWinner);
       }
       cdwDEBUG("   winner is %s\n",pWinner->name.c_str());
-      pWinner->requireStorage(i.orderNum,it->first);
+      pWinner->requireStorage(i.orderNum,it->first); // why do I have to do this?
+                                                     // aren't I here b/c it's already true?
 
       // evict all the losers (and runners-up)
       std::map<var*,size_t> altStorageMap;
@@ -106,6 +111,8 @@ void varCombiner::onInstrWithAvailVar(lirInstr& i)
 
          // stash loser to a free storage loc and fixup subsequent refs
          size_t altStorage = m_f.chooseFreeStorage((*jit)->getSize());
+//            updateStorageHereAndAfter is weirdly named
+//              - if instr i doesn't have a storage req on old, add one for nu
          (*jit)->updateStorageHereAndAfter(i,it->first,altStorage);
          cdwDEBUG("      evicting to %lld\n",altStorage);
 

@@ -221,4 +221,25 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
    }
 }
 
+// deadcode kept around jic
+void instrPrefs::trashVolatileRegs(lirInstr& i, const cmn::tgt::iCallingConvention& cc)
+{
+   cdwTHROW("unreachable");
+
+   std::vector<size_t> argStorage;
+   cc.getRValAndArgBank(argStorage);
+   cc.createScratchRegisterBank(argStorage);
+
+   // +1 b/c the postcall instr has a stack size as a literal
+   if(argStorage.size() + 1 != i.getArgs().size())
+      cdwTHROW("ISE: trashVolatileRegs cardinality doesn't match arg creation alg");
+
+   for(size_t k=1;k<i.getArgs().size();k++)
+   {
+      var& v = m_vTable.demand(*i.getArgs()[k]);
+      v.requireStorage(i.orderNum,argStorage[k-1]);
+      cdwDEBUG("assigning r%lld to %s\n",argStorage[k-1],v.name.c_str());
+   }
+}
+
 } // namespace liam

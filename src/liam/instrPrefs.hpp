@@ -24,6 +24,8 @@ private:
    void handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, bool outOrIn, bool isInvoke);
    void handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, bool isLeaving);
 
+   void trashVolatileRegs(lirInstr& i, const cmn::tgt::iCallingConvention& cc);
+
    lirStream *m_pCurrStream;
    varTable& m_vTable;
    const cmn::tgt::iTargetInfo& m_target;
