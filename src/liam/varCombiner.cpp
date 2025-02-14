@@ -89,23 +89,12 @@ void varCombiner::resolveCollision(lirInstr& i, size_t storage, std::set<var*>& 
    // the preserve instruction inject before this instruction would trigger another
    // conflict, leading to an infinite chain of conflicts.
    var *pWinner = NULL;
-   if(winners.size() > 1)
-      cdwTHROW("insanity!  winners size is %lld",winners.size());
-   else if(winners.size() == 1)
+   if(winners.size() == 1)
       pWinner = *winners.begin();
-   else if(winners.size() == 0)
-   {
-      cdwTHROW("does this ever get hit??");
-      // then just pick the one who needs it soonest
-      if(runnerUpMap.size() == 0)
-         cdwTHROW("insanity!  can't pick a winner");
-      pWinner = runnerUpMap.begin()->second;
-      runnerUpMap.erase(runnerUpMap.begin());
-      losers.erase(pWinner);
-   }
+   else
+      cdwTHROW("insanity!  winners size is %lld",winners.size());
    cdwDEBUG("   winner is %s\n",pWinner->name.c_str());
-   pWinner->requireStorage(i.orderNum,storage); // why do I have to do this?
-                                                // aren't I here b/c it's already true?
+   //pWinner->requireStorage(i.orderNum,storage);
 
    // evict all the losers (and runners-up)
    std::map<var*,size_t> altStorageMap;
@@ -119,7 +108,10 @@ void varCombiner::resolveCollision(lirInstr& i, size_t storage, std::set<var*>& 
       size_t altStorage = m_f.chooseFreeStorage((*jit)->getSize());
 //            updateStorageHereAndAfter is weirdly named
 //              - if instr i doesn't have a storage req on old, add one for nu
-      (*jit)->updateStorageHereAndAfter(i,storage,altStorage);
+      // TODO why can't I remove this?
+      // TODO ... or, at least, just do a change storage?
+      (*jit)->requireNewStorageIfNotOld(i,storage,altStorage);
+      //(*jit)->changeStorage(i.orderNum,storage,altStorage);
       cdwDEBUG("      evicting to %lld\n",altStorage);
 
       // emit a move to implement this

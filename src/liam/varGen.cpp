@@ -143,49 +143,21 @@ void var::changeStorage(size_t orderNum, size_t old, size_t nu)
 // TODO - this seems highly questionable!!?
 //        search all instructions for no good reason
 //        if instr i doesn't have a storage req on old, add one for nu
-void var::updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu)
+void var::requireNewStorageIfNotOld(lirInstr& i, size_t old, size_t nu)
 {
-   cdwDEBUG("--updateStorageHereAndAfter[%lld,%lld->%lld]\n",i.orderNum,old,nu);
+   cdwDEBUG("--requireNewStorageIfNotOld[%lld,%lld->%lld]\n",i.orderNum,old,nu);
 
-   lirInstr *pInstr = &i;
-   while(true)
+   auto it = instrToStorageMap.find(i.orderNum);
+   if(it!=instrToStorageMap.end() && it->second.find(old)!=it->second.end())
    {
-      auto it = instrToStorageMap.find(pInstr->orderNum);
-      if(it!=instrToStorageMap.end() && it->second.find(old)!=it->second.end())
-      {
-         cdwDEBUG("   hit\n");
-#if 0
-         it->second.erase(old);
-         it->second.insert(nu);
-
-         storageToInstrMap[old].erase(pInstr->orderNum);
-         if(storageToInstrMap[old].size() == 0)
-            storageToInstrMap.erase(old);
-         storageToInstrMap[nu].insert(pInstr->orderNum);
-
-         auto& args = i.getArgs();
-         for(auto jit=args.begin();jit!=args.end();++jit)
-         {
-            auto kit = storageDisambiguators.find(*jit);
-            if(kit != storageDisambiguators.end() && kit->second == old)
-               kit->second = nu;
-         }
-#endif
-      }
-      else
-      {
-         cdwDEBUG("   ?no hit\n");
-
-         if(pInstr->orderNum == i.orderNum)
-         {
-            cdwDEBUG("      since this is instr %llu, inject a requirement\n",i.orderNum);
-            requireStorage(i.orderNum,nu);
-         }
-      }
-
-      if(pInstr->isLast())
-         break;
-      pInstr = &pInstr->next();
+      // this instr has storage AND it has the old storage
+      cdwDEBUG("   hit\n");
+   }
+   else
+   {
+      cdwDEBUG("   ?no hit\n");
+      cdwDEBUG("      since this is instr %llu, inject a requirement\n",i.orderNum);
+      requireStorage(i.orderNum,nu);
    }
 }
 

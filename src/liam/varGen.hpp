@@ -38,7 +38,7 @@ public:
 
    void requireStorage(size_t orderNum, size_t s);
    void changeStorage(size_t orderNum, size_t old, size_t nu);
-   void updateStorageHereAndAfter(lirInstr& i, size_t old, size_t nu);
+   void requireNewStorageIfNotOld(lirInstr& i, size_t old, size_t nu);
 
    void format(cmn::outStream& s);
    std::string storageToString(size_t s);
