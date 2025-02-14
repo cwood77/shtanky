@@ -94,7 +94,6 @@ void varCombiner::resolveCollision(lirInstr& i, size_t storage, std::set<var*>& 
    else
       cdwTHROW("insanity!  winners size is %lld",winners.size());
    cdwDEBUG("   winner is %s\n",pWinner->name.c_str());
-   //pWinner->requireStorage(i.orderNum,storage);
 
    // evict all the losers (and runners-up)
    std::map<var*,size_t> altStorageMap;
@@ -106,12 +105,13 @@ void varCombiner::resolveCollision(lirInstr& i, size_t storage, std::set<var*>& 
 
       // stash loser to a free storage loc and fixup subsequent refs
       size_t altStorage = m_f.chooseFreeStorage((*jit)->getSize());
-//            updateStorageHereAndAfter is weirdly named
-//              - if instr i doesn't have a storage req on old, add one for nu
-      // TODO why can't I remove this?
-      // TODO ... or, at least, just do a change storage?
-      (*jit)->requireNewStorageIfNotOld(i,storage,altStorage);
-      //(*jit)->changeStorage(i.orderNum,storage,altStorage);
+
+      // do a change storage to cue myself on subsequent iterations, otherwise the
+      // combiner is non-terminating
+      //   (the injected mov isn't enough to avoid the conflict next time
+      //    that's because in injected movs can't change storage, b/c they
+      //       reference _both_ the nu and old storages)
+      (*jit)->changeStorage(i.orderNum,storage,altStorage);
       cdwDEBUG("      evicting to %lld\n",altStorage);
 
       // emit a move to implement this

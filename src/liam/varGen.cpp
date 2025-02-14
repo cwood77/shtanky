@@ -134,30 +134,20 @@ void var::changeStorage(size_t orderNum, size_t old, size_t nu)
       storageToInstrMap.erase(old);
    storageToInstrMap[nu].insert(orderNum);
 
-   for(auto it=storageDisambiguators.begin();it!=storageDisambiguators.end();++it)
+   if(refs.find(orderNum) == refs.end())
+      // it's allowed for an instruction to add storage demands on variables it doesn't
+      // reference
+      // e.g. the combiner does this to allow itself to terminate on subsequent iterations
+      return;
+
+   auto& args = refs[orderNum];
+   for(auto *pArg : args)
+   {
+      auto it = storageDisambiguators.find(pArg);
+      if(it == storageDisambiguators.end())
+         continue;
       if(it->second == old)
          it->second = nu;
-}
-
-// why is this so different from changeStorage above?
-// TODO - this seems highly questionable!!?
-//        search all instructions for no good reason
-//        if instr i doesn't have a storage req on old, add one for nu
-void var::requireNewStorageIfNotOld(lirInstr& i, size_t old, size_t nu)
-{
-   cdwDEBUG("--requireNewStorageIfNotOld[%lld,%lld->%lld]\n",i.orderNum,old,nu);
-
-   auto it = instrToStorageMap.find(i.orderNum);
-   if(it!=instrToStorageMap.end() && it->second.find(old)!=it->second.end())
-   {
-      // this instr has storage AND it has the old storage
-      cdwDEBUG("   hit\n");
-   }
-   else
-   {
-      cdwDEBUG("   ?no hit\n");
-      cdwDEBUG("      since this is instr %llu, inject a requirement\n",i.orderNum);
-      requireStorage(i.orderNum,nu);
    }
 }
 
