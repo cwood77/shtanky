@@ -52,8 +52,6 @@ void varAllocator::run(varTable& v, varFinder& f)
    if(!priOrder.size())
       return;
 
-   std::vector<size_t> ideal;
-   m_t.getCallConvention().createRegisterBankInPreferredOrder(ideal);
    for(auto vit=priOrder.begin();vit!=priOrder.end();++vit)
    {
       size_t firstAlive = (*vit)->refs.begin()->first;

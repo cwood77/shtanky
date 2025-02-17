@@ -12,7 +12,7 @@ void varFinder::resetUsedStorage()
 void varFinder::recordStorageUsed(size_t s)
 {
    m_inUse[s]++;
-   m_regsUsed.insert(s);
+   m_regsUsed.insert(s); // TODO - what if it's not a register?
 }
 
 size_t varFinder::chooseFreeStorage(size_t pseudoSize)

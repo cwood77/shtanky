@@ -33,9 +33,14 @@ public:
    bool isAlive(size_t start, size_t end);
    std::set<size_t> getStorageAt(size_t orderNum);
    size_t getStorageFor(size_t orderNum, lirArg& a);
+
+   // these two are used to rank usages by the combiner
+      // whens the next (i.e. after 'orderNum') requirement on 'storage'?
    size_t requiresStorageNext(size_t orderNum, size_t storage);
+      // was this variable's most previous storage this storage?
    bool alreadyWantedStorage(size_t orderNum, size_t storage);
 
+   // n.b. add a new requirement, but don't change existing requirements
    void requireStorage(size_t orderNum, size_t s);
    void changeStorage(size_t orderNum, size_t old, size_t nu);
 

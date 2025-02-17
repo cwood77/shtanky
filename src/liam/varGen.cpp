@@ -61,12 +61,14 @@ bool var::isAlive(size_t start, size_t end)
       (refs.size() && start < refs.begin()->first && (--(refs.end()))->first < end);
 }
 
-// ans    req
-//  b  0
-//  b  1  BX
-//  b  2
-//  d  3  DX   splitter will inject at 2.5 to mov BX <- BX
-//  d  4
+// rval #  req
+//  BX  0
+//  BX  1  BX
+//  BX  2
+//  DX  3  DX
+//  BX  4  stompD
+//
+// note: splitter will inject at 2.5 to mov BX <- BX
 //
 std::set<size_t> var::getStorageAt(size_t orderNum)
 {
@@ -96,7 +98,6 @@ size_t var::getStorageFor(size_t orderNum, lirArg& a)
    return *(stors.begin());
 }
 
-// whens the next (i.e. after 'orderNum') requirement on 'storage'?
 size_t var::requiresStorageNext(size_t orderNum, size_t storage)
 {
    for(auto it=instrToStorageMap.begin();it!=instrToStorageMap.end();++it)
@@ -107,7 +108,6 @@ size_t var::requiresStorageNext(size_t orderNum, size_t storage)
    return 0;
 }
 
-// was this variable's most previous storage this storage?
 bool var::alreadyWantedStorage(size_t orderNum, size_t storage)
 {
    std::set<size_t> lastStorage;
