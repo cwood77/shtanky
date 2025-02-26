@@ -10,33 +10,38 @@ image::entrypoint_t image::findEntrypoint()
 {
    unsigned long offset = *(unsigned long *)(m_pPtr->getBasePtr() + kEntrypointOffset);
    cdwDEBUG("  entrypoint is offset %lu\r\n",offset);
+   if(offset == kUnset)
+      cdwTHROW("no entrypoint indicated in app header\r\n");
    return (entrypoint_t)(m_pPtr->getBasePtr() + offset);
 }
 
 void image::patch(osCall_t hook)
 {
    unsigned long offset = *(unsigned long *)(m_pPtr->getBasePtr() + kOsCallOffset);
-   cdwDEBUG("  osCall is offset %lu\r\n",offset);
-   *(osCall_t*)(m_pPtr->getBasePtr() + offset) = hook;
+   if(offset == kUnset)
+      cdwDEBUG("  no osCall indicated in header; not patching it\r\n");
+   else
+   {
+      cdwDEBUG("  osCall is offset %lu\r\n",offset);
+      *(osCall_t*)(m_pPtr->getBasePtr() + offset) = hook;
+   }
 }
 
 void image::setFlags(__int64 f0, __int64 f1, __int64 f2, __int64 f3)
 {
    unsigned long offset = *(unsigned long *)(m_pPtr->getBasePtr() + kFlagsOffset);
-   cdwDEBUG("  flags is offset %lu\r\n",offset);
-   __int64 *pArray = (__int64*)(m_pPtr->getBasePtr() + offset);
-   pArray[0] = f0;
-   pArray[1] = f1;
-   pArray[2] = f2;
-   pArray[3] = f3;
-   cdwDEBUG("    setting flags to {%lld,%lld,%lld,%lld}\r\n",f0,f1,f2,f3);
-}
-
-image::osCall_t image::findOsCallImpl()
-{
-   unsigned long offset = *(unsigned long *)(m_pPtr->getBasePtr() + kOsCallOffset);
-   cdwDEBUG("  osCall is offset %lu\r\n",offset);
-   return (osCall_t)(m_pPtr->getBasePtr() + offset);
+   if(offset == kUnset)
+      cdwDEBUG("  no flags indicated in header; not populating\r\n");
+   else
+   {
+      cdwDEBUG("  flags is offset %lu\r\n",offset);
+      __int64 *pArray = (__int64*)(m_pPtr->getBasePtr() + offset);
+      pArray[0] = f0;
+      pArray[1] = f1;
+      pArray[2] = f2;
+      pArray[3] = f3;
+      cdwDEBUG("    setting flags to {%lld,%lld,%lld,%lld}\r\n",f0,f1,f2,f3);
+   }
 }
 
 image *loader::loadFile(iImageAllocator& a, const std::string& path)

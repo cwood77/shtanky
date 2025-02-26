@@ -68,8 +68,7 @@ int main(int argc, const char *argv[])
 
    // ------------------ dev sandboxes ------------------
 
-   // BROKEN
-   // tanks in release mode
+   // broken: tanks in release mode, but handwritten experiments so unfixed
    testWriter(s,subset,cl).skipByDefault("shtemu",[](auto& is){
       shtasmTest(is,".\\testdata\\shtemu\\basic.asm")
          .runFullBuildStack(".\\testdata\\shtemu\\basic.app")
@@ -86,7 +85,7 @@ int main(int argc, const char *argv[])
    });
 
    // BROKEN!
-   testWriter(s,subset,cl).skipByDefault("shtemu.ls",[](auto& is){
+   testWriter(s,subset,cl).add("shtemu.ls",[](auto& is){
       liamTest(is,".\\testdata\\shtemu\\basic.ls")
          .runFullBuildStack(".\\testdata\\shtemu\\basic.ls.app")
          .emulateAndCheckOutput()

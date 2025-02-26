@@ -32,14 +32,21 @@ void segmentBlock::setFlags(unsigned long f)
       m_align = true;
 }
 
+
+// i read in some online lab assignment that win64 required 16-byte aligned code, but
+// have not found this in any official documentation nor does it seem to be supported
+// by experiment.  i'm disabling this until it proves necessary.
+#define kLinkerUseAlignment 0
+
 void segmentBlock::setOffset(unsigned long o)
 {
    unsigned long pad = 0;
    if(m_align && false)
-      // I read in some online lab assignment that Win64 required 16-byte aligned code, but
-      // have not found this in any official documentation nor does it seem to be supported
-      // by experiment.  I'm disabling this until it proves necessary.
-      pad = /*cmn::align16(o)*/o - o;
+#if kLinkerUseAlignment
+      pad = cmn::align16(o) - o;
+#else
+      pad = 0;
+#endif
    m_offset = pad + o;
    m_size += pad;
 }
@@ -48,10 +55,11 @@ unsigned long segmentBlock::append(cmn::objfmt::obj& o)
 {
    unsigned long pad = 0;
    if(m_align)
-      // I read in some online lab assignment that Win64 required 16-byte aligned code, but
-      // have not found this in any official documentation nor does it seem to be supported
-      // by experiment.  I'm disabling this until it proves necessary.
-      pad = /*cmn::align16(m_size)*/m_size - m_size;
+#if kLinkerUseAlignment
+      pad = cmn::align16(m_size) - m_size;
+#else
+      pad = 0;
+#endif
    unsigned long startOffset = m_size + pad;
 
    auto left = m_bytes.size() - m_size;
