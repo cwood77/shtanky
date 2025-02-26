@@ -2,6 +2,8 @@
 
 namespace shtemu {
 
+// TODO should really use cmn::appfmt::header in cmd/app-fmt.hpp
+
 enum {
    kUnset            = 0xFFFFFFFF,
 

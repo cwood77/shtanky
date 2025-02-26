@@ -32,7 +32,6 @@ void segmentBlock::setFlags(unsigned long f)
       m_align = true;
 }
 
-
 // i read in some online lab assignment that win64 required 16-byte aligned code, but
 // have not found this in any official documentation nor does it seem to be supported
 // by experiment.  i'm disabling this until it proves necessary.
