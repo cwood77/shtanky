@@ -8,43 +8,43 @@
              sub, rsp, 40                 
              mov, rbx, rcx                ; (preserve) [combiner]
              lea, rcx, [rbp-8]            ; cout
-             sub, rsp, 32                 
+             sub, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
              call, .sht.cons.stdout_sctor ; (call label)
-             add, rsp, 32                 
+             add, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
              mov, rdi, rcx                ; (preserve) [combiner]
              lea, rcx, [rbp-24]           ; obj0
-             sub, rsp, 32                 
+             sub, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
              call, .uats.ifTest_sctor     ; (call label)
-             add, rsp, 32                 
+             add, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
              mov, [rcx+8], rdi            ; =
              mov, rsi, rcx                ; (preserve) [combiner]
              lea, rcx, [rbp-40]           ; obj1
-             sub, rsp, 32                 
+             sub, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
              call, .uats.loopTest_sctor   ; (call label)
-             add, rsp, 32                 
+             add, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
              mov, [rcx+8], rdi            ; =
-             sub, rsp, 32                 
+             sub, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
              mov, rdx, rbx                ;       (args req for rdx) [splitter]
              mov, rbx, rcx                ; (preserve) [combiner]
              mov, rcx, rsi                ; (restore [combiner])
              call, [rcx]                  ; vtbl call to .uats.ifTest_vtbl::run
-             add, rsp, 32                 
-             sub, rsp, 32                 
+             add, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
+             sub, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
              mov, rsi, rcx                ; (preserve) [combiner]
              mov, rcx, rbx                ; (restore [combiner])
              call, [rcx]                  ; vtbl call to .uats.loopTest_vtbl::run
-             add, rsp, 32                 
-             sub, rsp, 32                 
+             add, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
+             sub, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
              call, .uats.loopTest_sdtor   ; (call label)
-             add, rsp, 32                 
-             sub, rsp, 32                 
+             add, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
+             sub, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
              mov, rcx, rsi                ; (restore [combiner])
              call, .uats.ifTest_sdtor     ; (call label)
-             add, rsp, 32                 
-             sub, rsp, 32                 
+             add, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
+             sub, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
              mov, rcx, rdi                ; (restore [combiner])
              call, .sht.cons.stdout_sdtor ; (call label)
-             add, rsp, 32                 
+             add, rsp, 32                 ; 32 = (passing size)32 + (align pad)0
              mov, rsp, rbp                
              pop, rdi                     
              pop, rsi                     
@@ -76,14 +76,14 @@
                            push, rbp                                        
                            push, rbx                                        
                            mov, rbp, rsp                                    
-                           sub, rsp, 32                                     
+                           sub, rsp, 40                                     ; 40 = (passing size)32 + (align pad)8
                            call, .sht.core.object_sctor                     ; (call label)
-                           add, rsp, 32                                     
+                           add, rsp, 40                                     ; 40 = (passing size)32 + (align pad)8
                            lea, rbx, qwordptr .uats.consoleTarget_vtbl_inst 
                            mov, [rcx], rbx                                  ; =
-                           sub, rsp, 32                                     
+                           sub, rsp, 40                                     ; 40 = (passing size)32 + (align pad)8
                            call, .uats.consoleTarget.cctor                  ; (call label)
-                           add, rsp, 32                                     
+                           add, rsp, 40                                     ; 40 = (passing size)32 + (align pad)8
                            mov, rsp, rbp                                    
                            pop, rbx                                         
                            pop, rbp                                         
@@ -96,12 +96,12 @@
                            mov, rbp, rsp                                    
                            lea, rbx, qwordptr .uats.consoleTarget_vtbl_inst 
                            mov, [rcx], rbx                                  ; =
-                           sub, rsp, 32                                     
+                           sub, rsp, 40                                     ; 40 = (passing size)32 + (align pad)8
                            call, .uats.consoleTarget.cdtor                  ; (call label)
-                           add, rsp, 32                                     
-                           sub, rsp, 32                                     
+                           add, rsp, 40                                     ; 40 = (passing size)32 + (align pad)8
+                           sub, rsp, 40                                     ; 40 = (passing size)32 + (align pad)8
                            call, .sht.core.object_sdtor                     ; (call label)
-                           add, rsp, 32                                     
+                           add, rsp, 40                                     ; 40 = (passing size)32 + (align pad)8
                            mov, rsp, rbp                                    
                            pop, rbx                                         
                            pop, rbp                                         

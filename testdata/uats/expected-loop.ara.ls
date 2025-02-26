@@ -21,7 +21,7 @@ func .uats.loopTest.run(
    {
       var i : .sht.core.forLoopInst;
       .sht.core.forLoopInst_sctor(i);
-      for[i](1,4)
+      for[i](1,6)
       {
          .uats.loopTest.printI(self,.sht.core.forLoopInst.getValue(i));
       }

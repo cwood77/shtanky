@@ -30,36 +30,36 @@
 .uats.loopTest.run:                 
                                     push, rbp                                
                                     push, rbx                                
-                                    push, rsi                                
                                     push, rdi                                
                                     mov, rbp, rsp                            
                                     sub, rsp, 40                             
-                                    sub, rsp, 32                             
+                                    sub, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
                                     mov, rbx, rcx                            ; (preserve) [combiner]
                                     lea, rcx, qwordptr ._strLit_For_0        
                                     call, ._print                            ; (call label)
-                                    add, rsp, 32                             
-                                    sub, rsp, 32                             
+                                    add, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
+                                    sub, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
                                     lea, rcx, qwordptr ._strLit_14_1         
                                     call, ._print                            ; (call label)
-                                    add, rsp, 32                             
+                                    add, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
                                     lea, rcx, [rbp-40]                       ; i
-                                    sub, rsp, 32                             
+                                    sub, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
                                     call, .sht.core.forLoopInst_sctor        ; (call label)
-                                    add, rsp, 32                             
-                                    sub, rsp, 32                             
-                                    mov, rdx, 0                              ;       (0 req for rdx) [splitter]
-                                    mov, r8, 1                               ;       (1 req for r8) [splitter]
+                                    add, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
+                                    sub, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
+                                    mov, rdx, 1                              ;       (1 req for rdx) [splitter]
+                                    mov, r8, 6                               ;       (6 req for r8) [splitter]
                                     call, .sht.core.forLoopInst.setBounds    ; (call label)
-                                    add, rsp, 32                             
+                                    add, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
+                                    sub, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
+                                    call, .sht.core.loopInstBase.setDir      ; (call label)
+                                    add, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
                                     goto, .uats.loopTest.run.loop_i_24_start ; label decomp
 .seg code                           
 .uats.loopTest.run.loop_i_24_start: 
-                                    sub, rsp, 32                             
-                                    mov, rdi, rdx                            ; (preserve) [combiner]
-                                    mov, rsi, r8                             ; (preserve) [combiner]
+                                    sub, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
                                     call, .sht.core.forLoopInst.inBounds     ; (call label)
-                                    add, rsp, 32                             
+                                    add, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
                                     cmp, rax, 0                              
                                     je, .uats.loopTest.run.else.0            
                                     goto, .uats.loopTest.run.endif.1         
@@ -69,32 +69,27 @@
                                     goto, .uats.loopTest.run.endif.1         
 .seg code                           
 .uats.loopTest.run.endif.1:         
-                                    sub, rsp, 32                             
-                                    sub, rsp, 32                             
+                                    sub, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
+                                    sub, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
                                     call, .sht.core.forLoopInst.getValue     ; (call label)
-                                    add, rsp, 32                             
-                                    mov, rdx, rax                            ;       (rval5 req for rdx) [splitter]
+                                    add, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
+                                    mov, rdx, rax                            ;       (rval6 req for rdx) [splitter]
                                     mov, rdi, rcx                            ; (preserve) [combiner]
                                     mov, rcx, rbx                            ; (restore [combiner])
                                     call, .uats.loopTest.printI              ; (call label)
-                                    add, rsp, 32                             
-                                    sub, rsp, 32                             
+                                    add, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
+                                    sub, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
                                     mov, rcx, rdi                            ; (restore [combiner])
                                     call, [rcx]                              ; vtbl call to .sht.core.forLoopInst_vtbl::bump
-                                    add, rsp, 32                             
+                                    add, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
                                     goto, .uats.loopTest.run.loop_i_24_start 
 .seg code                           
 .uats.loopTest.run.loop_i_24_end:   
-                                    sub, rsp, 32                             
-                                    mov, rdx, 1                              ;       (1 req for rdx) [splitter]
-                                    call, .sht.core.loopInstBase.setDir      ; (call label)
-                                    add, rsp, 32                             
-                                    sub, rsp, 32                             
+                                    sub, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
                                     call, .sht.core.forLoopInst_sdtor        ; (call label)
-                                    add, rsp, 32                             
+                                    add, rsp, 40                             ; 40 = (passing size)32 + (align pad)8
                                     mov, rsp, rbp                            
                                     pop, rdi                                 
-                                    pop, rsi                                 
                                     pop, rbx                                 
                                     pop, rbp                                 
                                     ret                                      
@@ -110,11 +105,11 @@
                                setlts, rbx                         
                                cmp, rbx, 0                         
                                je, .uats.loopTest.printI.else.0    
-                               sub, rsp, 32                        
+                               sub, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
                                lea, rcx, qwordptr ._strLit_0_2     
                                mov, rbx, rdx                       ; (preserve) [combiner]
                                call, ._print                       ; (call label)
-                               add, rsp, 32                        
+                               add, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
                                goto, .uats.loopTest.printI.endif.1 
 .seg code                      
 .uats.loopTest.printI.else.0:  
@@ -123,10 +118,10 @@
                                setlts, rdi                         
                                cmp, rdi, 0                         
                                je, .uats.loopTest.printI.else.2    
-                               sub, rsp, 32                        
+                               sub, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
                                lea, rcx, qwordptr ._strLit_1_3     
                                call, ._print                       ; (call label)
-                               add, rsp, 32                        
+                               add, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
                                goto, .uats.loopTest.printI.endif.3 
 .seg code                      
 .uats.loopTest.printI.else.2:  
@@ -135,10 +130,10 @@
                                setlts, rdi                         
                                cmp, rdi, 0                         
                                je, .uats.loopTest.printI.else.4    
-                               sub, rsp, 32                        
+                               sub, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
                                lea, rcx, qwordptr ._strLit_2_4     
                                call, ._print                       ; (call label)
-                               add, rsp, 32                        
+                               add, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
                                goto, .uats.loopTest.printI.endif.5 
 .seg code                      
 .uats.loopTest.printI.else.4:  
@@ -147,17 +142,17 @@
                                setlts, rdi                         
                                cmp, rdi, 0                         
                                je, .uats.loopTest.printI.else.6    
-                               sub, rsp, 32                        
+                               sub, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
                                lea, rcx, qwordptr ._strLit_3_5     
                                call, ._print                       ; (call label)
-                               add, rsp, 32                        
+                               add, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
                                goto, .uats.loopTest.printI.endif.7 
 .seg code                      
 .uats.loopTest.printI.else.6:  
-                               sub, rsp, 32                        
+                               sub, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
                                lea, rcx, qwordptr ._strLit_4_6     
                                call, ._print                       ; (call label)
-                               add, rsp, 32                        
+                               add, rsp, 32                        ; 32 = (passing size)32 + (align pad)0
                                goto, .uats.loopTest.printI.endif.7 
 .seg code                      
 .uats.loopTest.printI.endif.7: 
@@ -201,14 +196,14 @@
                       push, rbp                                   
                       push, rbx                                   
                       mov, rbp, rsp                               
-                      sub, rsp, 32                                
+                      sub, rsp, 40                                ; 40 = (passing size)32 + (align pad)8
                       call, .sht.cons.program_sctor               ; (call label)
-                      add, rsp, 32                                
+                      add, rsp, 40                                ; 40 = (passing size)32 + (align pad)8
                       lea, rbx, qwordptr .uats.loopTest_vtbl_inst 
                       mov, [rcx], rbx                             ; =
-                      sub, rsp, 32                                
+                      sub, rsp, 40                                ; 40 = (passing size)32 + (align pad)8
                       call, .uats.loopTest.cctor                  ; (call label)
-                      add, rsp, 32                                
+                      add, rsp, 40                                ; 40 = (passing size)32 + (align pad)8
                       mov, rsp, rbp                               
                       pop, rbx                                    
                       pop, rbp                                    
@@ -221,12 +216,12 @@
                       mov, rbp, rsp                               
                       lea, rbx, qwordptr .uats.loopTest_vtbl_inst 
                       mov, [rcx], rbx                             ; =
-                      sub, rsp, 32                                
+                      sub, rsp, 40                                ; 40 = (passing size)32 + (align pad)8
                       call, .uats.loopTest.cdtor                  ; (call label)
-                      add, rsp, 32                                
-                      sub, rsp, 32                                
+                      add, rsp, 40                                ; 40 = (passing size)32 + (align pad)8
+                      sub, rsp, 40                                ; 40 = (passing size)32 + (align pad)8
                       call, .sht.cons.program_sdtor               ; (call label)
-                      add, rsp, 32                                
+                      add, rsp, 40                                ; 40 = (passing size)32 + (align pad)8
                       mov, rsp, rbp                               
                       pop, rbx                                    
                       pop, rbp                                    

@@ -38,94 +38,94 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 49:                   mov, rbp, rsp                    
 rex(48)op(89)modR/M(e5)
-// 50:                   sub, rsp, 32                     
-rex(48)op(83)modR/M(ec)i8(20)
+// 50:                   sub, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 51:                   mov, rbx, rcx                    ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
 // 52:                   lea, rcx, qwordptr ._strLit_If_0 
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 // 53:                   call, ._print                    ; (call label)
 op(e8)co32(00-00-00-00)
-// 54:                   add, rsp, 32                     
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 55:                   sub, rsp, 32                     
-rex(48)op(83)modR/M(ec)i8(20)
+// 54:                   add, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
+// 55:                   sub, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 56:                   lea, rcx, qwordptr ._strLit_1_1  
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 // 57:                   call, ._print                    ; (call label)
 op(e8)co32(00-00-00-00)
-// 58:                   add, rsp, 32                     
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 59:                   sub, rsp, 32                     
-rex(48)op(83)modR/M(ec)i8(20)
+// 58:                   add, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
+// 59:                   sub, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 60:                   mov, rdx, 1                      ;       (1 req for rdx) [splitter]
 rex(48)op(ba)i64(01-00-00-00,00-00-00-00)
 // 61:                   mov, rcx, rbx                    ; (restore [combiner])
 rex(48)op(89)modR/M(d9)
 // 62:                   call, .uats.ifTest.doTest        ; (call label)
 op(e8)co32(00-00-00-00)
-// 63:                   add, rsp, 32                     
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 64:                   sub, rsp, 32                     
-rex(48)op(83)modR/M(ec)i8(20)
+// 63:                   add, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
+// 64:                   sub, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 65:                   mov, rbx, rcx                    ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
 // 66:                   lea, rcx, qwordptr ._strLit_2_2  
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 // 67:                   call, ._print                    ; (call label)
 op(e8)co32(00-00-00-00)
-// 68:                   add, rsp, 32                     
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 69:                   sub, rsp, 32                     
-rex(48)op(83)modR/M(ec)i8(20)
+// 68:                   add, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
+// 69:                   sub, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 70:                   mov, rdx, 2                      ;       (2 req for rdx) [splitter]
 rex(48)op(ba)i64(02-00-00-00,00-00-00-00)
 // 71:                   mov, rcx, rbx                    ; (restore [combiner])
 rex(48)op(89)modR/M(d9)
 // 72:                   call, .uats.ifTest.doTest        ; (call label)
 op(e8)co32(00-00-00-00)
-// 73:                   add, rsp, 32                     
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 74:                   sub, rsp, 32                     
-rex(48)op(83)modR/M(ec)i8(20)
+// 73:                   add, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
+// 74:                   sub, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 75:                   mov, rbx, rcx                    ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
 // 76:                   lea, rcx, qwordptr ._strLit_3_3  
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 // 77:                   call, ._print                    ; (call label)
 op(e8)co32(00-00-00-00)
-// 78:                   add, rsp, 32                     
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 79:                   sub, rsp, 32                     
-rex(48)op(83)modR/M(ec)i8(20)
+// 78:                   add, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
+// 79:                   sub, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 80:                   mov, rdx, 3                      ;       (3 req for rdx) [splitter]
 rex(48)op(ba)i64(03-00-00-00,00-00-00-00)
 // 81:                   mov, rcx, rbx                    ; (restore [combiner])
 rex(48)op(89)modR/M(d9)
 // 82:                   call, .uats.ifTest.doTest        ; (call label)
 op(e8)co32(00-00-00-00)
-// 83:                   add, rsp, 32                     
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 84:                   sub, rsp, 32                     
-rex(48)op(83)modR/M(ec)i8(20)
+// 83:                   add, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
+// 84:                   sub, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 85:                   mov, rbx, rcx                    ; (preserve) [combiner]
 rex(48)op(89)modR/M(cb)
 // 86:                   lea, rcx, qwordptr ._strLit_4_4  
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 // 87:                   call, ._print                    ; (call label)
 op(e8)co32(00-00-00-00)
-// 88:                   add, rsp, 32                     
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 89:                   sub, rsp, 32                     
-rex(48)op(83)modR/M(ec)i8(20)
+// 88:                   add, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
+// 89:                   sub, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 90:                   mov, rdx, 4                      ;       (4 req for rdx) [splitter]
 rex(48)op(ba)i64(04-00-00-00,00-00-00-00)
 // 91:                   mov, rcx, rbx                    ; (restore [combiner])
 rex(48)op(89)modR/M(d9)
 // 92:                   call, .uats.ifTest.doTest        ; (call label)
 op(e8)co32(00-00-00-00)
-// 93:                   add, rsp, 32                     
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 93:                   add, rsp, 40                     ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 94:                   mov, rsp, rbp                    
 rex(48)op(89)modR/M(ec)
 // 95:                   pop, rbx                         
@@ -143,7 +143,7 @@ rex(48)op(ff)modR/M(f3)
 rex(48)op(ff)modR/M(f7)
 // 104:                              mov, rbp, rsp                     
 rex(48)op(89)modR/M(e5)
-// 105:                              sub, rsp, 32                      
+// 105:                              sub, rsp, 32                      ; 32 = (passing size)32 + (align pad)0
 rex(48)op(83)modR/M(ec)i8(20)
 // 106:                              lea, rcx, qwordptr ._strLit__5    
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
@@ -151,7 +151,7 @@ rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 rex(48)op(89)modR/M(d3)
 // 108:                              call, ._print                     ; (call label)
 op(e8)co32(00-00-00-00)
-// 109:                              add, rsp, 32                      
+// 109:                              add, rsp, 32                      ; 32 = (passing size)32 + (align pad)0
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 110:                              xor, rdi, rdi                     
 rex(48)op(31)modR/M(ff)
@@ -163,13 +163,13 @@ rex(48)op(0f-9c)modR/M(c7)
 rex(48)op(81)modR/M(ff)i32(00-00-00-00)
 // 114:                              je, .uats.ifTest.doTest.else.0    
 op(0f-84)co32(00-00-00-00)
-// 115:                              sub, rsp, 32                      
+// 115:                              sub, rsp, 32                      ; 32 = (passing size)32 + (align pad)0
 rex(48)op(83)modR/M(ec)i8(20)
 // 116:                              lea, rcx, qwordptr ._strLit_1_6   
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 // 117:                              call, ._print                     ; (call label)
 op(e8)co32(00-00-00-00)
-// 118:                              add, rsp, 32                      
+// 118:                              add, rsp, 32                      ; 32 = (passing size)32 + (align pad)0
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 119:                              goto, .uats.ifTest.doTest.endif.1 
 op(e9)co32(00-00-00-00)
@@ -184,24 +184,24 @@ rex(48)op(0f-9c)modR/M(c7)
 rex(48)op(81)modR/M(ff)i32(00-00-00-00)
 // 126:                              je, .uats.ifTest.doTest.else.2    
 op(0f-84)co32(00-00-00-00)
-// 127:                              sub, rsp, 32                      
+// 127:                              sub, rsp, 32                      ; 32 = (passing size)32 + (align pad)0
 rex(48)op(83)modR/M(ec)i8(20)
 // 128:                              lea, rcx, qwordptr ._strLit_2_7   
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 // 129:                              call, ._print                     ; (call label)
 op(e8)co32(00-00-00-00)
-// 130:                              add, rsp, 32                      
+// 130:                              add, rsp, 32                      ; 32 = (passing size)32 + (align pad)0
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 131:                              goto, .uats.ifTest.doTest.endif.3 
 op(e9)co32(00-00-00-00)
 // 133: .uats.ifTest.doTest.else.2:  
-// 134:                              sub, rsp, 32                      
+// 134:                              sub, rsp, 32                      ; 32 = (passing size)32 + (align pad)0
 rex(48)op(83)modR/M(ec)i8(20)
 // 135:                              lea, rcx, qwordptr ._strLit_34_8  
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 // 136:                              call, ._print                     ; (call label)
 op(e8)co32(00-00-00-00)
-// 137:                              add, rsp, 32                      
+// 137:                              add, rsp, 32                      ; 32 = (passing size)32 + (align pad)0
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 138:                              goto, .uats.ifTest.doTest.endif.3 
 op(e9)co32(00-00-00-00)
@@ -219,24 +219,24 @@ rex(48)op(0f-9c)modR/M(c7)
 rex(48)op(81)modR/M(ff)i32(00-00-00-00)
 // 148:                              je, .uats.ifTest.doTest.else.4    
 op(0f-84)co32(00-00-00-00)
-// 149:                              sub, rsp, 32                      
+// 149:                              sub, rsp, 32                      ; 32 = (passing size)32 + (align pad)0
 rex(48)op(83)modR/M(ec)i8(20)
 // 150:                              lea, rcx, qwordptr ._strLit_13_9  
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 // 151:                              call, ._print                     ; (call label)
 op(e8)co32(00-00-00-00)
-// 152:                              add, rsp, 32                      
+// 152:                              add, rsp, 32                      ; 32 = (passing size)32 + (align pad)0
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 153:                              goto, .uats.ifTest.doTest.endif.5 
 op(e9)co32(00-00-00-00)
 // 155: .uats.ifTest.doTest.else.4:  
-// 156:                              sub, rsp, 32                      
+// 156:                              sub, rsp, 32                      ; 32 = (passing size)32 + (align pad)0
 rex(48)op(83)modR/M(ec)i8(20)
 // 157:                              lea, rcx, qwordptr ._strLit_4_10  
 rex(48)op(8d)modR/M(0d)disp32toLabel(00-00-00-00)
 // 158:                              call, ._print                     ; (call label)
 op(e8)co32(00-00-00-00)
-// 159:                              add, rsp, 32                      
+// 159:                              add, rsp, 32                      ; 32 = (passing size)32 + (align pad)0
 rex(48)op(81)modR/M(c4)i32(20-00-00-00)
 // 160:                              goto, .uats.ifTest.doTest.endif.5 
 op(e9)co32(00-00-00-00)
@@ -283,22 +283,22 @@ rex(48)op(ff)modR/M(f5)
 rex(48)op(ff)modR/M(f3)
 // 193:                     mov, rbp, rsp                             
 rex(48)op(89)modR/M(e5)
-// 194:                     sub, rsp, 32                              
-rex(48)op(83)modR/M(ec)i8(20)
+// 194:                     sub, rsp, 40                              ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 195:                     call, .sht.cons.program_sctor             ; (call label)
 op(e8)co32(00-00-00-00)
-// 196:                     add, rsp, 32                              
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 196:                     add, rsp, 40                              ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 197:                     lea, rbx, qwordptr .uats.ifTest_vtbl_inst 
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 198:                     mov, [rcx], rbx                           ; =
 rex(48)op(89)modR/M(19)
-// 199:                     sub, rsp, 32                              
-rex(48)op(83)modR/M(ec)i8(20)
+// 199:                     sub, rsp, 40                              ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 200:                     call, .uats.ifTest.cctor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 201:                     add, rsp, 32                              
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 201:                     add, rsp, 40                              ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 202:                     mov, rsp, rbp                             
 rex(48)op(89)modR/M(ec)
 // 203:                     pop, rbx                                  
@@ -318,18 +318,18 @@ rex(48)op(89)modR/M(e5)
 rex(48)op(8d)modR/M(1d)disp32toLabel(00-00-00-00)
 // 213:                     mov, [rcx], rbx                           ; =
 rex(48)op(89)modR/M(19)
-// 214:                     sub, rsp, 32                              
-rex(48)op(83)modR/M(ec)i8(20)
+// 214:                     sub, rsp, 40                              ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 215:                     call, .uats.ifTest.cdtor                  ; (call label)
 op(e8)co32(00-00-00-00)
-// 216:                     add, rsp, 32                              
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
-// 217:                     sub, rsp, 32                              
-rex(48)op(83)modR/M(ec)i8(20)
+// 216:                     add, rsp, 40                              ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
+// 217:                     sub, rsp, 40                              ; 40 = (passing size)32 + (align pad)8
+rex(48)op(83)modR/M(ec)i8(28)
 // 218:                     call, .sht.cons.program_sdtor             ; (call label)
 op(e8)co32(00-00-00-00)
-// 219:                     add, rsp, 32                              
-rex(48)op(81)modR/M(c4)i32(20-00-00-00)
+// 219:                     add, rsp, 40                              ; 40 = (passing size)32 + (align pad)8
+rex(48)op(81)modR/M(c4)i32(28-00-00-00)
 // 220:                     mov, rsp, rbp                             
 rex(48)op(89)modR/M(ec)
 // 221:                     pop, rbx                                  
