@@ -10,6 +10,39 @@
 
 namespace liam {
 
+void var::addRef(size_t orderNum, lirArg& a)
+{
+   refs[orderNum].push_back(&a);
+
+   if(dynamic_cast<lirArgConst*>(&a))
+      requireStorage(orderNum,cmn::tgt::kStorageImmediate);
+}
+
+size_t var::estimatePopularity() const
+{
+   return refs.size();
+}
+
+bool var::hasArg(lirArg& a) const
+{
+   for(auto it=refs.begin();it!=refs.end();++it)
+   {
+      auto& args = it->second;
+      for(auto *pArg : args)
+         if(pArg == &a)
+            return true;
+   }
+   return false;
+}
+
+const lirArg& var::onlyArg(size_t orderNum)
+{
+   auto& args = refs[orderNum];
+   if(args.size() != 1)
+      cdwTHROW("var %s has %lu<>1 refs!",name.c_str(),args.size());
+   return **args.begin();
+}
+
 const lirArg& var::lastArg()
 {
    return **(--((--(refs.end()))->second.end()));
@@ -47,6 +80,34 @@ void var::unbindArgButKeepStorage(lirInstr& i, lirArg& a)
    {
       storageDisambiguators.erase(&a);
    }
+}
+
+std::set<size_t> var::getInstrsWithStorage(size_t s) const
+{
+   auto jit = storageToInstrMap.find(s);
+   if(jit == storageToInstrMap.end())
+      return std::set<size_t>();
+   else
+      return jit->second;
+}
+
+bool var::hasAnyStorageEver() const
+{
+   return storageToInstrMap.size() != 0;
+}
+
+size_t var::firstUsage() const
+{
+   if(refs.size() == 0)
+      cdwTHROW("var::firstUsage() without refs! name=%s",name.c_str());
+   return refs.begin()->first;
+}
+
+size_t var::lastUsage() const
+{
+   if(refs.size() == 0)
+      cdwTHROW("var::firstUsage() without refs! name=%s",name.c_str());
+   return (--refs.end())->first;
 }
 
 bool var::isAlive(size_t orderNum)
@@ -123,6 +184,12 @@ void var::requireStorage(size_t orderNum, size_t s)
 {
    instrToStorageMap[orderNum].insert(s);
    storageToInstrMap[s].insert(orderNum);
+}
+
+void var::requireStorage(size_t orderNum, lirArg& a, size_t s)
+{
+   requireStorage(orderNum,s);
+   storageDisambiguators[&a] = s;
 }
 
 void var::changeStorage(size_t orderNum, size_t old, size_t nu)
@@ -312,10 +379,8 @@ var *varTable::fetch(lirArg& a)
    std::vector<var*> ans;
 
    for(auto it=m_vars.begin();it!=m_vars.end();++it)
-      for(auto jit=it->second->refs.begin();jit!=it->second->refs.end();++jit)
-         for(auto kit=jit->second.begin();kit!=jit->second.end();++kit)
-            if(*kit == &a)
-               ans.push_back(it->second);
+      if(it->second->hasArg(a))
+         ans.push_back(it->second);
 
    if(ans.size() == 1)
       return ans[0];

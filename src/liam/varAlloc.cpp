@@ -10,12 +10,11 @@ void stackAllocator::run(varTable& v, varFinder& f)
 {
    for(auto it=v.all().begin();it!=v.all().end();++it)
    {
-      auto jit = it->second->storageToInstrMap.find(cmn::tgt::kStorageUndecidedStack);
-      if(jit != it->second->storageToInstrMap.end())
+      auto instrs = it->second->getInstrsWithStorage(cmn::tgt::kStorageUndecidedStack);
+      if(instrs.size())
       {
          // at least one instruction wants a stack allocation
          auto nu = f.decideStackStorage(it->second->getSize());
-         auto instrs = jit->second;
          for(auto kit=instrs.begin();kit!=instrs.end();++kit)
          {
             cdwDEBUG("deciding undecided stack storage as %lld for instr %lld\n",nu,*kit);
@@ -30,8 +29,8 @@ class varPrioritySorter {
 public:
    bool operator()(const var *pLhs, const var *pRhs) const
    {
-      if(pLhs->refs.size() != pRhs->refs.size())
-         return (pLhs->refs.size() > pRhs->refs.size());
+      if(pLhs->estimatePopularity() != pRhs->estimatePopularity())
+         return (pLhs->estimatePopularity() > pRhs->estimatePopularity());
       if(pLhs->name != pRhs->name)
          return pLhs->name < pRhs->name;
       else
@@ -45,7 +44,7 @@ void varAllocator::run(varTable& v, varFinder& f)
 
    // find all vars that need storage, sorted in priority order
    for(auto it=v.all().begin();it!=v.all().end();++it)
-      if(it->second->storageToInstrMap.size()==0)
+      if(!it->second->hasAnyStorageEver())
          priOrder.insert(it->second);
 
    // what I do next is expensive, so don't if you can avoid it
@@ -54,8 +53,8 @@ void varAllocator::run(varTable& v, varFinder& f)
 
    for(auto vit=priOrder.begin();vit!=priOrder.end();++vit)
    {
-      size_t firstAlive = (*vit)->refs.begin()->first;
-      size_t lastAlive = (--((*vit)->refs.end()))->first;
+      size_t firstAlive = (*vit)->firstUsage();
+      size_t lastAlive = (*vit)->lastUsage();
 
       // record all the storage used by variables living during my lifetime
       f.resetUsedStorage();

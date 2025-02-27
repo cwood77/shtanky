@@ -33,18 +33,19 @@ void varSplitter::checkVar(var& v)
       return;
    m_done.insert(&v);
 
-   if(v.storageToInstrMap.size() > 1)
+   if(v.hasAnyStorageEver())
    {
       // this var has at least two different storage demands
 
-      auto it=v.instrToStorageMap.begin();
+      auto iToSMap = v.getInstrToStorageMap();
+      auto it=iToSMap.begin();
       auto pPrevSs = &it->second;
 
       // implement first storage requirements
       implementFirstStorageRequirements(v,it->first,it->second);
 
       // for each subsequent requirement, implement it if not already the case
-      for(++it;it!=v.instrToStorageMap.end();++it)
+      for(++it;it!=iToSMap.end();++it)
       {
          size_t currI = it->first;
          auto *pCurrSs = &it->second;
@@ -139,8 +140,8 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
       tryPreserveDisp(v,orderNum,*pSrc);
    }
 
-   v.refs[mov.orderNum].push_back(&dest);
-   v.refs[mov.orderNum].push_back(pSrc);
+   v.addRef(mov.orderNum,dest);
+   v.addRef(mov.orderNum,*pSrc);
 
    // defer adding storage requirements until later, since it will invalidate the loop
    // I'm running inside of
@@ -163,8 +164,14 @@ void varSplitter::tryPreserveDisp(var& v, size_t orderNum, lirArg& splitSrcArg)
    // when I really want to split [rcx+8] -> rax.  So, preserve any displacement
    // while splitting
 
+   auto& a = v.onlyArg(orderNum);
+   splitSrcArg.disp = a.disp;
+   splitSrcArg.addrOf = a.addrOf;
+
+#if 0
    auto& args = v.refs[orderNum];
-   if(args.size() < 1)
+   if(args.size() != 1)
+   //if(args.size() < 1)
       cdwTHROW("insanity");
 
    // it's possible to have multiple refs on the same instr (e.g. consider x->foo(), which
@@ -192,6 +199,7 @@ void varSplitter::tryPreserveDisp(var& v, size_t orderNum, lirArg& splitSrcArg)
 
    splitSrcArg.disp = disp;
    splitSrcArg.addrOf = addrOf;
+#endif
 }
 
 void varSplitter::deferChangeStorage(var& v, lirInstr& i, size_t srcStor, size_t destStor)

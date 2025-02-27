@@ -151,14 +151,11 @@ void varCombiner::emitMoveBefore(lirInstr& antecedent, var& v, const std::string
    auto& dest = mov.addArg<lirArgVar>(":combDest",0);
    auto& src = mov.addArg<lirArgVar>(":combSrc",0);
 
-   v.refs[mov.orderNum].push_back(&src);
-   v.refs[mov.orderNum].push_back(&dest);
+   v.addRef(mov.orderNum,src);
+   v.addRef(mov.orderNum,dest);
 
-   v.requireStorage(mov.orderNum,srcStorage);
-   v.requireStorage(mov.orderNum,destStorage);
-
-   v.storageDisambiguators[&src] = srcStorage;
-   v.storageDisambiguators[&dest] = destStorage;
+   v.requireStorage(mov.orderNum,src,srcStorage);
+   v.requireStorage(mov.orderNum,dest,destStorage);
 }
 
 } // namespace liam

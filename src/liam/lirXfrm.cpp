@@ -102,10 +102,8 @@ void lirTransform::appendChange::apply()
 void lirTransform::varBindChange::apply()
 {
    var& v = m_v.create(m_a.getName());
-   v.refs[m_i.orderNum].push_back(&m_a);
-   v.instrToStorageMap[m_i.orderNum].insert(m_stor);
-   v.storageToInstrMap[m_stor].insert(m_i.orderNum);
-   v.storageDisambiguators[&m_a] = m_stor;
+   v.addRef(m_i.orderNum,m_a);
+   v.requireStorage(m_i.orderNum,m_a,m_stor);
 }
 
 void lirTransform::applyChanges()
@@ -437,10 +435,7 @@ void runLirTransforms(lirStreams& lir, cmn::tgt::iTargetInfo& t)
 void lirVarGen::runArg(lirInstr& i, lirArg& a)
 {
    var& v = m_v.create(a.getName());
-   v.refs[i.orderNum].push_back(&a);
-
-   if(dynamic_cast<lirArgConst*>(&a))
-      v.requireStorage(i.orderNum,cmn::tgt::kStorageImmediate);
+   v.addRef(i.orderNum,a);
 
    lirTransform::runArg(i,a);
 }
