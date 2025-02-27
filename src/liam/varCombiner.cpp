@@ -111,6 +111,8 @@ void varCombiner::resolveCollision(lirInstr& i, size_t storage, std::set<var*>& 
       //   (the injected mov isn't enough to avoid the conflict next time
       //    that's because in injected movs can't change storage, b/c they
       //       reference _both_ the nu and old storages)
+
+      // regardless of loop termination, this also disambiguates storage for this instruction
       (*jit)->changeStorage(i.orderNum,storage,altStorage);
       cdwDEBUG("      evicting to %lld\n",altStorage);
 
@@ -138,6 +140,7 @@ void varCombiner::resolveCollision(lirInstr& i, size_t storage, std::set<var*>& 
    }
 
    // restart algorithm
+   // TODO - is this really necessary/appropriate?
    restart();
 }
 

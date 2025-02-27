@@ -41,7 +41,7 @@ void varSplitter::checkVar(var& v)
       auto pPrevSs = &it->second;
 
       // implement first storage requirements
-      implementFirstStorageRequirements(v, it->first,it->second);
+      implementFirstStorageRequirements(v,it->first,it->second);
 
       // for each subsequent requirement, implement it if not already the case
       for(++it;it!=v.instrToStorageMap.end();++it)
@@ -67,10 +67,26 @@ void varSplitter::checkVar(var& v)
       }
    }
 
-   // update the table _after_ iterating on it
+   // defer requirement adjustments until after iterating
    for(auto it=m_newInstrs.begin();it!=m_newInstrs.end();++it)
-      v.requireStorage(it->first->orderNum,it->second);
+   {
+      const auto& info = it->second;
+      v.requireStorage(it->first->orderNum,info.first); // dest storage
+      if(info.second)
+         v.requireStorage(it->first->orderNum,cmn::tgt::kStorageImmediate); // src storage
+   }
    m_newInstrs.clear();
+   for(auto it=m_oldStorage.begin();it!=m_oldStorage.end();++it)
+   {
+      for(auto jit=it->second.begin();jit!=it->second.end();++jit)
+      {
+         jit->first->changeStorage(
+            it->first,
+            jit->second.first,
+            jit->second.second);
+      }
+   }
+   m_oldStorage.clear();
 }
 
 // even initial requirements may require implementation if there's multiple of them
@@ -103,9 +119,11 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
 
    const bool hasImm = (srcStor == cmn::tgt::kStorageImmediate);
 
-   auto& mov = m_s.pTail
-      ->searchUp([=](auto& i){ return i.orderNum == orderNum; })
-         .injectBefore(*new lirInstr(hasImm ? cmn::tgt::kMov : cmn::tgt::kSplit));
+   auto& origInstr = m_s.pTail->searchUp([=](auto& i){ return i.orderNum == orderNum; });
+   deferChangeStorage(v,origInstr,srcStor,destStor);
+
+   auto& mov = origInstr
+      .injectBefore(*new lirInstr(hasImm ? cmn::tgt::kMov : cmn::tgt::kSplit));
    mov.comment = cmn::fmt("      (%s req for %s) [splitter]",
       v.name.c_str(),
       m_t.getProc().getRegName(destStor));
@@ -124,14 +142,18 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
    v.refs[mov.orderNum].push_back(&dest);
    v.refs[mov.orderNum].push_back(pSrc);
 
-   // n.b. the source is _not_ a requirement.  I care where it's going, but not
-   //      really where it's coming from.  This gives more flexibility to the combiner.
-   m_newInstrs.push_back(std::make_pair<lirInstr*,size_t>(&mov,(size_t)destStor));
+   // defer adding storage requirements until later, since it will invalidate the loop
+   // I'm running inside of
+   auto& defer = m_newInstrs[&mov];
+   defer.first = destStor;
+   defer.second = hasImm;
 
+   // ... but it is safe to set disambiguators now
    v.storageDisambiguators[&dest] = destStor;
-
    if(hasImm)
-      // kMov won't have a 2nd splitter pass, so do some extra stuff now
+      // n.b. generally the source is _not_ a requirement.  I care where it's going, but
+      //      not really where it's coming from.  This gives more flexibility to the
+      //      combiner.  But immedate operands are special and are unambiguous now.
       v.storageDisambiguators[pSrc] = cmn::tgt::kStorageImmediate;
 }
 
@@ -172,6 +194,12 @@ void varSplitter::tryPreserveDisp(var& v, size_t orderNum, lirArg& splitSrcArg)
    splitSrcArg.addrOf = addrOf;
 }
 
+void varSplitter::deferChangeStorage(var& v, lirInstr& i, size_t srcStor, size_t destStor)
+{
+   m_oldStorage[i.orderNum][&v].first = srcStor;
+   m_oldStorage[i.orderNum][&v].second = destStor;
+}
+
 void splitResolver::run()
 {
    lirInstr *pInstr = &m_s.pTail->head();
@@ -185,7 +213,7 @@ void splitResolver::run()
          if(prev.size() != 1)
             cdwTHROW("insane!  too many previous storages!");
 
-         src.requireStorage(pInstr->orderNum,*prev.begin()); // TODO - necessary?
+         src.requireStorage(pInstr->orderNum,*prev.begin());
          src.storageDisambiguators[pInstr->getArgs()[1]] = *prev.begin();
 
          pInstr->instrId = cmn::tgt::kMov;

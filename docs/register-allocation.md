@@ -59,7 +59,6 @@ For any split instruction added by the splitter, variables area assigned to the 
 The splitter never changes the storage demands of existing instructions.
 
 TODO: is it ok to only handle immediate data as first demands?
-TODO: shouldn't `requireStorage` be called on `kMov` (not split) for the source?
 
 ## 4. Resvole Conflicts over Storage
 
