@@ -14,6 +14,9 @@ class lirInstr;
 
 class var {
 public:
+   explicit var(const std::string& n) : name(n) {}
+   std::string getName() const { return name; }
+private:
    std::string name;
 private:
    std::map<size_t,std::list<lirArg*> > refs;
@@ -33,7 +36,7 @@ public:
 
    bool hasArg(lirArg& a) const;
    const lirArg& onlyArg(size_t orderNum);
-   const lirArg& lastArg();
+public:
    size_t getSize();
 
    // this unbinds the argument, but keeps the storage assignment
@@ -42,7 +45,7 @@ public:
    std::set<size_t> getInstrsWithStorage(size_t s) const;
    bool hasAnyStorageEver() const;
 
-   std::string getImmediateData() { return lastArg().getName(); }
+   std::string getImmediateData();
 
    size_t firstUsage() const;
    size_t lastUsage() const;

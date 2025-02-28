@@ -31,8 +31,8 @@ public:
    {
       if(pLhs->estimatePopularity() != pRhs->estimatePopularity())
          return (pLhs->estimatePopularity() > pRhs->estimatePopularity());
-      if(pLhs->name != pRhs->name)
-         return pLhs->name < pRhs->name;
+      if(pLhs->getName() != pRhs->getName())
+         return pLhs->getName() < pRhs->getName();
       else
          return pLhs < pRhs;
    }
@@ -69,8 +69,8 @@ void varAllocator::run(varTable& v, varFinder& f)
          }
       }
 
-      size_t ans = f.chooseFreeStorage((*vit)->lastArg().getSize());
-      cdwDEBUG("assigning r%ld for var %s\n",ans,(*vit)->name.c_str());
+      size_t ans = f.chooseFreeStorage((*vit)->getSize());
+      cdwDEBUG("assigning r%ld for var %s\n",ans,(*vit)->getName().c_str());
       (*vit)->requireStorage(firstAlive,ans);
    }
 }

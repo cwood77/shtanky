@@ -72,7 +72,7 @@ void varCombiner::resolveCollision(lirInstr& i, size_t storage, std::set<var*>& 
          size_t priority = (*pVar)->requiresStorageNext(i.orderNum,storage);
 
          cdwDEBUG("   %s requires storage %lld after instr #%lld at #%lld\n",
-            (*pVar)->name.c_str(),
+            (*pVar)->getName().c_str(),
             storage,
             i.orderNum,
             priority);
@@ -93,7 +93,7 @@ void varCombiner::resolveCollision(lirInstr& i, size_t storage, std::set<var*>& 
       pWinner = *winners.begin();
    else
       cdwTHROW("insanity!  winners size is %lld",winners.size());
-   cdwDEBUG("   winner is %s\n",pWinner->name.c_str());
+   cdwDEBUG("   winner is %s\n",pWinner->getName().c_str());
 
    // evict all the losers (and runners-up)
    std::map<var*,size_t> altStorageMap;
@@ -101,7 +101,7 @@ void varCombiner::resolveCollision(lirInstr& i, size_t storage, std::set<var*>& 
    {
       // for each loser
 
-      cdwDEBUG("   handling loser %s\n",(*jit)->name.c_str());
+      cdwDEBUG("   handling loser %s\n",(*jit)->getName().c_str());
 
       // stash loser to a free storage loc and fixup subsequent refs
       size_t altStorage = m_f.chooseFreeStorage((*jit)->getSize());

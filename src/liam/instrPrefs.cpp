@@ -50,7 +50,7 @@ void instrPrefs::handle(lirInstr& i)
       case cmn::tgt::kReserveLocal:
          {
             var& v = m_vTable.demand(*i.getArgs()[0]);
-            v.requireStorage(i.orderNum,cmn::tgt::kStorageUndecidedStack);
+            v.requireStorage(i.orderNum,*i.getArgs()[0],cmn::tgt::kStorageUndecidedStack);
             cdwDEBUG("> local %s needs stack, any stack\n",
                //dynamic_cast<lirArgVar*>(i.getArgs()[0])->name.c_str());
                i.getArgs()[0]->getName().c_str());
@@ -73,7 +73,7 @@ void instrPrefs::handle(lirInstr& i)
                std::vector<size_t> argStorage;
                cc.getRValAndArgBank(argStorage);
                var& v = m_vTable.demand(arg.getName());
-               v.requireStorage(i.orderNum,argStorage[0]);
+               v.requireStorage(i.orderNum,arg,argStorage[0]);
             }
          }
          break;
@@ -122,7 +122,7 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
             // going out
             size_t stor = cmn::tgt::makeStackStorage(stackSpace);
             stor = m_vTable.getVirtualStack().reserveVirtStorage(stor);
-            v.requireStorage(i.orderNum,stor);
+            v.requireStorage(i.orderNum,*i.getArgs()[k],stor);
             stackSpace -= m_target.getRealSize(v.getSize());
          }
          else
@@ -136,8 +136,8 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
       else
       {
          // use a register
-         v.requireStorage(i.orderNum,argStorage[k+offset2]);
-         cdwDEBUG("assigning r%lld to %s\n",argStorage[k+offset2],v.name.c_str());
+         v.requireStorage(i.orderNum,*i.getArgs()[k],argStorage[k+offset2]);
+         cdwDEBUG("assigning r%lld to %s\n",argStorage[k+offset2],v.getName().c_str());
       }
 
       if(k==0)
@@ -189,7 +189,7 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
             // going out
             size_t stor = cmn::tgt::makeStackStorage(stackSpace);
             stor = m_vTable.getVirtualStack().reserveVirtStorage(stor);
-            v.requireStorage(i.orderNum,stor);
+            v.requireStorage(i.orderNum,*i.getArgs()[k],stor);
             stackSpace += m_target.getRealSize(v.getSize());
          }
          else
@@ -201,8 +201,8 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
       else
       {
          // use a register
-         v.requireStorage(i.orderNum,argStorage[k]);
-         cdwDEBUG("assigning r%lld to %s\n",argStorage[k],v.name.c_str());
+         v.requireStorage(i.orderNum,*i.getArgs()[k],argStorage[k]);
+         cdwDEBUG("assigning r%lld to %s\n",argStorage[k],v.getName().c_str());
       }
 
       if(k==0)
@@ -216,7 +216,7 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
       for(size_t k=0;k<trashedRegs.size();k++)
       {
          var& v = m_vTable.demand(*i.getArgs()[offset+k]);
-         v.requireStorage(i.orderNum,trashedRegs[k]);
+         v.requireStorage(i.orderNum,*i.getArgs()[offset+k],trashedRegs[k]);
       }
    }
 }
@@ -237,8 +237,8 @@ void instrPrefs::trashVolatileRegs(lirInstr& i, const cmn::tgt::iCallingConventi
    for(size_t k=1;k<i.getArgs().size();k++)
    {
       var& v = m_vTable.demand(*i.getArgs()[k]);
-      v.requireStorage(i.orderNum,argStorage[k-1]);
-      cdwDEBUG("assigning r%lld to %s\n",argStorage[k-1],v.name.c_str());
+      v.requireStorage(i.orderNum,*i.getArgs()[k],argStorage[k-1]);
+      cdwDEBUG("assigning r%lld to %s\n",argStorage[k-1],v.getName().c_str());
    }
 }
 

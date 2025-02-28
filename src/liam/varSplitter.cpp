@@ -105,7 +105,7 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
    auto& mov = origInstr
       .injectBefore(*new lirInstr(hasImm ? cmn::tgt::kMov : cmn::tgt::kSplit));
    mov.comment = cmn::fmt("      (%s req for %s) [splitter]",
-      v.name.c_str(),
+      v.getName().c_str(),
       m_t.getProc().getRegName(destStor));
 
    auto& dest = mov.addArg<lirArgVar>("spltD",v.getSize());

@@ -43,14 +43,18 @@ const lirArg& var::onlyArg(size_t orderNum)
    return **args.begin();
 }
 
-const lirArg& var::lastArg()
-{
-   return **(--((--(refs.end()))->second.end()));
-}
-
 size_t var::getSize()
 {
-   return (*refs.begin()->second.begin())->getSize();
+   // TODO - lirArgs refed by var aren't always the same size...?
+   // I think this is just laziness in astCodeGen
+
+   size_t maxSize = 0;
+   for(auto it=refs.begin();it!=refs.end();++it)
+      for(auto *pArg : it->second)
+         if(pArg->getSize() > maxSize)
+            maxSize = pArg->getSize();
+
+   return maxSize;
 }
 
 // remove all references to the argument but keep storage (and orderNums).
@@ -94,6 +98,33 @@ std::set<size_t> var::getInstrsWithStorage(size_t s) const
 bool var::hasAnyStorageEver() const
 {
    return storageToInstrMap.size() != 0;
+}
+
+std::string var::getImmediateData()
+{
+   std::string immData;
+   bool inited = false;
+
+   for(auto it=refs.begin();it!=refs.end();++it)
+      for(auto *pArg : it->second)
+         if(auto *pImm = dynamic_cast<lirArgConst*>(pArg))
+         {
+            if(inited)
+            {
+               if(immData != pImm->getName())
+                  cdwTHROW("var %s has different names i.e. different immediate data",name.c_str());
+            }
+            else
+            {
+               immData = pImm->getName();
+               inited = true;
+            }
+         }
+
+   if(!inited)
+      cdwTHROW("var::getImmediateData() called without const lirArg; name=%s",name.c_str());
+
+   return immData;
 }
 
 size_t var::firstUsage() const
@@ -349,10 +380,7 @@ var& varTable::create(const std::string& name)
 {
    var*& pVar = m_vars[name];
    if(!pVar)
-   {
-      pVar = new var;
-      pVar->name = name;
-   }
+      pVar = new var(name);
    return *pVar;
 }
 
