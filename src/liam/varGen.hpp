@@ -25,8 +25,8 @@ public:
 private:
    std::map<size_t,std::set<size_t> > instrToStorageMap;
    std::map<size_t,std::set<size_t> > storageToInstrMap;
-public:
    std::map<lirArg*,size_t> storageDisambiguators;
+public:
 
    void addRef(size_t orderNum, lirArg& a);
    size_t estimatePopularity() const;

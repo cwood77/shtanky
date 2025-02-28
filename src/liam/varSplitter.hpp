@@ -26,15 +26,11 @@ private:
    void implementFirstStorageRequirements(var& v, size_t orderNum, std::set<size_t>& reqs);
    void emitMoveBefore(var& v, size_t orderNum, size_t src, size_t dest);
    void tryPreserveDisp(var& v, size_t orderNum, lirArg& splitSrcArg);
-   void deferChangeStorage(var& v, lirInstr& i, size_t srcStor, size_t destStor);
 
    lirStream& m_s;
    varTable& m_v;
    cmn::tgt::iTargetInfo& m_t;
    std::set<var*> m_done;
-
-   std::map<lirInstr*,std::pair<size_t,bool> > m_newInstrs;
-   std::map<size_t,std::map<var*,std::pair<size_t,size_t> > > m_oldStorage;
 };
 
 // convert split instrs to mov instrs

@@ -67,27 +67,6 @@ void varSplitter::checkVar(var& v)
          pPrevSs = pCurrSs;
       }
    }
-
-   // defer requirement adjustments until after iterating
-   for(auto it=m_newInstrs.begin();it!=m_newInstrs.end();++it)
-   {
-      const auto& info = it->second;
-      v.requireStorage(it->first->orderNum,info.first); // dest storage
-      if(info.second)
-         v.requireStorage(it->first->orderNum,cmn::tgt::kStorageImmediate); // src storage
-   }
-   m_newInstrs.clear();
-   for(auto it=m_oldStorage.begin();it!=m_oldStorage.end();++it)
-   {
-      for(auto jit=it->second.begin();jit!=it->second.end();++jit)
-      {
-         jit->first->changeStorage(
-            it->first,
-            jit->second.first,
-            jit->second.second);
-      }
-   }
-   m_oldStorage.clear();
 }
 
 // even initial requirements may require implementation if there's multiple of them
@@ -121,7 +100,7 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
    const bool hasImm = (srcStor == cmn::tgt::kStorageImmediate);
 
    auto& origInstr = m_s.pTail->searchUp([=](auto& i){ return i.orderNum == orderNum; });
-   deferChangeStorage(v,origInstr,srcStor,destStor);
+   v.changeStorage(origInstr.orderNum,srcStor,destStor);
 
    auto& mov = origInstr
       .injectBefore(*new lirInstr(hasImm ? cmn::tgt::kMov : cmn::tgt::kSplit));
@@ -143,19 +122,7 @@ void varSplitter::emitMoveBefore(var& v, size_t orderNum, size_t srcStor, size_t
    v.addRef(mov.orderNum,dest);
    v.addRef(mov.orderNum,*pSrc);
 
-   // defer adding storage requirements until later, since it will invalidate the loop
-   // I'm running inside of
-   auto& defer = m_newInstrs[&mov];
-   defer.first = destStor;
-   defer.second = hasImm;
-
-   // ... but it is safe to set disambiguators now
-   v.storageDisambiguators[&dest] = destStor;
-   if(hasImm)
-      // n.b. generally the source is _not_ a requirement.  I care where it's going, but
-      //      not really where it's coming from.  This gives more flexibility to the
-      //      combiner.  But immedate operands are special and are unambiguous now.
-      v.storageDisambiguators[pSrc] = cmn::tgt::kStorageImmediate;
+   v.requireStorage(mov.orderNum,dest,destStor);
 }
 
 void varSplitter::tryPreserveDisp(var& v, size_t orderNum, lirArg& splitSrcArg)
@@ -202,12 +169,6 @@ void varSplitter::tryPreserveDisp(var& v, size_t orderNum, lirArg& splitSrcArg)
 #endif
 }
 
-void varSplitter::deferChangeStorage(var& v, lirInstr& i, size_t srcStor, size_t destStor)
-{
-   m_oldStorage[i.orderNum][&v].first = srcStor;
-   m_oldStorage[i.orderNum][&v].second = destStor;
-}
-
 void splitResolver::run()
 {
    lirInstr *pInstr = &m_s.pTail->head();
@@ -221,8 +182,7 @@ void splitResolver::run()
          if(prev.size() != 1)
             cdwTHROW("insane!  too many previous storages!");
 
-         src.requireStorage(pInstr->orderNum,*prev.begin());
-         src.storageDisambiguators[pInstr->getArgs()[1]] = *prev.begin();
+         src.requireStorage(pInstr->orderNum,*pInstr->getArgs()[1],*prev.begin());
 
          pInstr->instrId = cmn::tgt::kMov;
       }

@@ -15,7 +15,7 @@ void var::addRef(size_t orderNum, lirArg& a)
    refs[orderNum].push_back(&a);
 
    if(dynamic_cast<lirArgConst*>(&a))
-      requireStorage(orderNum,cmn::tgt::kStorageImmediate);
+      requireStorage(orderNum,a,cmn::tgt::kStorageImmediate);
 }
 
 size_t var::estimatePopularity() const
@@ -387,17 +387,7 @@ var *varTable::fetch(lirArg& a)
    else if(ans.size() == 0)
       return NULL;
    else
-   {
-      for(auto it=ans.begin();it!=ans.end();++it)
-      {
-         std::string storage = "???";
-         auto jit=(*it)->storageDisambiguators.find(&a);
-         if(jit!=(*it)->storageDisambiguators.end())
-            storage = cmn::fmt("%lld",jit->second);
-         cdwDEBUG("v = '%s', stor=%lld\n",(*it)->name.c_str(),storage.c_str());
-      }
       cdwTHROW("INSANITY! lirArg %s has %lld variables associated?!",a.getName().c_str(),ans.size());
-   }
 }
 
 void varTable::format(cmn::outStream& s)
