@@ -16,6 +16,7 @@ namespace cmn { class textTableLineWriter; }
 namespace liam {
 
 class lirStreams;
+class var;
 
 class lirArg {
 public:
@@ -26,12 +27,16 @@ public:
    size_t getSize() const { return m_size; }
    virtual lirArg& clone() const = 0;
 
+   void bindVar(var& v);
+   //void unbindVarIf();
+   var& demandVar();
+
    int disp;
    bool addrOf;
 
 protected:
    lirArg(const std::string& name, size_t size)
-   : disp(0), addrOf(false), m_name(name), m_size(size) {}
+   : disp(0), addrOf(false), m_name(name), m_size(size), m_pVar(NULL) {}
 
    template<class T>
    T& _clone() const
@@ -46,6 +51,7 @@ protected:
 private:
    const std::string m_name;
    const size_t m_size;
+   var *m_pVar;
 };
 
 class lirArgVar : public lirArg {

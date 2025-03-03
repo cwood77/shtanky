@@ -49,7 +49,7 @@ void instrPrefs::handle(lirInstr& i)
 
       case cmn::tgt::kReserveLocal:
          {
-            var& v = m_vTable.demand(*i.getArgs()[0]);
+            var& v = i.getArgs()[0]->demandVar();
             v.requireStorage(i.orderNum,*i.getArgs()[0],cmn::tgt::kStorageUndecidedStack);
             cdwDEBUG("> local %s needs stack, any stack\n",
                //dynamic_cast<lirArgVar*>(i.getArgs()[0])->name.c_str());
@@ -72,7 +72,7 @@ void instrPrefs::handle(lirInstr& i)
                auto& cc = m_target.getCallConvention();
                std::vector<size_t> argStorage;
                cc.getRValAndArgBank(argStorage);
-               var& v = m_vTable.demand(arg.getName());
+               var& v = arg.demandVar();
                v.requireStorage(i.orderNum,arg,argStorage[0]);
             }
          }
@@ -112,7 +112,7 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
       else if(isInvoke && k>0)
          offset2--;
 
-      var& v = m_vTable.demand(*i.getArgs()[k]);
+      var& v = i.getArgs()[k]->demandVar();
 
       if((k+offset2) >= argStorage.size())
       {
@@ -179,7 +179,7 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
       if(isLeaving && k==1)
          continue;
 
-      var& v = m_vTable.demand(*i.getArgs()[k]);
+      var& v = i.getArgs()[k]->demandVar();
 
       if(k > argStorage.size())
       {
@@ -215,7 +215,7 @@ void instrPrefs::handle(lirInstr& i, const cmn::tgt::iCallingConvention& cc, boo
       size_t offset = i.getArgs().size() - trashedRegs.size();
       for(size_t k=0;k<trashedRegs.size();k++)
       {
-         var& v = m_vTable.demand(*i.getArgs()[offset+k]);
+         var& v = i.getArgs()[offset+k]->demandVar();
          v.requireStorage(i.orderNum,*i.getArgs()[offset+k],trashedRegs[k]);
       }
    }
@@ -236,7 +236,7 @@ void instrPrefs::trashVolatileRegs(lirInstr& i, const cmn::tgt::iCallingConventi
 
    for(size_t k=1;k<i.getArgs().size();k++)
    {
-      var& v = m_vTable.demand(*i.getArgs()[k]);
+      var& v = i.getArgs()[k]->demandVar();
       v.requireStorage(i.orderNum,*i.getArgs()[k],argStorage[k-1]);
       cdwDEBUG("assigning r%lld to %s\n",argStorage[k-1],v.getName().c_str());
    }

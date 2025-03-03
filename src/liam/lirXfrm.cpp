@@ -451,7 +451,7 @@ void spuriousVarStripper::runInstr(lirInstr& i)
       {
          if(*it != pKeeper)
          {
-            m_v.demand(**it).unbindArgButKeepStorage(i,**it);
+            (*it)->demandVar().unbindArgButKeepStorage(i,**it);
             delete *it;
          }
       }
@@ -466,7 +466,7 @@ void spuriousVarStripper::runInstr(lirInstr& i)
    {
       for(auto *pA : i.getArgs())
       {
-         m_v.demand(*pA).unbindArgButKeepStorage(i,*pA);
+         pA->demandVar().unbindArgButKeepStorage(i,*pA);
          delete pA;
       }
       i.getArgs().clear();
@@ -515,7 +515,7 @@ void codeShapeTransform::runInstr(lirInstr& i)
    lirNameCollector(u).runStream(getCurrentStream());
    std::string varName = u.makeUnique("t");
    lirArg& origArg = *i.getArgs()[*regOffsets.begin()];
-   size_t origStor = m_v.demand(origArg).getStorageFor(i.orderNum,origArg);
+   size_t origStor = origArg.demandVar().getStorageFor(i.orderNum,origArg);
 
    // inject save
    if(needsSpill)
@@ -553,7 +553,7 @@ void codeShapeTransform::runInstr(lirInstr& i)
 
    // modify original instruction
    {
-      var& origVar = m_v.demand(origArg);
+      var& origVar = origArg.demandVar();
       origVar.unbindArgButKeepStorage(i,origArg);
 
       auto *pUpdatedArg = new lirArgTemp(varName,origArg.getSize());
@@ -589,7 +589,7 @@ void codeShapeTransform::categorizeArgs(lirInstr& i, std::vector<cmn::tgt::argTy
       }
       else
       {
-         size_t stor = m_v.demand(**it).getStorageFor(i.orderNum,**it);
+         size_t stor = (*it)->demandVar().getStorageFor(i.orderNum,**it);
          if(cmn::tgt::isVStack(stor) || cmn::tgt::isStackStorage(stor))
          {
             cdwDEBUG("   m\n");
@@ -783,7 +783,7 @@ bool codeShapeTransform::isStackFramePtrInUse(lirInstr& i, const cmn::tgt::instr
       else
       {
          lirArg& arg = *i.getArgs()[idx];
-         size_t stor = m_v.demand(arg).getStorageFor(i.orderNum,arg);
+         size_t stor = arg.demandVar().getStorageFor(i.orderNum,arg);
          stackFramePtrInUse = cmn::tgt::isVStack(stor);
          if(stackFramePtrInUse)
             break;

@@ -13,6 +13,7 @@ namespace liam {
 void var::addRef(size_t orderNum, lirArg& a)
 {
    refs[orderNum].push_back(&a);
+   a.bindVar(*this);
 
    if(dynamic_cast<lirArgConst*>(&a))
       requireStorage(orderNum,a,cmn::tgt::kStorageImmediate);
@@ -390,32 +391,6 @@ var& varTable::demand(const std::string& name)
    if(!pVar)
       throw std::runtime_error("missing var");
    return *pVar;
-}
-
-var& varTable::demand(lirArg& a)
-{
-   var *pAns = fetch(a);
-
-   if(!pAns)
-      cdwTHROW("variable not found!");
-
-   return *pAns;
-}
-
-var *varTable::fetch(lirArg& a)
-{
-   std::vector<var*> ans;
-
-   for(auto it=m_vars.begin();it!=m_vars.end();++it)
-      if(it->second->hasArg(a))
-         ans.push_back(it->second);
-
-   if(ans.size() == 1)
-      return ans[0];
-   else if(ans.size() == 0)
-      return NULL;
-   else
-      cdwTHROW("INSANITY! lirArg %s has %lld variables associated?!",a.getName().c_str(),ans.size());
 }
 
 void varTable::format(cmn::outStream& s)

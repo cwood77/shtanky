@@ -15,11 +15,7 @@ void varSplitter::split(lirStream& s, varTable& v, cmn::tgt::iTargetInfo& t)
    while(true)
    {
       for(auto it=pInstr->getArgs().begin();it!=pInstr->getArgs().end();++it)
-      {
-         var *pVar = v.fetch(**it);
-         if(pVar)
-            self.checkVar(*pVar);
-      }
+         self.checkVar((*it)->demandVar());
 
       if(pInstr->isLast())
          break;
@@ -176,7 +172,7 @@ void splitResolver::run()
    {
       if(pInstr->instrId == cmn::tgt::kSplit)
       {
-         var& src = m_v.demand(*pInstr->getArgs()[1]);
+         var& src = pInstr->getArgs()[1]->demandVar();
 
          auto prev = src.getStorageAt(pInstr->orderNum-1);
          if(prev.size() != 1)

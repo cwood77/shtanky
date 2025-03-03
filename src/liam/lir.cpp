@@ -9,10 +9,25 @@
 
 namespace liam {
 
+void lirArg::bindVar(var& v)
+{
+   if(m_pVar)
+      cdwTHROW("rebind var is unsupported");
+   m_pVar = &v;
+}
+
+var& lirArg::demandVar()
+{
+   if(!m_pVar)
+      cdwTHROW("no var in demandVar");
+   return *m_pVar;
+}
+
 lirArg& lirArg::copyFieldsInto(lirArg& noob) const
 {
    noob.disp = disp;
    noob.addrOf = addrOf;
+   noob.m_pVar = NULL;
    return noob;
 }
 
