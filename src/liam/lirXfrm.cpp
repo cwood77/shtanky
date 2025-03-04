@@ -205,12 +205,12 @@ void lirComparisonOpDecomposition::runInstr(lirInstr& i)
    {
       // inject a SETcc instruction after me
       auto noob = new lirInstr(cmn::tgt::kSetLessThanSigned);
-      noob->addArg(*i.getArgs()[0]);
+      noob->addArg(i.getArgs()[0]->clone());
       scheduleInjectAfter(*noob,i);
 
       // repurpose my instruction as a compare
       i.instrId = cmn::tgt::kCmp;
-      i.getArgs().erase(i.getArgs().begin()); // I gave this arg away
+      i.deleteArg(0);
 
       // inject an xor before the compare, since SETcc
       // only writes to a byte
@@ -223,12 +223,12 @@ void lirComparisonOpDecomposition::runInstr(lirInstr& i)
    {
       // inject a SETcc instruction after me
       auto noob = new lirInstr(cmn::tgt::kSetEqualTo);
-      noob->addArg(*i.getArgs()[0]);
+      noob->addArg(i.getArgs()[0]->clone());
       scheduleInjectAfter(*noob,i);
 
       // repurpose my instruction as a compare
       i.instrId = cmn::tgt::kCmp;
-      i.getArgs().erase(i.getArgs().begin()); // I gave this arg away
+      i.deleteArg(0);
 
       // inject an xor before the compare, since SETcc
       // only writes to a byte
@@ -247,12 +247,12 @@ void lirBranchDecomposition::runInstr(lirInstr& i)
    {
       // inject a jump instruction after me
       auto noob = new lirInstr(cmn::tgt::kJumpEqual);
-      noob->addArg(*i.getArgs()[1]);
+      noob->addArg(i.getArgs()[1]->clone());
       scheduleInjectAfter(*noob,i);
 
       // repurpose my instruction as a compare
       i.instrId = cmn::tgt::kCmp;
-      i.getArgs().resize(1); // rescind ownership of label I just gave to je
+      i.deleteAllButNArgs(1);
       i.addArg<lirArgConst>("0",1);
    }
 
@@ -351,14 +351,14 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
 
          auto pMov = new lirInstr(cmn::tgt::kMov);
          pMov->addArg(*pTmp);
-         pMov->addArg(*pArg);
+         pMov->addArg(pArg->clone());
          pMov->comment = "shape:hoist addrOf from call";
 
          scheduleInjectBefore(*pMov,i);
 
          // go ahead and swap out the arg directly; this is safe b/c I haven't
          // traversed it yet
-         args[j] = &pTmp->clone();
+         i.replaceArg(j,pTmp->clone());
       }
    }
 
@@ -387,7 +387,7 @@ void lirCodeShapeDecomposition::runInstr(lirInstr& i)
 
          // go ahead and swap out the arg directly; this is safe b/c I haven't
          // traversed it yet
-         i.getArgs()[0] = &pTmp->clone();
+         i.replaceArg(0,pTmp->clone());
       }
    }
 
@@ -444,33 +444,15 @@ void spuriousVarStripper::runInstr(lirInstr& i)
 {
    if(i.instrId == cmn::tgt::kCall)
    {
-      auto& args = i.getArgs();
-      auto *pKeeper = args[1]; // keep only the call ptr
-
-      for(auto it=args.begin();it!=args.end();++it)
-      {
-         if(*it != pKeeper)
-         {
-            (*it)->demandVar().unbindArgButKeepStorage(i,**it);
-            delete *it;
-         }
-      }
-
-      args.clear();
-      args.push_back(pKeeper);
+      // keep only the call ptr (args[1])
+      i.deleteAllButNArgs(2);
+      i.deleteArg(0);
    }
 
    // even though this instr is never emitted, strip the args so codeshape doesn't
    // get confused later
    else if(i.instrId == cmn::tgt::kRet)
-   {
-      for(auto *pA : i.getArgs())
-      {
-         pA->demandVar().unbindArgButKeepStorage(i,*pA);
-         delete pA;
-      }
-      i.getArgs().clear();
-   }
+      i.deleteAllArgs();
 
    lirTransform::runInstr(i);
 }
@@ -516,6 +498,7 @@ void codeShapeTransform::runInstr(lirInstr& i)
    std::string varName = u.makeUnique("t");
    lirArg& origArg = *i.getArgs()[*regOffsets.begin()];
    size_t origStor = origArg.demandVar().getStorageFor(i.orderNum,origArg);
+   size_t origSize = origArg.getSize();
 
    // inject save
    if(needsSpill)
@@ -553,11 +536,8 @@ void codeShapeTransform::runInstr(lirInstr& i)
 
    // modify original instruction
    {
-      var& origVar = origArg.demandVar();
-      origVar.unbindArgButKeepStorage(i,origArg);
-
       auto *pUpdatedArg = new lirArgTemp(varName,origArg.getSize());
-      i.getArgs()[*regOffsets.begin()] = pUpdatedArg;
+      i.replaceArg(*regOffsets.begin(),*pUpdatedArg); // origArg unsafe to use now!
 
       scheduleVarBind(i,*pUpdatedArg,m_v,altStor);
    }
@@ -566,14 +546,12 @@ void codeShapeTransform::runInstr(lirInstr& i)
    if(needsSpill)
    {
       auto& pop = *new lirInstr(cmn::tgt::kPop);
-      auto& arg = pop.addArg<lirArgTemp>(varName,origArg.getSize());
+      auto& arg = pop.addArg<lirArgTemp>(varName,origSize);
       pop.comment = "codeshape restore";
 
       scheduleInjectBefore(pop,i.next());
       scheduleVarBind(pop,arg,m_v,altStor);
    }
-
-   delete &origArg;
 
    lirTransform::runInstr(i);
 }

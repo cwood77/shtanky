@@ -406,4 +406,32 @@ void varTable::format(cmn::outStream& s)
    m_vSTable.format(s);
 }
 
+void varMap::bind(lirArg& a, var& v)
+{
+   auto& val = m_map[&a];
+   if(val)
+      cdwTHROW("rebind var is unsupported");
+   val = &v;
+}
+
+void varMap::unbindIf(lirArg& a)
+{
+   auto it = m_map.find(&a);
+   if(it == m_map.end())
+      return;
+
+   it->second->unbindArgButKeepStorage(a.instr(),a);
+   m_map.erase(it);
+}
+
+var& varMap::demand(lirArg& a)
+{
+   auto it = m_map.find(&a);
+   if(it == m_map.end())
+      cdwTHROW("no var in demandVar");
+   return *it->second;
+}
+
+cmn::timedGlobal<varMap> gVarMap;
+
 } // namespace liam

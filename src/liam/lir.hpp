@@ -15,12 +15,13 @@ namespace cmn { class textTableLineWriter; }
 
 namespace liam {
 
+class lirInstr;
 class lirStreams;
 class var;
 
 class lirArg {
 public:
-   virtual ~lirArg() {}
+   virtual ~lirArg();
 
    const std::string& getName() const { return m_name; }
    // sizes here are typically pseudo, but some instrs differ
@@ -31,12 +32,15 @@ public:
    //void unbindVarIf();
    var& demandVar();
 
+   void adopt(lirInstr& i);
+   lirInstr& instr();
+
    int disp;
    bool addrOf;
 
 protected:
    lirArg(const std::string& name, size_t size)
-   : disp(0), addrOf(false), m_name(name), m_size(size), m_pVar(NULL) {}
+   : disp(0), addrOf(false), m_name(name), m_size(size), m_pVar(NULL), m_pInstr(NULL) {}
 
    template<class T>
    T& _clone() const
@@ -52,6 +56,7 @@ private:
    const std::string m_name;
    const size_t m_size;
    var *m_pVar;
+   lirInstr *m_pInstr;
 };
 
 class lirArgVar : public lirArg {
@@ -91,7 +96,12 @@ public:
       addArg(*pArg);
       return *pArg;
    }
-   lirArg& addArg(lirArg& a) { m_args.push_back(&a); return a; }
+   lirArg& addArg(lirArg& a) { m_args.push_back(&a); a.adopt(*this); return a; }
+   void deleteArg(size_t n);
+   void deleteAllButNArgs(size_t n);
+   void deleteAllArgs() { deleteAllButNArgs(0); }
+   void replaceArg(size_t i, lirArg& a);
+   const std::vector<lirArg*>& getArgs() const { return m_args; }
 
    lirInstr& injectBefore(lirInstr& noob);
    lirInstr& injectAfter(lirInstr& noob);
@@ -107,7 +117,6 @@ public:
    size_t orderNum;
    cmn::tgt::instrIds instrId;
    std::string comment;
-   std::vector<lirArg*>& getArgs() { return m_args; }
 
 private:
    void pickOrderNumForNewLocation();

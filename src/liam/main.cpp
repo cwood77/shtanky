@@ -123,6 +123,8 @@ int _main(int argc,const char *argv[])
       autoIncrementalSetting _s(xf.fetch<lirAutoLogger>(),*it);
 
       varTable vTbl;
+      varMap                       _vMap;
+      cmn::globalPublishTo<varMap> _vMapReg(_vMap,gVarMap);
       varTableAutoLogger varLogger(vTbl);
       cmn::firewallRegistrar fr(xf,varLogger);
       lirVarGen(vTbl).runStream(*it);

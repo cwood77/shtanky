@@ -102,6 +102,19 @@ private:
    virtStackTable m_vSTable;
 };
 
+// timed global that connects the lirArgs to the vars temporarily
+class varMap {
+public:
+   void bind(lirArg& a, var& v);
+   void unbindIf(lirArg& a);
+   var& demand(lirArg& a);
+
+private:
+   std::map<lirArg*,var*> m_map;
+};
+
+extern cmn::timedGlobal<varMap> gVarMap;
+
 class varTableAutoLogger : public cmn::iLogger {
 public:
    typedef varTable argType;

@@ -4,23 +4,40 @@
 #include "../cmn/throw.hpp"
 #include "../cmn/trace.hpp"
 #include "lir.hpp"
+#include "varGen.hpp"
 #include <algorithm>
 #include <sstream>
 
 namespace liam {
 
+lirArg::~lirArg()
+{
+   if(gVarMap.isValid())
+      gVarMap->unbindIf(*this);
+}
+
 void lirArg::bindVar(var& v)
 {
-   if(m_pVar)
-      cdwTHROW("rebind var is unsupported");
-   m_pVar = &v;
+   gVarMap->bind(*this,v);
 }
 
 var& lirArg::demandVar()
 {
-   if(!m_pVar)
-      cdwTHROW("no var in demandVar");
-   return *m_pVar;
+   return gVarMap->demand(*this);
+}
+
+void lirArg::adopt(lirInstr& i)
+{
+   if(m_pInstr)
+      cdwTHROW("instr already set!");
+   m_pInstr = &i;
+}
+
+lirInstr& lirArg::instr()
+{
+   if(!m_pInstr)
+      cdwTHROW("no instr set!");
+   return *m_pInstr;
 }
 
 lirArg& lirArg::copyFieldsInto(lirArg& noob) const
@@ -28,6 +45,7 @@ lirArg& lirArg::copyFieldsInto(lirArg& noob) const
    noob.disp = disp;
    noob.addrOf = addrOf;
    noob.m_pVar = NULL;
+   noob.m_pInstr = NULL;
    return noob;
 }
 
@@ -48,9 +66,27 @@ lirInstr::lirInstr(const cmn::tgt::instrIds id)
 
 lirInstr::~lirInstr()
 {
-   for(auto it=m_args.begin();it!=m_args.end();++it)
-      delete *it;
+   deleteAllArgs();
    delete m_pNext;
+}
+
+void lirInstr::deleteArg(size_t n)
+{
+   delete m_args[n];
+   m_args.erase(std::next(m_args.begin(),n));
+}
+
+void lirInstr::deleteAllButNArgs(size_t n)
+{
+   while(m_args.size() > n)
+      deleteArg(n);
+}
+
+void lirInstr::replaceArg(size_t i, lirArg& a)
+{
+   delete m_args[i];
+   m_args[i] = &a;
+   a.adopt(*this);
 }
 
 lirInstr& lirInstr::injectBefore(lirInstr& noob)
